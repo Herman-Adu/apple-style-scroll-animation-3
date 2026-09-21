@@ -1,10 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowUpRight, ChevronLeft, ChevronRight, MapPin, Mail, User, X } from "lucide-react"
+import { ArrowUpRight, ChevronLeft, ChevronRight, LogOut, MapPin, Mail, Package, User, UserRound, X } from "lucide-react"
 import type { NavLink } from "@/lib/types"
 import { mainNav, siteConfig } from "@/lib/data/site"
 import { isSectionActive, isTopLevelActive } from "@/lib/nav"
@@ -21,13 +21,22 @@ interface MobileNavProps {
 
 export function MobileNav({ open, onClose, activeId, category }: MobileNavProps) {
   const pathname = usePathname()
-  const { status, user } = useAuth()
+  const router = useRouter()
+  const { status, user, signOut } = useAuth()
   const [submenu, setSubmenu] = useState<NavLink | null>(null)
+  const [accountOpen, setAccountOpen] = useState(false)
+
+  async function handleSignOut() {
+    onClose()
+    await signOut()
+    router.replace("/")
+  }
 
   // Reset to the root panel whenever the sheet closes, and lock body scroll.
   useEffect(() => {
     if (!open) {
       setSubmenu(null)
+      setAccountOpen(false)
       return
     }
     const previous = document.body.style.overflow
@@ -143,6 +152,70 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                       })}
                     </div>
                   </motion.div>
+                ) : accountOpen && user ? (
+                  <motion.div
+                    key="account"
+                    initial={{ x: "100%" }}
+                    animate={{ x: 0 }}
+                    exit={{ x: "100%" }}
+                    transition={{ type: "spring", damping: 32, stiffness: 300 }}
+                    className="absolute inset-0 flex flex-col"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setAccountOpen(false)}
+                      className="flex items-center gap-2 border-b border-foreground/10 px-6 py-4 text-xs uppercase tracking-[0.2em] text-foreground/50 transition-colors hover:text-foreground"
+                    >
+                      <ChevronLeft className="h-4 w-4" strokeWidth={2} />
+                      Menu
+                    </button>
+
+                    <div className="flex-1 overflow-y-auto px-4 py-4">
+                      <div className="flex items-center gap-3 rounded-2xl border border-foreground/10 bg-foreground/[0.02] px-4 py-4">
+                        <UserAvatar
+                          name={user.profile.displayName || user.name}
+                          src={user.profile.avatarUrl}
+                          size={44}
+                        />
+                        <span className="min-w-0">
+                          <span className="block text-[11px] uppercase tracking-[0.15em] text-foreground/40">
+                            Account
+                          </span>
+                          <span className="block truncate text-base font-semibold text-foreground">
+                            {user.profile.displayName || user.name}
+                          </span>
+                          <span className="block truncate text-sm text-foreground/40">{user.email}</span>
+                        </span>
+                      </div>
+
+                      <div className="my-2 h-px bg-foreground/10" />
+
+                      <Link
+                        href="/account"
+                        onClick={onClose}
+                        className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
+                      >
+                        <UserRound className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
+                        <span className="text-base font-medium text-foreground/80">Profile</span>
+                      </Link>
+                      <Link
+                        href="/account?tab=orders"
+                        onClick={onClose}
+                        className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
+                      >
+                        <Package className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
+                        <span className="text-base font-medium text-foreground/80">Orders &amp; invoices</span>
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-colors hover:bg-foreground/5"
+                      >
+                        <LogOut className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
+                        <span className="text-base font-medium text-foreground/80">Sign out</span>
+                      </button>
+                    </div>
+                  </motion.div>
                 ) : (
                   <motion.div
                     key="root"
@@ -198,10 +271,10 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                     {/* Under the links — account, contact, and studios */}
                     <div className="space-y-4 border-t border-foreground/10 p-5">
                       {status === "authenticated" && user ? (
-                        <Link
-                          href="/account"
-                          onClick={onClose}
-                          className="flex items-center gap-3 rounded-2xl border border-foreground/10 bg-foreground/[0.02] px-4 py-3 transition-colors hover:bg-foreground/[0.05]"
+                        <button
+                          type="button"
+                          onClick={() => setAccountOpen(true)}
+                          className="flex w-full items-center gap-3 rounded-2xl border border-foreground/10 bg-foreground/[0.02] px-4 py-3 text-left transition-colors hover:bg-foreground/[0.05]"
                         >
                           <UserAvatar
                             name={user.profile.displayName || user.name}
@@ -217,7 +290,7 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                             </span>
                           </span>
                           <ChevronRight className="ml-auto h-4 w-4 shrink-0 text-foreground/40" strokeWidth={1.5} />
-                        </Link>
+                        </button>
                       ) : (
                         <Link
                           href="/sign-in"

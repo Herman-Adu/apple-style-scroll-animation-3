@@ -24,6 +24,14 @@ export function SiteHeader() {
   const { status, user } = useAuth()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  // Auth state is client-only (persisted session), so the server always renders
+  // the signed-out link. Gate the auth-aware UI on mount so the first client
+  // render matches the server and we avoid a hydration mismatch.
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -85,7 +93,7 @@ export function SiteHeader() {
             return to their normal inline position in the right-hand cluster.
           */}
           <div className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2 md:static md:left-auto md:translate-x-0">
-            {status === "authenticated" && user ? (
+            {mounted && status === "authenticated" && user ? (
               <AccountMenu chromeText={chromeText} chromeHover={chromeHover} />
             ) : (
               <Link

@@ -20,7 +20,7 @@ export function OnboardingFlow() {
   const [submitting, setSubmitting] = useState(false)
   const [draft, setDraft] = useState<ProfileUpdate>(() => ({
     displayName: user?.profile.displayName || user?.name || "",
-    goal: user?.profile.goal,
+    goals: user?.profile.goals ?? [],
     interests: user?.profile.interests ?? [],
     newsletter: user?.profile.newsletter ?? false,
     bio: user?.profile.bio,

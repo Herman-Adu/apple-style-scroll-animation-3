@@ -30,7 +30,7 @@ export function ProfileForm() {
   const [draft, setDraft] = useState<ProfileUpdate>(() => ({
     displayName: user?.profile.displayName ?? "",
     avatarUrl: user?.profile.avatarUrl,
-    goal: user?.profile.goal,
+    goals: user?.profile.goals ?? [],
     interests: user?.profile.interests ?? [],
     newsletter: user?.profile.newsletter ?? false,
     bio: user?.profile.bio ?? "",

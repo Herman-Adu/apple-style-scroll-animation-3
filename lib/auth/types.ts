@@ -18,8 +18,8 @@ export interface UserProfile {
   displayName?: string
   /** Avatar image source — an uploaded data URL (local) or a hosted URL (Strapi). */
   avatarUrl?: string
-  /** Primary reason the user is here — drives personalization. */
-  goal?: string
+  /** Reasons the user is here — drives personalization. Multi-select. */
+  goals: string[]
   /** Product interests selected during onboarding. */
   interests: string[]
   /** Marketing / product update opt-in. */

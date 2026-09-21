@@ -36,7 +36,11 @@ function toUser(raw: any): User {
     displayName: raw.profile?.displayName ?? raw.username,
     // Prefer an explicit profile URL, falling back to a Strapi media relation.
     avatarUrl: raw.profile?.avatarUrl ?? raw.avatar?.url,
-    goal: raw.profile?.goal,
+    goals: Array.isArray(raw.profile?.goals)
+      ? raw.profile.goals
+      : raw.profile?.goal
+        ? [raw.profile.goal]
+        : [],
     interests: raw.profile?.interests ?? [],
     newsletter: raw.profile?.newsletter ?? false,
     bio: raw.profile?.bio,

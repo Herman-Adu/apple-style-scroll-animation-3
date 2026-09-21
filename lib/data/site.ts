@@ -19,7 +19,6 @@ export const mainNav: NavLink[] = [
     label: "Home",
     href: "/",
     sections: [
-      { label: "Overview", href: "/#top", hint: "Back to the top" },
       { label: "Philosophy", href: "/#statement", hint: "What we believe" },
       { label: "The collection", href: "/#collection", hint: "Every product" },
       { label: "Journal", href: "/#journal", hint: "Latest field notes" },

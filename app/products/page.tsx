@@ -6,6 +6,7 @@ import { fetchProducts } from "@/features/products/api"
 import { pageHeroes } from "@/lib/data/heroes"
 import { PageHero } from "@/components/layout/page-hero"
 import { SearchField } from "@/components/primitives"
+import { ScrollToResults } from "@/features/products/components/scroll-to-results"
 import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
@@ -62,9 +63,12 @@ export default async function ProductsPage({
 
   return (
     <main className="bg-background">
+      <Suspense fallback={null}>
+        <ScrollToResults targetId="collection" />
+      </Suspense>
       <PageHero content={pageHeroes.products} />
 
-      <section className="px-6 pt-16 md:px-12 md:pt-24">
+      <section id="collection" className="scroll-mt-24 px-6 pt-16 md:px-12 md:pt-24">
         <div className="mx-auto max-w-7xl">
           <p className="max-w-xl text-lg text-foreground/60">
             {activeCategory
@@ -78,6 +82,7 @@ export default async function ProductsPage({
                 <Link
                   key={filter.href}
                   href={filter.href}
+                  scroll={false}
                   aria-current={filter.active ? "page" : undefined}
                   className={cn(
                     "rounded-full border px-5 py-2 text-xs uppercase tracking-[0.2em] transition-colors",

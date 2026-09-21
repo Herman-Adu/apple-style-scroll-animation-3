@@ -88,6 +88,9 @@ export const products: Product[] = [
       { label: "Noise cancellation", value: "-45dB adaptive" },
     ],
     colors: ["Titanium", "Midnight", "Stone"],
+    stock: 0,
+    lowStockThreshold: 5,
+    reserved: 0,
   },
   {
     slug: "momo-air",
@@ -165,6 +168,9 @@ export const products: Product[] = [
       { label: "Water resistance", value: "IPX4" },
     ],
     colors: ["Cloud", "Graphite", "Sky"],
+    stock: 42,
+    lowStockThreshold: 8,
+    reserved: 0,
   },
   {
     slug: "momo-studio",
@@ -242,6 +248,9 @@ export const products: Product[] = [
       { label: "Distortion", value: "<0.05% THD" },
     ],
     colors: ["Studio Black", "Silver"],
+    stock: 4,
+    lowStockThreshold: 6,
+    reserved: 0,
   },
   {
     slug: "momo-beat",
@@ -331,6 +340,9 @@ export const products: Product[] = [
       { label: "Durability", value: "IP67" },
     ],
     colors: ["Titanium", "Slate"],
+    stock: 15,
+    lowStockThreshold: 5,
+    reserved: 0,
   },
 ]
 

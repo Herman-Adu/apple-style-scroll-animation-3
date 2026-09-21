@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Inter } from "next/font/google"
 import { CartProvider } from "@/lib/cart-context"
+import { CatalogProvider } from "@/features/catalog"
 import { AuthProvider } from "@/lib/auth/auth-context"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SiteHeader } from "@/components/layout/site-header"
@@ -85,16 +86,18 @@ export default function RootLayout({
         <JsonLd data={[organizationLd(), websiteLd()]} />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <AuthProvider>
-            <CartProvider catalog={catalog}>
-              <Suspense fallback={null}>
-                <SiteHeader />
-              </Suspense>
-              {children}
-              <SiteFooter />
-              <Suspense fallback={null}>
-                <CartDrawer />
-              </Suspense>
-            </CartProvider>
+            <CatalogProvider initialProducts={catalog}>
+              <CartProvider catalog={catalog}>
+                <Suspense fallback={null}>
+                  <SiteHeader />
+                </Suspense>
+                {children}
+                <SiteFooter />
+                <Suspense fallback={null}>
+                  <CartDrawer />
+                </Suspense>
+              </CartProvider>
+            </CatalogProvider>
           </AuthProvider>
         </ThemeProvider>
         <Analytics />

@@ -108,5 +108,15 @@ export const productSchema = z.object({
   features: z.array(productFeatureSchema),
   specs: z.array(productSpecSchema),
   colors: z.array(z.string()),
+  /**
+   * Inventory. Defaulted so payloads that predate these fields (or a Strapi
+   * content-type still being extended) parse cleanly instead of failing at the
+   * boundary.
+   */
+  stock: z.number().int().nonnegative().default(0),
+  /** At or below this many available units, the product reads as low-stock. */
+  lowStockThreshold: z.number().int().nonnegative().default(5),
+  /** Units held by in-flight orders but not yet removed from `stock`. */
+  reserved: z.number().int().nonnegative().default(0),
 })
 export type Product = z.infer<typeof productSchema>

@@ -3,10 +3,19 @@
 
 export type OnboardingStatus = "pending" | "complete"
 
+/**
+ * Access role. In local mode it's resolved from an email allowlist; once Strapi
+ * is connected it maps to the users-permissions role. The admin area gates on
+ * `admin`.
+ */
+export type UserRole = "admin" | "customer"
+
 export interface User {
   id: string
   email: string
   name: string
+  /** Access role — drives admin-area authorization. */
+  role: UserRole
   /** Free-form profile fields collected during onboarding. */
   profile: UserProfile
   onboardingStatus: OnboardingStatus

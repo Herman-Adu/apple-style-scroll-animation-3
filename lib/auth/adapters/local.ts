@@ -3,7 +3,7 @@
 // with zero backend. Mirrors the exact AuthAdapter contract the Strapi adapter uses,
 // so the application layer cannot tell them apart.
 
-import { authConfig } from "../config"
+import { authConfig, resolveRole } from "../config"
 import {
   AuthAdapter,
   AuthError,
@@ -66,7 +66,13 @@ function normalizeProfile(profile: Record<string, unknown>): UserProfile {
 
 function stripPassword(user: StoredUser): User {
   const { password: _password, ...safe } = user
-  return { ...safe, profile: normalizeProfile(safe.profile as unknown as Record<string, unknown>) }
+  // Role is always derived from the current allowlist, so promoting/demoting an
+  // email takes effect on next read without rewriting stored records.
+  return {
+    ...safe,
+    role: resolveRole(safe.email),
+    profile: normalizeProfile(safe.profile as unknown as Record<string, unknown>),
+  }
 }
 
 function emptyProfile(): UserProfile {
@@ -96,6 +102,7 @@ export function createLocalAdapter(): AuthAdapter {
         id: crypto.randomUUID(),
         email: input.email,
         name: input.name,
+        role: resolveRole(input.email),
         password: input.password,
         profile: emptyProfile(),
         onboardingStatus: "pending",

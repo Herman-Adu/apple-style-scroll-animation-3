@@ -7,7 +7,7 @@
 // mapping helpers below to match your exact content-type — that is the only place
 // backend-specific shape lives.
 
-import { authConfig } from "../config"
+import { authConfig, resolveRole } from "../config"
 import {
   AuthAdapter,
   AuthError,
@@ -45,10 +45,15 @@ function toUser(raw: any): User {
     newsletter: raw.profile?.newsletter ?? false,
     bio: raw.profile?.bio,
   }
+  // Prefer Strapi's users-permissions role name; fall back to the local
+  // allowlist so admin bootstrapping keeps working before roles are configured.
+  const strapiRole = String(raw.role?.name ?? raw.role?.type ?? "").toLowerCase()
+  const role = strapiRole === "admin" ? "admin" : resolveRole(raw.email ?? "")
   return {
     id: String(raw.id),
     email: raw.email,
     name: raw.name ?? raw.username ?? raw.email,
+    role,
     profile,
     onboardingStatus: raw.onboardingStatus ?? "pending",
     createdAt: raw.createdAt ?? new Date().toISOString(),

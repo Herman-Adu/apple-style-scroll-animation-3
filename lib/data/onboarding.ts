@@ -11,7 +11,7 @@ export interface OnboardingOption {
 
 export interface OnboardingField {
   /** Maps to a key on UserProfile. */
-  key: "displayName" | "goal" | "interests" | "bio" | "newsletter"
+  key: "displayName" | "goals" | "interests" | "bio" | "newsletter"
   type: OnboardingFieldType
   label: string
   placeholder?: string
@@ -42,14 +42,14 @@ export const onboardingSteps: OnboardingStep[] = [
     ],
   },
   {
-    id: "goal",
+    id: "goals",
     title: "What brings you here?",
-    subtitle: "We'll tailor recommendations to what matters most to you.",
+    subtitle: "Pick everything that applies — we'll tailor recommendations to match.",
     fields: [
       {
-        key: "goal",
-        type: "single-select",
-        label: "Primary goal",
+        key: "goals",
+        type: "multi-select",
+        label: "Goals",
         required: true,
         options: [
           { value: "listen", label: "Immersive listening", description: "Music, films, and spatial audio" },

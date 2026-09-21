@@ -12,6 +12,7 @@ import {
   SignInInput,
   SignUpInput,
   User,
+  UserProfile,
 } from "../types"
 
 const USERS_KEY = "momo.auth.users"
@@ -43,13 +44,33 @@ function writeToken(token: string | null) {
   else window.localStorage.removeItem(authConfig.storageKey)
 }
 
-function stripPassword(user: StoredUser): User {
-  const { password: _password, ...safe } = user
-  return safe
+// Coerces persisted profiles to the current shape. Notably migrates the legacy
+// single `goal` string to the `goals` array so accounts created before the
+// multi-select change keep their selection.
+function normalizeProfile(profile: Record<string, unknown>): UserProfile {
+  const legacyGoal = typeof profile.goal === "string" ? profile.goal : undefined
+  const goals = Array.isArray(profile.goals)
+    ? (profile.goals as string[])
+    : legacyGoal
+      ? [legacyGoal]
+      : []
+  return {
+    displayName: profile.displayName as string | undefined,
+    avatarUrl: profile.avatarUrl as string | undefined,
+    goals,
+    interests: Array.isArray(profile.interests) ? (profile.interests as string[]) : [],
+    newsletter: Boolean(profile.newsletter),
+    bio: profile.bio as string | undefined,
+  }
 }
 
-function emptyProfile() {
-  return { interests: [], newsletter: false }
+function stripPassword(user: StoredUser): User {
+  const { password: _password, ...safe } = user
+  return { ...safe, profile: normalizeProfile(safe.profile as unknown as Record<string, unknown>) }
+}
+
+function emptyProfile(): UserProfile {
+  return { goals: [], interests: [], newsletter: false }
 }
 
 /** Simulated latency so loading states behave like a real network. */

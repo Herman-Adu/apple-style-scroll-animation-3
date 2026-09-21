@@ -7,34 +7,64 @@ import { useState } from "react"
 import { ArrowLeft, Lock, ShoppingBag } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth/auth-context"
+import { useOrders } from "@/hooks/use-orders"
 import { UserAvatar } from "@/components/account/user-avatar"
+import { Spinner } from "@/components/ui/spinner"
 import { formatMoney } from "@/lib/format"
+import type { Order } from "@/lib/orders/types"
 
 export function CheckoutView() {
   const { lines, subtotal, currency, itemCount, clear } = useCart()
   const { user } = useAuth()
+  const { createOrder } = useOrders(user?.id)
   const router = useRouter()
-  const [placed, setPlaced] = useState(false)
+  const [placing, setPlacing] = useState(false)
+  const [order, setOrder] = useState<Order | null>(null)
 
   const displayName = user?.profile.displayName || user?.name || "there"
 
-  function placeOrder() {
-    // Demo order placement. A real integration (e.g. Stripe) would create a
-    // server-side session here from the authenticated user's cart.
-    setPlaced(true)
-    clear()
+  async function placeOrder() {
+    if (!user || lines.length === 0 || placing) return
+    // Records the order through the OrdersAdapter port. A real integration
+    // (e.g. Stripe) swaps that adapter for a server-side Checkout Session —
+    // this component stays the same.
+    setPlacing(true)
+    try {
+      const created = await createOrder({
+        userId: user.id,
+        email: user.email,
+        items: lines.map((line) => ({
+          slug: line.product.slug,
+          name: line.product.name,
+          image: line.product.image,
+          color: line.color,
+          quantity: line.quantity,
+          unitAmount: line.product.price.amount,
+          currency: line.product.price.currency,
+        })),
+        subtotal,
+        shipping: 0,
+        total: subtotal,
+        currency,
+      })
+      setOrder(created)
+      clear()
+    } finally {
+      setPlacing(false)
+    }
   }
 
-  if (placed) {
+  if (order) {
     return (
       <main className="mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center px-6 py-24 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-foreground/5">
           <ShoppingBag className="h-7 w-7 text-foreground" strokeWidth={1.5} />
         </div>
         <h1 className="mt-6 text-2xl font-semibold text-foreground">Order confirmed</h1>
+        <p className="mt-2 font-mono text-sm text-foreground/70">{order.number}</p>
         <p className="mt-2 max-w-md text-pretty text-sm leading-relaxed text-foreground/50">
-          Thanks, {displayName}. A confirmation is on its way to {user?.email}. You can track this
-          order from your account.
+          Thanks, {displayName}. A confirmation is on its way to {user?.email}. You can find this
+          order and its invoice under Orders in your account.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
@@ -159,10 +189,17 @@ export function CheckoutView() {
             <button
               type="button"
               onClick={placeOrder}
-              className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-4 text-xs font-semibold uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-90"
+              disabled={placing}
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-4 text-xs font-semibold uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-90 disabled:opacity-60"
             >
-              <Lock className="h-3.5 w-3.5" strokeWidth={2} />
-              Place order
+              {placing ? (
+                <Spinner className="size-4" />
+              ) : (
+                <>
+                  <Lock className="h-3.5 w-3.5" strokeWidth={2} />
+                  Place order
+                </>
+              )}
             </button>
             <p className="mt-3 text-center text-xs text-foreground/40">
               Secure checkout. You&apos;re signed in as {user?.email}.

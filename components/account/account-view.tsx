@@ -1,7 +1,7 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,16 @@ function optionLabel(fieldKey: string, value?: string) {
 export function AccountView() {
   const { user, signOut } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [signingOut, setSigningOut] = useState(false)
+
+  // Deep-link support: /account?tab=orders opens the Orders tab, both on a
+  // fresh mount and while the page is already mounted (e.g. from the header
+  // dropdown or the mobile account submenu).
+  const [tab, setTab] = useState(() => (searchParams.get("tab") === "orders" ? "orders" : "profile"))
+  useEffect(() => {
+    setTab(searchParams.get("tab") === "orders" ? "orders" : "profile")
+  }, [searchParams])
 
   if (!user) return null
 
@@ -77,7 +86,7 @@ export function AccountView() {
           transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
           className="pt-10"
         >
-          <Tabs defaultValue="profile">
+          <Tabs value={tab} onValueChange={setTab}>
             <TabsList className="mb-8 bg-foreground/[0.04]">
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="orders">Orders &amp; invoices</TabsTrigger>

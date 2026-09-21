@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { Suspense } from "react"
 import { RouteGuard } from "@/components/auth/route-guard"
 import { AccountView } from "@/components/account/account-view"
 
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 export default function AccountPage() {
   return (
     <RouteGuard require="authenticated" redirectTo="/sign-in" requireOnboarded>
-      <AccountView />
+      <Suspense fallback={null}>
+        <AccountView />
+      </Suspense>
     </RouteGuard>
   )
 }

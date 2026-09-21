@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Suspense } from "react"
-import { ProductCard, ProductGridSkeleton, filterProducts } from "@/features/products"
+import { ProductCollection, ProductGridSkeleton } from "@/features/products"
 import { fetchProducts } from "@/features/products/api"
 import { pageHeroes } from "@/lib/data/heroes"
 import { PageHero } from "@/components/layout/page-hero"
@@ -18,26 +18,8 @@ const CATEGORIES = ["Headphones", "Earbuds", "Speakers"] as const
 type Category = (typeof CATEGORIES)[number]
 
 async function ProductGrid({ category, query }: { category?: Category; query?: string }) {
-  const allProducts = await fetchProducts()
-  const products = filterProducts(allProducts, { category, query })
-
-  if (products.length === 0) {
-    return (
-      <p className="mx-auto max-w-7xl text-foreground/50">
-        {query
-          ? `No products match “${query}”${category ? ` in ${category}` : ""}. Try a different search.`
-          : "No products in this category yet."}
-      </p>
-    )
-  }
-
-  return (
-    <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {products.map((product, index) => (
-        <ProductCard key={product.slug} product={product} index={index} />
-      ))}
-    </div>
-  )
+  const initialProducts = await fetchProducts()
+  return <ProductCollection initialProducts={initialProducts} category={category} query={query} />
 }
 
 export default async function ProductsPage({

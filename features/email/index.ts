@@ -1,2 +1,1 @@
-export { sendOrderConfirmation, sendLowStockAlert } from "./actions"
-export { isEmailConfigured } from "./provider"
+export { sendOrderConfirmation, sendLowStockAlert, getEmailConfigured, sendTestEmail } from "./actions"

@@ -79,6 +79,21 @@ export function orderConfirmationEmail(params: { name: string; order: Order }): 
   return { subject: `Order confirmed — ${order.number}`, html, text }
 }
 
+export function testEmail(): { subject: string; html: string; text: string } {
+  const html = layout(
+    "Test email",
+    `<p style="margin:0 0 16px;color:${MUTED};font-size:14px;line-height:1.6;">
+      This is a test from your MOMO admin dashboard. If you're reading this, your Resend
+      configuration and sending domain are working correctly.
+    </p>`,
+  )
+  return {
+    subject: "MOMO — email configuration test",
+    html,
+    text: "This is a test from your MOMO admin dashboard. Your email configuration is working correctly.",
+  }
+}
+
 export function lowStockAlertEmail(params: {
   items: { name: string; slug: string; stock: number; threshold: number }[]
 }): { subject: string; html: string; text: string } {

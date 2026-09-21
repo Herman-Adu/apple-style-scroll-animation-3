@@ -3,8 +3,15 @@
 import { useEffect, useState } from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
+import { cn } from "@/lib/utils"
 
-export function ThemeToggle() {
+export function ThemeToggle({
+  chromeText = "text-foreground",
+  chromeHover = "hover:bg-foreground/10",
+}: {
+  chromeText?: string
+  chromeHover?: string
+}) {
   const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -18,7 +25,11 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="relative flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-foreground/10"
+      className={cn(
+        "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors",
+        chromeText,
+        chromeHover,
+      )}
       aria-label={mounted ? `Switch to ${isDark ? "light" : "dark"} theme` : "Toggle theme"}
     >
       {mounted ? (

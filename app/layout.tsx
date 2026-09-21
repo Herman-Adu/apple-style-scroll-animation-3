@@ -1,5 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
@@ -85,10 +86,14 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <AuthProvider>
             <CartProvider catalog={catalog}>
-              <SiteHeader />
+              <Suspense fallback={null}>
+                <SiteHeader />
+              </Suspense>
               {children}
               <SiteFooter />
-              <CartDrawer />
+              <Suspense fallback={null}>
+                <CartDrawer />
+              </Suspense>
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>

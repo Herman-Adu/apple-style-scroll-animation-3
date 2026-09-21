@@ -109,7 +109,7 @@ export function SiteHeader() {
               </Link>
             )}
 
-            <ThemeToggle />
+            <ThemeToggle chromeText={chromeText} chromeHover={chromeHover} />
 
             <button
               type="button"

@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, ArrowUpRight, Clock, Lock } from "lucide-react"
-import { DocAccessGate, DocBlocks, getDocHeadings } from "@/features/docs"
-import { fetchDoc, fetchDocSlugs, fetchRelatedDocs } from "@/features/docs/api"
+import { DocAccessGate, DocBlocks, DocsSidebar, getDocHeadings, toDocSummary } from "@/features/docs"
+import { fetchDoc, fetchDocs, fetchDocSlugs, fetchRelatedDocs } from "@/features/docs/api"
 
 export async function generateStaticParams() {
   const slugs = await fetchDocSlugs()
@@ -32,11 +32,13 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
 
   const headings = getDocHeadings(doc)
   const related = await fetchRelatedDocs(slug)
+  // Card-level summaries only (no bodies) power the role-aware nav rail.
+  const allSummaries = (await fetchDocs()).map(toDocSummary)
 
   return (
     <main className="bg-background">
       <article className="px-6 pt-32 pb-20 md:px-12 md:pt-40">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-7xl">
           <Link
             href="/docs"
             className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40 transition-colors hover:text-foreground"
@@ -45,64 +47,70 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
             Documentation
           </Link>
 
-          <header className="mt-8 border-b border-foreground/10 pb-10">
-            <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
-              <span className="rounded-full border border-accent-teal/40 px-3 py-1 text-accent-teal">
-                {doc.category}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" strokeWidth={1.5} />
-                {doc.readingMinutes} min read
-              </span>
-              {doc.access === "admin" ? (
-                <span className="flex items-center gap-1 rounded-full border border-accent-amber/30 bg-accent-amber/10 px-3 py-1 text-accent-amber">
-                  <Lock className="h-2.5 w-2.5" strokeWidth={2} />
-                  Internal
-                </span>
-              ) : null}
-            </div>
-            <h1 className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-5xl">
-              {doc.title}
-            </h1>
-            <p className="mt-5 text-pretty text-lg leading-relaxed text-foreground/60">{doc.summary}</p>
-          </header>
-        </div>
-
-        {/* Reading column + sticky TOC on wide screens */}
-        <div className="mx-auto mt-12 flex max-w-6xl gap-12">
-          {headings.length > 1 && (
-            <aside className="hidden w-56 shrink-0 lg:block">
-              <nav aria-label="On this page" className="sticky top-28">
-                <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
-                  On this page
-                </p>
-                <ul className="space-y-2.5 border-l border-foreground/10">
-                  {headings.map((heading) => (
-                    <li key={heading.id}>
-                      <a
-                        href={`#${heading.id}`}
-                        className="-ml-px block border-l border-transparent pl-4 text-sm leading-snug text-foreground/50 transition-colors hover:border-accent-teal hover:text-foreground"
-                      >
-                        {heading.text}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
+          {/* Nav rail · reading column · on-this-page TOC */}
+          <div className="mt-8 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[15rem_minmax(0,1fr)_14rem]">
+            <aside className="hidden lg:block">
+              <DocsSidebar docs={allSummaries} activeSlug={slug} />
             </aside>
-          )}
 
-          <div className="min-w-0 max-w-3xl flex-1">
-            <DocBlocks blocks={doc.body} />
+            <div className="min-w-0">
+              <header className="border-b border-foreground/10 pb-10">
+                <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+                  <span className="rounded-full border border-accent-teal/40 px-3 py-1 text-accent-teal">
+                    {doc.category}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    {doc.readingMinutes} min read
+                  </span>
+                  {doc.access === "admin" ? (
+                    <span className="flex items-center gap-1 rounded-full border border-accent-amber/30 bg-accent-amber/10 px-3 py-1 text-accent-amber">
+                      <Lock className="h-2.5 w-2.5" strokeWidth={2} />
+                      Internal
+                    </span>
+                  ) : null}
+                </div>
+                <h1 className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-5xl">
+                  {doc.title}
+                </h1>
+                <p className="mt-5 text-pretty text-lg leading-relaxed text-foreground/60">{doc.summary}</p>
+              </header>
 
-            <div className="mt-16 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-8">
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">Tags</span>
-              {doc.tags.map((tag) => (
-                <span key={tag} className="rounded-full bg-foreground/[0.05] px-3 py-1 text-xs text-foreground/50">
-                  {tag}
-                </span>
-              ))}
+              <div className="mt-10">
+                <DocBlocks blocks={doc.body} />
+              </div>
+
+              <div className="mt-16 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-8">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">Tags</span>
+                {doc.tags.map((tag) => (
+                  <span key={tag} className="rounded-full bg-foreground/[0.05] px-3 py-1 text-xs text-foreground/50">
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
+
+            {headings.length > 1 && (
+              <aside className="hidden xl:block">
+                <nav aria-label="On this page" className="sticky top-28">
+                  <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+                    On this page
+                  </p>
+                  <ul className="space-y-2.5 border-l border-foreground/10">
+                    {headings.map((heading) => (
+                      <li key={heading.id}>
+                        <a
+                          href={`#${heading.id}`}
+                          className="-ml-px block border-l border-transparent pl-4 text-sm leading-snug text-foreground/50 transition-colors hover:border-accent-teal hover:text-foreground"
+                        >
+                          {heading.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </aside>
+            )}
           </div>
         </div>
       </article>

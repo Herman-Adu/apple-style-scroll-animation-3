@@ -91,7 +91,7 @@ export type DocChartDatum = Record<string, string | number>
 export type DocBlock =
   | { type: "paragraph"; text: string }
   | { type: "heading"; text: string }
-  | { type: "callout"; variant: "info" | "warning" | "success" | "tip"; title?: string; text: string }
+  | { type: "callout"; variant: "info" | "note" | "warning" | "success" | "tip"; title?: string; text: string }
   | { type: "code"; language: string; title?: string; code: string }
   | { type: "list"; ordered?: boolean; items: string[] }
   | { type: "steps"; items: { title: string; text: string }[] }

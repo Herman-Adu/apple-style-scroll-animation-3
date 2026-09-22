@@ -77,7 +77,13 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
               </header>
 
               <div className="mt-10">
-                <DocBlocks blocks={doc.body} />
+                {doc.access === "admin" ? (
+                  <DocAccessGate>
+                    <DocBlocks blocks={doc.body} />
+                  </DocAccessGate>
+                ) : (
+                  <DocBlocks blocks={doc.body} />
+                )}
               </div>
 
               <div className="mt-16 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-8">

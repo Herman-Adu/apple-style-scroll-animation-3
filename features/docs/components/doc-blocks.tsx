@@ -1,4 +1,4 @@
-import { Info, TriangleAlert, CheckCircle2, Lightbulb } from "lucide-react"
+import { Info, TriangleAlert, CheckCircle2, Lightbulb, NotebookPen } from "lucide-react"
 import type { DocBlock } from "../schema"
 import { slugifyHeading } from "../lib/doc"
 import { MermaidDiagram } from "@/components/docs/mermaid-diagram"
@@ -12,6 +12,7 @@ import { DocChart } from "@/components/docs/doc-chart"
 
 const calloutConfig = {
   info: { Icon: Info, className: "border-foreground/15 bg-foreground/[0.03]", iconClass: "text-foreground/50" },
+  note: { Icon: NotebookPen, className: "border-foreground/15 bg-foreground/[0.03]", iconClass: "text-foreground/50" },
   tip: { Icon: Lightbulb, className: "border-accent-teal/30 bg-accent-teal/[0.06]", iconClass: "text-accent-teal" },
   success: { Icon: CheckCircle2, className: "border-accent-teal/30 bg-accent-teal/[0.06]", iconClass: "text-accent-teal" },
   warning: { Icon: TriangleAlert, className: "border-destructive/30 bg-destructive/[0.06]", iconClass: "text-destructive" },

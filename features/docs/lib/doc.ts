@@ -66,6 +66,15 @@ export function visibleDocs<T extends { access: DocSummary["access"] }>(items: T
   return items.filter((item) => item.access === "public")
 }
 
+/**
+ * Whether a viewer may read a doc's body. Public docs are always viewable; admin
+ * docs require an admin. The single source of truth for the access rule, used by
+ * both the client nav (visibleDocs) intent and the server data layer. Pure.
+ */
+export function canViewDoc(doc: { access: DocSummary["access"] }, isAdmin: boolean): boolean {
+  return doc.access === "public" || isAdmin
+}
+
 /** Filter by audience, or return all when audience is falsy. */
 export function filterDocsByAudience<T extends { audience: DocAudience }>(
   items: T[],

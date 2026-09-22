@@ -1,33 +1,13 @@
-"use client"
-
 import Link from "next/link"
 import { Lock } from "lucide-react"
-import { useAuth } from "@/lib/auth/auth-context"
 
 /**
- * Client gate for an admin-only doc. Renders children only for an authenticated
- * admin; everyone else sees a locked notice instead of the guide body. Mirrors
- * the admin area's client-side gating (localStorage auth). The detail page still
- * fetches the body on the server today, so this is UX-level gating pre-Strapi;
- * once auth is server-side the same `access` field enforces it before render.
+ * Server-rendered notice shown in place of an admin-only guide body when the
+ * viewer is not an admin. The body is withheld on the server (see
+ * fetchDocForViewer), so no protected content reaches the client — this notice
+ * is the entirety of what a non-admin receives for a locked guide.
  */
-export function DocAccessGate({ children }: { children: React.ReactNode }) {
-  const { status, user } = useAuth()
-
-  if (status === "loading") {
-    return (
-      <div className="space-y-4" aria-hidden>
-        <div className="h-4 w-full animate-pulse rounded bg-foreground/[0.06]" />
-        <div className="h-4 w-5/6 animate-pulse rounded bg-foreground/[0.06]" />
-        <div className="h-4 w-2/3 animate-pulse rounded bg-foreground/[0.06]" />
-      </div>
-    )
-  }
-
-  if (user?.role === "admin") {
-    return <>{children}</>
-  }
-
+export function DocLockedNotice() {
   return (
     <div className="rounded-2xl border border-accent-amber/30 bg-accent-amber/[0.06] p-8 text-center">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-accent-amber/40 bg-accent-amber/10">

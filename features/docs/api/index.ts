@@ -1,7 +1,8 @@
 import "server-only"
+import { getServerRole } from "@/lib/auth/server"
 import type { Doc } from "../schema"
 import { docs } from "../content"
-import { selectRelatedDocs, sortDocs } from "../lib/doc"
+import { canViewDoc, selectRelatedDocs, sortDocs } from "../lib/doc"
 
 /**
  * Docs data seam. Mirrors features/products and features/articles: async
@@ -16,6 +17,25 @@ export async function fetchDocs(): Promise<Doc[]> {
 
 export async function fetchDoc(slug: string): Promise<Doc | null> {
   return docs.find((doc) => doc.slug === slug) ?? null
+}
+
+/**
+ * Fetch a doc for the current server-side viewer, enforcing access before the
+ * body is ever serialized. For an admin-only doc the viewer must be an admin;
+ * otherwise the body is stripped so protected content never reaches a non-admin
+ * browser (title/summary metadata remain so the page can render a locked notice).
+ *
+ * Public docs skip the cookie read entirely, keeping those pages statically
+ * renderable — only admin guides opt into per-viewer dynamic rendering.
+ */
+export async function fetchDocForViewer(slug: string): Promise<{ doc: Doc; authorized: boolean } | null> {
+  const doc = docs.find((d) => d.slug === slug)
+  if (!doc) return null
+  if (doc.access === "public") return { doc, authorized: true }
+
+  const role = await getServerRole()
+  const authorized = canViewDoc(doc, role === "admin")
+  return { doc: authorized ? doc : { ...doc, body: [] }, authorized }
 }
 
 export async function fetchDocSlugs(): Promise<string[]> {

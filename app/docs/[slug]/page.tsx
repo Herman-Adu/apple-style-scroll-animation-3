@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, ArrowUpRight, Clock, Lock } from "lucide-react"
-import { DocAccessGate, DocBlocks, DocsSidebar, getDocHeadings, toDocSummary } from "@/features/docs"
-import { fetchDoc, fetchDocs, fetchDocSlugs, fetchRelatedDocs } from "@/features/docs/api"
+import { DocBlocks, DocLockedNotice, DocsSidebar, getDocHeadings, toDocSummary } from "@/features/docs"
+import { fetchDoc, fetchDocForViewer, fetchDocs, fetchDocSlugs, fetchRelatedDocs } from "@/features/docs/api"
 
 export async function generateStaticParams() {
   const slugs = await fetchDocSlugs()
@@ -27,11 +27,14 @@ export async function generateMetadata({
 
 export default async function DocPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const doc = await fetchDoc(slug)
-  if (!doc) notFound()
+  const result = await fetchDocForViewer(slug)
+  if (!result) notFound()
+  const { doc, authorized } = result
 
-  const headings = getDocHeadings(doc)
-  const related = await fetchRelatedDocs(slug)
+  // When the viewer is not authorized the body was already stripped server-side,
+  // so there are no headings and we skip related guides rather than leak titles.
+  const headings = authorized ? getDocHeadings(doc) : []
+  const related = authorized ? await fetchRelatedDocs(slug) : []
   // Card-level summaries only (no bodies) power the role-aware nav rail.
   const allSummaries = (await fetchDocs()).map(toDocSummary)
 
@@ -77,23 +80,19 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
               </header>
 
               <div className="mt-10">
-                {doc.access === "admin" ? (
-                  <DocAccessGate>
-                    <DocBlocks blocks={doc.body} />
-                  </DocAccessGate>
-                ) : (
-                  <DocBlocks blocks={doc.body} />
-                )}
+                {authorized ? <DocBlocks blocks={doc.body} /> : <DocLockedNotice />}
               </div>
 
-              <div className="mt-16 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-8">
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">Tags</span>
-                {doc.tags.map((tag) => (
-                  <span key={tag} className="rounded-full bg-foreground/[0.05] px-3 py-1 text-xs text-foreground/50">
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              {authorized && (
+                <div className="mt-16 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-8">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">Tags</span>
+                  {doc.tags.map((tag) => (
+                    <span key={tag} className="rounded-full bg-foreground/[0.05] px-3 py-1 text-xs text-foreground/50">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {headings.length > 1 && (

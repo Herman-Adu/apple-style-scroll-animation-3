@@ -4,6 +4,7 @@
 // so the application layer cannot tell them apart.
 
 import { authConfig, resolveRole } from "../config"
+import { writeRoleCookie } from "../session-cookie"
 import {
   AuthAdapter,
   AuthError,
@@ -86,10 +87,20 @@ export function createLocalAdapter(): AuthAdapter {
   return {
     async getSession() {
       const token = readToken()
-      if (!token) return null
+      if (!token) {
+        writeRoleCookie(null)
+        return null
+      }
       const user = readUsers().find((u) => u.id === token)
-      if (!user) return null
-      return { user: stripPassword(user), token }
+      if (!user) {
+        writeRoleCookie(null)
+        return null
+      }
+      const safe = stripPassword(user)
+      // Keep the server-readable role cookie in sync on every load, so accounts
+      // created before this cookie existed self-heal on their next visit.
+      writeRoleCookie(safe.role)
+      return { user: safe, token }
     },
 
     async signUp(input: SignUpInput): Promise<Session> {
@@ -111,7 +122,9 @@ export function createLocalAdapter(): AuthAdapter {
       users.push(user)
       writeUsers(users)
       writeToken(user.id)
-      return { user: stripPassword(user), token: user.id }
+      const safe = stripPassword(user)
+      writeRoleCookie(safe.role)
+      return { user: safe, token: user.id }
     },
 
     async signIn(input: SignInInput): Promise<Session> {
@@ -123,11 +136,14 @@ export function createLocalAdapter(): AuthAdapter {
         throw new AuthError("Incorrect email or password.", "invalid_credentials")
       }
       writeToken(user.id)
-      return { user: stripPassword(user), token: user.id }
+      const safe = stripPassword(user)
+      writeRoleCookie(safe.role)
+      return { user: safe, token: user.id }
     },
 
     async signOut() {
       writeToken(null)
+      writeRoleCookie(null)
     },
 
     async updateProfile(update: ProfileUpdate): Promise<User> {

@@ -8,6 +8,7 @@
 // backend-specific shape lives.
 
 import { authConfig, resolveRole } from "../config"
+import { writeRoleCookie } from "../session-cookie"
 import {
   AuthAdapter,
   AuthError,
@@ -97,12 +98,18 @@ export function createStrapiAdapter(): AuthAdapter {
   return {
     async getSession(): Promise<Session | null> {
       const token = readToken()
-      if (!token) return null
+      if (!token) {
+        writeRoleCookie(null)
+        return null
+      }
       try {
         const raw = await api<any>("/api/users/me?populate=*", { method: "GET" }, token)
-        return { user: toUser(raw), token }
+        const user = toUser(raw)
+        writeRoleCookie(user.role)
+        return { user, token }
       } catch {
         writeToken(null)
+        writeRoleCookie(null)
         return null
       }
     },
@@ -118,7 +125,9 @@ export function createStrapiAdapter(): AuthAdapter {
         }),
       })
       writeToken(data.jwt)
-      return { user: toUser(data.user), token: data.jwt }
+      const user = toUser(data.user)
+      writeRoleCookie(user.role)
+      return { user, token: data.jwt }
     },
 
     async signIn(input: SignInInput): Promise<Session> {
@@ -127,11 +136,14 @@ export function createStrapiAdapter(): AuthAdapter {
         body: JSON.stringify({ identifier: input.email, password: input.password }),
       })
       writeToken(data.jwt)
-      return { user: toUser(data.user), token: data.jwt }
+      const user = toUser(data.user)
+      writeRoleCookie(user.role)
+      return { user, token: data.jwt }
     },
 
     async signOut() {
       writeToken(null)
+      writeRoleCookie(null)
     },
 
     async updateProfile(update: ProfileUpdate): Promise<User> {

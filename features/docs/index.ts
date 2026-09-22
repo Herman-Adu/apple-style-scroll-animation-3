@@ -12,9 +12,10 @@ export {
   sortDocs,
   toDocSummary,
   visibleDocs,
+  canViewDoc,
 } from "./lib/doc"
 export { DocCard, DocCardSkeleton, DocGridSkeleton } from "./components/doc-card"
 export { DocBlocks } from "./components/doc-blocks"
 export { DocsExplorer } from "./components/docs-explorer"
 export { DocsSidebar } from "./components/docs-sidebar"
-export { DocAccessGate } from "./components/doc-access-gate"
+export { DocLockedNotice } from "./components/doc-locked-notice"

@@ -25,5 +25,8 @@ export async function fetchDocSlugs(): Promise<string[]> {
 export async function fetchRelatedDocs(slug: string): Promise<Doc[]> {
   const current = docs.find((doc) => doc.slug === slug)
   if (!current) return []
-  return selectRelatedDocs(docs, slug, current.category)
+  // Keep related within the same audience so a public guide never surfaces
+  // admin-only guides (and vice versa).
+  const sameAudience = docs.filter((doc) => doc.audience === current.audience)
+  return selectRelatedDocs(sameAudience, slug, current.category)
 }

@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, ArrowUpRight, Clock } from "lucide-react"
-import { DocBlocks, getDocHeadings } from "@/features/docs"
+import { ArrowLeft, ArrowUpRight, Clock, Lock } from "lucide-react"
+import { DocAccessGate, DocBlocks, getDocHeadings } from "@/features/docs"
 import { fetchDoc, fetchDocSlugs, fetchRelatedDocs } from "@/features/docs/api"
 
 export async function generateStaticParams() {
@@ -54,6 +54,12 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
                 <Clock className="h-3.5 w-3.5" strokeWidth={1.5} />
                 {doc.readingMinutes} min read
               </span>
+              {doc.access === "admin" ? (
+                <span className="flex items-center gap-1 rounded-full border border-accent-amber/30 bg-accent-amber/10 px-3 py-1 text-accent-amber">
+                  <Lock className="h-2.5 w-2.5" strokeWidth={2} />
+                  Internal
+                </span>
+              ) : null}
             </div>
             <h1 className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-5xl">
               {doc.title}

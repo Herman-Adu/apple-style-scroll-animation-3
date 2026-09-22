@@ -49,10 +49,10 @@ export const pageHeroes: Record<"about" | "products" | "articles" | "contact" | 
   },
   docs: {
     eyebrow: "Documentation",
-    title: "The engineering & platform library.",
-    titleAccent: "platform library",
+    title: "Guides for owners, operators & engineers.",
+    titleAccent: "operators & engineers",
     subtitle:
-      "Deep guides on the server-first architecture, the Strapi migration, DevOps, commerce, and how to position and sell the platform.",
+      "Everything from setting up your device to running the store and building the platform — organised by who it's for.",
     image: "/heroes/docs-hero.png",
     imageAlt:
       "An architect's desk from above with technical blueprints and exploded-view engineering schematics under a soft directional light.",

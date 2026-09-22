@@ -4,6 +4,8 @@ export const devopsDeployObservability: Doc = {
   slug: "devops-deploy-cache-observability",
   title: "Deploy, Cache & Observability",
   category: "DevOps",
+  audience: "developer",
+  access: "admin",
   summary:
     "The delivery pipeline: CI gates, preview deploys, the caching layers from ISR to cache tags, and what to watch in production.",
   readingMinutes: 12,

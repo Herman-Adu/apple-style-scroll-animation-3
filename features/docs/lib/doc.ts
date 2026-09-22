@@ -1,5 +1,5 @@
-import type { Doc, DocCategory } from "../schema"
-import { DOC_CATEGORIES } from "../schema"
+import type { Doc, DocAudience, DocCategory, DocSummary } from "../schema"
+import { DOC_AUDIENCES, DOC_CATEGORIES, docAudienceMeta } from "../schema"
 
 /** Pure domain selectors for docs. Fully unit-testable, no I/O. */
 
@@ -45,6 +45,52 @@ export function groupDocsByCategory(docs: Doc[]): { category: DocCategory; docs:
   })).filter((group) => group.docs.length > 0)
 }
 
+/** Project a full Doc down to the card-level summary shipped to client islands. */
+export function toDocSummary(doc: Doc): DocSummary {
+  return {
+    slug: doc.slug,
+    title: doc.title,
+    summary: doc.summary,
+    category: doc.category,
+    audience: doc.audience,
+    access: doc.access,
+    readingMinutes: doc.readingMinutes,
+    order: doc.order,
+    tags: doc.tags,
+  }
+}
+
+/** Only the docs the current viewer may see. Admins see everything. */
+export function visibleDocs<T extends { access: DocSummary["access"] }>(items: T[], isAdmin: boolean): T[] {
+  if (isAdmin) return items
+  return items.filter((item) => item.access === "public")
+}
+
+/** Filter by audience, or return all when audience is falsy. */
+export function filterDocsByAudience<T extends { audience: DocAudience }>(
+  items: T[],
+  audience?: DocAudience | null,
+): T[] {
+  if (!audience) return items
+  return items.filter((item) => item.audience === audience)
+}
+
+/** Group docs by audience in canonical audience order, dropping empty groups. */
+export function groupDocsByAudience<T extends Pick<DocSummary, "audience" | "category" | "order">>(
+  items: T[],
+): { audience: DocAudience; meta: (typeof docAudienceMeta)[DocAudience]; docs: T[] }[] {
+  return DOC_AUDIENCES.map((audience) => ({
+    audience,
+    meta: docAudienceMeta[audience],
+    docs: items
+      .filter((item) => item.audience === audience)
+      .sort((a, b) => {
+        const byCategory = DOC_CATEGORIES.indexOf(a.category) - DOC_CATEGORIES.indexOf(b.category)
+        return byCategory !== 0 ? byCategory : a.order - b.order
+      }),
+  })).filter((group) => group.docs.length > 0)
+}
+
 /** Related docs: same category first, then fill from the rest, excluding self. */
 export function selectRelatedDocs(docs: Doc[], slug: string, category: DocCategory, limit = 3): Doc[] {
   const others = docs.filter((doc) => doc.slug !== slug)
@@ -53,9 +99,11 @@ export function selectRelatedDocs(docs: Doc[], slug: string, category: DocCatego
   return [...sameCategory, ...rest].slice(0, limit)
 }
 
-/** Sort helper: category order, then per-category order field. */
+/** Sort helper: audience order, then category order, then per-category order field. */
 export function sortDocs(docs: Doc[]): Doc[] {
   return [...docs].sort((a, b) => {
+    const byAudience = DOC_AUDIENCES.indexOf(a.audience) - DOC_AUDIENCES.indexOf(b.audience)
+    if (byAudience !== 0) return byAudience
     const byCategory = DOC_CATEGORIES.indexOf(a.category) - DOC_CATEGORIES.indexOf(b.category)
     return byCategory !== 0 ? byCategory : a.order - b.order
   })

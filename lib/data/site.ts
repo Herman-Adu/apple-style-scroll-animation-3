@@ -56,13 +56,6 @@ export const mainNav: NavLink[] = [
   {
     label: "Docs",
     href: "/docs",
-    sections: [
-      { label: "Next.js playbook", href: "/docs?category=Next.js", hint: "Server-first architecture" },
-      { label: "Strapi migration", href: "/docs?category=Migration", hint: "Schemas & runbook" },
-      { label: "DevOps", href: "/docs?category=DevOps", hint: "Deploy & observability" },
-      { label: "Commerce", href: "/docs?category=Commerce", hint: "Cart & checkout" },
-      { label: "Positioning", href: "/docs?category=Positioning", hint: "Market & sell" },
-    ],
   },
   {
     label: "Contact",

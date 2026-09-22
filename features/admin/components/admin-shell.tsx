@@ -114,19 +114,25 @@ export function AdminShell({ title, children }: { title: string; children: React
       )}
 
       <div className="lg:pl-60">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md sm:px-6">
+        {/* Mobile-only bar: keeps the drawer toggle. Desktop uses the sidebar for context. */}
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md lg:hidden">
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="text-muted-foreground hover:text-foreground lg:hidden"
+            className="text-muted-foreground hover:text-foreground"
             aria-label="Open menu"
           >
             <Menu className="size-5" aria-hidden />
           </button>
-          <h1 className="text-lg font-semibold tracking-tight text-balance">{title}</h1>
+          <span className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">Admin</span>
         </header>
 
-        <main className="p-4 sm:p-6">{children}</main>
+        <main className="p-4 sm:p-6">
+          <header className="mb-6 border-b border-border pb-4">
+            <h1 className="text-2xl font-semibold tracking-tight text-balance">{title}</h1>
+          </header>
+          {children}
+        </main>
       </div>
 
       <Toaster position="top-right" />

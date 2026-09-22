@@ -4,7 +4,7 @@
 // so the application layer cannot tell them apart.
 
 import { authConfig, resolveRole } from "../config"
-import { writeRoleCookie } from "../session-cookie"
+import { clearSession, establishSession } from "../actions"
 import {
   AuthAdapter,
   AuthError,
@@ -88,18 +88,18 @@ export function createLocalAdapter(): AuthAdapter {
     async getSession() {
       const token = readToken()
       if (!token) {
-        writeRoleCookie(null)
+        await clearSession()
         return null
       }
       const user = readUsers().find((u) => u.id === token)
       if (!user) {
-        writeRoleCookie(null)
+        await clearSession()
         return null
       }
       const safe = stripPassword(user)
-      // Keep the server-readable role cookie in sync on every load, so accounts
-      // created before this cookie existed self-heal on their next visit.
-      writeRoleCookie(safe.role)
+      // Re-mint the httpOnly session cookie on every load so accounts created
+      // before it existed self-heal, and so the server-trusted role stays fresh.
+      await establishSession({ id: safe.id, email: safe.email, name: safe.name })
       return { user: safe, token }
     },
 
@@ -123,7 +123,7 @@ export function createLocalAdapter(): AuthAdapter {
       writeUsers(users)
       writeToken(user.id)
       const safe = stripPassword(user)
-      writeRoleCookie(safe.role)
+      await establishSession({ id: safe.id, email: safe.email, name: safe.name })
       return { user: safe, token: user.id }
     },
 
@@ -137,13 +137,13 @@ export function createLocalAdapter(): AuthAdapter {
       }
       writeToken(user.id)
       const safe = stripPassword(user)
-      writeRoleCookie(safe.role)
+      await establishSession({ id: safe.id, email: safe.email, name: safe.name })
       return { user: safe, token: user.id }
     },
 
     async signOut() {
       writeToken(null)
-      writeRoleCookie(null)
+      await clearSession()
     },
 
     async updateProfile(update: ProfileUpdate): Promise<User> {

@@ -1,25 +1,10 @@
-// Client-writable, server-readable session hint.
-//
-// Bridges the browser-only auth adapters to server components so the server can
-// make authorization decisions (e.g. withholding admin-only content) without a
-// backend round-trip. This is a role *hint*: in local/demo mode it is written by
-// the client and is therefore forgeable — a data-minimization boundary, not a
-// cryptographic one. Real enforcement arrives when Strapi issues a JWT that the
-// server validates in getServerRole(). Kept intentionally tiny (role only, no PII).
+// Name of the httpOnly session cookie shared by the server action that mints it
+// (actions.ts) and the server resolver that reads it (server.ts). Kept in its own
+// tiny module so both server-side callers can import it without pulling in the
+// signing code. The cookie value is an HMAC-signed token (see session-token.ts);
+// it is httpOnly, so client JavaScript can neither read nor overwrite it.
 
-import type { UserRole } from "./types"
+export const SESSION_COOKIE = "momo.session"
 
-export const ROLE_COOKIE = "momo.auth.role"
-const MAX_AGE_SECONDS = 30 * 24 * 60 * 60
-
-// SameSite=None; Secure so the cookie is still sent when the app runs inside the
-// v0 preview's cross-site iframe (preview is always https).
-const ATTRS = "path=/; SameSite=None; Secure"
-
-/** Mirror the current viewer role into a cookie the server can read (or clear it). */
-export function writeRoleCookie(role: UserRole | null) {
-  if (typeof document === "undefined") return
-  document.cookie = role
-    ? `${ROLE_COOKIE}=${role}; max-age=${MAX_AGE_SECONDS}; ${ATTRS}`
-    : `${ROLE_COOKIE}=; max-age=0; ${ATTRS}`
-}
+/** Session lifetime in seconds (30 days), shared by the cookie maxAge and token exp. */
+export const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60

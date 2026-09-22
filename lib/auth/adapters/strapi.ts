@@ -8,7 +8,7 @@
 // backend-specific shape lives.
 
 import { authConfig, resolveRole } from "../config"
-import { writeRoleCookie } from "../session-cookie"
+import { clearSession, establishSession } from "../actions"
 import {
   AuthAdapter,
   AuthError,
@@ -99,17 +99,19 @@ export function createStrapiAdapter(): AuthAdapter {
     async getSession(): Promise<Session | null> {
       const token = readToken()
       if (!token) {
-        writeRoleCookie(null)
+        await clearSession()
         return null
       }
       try {
         const raw = await api<any>("/api/users/me?populate=*", { method: "GET" }, token)
         const user = toUser(raw)
-        writeRoleCookie(user.role)
+        // TODO(strapi): hand establishSession the verified Strapi JWT so the
+        // server derives identity + role from the token instead of the email.
+        await establishSession({ id: user.id, email: user.email, name: user.name })
         return { user, token }
       } catch {
         writeToken(null)
-        writeRoleCookie(null)
+        await clearSession()
         return null
       }
     },
@@ -126,7 +128,7 @@ export function createStrapiAdapter(): AuthAdapter {
       })
       writeToken(data.jwt)
       const user = toUser(data.user)
-      writeRoleCookie(user.role)
+      await establishSession({ id: user.id, email: user.email, name: user.name })
       return { user, token: data.jwt }
     },
 
@@ -137,13 +139,13 @@ export function createStrapiAdapter(): AuthAdapter {
       })
       writeToken(data.jwt)
       const user = toUser(data.user)
-      writeRoleCookie(user.role)
+      await establishSession({ id: user.id, email: user.email, name: user.name })
       return { user, token: data.jwt }
     },
 
     async signOut() {
       writeToken(null)
-      writeRoleCookie(null)
+      await clearSession()
     },
 
     async updateProfile(update: ProfileUpdate): Promise<User> {

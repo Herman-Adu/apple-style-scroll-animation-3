@@ -105,9 +105,9 @@ export function createStrapiAdapter(): AuthAdapter {
       try {
         const raw = await api<any>("/api/users/me?populate=*", { method: "GET" }, token)
         const user = toUser(raw)
-        // TODO(strapi): hand establishSession the verified Strapi JWT so the
-        // server derives identity + role from the token instead of the email.
-        await establishSession({ id: user.id, email: user.email, name: user.name })
+        // Hand the JWT to the server action, which re-verifies it against Strapi
+        // and derives the trusted role from that verified response.
+        await establishSession({ id: user.id, email: user.email, name: user.name, strapiJwt: token })
         return { user, token }
       } catch {
         writeToken(null)
@@ -128,7 +128,7 @@ export function createStrapiAdapter(): AuthAdapter {
       })
       writeToken(data.jwt)
       const user = toUser(data.user)
-      await establishSession({ id: user.id, email: user.email, name: user.name })
+      await establishSession({ id: user.id, email: user.email, name: user.name, strapiJwt: data.jwt })
       return { user, token: data.jwt }
     },
 
@@ -139,7 +139,7 @@ export function createStrapiAdapter(): AuthAdapter {
       })
       writeToken(data.jwt)
       const user = toUser(data.user)
-      await establishSession({ id: user.id, email: user.email, name: user.name })
+      await establishSession({ id: user.id, email: user.email, name: user.name, strapiJwt: data.jwt })
       return { user, token: data.jwt }
     },
 

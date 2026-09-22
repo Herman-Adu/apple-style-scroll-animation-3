@@ -2,21 +2,30 @@ import "server-only"
 import { getServerRole } from "@/lib/auth/server"
 import type { Doc } from "../schema"
 import { docs } from "../content"
+import { fetchStrapiDocs } from "../lib/strapi-source"
 import { canViewDoc, selectRelatedDocs, sortDocs } from "../lib/doc"
 
 /**
  * Docs data seam. Mirrors features/products and features/articles: async
- * functions returning domain types so the migration to Strapi is a swap of
- * these bodies (fetchStrapi + mapper) with no page changes. See the Strapi
- * Migration Runbook doc for the full plan.
+ * functions returning domain types so the source is swappable with no page
+ * changes. `loadDocs` prefers the Strapi CMS when configured and transparently
+ * falls back to the seeded corpus otherwise (or on any CMS failure), so this is
+ * the only place that knows where content comes from. See the Strapi Migration
+ * Runbook doc for the full plan.
  */
 
+async function loadDocs(): Promise<Doc[]> {
+  const remote = await fetchStrapiDocs()
+  return remote ?? docs
+}
+
 export async function fetchDocs(): Promise<Doc[]> {
-  return sortDocs(docs)
+  return sortDocs(await loadDocs())
 }
 
 export async function fetchDoc(slug: string): Promise<Doc | null> {
-  return docs.find((doc) => doc.slug === slug) ?? null
+  const all = await loadDocs()
+  return all.find((doc) => doc.slug === slug) ?? null
 }
 
 /**
@@ -29,7 +38,8 @@ export async function fetchDoc(slug: string): Promise<Doc | null> {
  * renderable — only admin guides opt into per-viewer dynamic rendering.
  */
 export async function fetchDocForViewer(slug: string): Promise<{ doc: Doc; authorized: boolean } | null> {
-  const doc = docs.find((d) => d.slug === slug)
+  const all = await loadDocs()
+  const doc = all.find((d) => d.slug === slug)
   if (!doc) return null
   if (doc.access === "public") return { doc, authorized: true }
 
@@ -39,14 +49,16 @@ export async function fetchDocForViewer(slug: string): Promise<{ doc: Doc; autho
 }
 
 export async function fetchDocSlugs(): Promise<string[]> {
-  return docs.map((doc) => doc.slug)
+  const all = await loadDocs()
+  return all.map((doc) => doc.slug)
 }
 
 export async function fetchRelatedDocs(slug: string): Promise<Doc[]> {
-  const current = docs.find((doc) => doc.slug === slug)
+  const all = await loadDocs()
+  const current = all.find((doc) => doc.slug === slug)
   if (!current) return []
   // Keep related within the same audience so a public guide never surfaces
   // admin-only guides (and vice versa).
-  const sameAudience = docs.filter((doc) => doc.audience === current.audience)
+  const sameAudience = all.filter((doc) => doc.audience === current.audience)
   return selectRelatedDocs(sameAudience, slug, current.category)
 }

@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowUpRight, ChevronLeft, ChevronRight, LogOut, MapPin, Mail, Package, User, UserRound, X } from "lucide-react"
+import { ArrowUpRight, ChevronLeft, ChevronRight, LayoutDashboard, LogOut, MapPin, Mail, Package, User, UserRound, X } from "lucide-react"
 import type { NavLink } from "@/lib/types"
 import { mainNav, siteConfig } from "@/lib/data/site"
 import { isSectionActive, isTopLevelActive } from "@/lib/nav"
@@ -206,6 +206,16 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                         <Package className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
                         <span className="text-base font-medium text-foreground/80">Orders &amp; invoices</span>
                       </Link>
+                      {user.role === "admin" && (
+                        <Link
+                          href="/admin"
+                          onClick={onClose}
+                          className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
+                        >
+                          <LayoutDashboard className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
+                          <span className="text-base font-medium text-foreground/80">Admin dashboard</span>
+                        </Link>
+                      )}
                       <button
                         type="button"
                         onClick={handleSignOut}

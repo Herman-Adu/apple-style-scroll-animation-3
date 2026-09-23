@@ -42,19 +42,37 @@ export const docAudienceMeta = {
   },
 } satisfies Record<DocAudience, { label: string; title: string; blurb: string; access: DocAccess }>
 
+/**
+ * Categories are the second level of the taxonomy, nested under an audience.
+ * The explorer renders each non-empty category as its own collapsible dropdown,
+ * so this list can grow freely — new categories (e.g. as Strapi, analytics, and
+ * integrations content lands) simply appear as new dropdowns under the right
+ * audience once a doc is assigned to them. Empty categories never render.
+ */
 export const DOC_CATEGORIES = [
-  // User guides
+  // User guides (public)
   "Getting Started",
   "Product Care",
   "Troubleshooting",
-  // Content management
+  "FAQ",
+  "Warranty & Returns",
+  // Content management (admin)
   "Catalog",
   "Store Operations",
-  // Developer & CTO
+  "Orders & Fulfillment",
+  "Customers",
+  "Email & Campaigns",
+  "Media Library",
+  "CMS & Publishing",
+  // Developer & CTO (admin)
+  "Architecture",
   "Next.js",
   "Migration",
   "DevOps",
   "Commerce",
+  "Data & Analytics",
+  "Security & Auth",
+  "API & Integrations",
   "Positioning",
 ] as const
 
@@ -62,15 +80,29 @@ export type DocCategory = (typeof DOC_CATEGORIES)[number]
 
 /** Which audience each category belongs to — drives grouping and the sidebar. */
 export const DOC_CATEGORY_AUDIENCE: Record<DocCategory, DocAudience> = {
+  // User guides
   "Getting Started": "user",
   "Product Care": "user",
   Troubleshooting: "user",
+  FAQ: "user",
+  "Warranty & Returns": "user",
+  // Content management
   Catalog: "content",
   "Store Operations": "content",
+  "Orders & Fulfillment": "content",
+  Customers: "content",
+  "Email & Campaigns": "content",
+  "Media Library": "content",
+  "CMS & Publishing": "content",
+  // Developer & CTO
+  Architecture: "developer",
   "Next.js": "developer",
   Migration: "developer",
   DevOps: "developer",
   Commerce: "developer",
+  "Data & Analytics": "developer",
+  "Security & Auth": "developer",
+  "API & Integrations": "developer",
   Positioning: "developer",
 }
 

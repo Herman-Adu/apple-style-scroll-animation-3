@@ -1,10 +1,37 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Lock, Search } from "lucide-react"
-import type { DocAudience, DocSummary } from "../schema"
+import { AnimatePresence, motion } from "framer-motion"
+import {
+  BarChart3,
+  Boxes,
+  ChevronDown,
+  Code2,
+  FileText,
+  GitBranch,
+  HelpCircle,
+  Image as ImageIcon,
+  Lock,
+  Mail,
+  Package,
+  Rocket,
+  RotateCcw,
+  Search,
+  Server,
+  ShieldCheck,
+  ShoppingCart,
+  Sparkles,
+  Store,
+  Target,
+  Truck,
+  Users,
+  Webhook,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react"
+import type { DocAudience, DocCategory, DocSummary } from "../schema"
 import { DOC_AUDIENCES, docAudienceMeta } from "../schema"
-import { groupDocsByAudience, visibleDocs } from "../lib/doc"
+import { groupDocsByAudienceAndCategory, visibleDocs } from "../lib/doc"
 import { useDocSearch } from "../lib/use-doc-search"
 import { DocCard } from "./doc-card"
 import { useAuth } from "@/lib/auth/auth-context"
@@ -12,12 +39,43 @@ import { cn } from "@/lib/utils"
 
 type AudienceTab = "all" | DocAudience
 
+/** Consistent lucide icon per category — mirrors the icon-led nav treatment. */
+const categoryIcon: Record<DocCategory, LucideIcon> = {
+  // User guides
+  "Getting Started": Rocket,
+  "Product Care": Sparkles,
+  Troubleshooting: Wrench,
+  FAQ: HelpCircle,
+  "Warranty & Returns": RotateCcw,
+  // Content management
+  Catalog: Package,
+  "Store Operations": Store,
+  "Orders & Fulfillment": Truck,
+  Customers: Users,
+  "Email & Campaigns": Mail,
+  "Media Library": ImageIcon,
+  "CMS & Publishing": FileText,
+  // Developer & CTO
+  Architecture: Boxes,
+  "Next.js": Code2,
+  Migration: GitBranch,
+  DevOps: Server,
+  Commerce: ShoppingCart,
+  "Data & Analytics": BarChart3,
+  "Security & Auth": ShieldCheck,
+  "API & Integrations": Webhook,
+  Positioning: Target,
+}
+
 /**
  * Role-aware docs explorer. Receives the full corpus as lightweight summaries
  * (no bodies) and, on the client, hides admin-only guides from non-admins. The
  * gating mirrors the admin area's client-side model (localStorage auth); once
  * auth moves server-side with Strapi the same `access` field enforces this on
  * the server and this component keeps working unchanged.
+ *
+ * Content is organised audience → category, where each non-empty category is a
+ * collapsible dropdown so the library scales as more guides land.
  */
 export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
   const { user } = useAuth()
@@ -25,6 +83,9 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
 
   const [query, setQuery] = useState("")
   const [tab, setTab] = useState<AudienceTab>("all")
+  // Categories collapsed by the user. Everything is open by default; searching
+  // force-opens everything so matches are never hidden behind a closed group.
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
 
   const visible = useMemo(() => visibleDocs(docs, isAdmin), [docs, isAdmin])
 
@@ -35,15 +96,25 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
   )
 
   const { rankedSlugs, snippets } = useDocSearch(visible, query)
+  const isSearching = rankedSlugs !== null
   const searched = useMemo(() => {
     if (!rankedSlugs) return visible
     const bySlug = new Map(visible.map((doc) => [doc.slug, doc]))
     return rankedSlugs.map((slug) => bySlug.get(slug)).filter((doc): doc is DocSummary => Boolean(doc))
   }, [visible, rankedSlugs])
   const scoped = tab === "all" ? searched : searched.filter((doc) => doc.audience === tab)
-  const groups = useMemo(() => groupDocsByAudience(scoped), [scoped])
+  const groups = useMemo(() => groupDocsByAudienceAndCategory(scoped), [scoped])
 
   const total = scoped.length
+
+  function toggleCategory(key: string) {
+    setCollapsed((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
 
   return (
     <div>
@@ -82,7 +153,7 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
           {query ? `No guides match “${query}”. Try a different search.` : "No guides here yet."}
         </p>
       ) : (
-        <div className="space-y-16">
+        <div className="space-y-14">
           {groups.map((group) => (
             <section key={group.audience} aria-labelledby={`docs-${group.audience}`}>
               <div className="mb-6 flex items-baseline gap-3">
@@ -99,19 +170,102 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
                   </span>
                 ) : null}
                 <span className="font-mono text-[10px] text-foreground/30">
-                  {group.docs.length} {group.docs.length === 1 ? "guide" : "guides"}
+                  {group.count} {group.count === 1 ? "guide" : "guides"}
                 </span>
               </div>
               <p className="mb-6 max-w-2xl text-sm leading-relaxed text-foreground/50">{group.meta.blurb}</p>
-              <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                {group.docs.map((doc, index) => (
-                  <DocCard key={doc.slug} doc={doc} index={index} snippet={snippets.get(doc.slug)} />
-                ))}
+
+              <div className="space-y-3">
+                {group.categories.map((cat) => {
+                  const key = `${group.audience}:${cat.category}`
+                  const open = isSearching || !collapsed.has(key)
+                  return (
+                    <CategoryDisclosure
+                      key={key}
+                      category={cat.category}
+                      count={cat.docs.length}
+                      open={open}
+                      onToggle={() => toggleCategory(key)}
+                    >
+                      <div className="grid gap-5 pt-5 md:grid-cols-2 lg:grid-cols-3">
+                        {cat.docs.map((doc, index) => (
+                          <DocCard key={doc.slug} doc={doc} index={index} snippet={snippets.get(doc.slug)} />
+                        ))}
+                      </div>
+                    </CategoryDisclosure>
+                  )
+                })}
               </div>
             </section>
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+function CategoryDisclosure({
+  category,
+  count,
+  open,
+  onToggle,
+  children,
+}: {
+  category: DocCategory
+  count: number
+  open: boolean
+  onToggle: () => void
+  children: React.ReactNode
+}) {
+  const Icon = categoryIcon[category]
+  return (
+    <div className="rounded-2xl border border-foreground/10 bg-card/30 px-4 py-1 transition-colors hover:border-foreground/20">
+      <h3>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          className="group flex w-full items-center gap-3 py-4 text-left"
+        >
+          <span
+            className={cn(
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors",
+              open
+                ? "border-accent-teal/40 bg-accent-teal/10 text-accent-teal"
+                : "border-foreground/10 bg-foreground/[0.03] text-foreground/50 group-hover:text-foreground",
+            )}
+          >
+            <Icon className="h-4 w-4" strokeWidth={1.75} />
+          </span>
+          <span className="flex-1">
+            <span className="block text-sm font-medium text-foreground">{category}</span>
+          </span>
+          <span className="font-mono text-[10px] text-foreground/30">
+            {count} {count === 1 ? "guide" : "guides"}
+          </span>
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 shrink-0 text-foreground/40 transition-transform duration-200",
+              open && "rotate-180 text-accent-teal",
+            )}
+            strokeWidth={2}
+          />
+        </button>
+      </h3>
+      <AnimatePresence initial={false}>
+        {open ? (
+          <motion.div
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="pb-5">{children}</div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 }

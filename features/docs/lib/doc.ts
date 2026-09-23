@@ -1,5 +1,5 @@
 import type { Doc, DocAudience, DocCategory, DocSummary } from "../schema"
-import { DOC_AUDIENCES, DOC_CATEGORIES, docAudienceMeta } from "../schema"
+import { DOC_AUDIENCES, DOC_CATEGORIES, DOC_CATEGORY_AUDIENCE, docAudienceMeta } from "../schema"
 
 /** Pure domain selectors for docs. Fully unit-testable, no I/O. */
 
@@ -150,6 +150,32 @@ export function groupDocsByAudience<T extends Pick<DocSummary, "audience" | "cat
         return byCategory !== 0 ? byCategory : a.order - b.order
       }),
   })).filter((group) => group.docs.length > 0)
+}
+
+/**
+ * Two-level grouping: audience → category → docs, both in canonical order,
+ * dropping empty categories and empty audiences. This drives the explorer's
+ * collapsible category dropdowns, so the taxonomy can grow (Strapi, analytics,
+ * integrations, …) and new categories surface automatically once populated.
+ */
+export function groupDocsByAudienceAndCategory<T extends Pick<DocSummary, "audience" | "category" | "order">>(
+  items: T[],
+): {
+  audience: DocAudience
+  meta: (typeof docAudienceMeta)[DocAudience]
+  count: number
+  categories: { category: DocCategory; docs: T[] }[]
+}[] {
+  return DOC_AUDIENCES.map((audience) => {
+    const inAudience = items.filter((item) => item.audience === audience)
+    const categories = DOC_CATEGORIES.filter((category) => DOC_CATEGORY_AUDIENCE[category] === audience)
+      .map((category) => ({
+        category,
+        docs: inAudience.filter((item) => item.category === category).sort((a, b) => a.order - b.order),
+      }))
+      .filter((group) => group.docs.length > 0)
+    return { audience, meta: docAudienceMeta[audience], count: inAudience.length, categories }
+  }).filter((group) => group.categories.length > 0)
 }
 
 /** Related docs: same category first, then fill from the rest, excluding self. */

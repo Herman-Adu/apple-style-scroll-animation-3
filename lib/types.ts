@@ -22,6 +22,7 @@ export type {
 
 export type { Author, Article, ArticleBlock } from "@/features/articles/schema"
 
+import type { LucideIcon } from "lucide-react"
 import type { Product } from "@/features/products/schema"
 
 /** A line item in the cart: a product plus its selected options. */
@@ -43,6 +44,8 @@ export interface NavSection {
 export interface NavLink {
   label: string
   href: string
+  /** Optional leading icon, matching the admin nav treatment. */
+  icon?: LucideIcon
   /** Optional dropdown sub-sections for this top-level item. */
   sections?: NavSection[]
 }

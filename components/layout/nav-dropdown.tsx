@@ -22,20 +22,23 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const onPage = isTopLevelActive(link.href, pathname)
-  const topClass = cn(
-    "text-xs uppercase tracking-[0.2em] transition-colors",
-    onDark
-      ? onPage
-        ? "text-white"
-        : "text-white/60 hover:text-white"
-      : onPage
-        ? "text-foreground"
-        : "text-foreground/50 hover:text-foreground",
+  const Icon = link.icon
+
+  // Pill treatment mirrors the admin sidebar: teal active state, subtle hover.
+  // Inactive text adapts to the transparent-over-dark-hero header.
+  const pill = cn(
+    "group relative inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium uppercase tracking-[0.15em] transition-colors",
+    onPage
+      ? "bg-accent-teal/12 text-accent-teal"
+      : onDark
+        ? "text-white/70 hover:bg-white/10 hover:text-white"
+        : "text-foreground/60 hover:bg-foreground/5 hover:text-foreground",
   )
 
   if (!link.sections?.length) {
     return (
-      <Link href={link.href} className={topClass}>
+      <Link href={link.href} className={pill} aria-current={onPage ? "page" : undefined}>
+        {Icon ? <Icon className="size-4 shrink-0" strokeWidth={1.75} aria-hidden /> : null}
         {link.label}
       </Link>
     )
@@ -57,11 +60,13 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
     <div className="relative" onMouseEnter={openNow} onMouseLeave={closeSoon}>
       <Link
         href={link.href}
-        className={cn(topClass, "inline-flex items-center gap-1.5")}
+        className={pill}
+        aria-current={onPage ? "page" : undefined}
         aria-expanded={open}
         onFocus={openNow}
         onBlur={closeSoon}
       >
+        {Icon ? <Icon className="size-4 shrink-0" strokeWidth={1.75} aria-hidden /> : null}
         {link.label}
         <ChevronDown
           className={cn("h-3 w-3 transition-transform duration-200", open && "rotate-180")}
@@ -82,7 +87,7 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
           >
             {/* hover bridge so the gap below the trigger doesn't close the panel */}
             <div className="absolute inset-x-0 -top-4 h-4" aria-hidden />
-            <div             className="glass backdrop-blur-xl backdrop-saturate-150 overflow-hidden rounded-2xl border p-2 shadow-2xl">
+            <div className="glass backdrop-blur-xl backdrop-saturate-150 overflow-hidden rounded-2xl border p-2 shadow-2xl">
               {link.sections.map((section) => {
                 const active = isSectionActive(section.href, pathname, category, activeId)
                 return (
@@ -92,7 +97,7 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
                     onClick={() => setOpen(false)}
                     className={cn(
                       "flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors",
-                      active ? "bg-foreground/10" : "hover:bg-foreground/5",
+                      active ? "bg-accent-teal/10" : "hover:bg-foreground/5",
                     )}
                   >
                     <span
@@ -106,7 +111,7 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
                       <span
                         className={cn(
                           "block text-sm font-medium transition-colors",
-                          active ? "text-foreground" : "text-foreground/80",
+                          active ? "text-accent-teal" : "text-foreground/80",
                         )}
                       >
                         {section.label}

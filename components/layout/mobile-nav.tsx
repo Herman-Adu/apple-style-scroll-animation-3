@@ -138,7 +138,7 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                               <span
                                 className={cn(
                                   "block text-base font-medium transition-colors",
-                                  active ? "text-foreground" : "text-foreground/80",
+                                  active ? "text-accent-teal" : "text-foreground/80",
                                 )}
                               >
                                 {section.label}
@@ -238,21 +238,37 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                     <nav className="flex-1 overflow-y-auto px-4 py-4">
                       {mainNav.map((link) => {
                         const active = isTopLevelActive(link.href, pathname)
+                        const Icon = link.icon
                         if (link.sections?.length) {
                           return (
                             <button
                               key={link.href}
                               type="button"
                               onClick={() => setSubmenu(link)}
-                              className="flex w-full items-center justify-between rounded-xl px-4 py-4 text-left transition-colors hover:bg-foreground/5"
+                              className={cn(
+                                "flex w-full items-center justify-between rounded-xl px-4 py-4 text-left transition-colors",
+                                active ? "bg-accent-teal/10" : "hover:bg-foreground/5",
+                              )}
                             >
-                              <span
-                                className={cn(
-                                  "text-lg font-medium transition-colors",
-                                  active ? "text-foreground" : "text-foreground/70",
-                                )}
-                              >
-                                {link.label}
+                              <span className="flex items-center gap-3">
+                                {Icon ? (
+                                  <Icon
+                                    className={cn(
+                                      "size-5 shrink-0 transition-colors",
+                                      active ? "text-accent-teal" : "text-foreground/50",
+                                    )}
+                                    strokeWidth={1.5}
+                                    aria-hidden
+                                  />
+                                ) : null}
+                                <span
+                                  className={cn(
+                                    "text-lg font-medium transition-colors",
+                                    active ? "text-accent-teal" : "text-foreground/70",
+                                  )}
+                                >
+                                  {link.label}
+                                </span>
                               </span>
                               <ChevronRight className="h-5 w-5 text-foreground/40" strokeWidth={1.5} />
                             </button>
@@ -263,12 +279,25 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                             key={link.href}
                             href={link.href}
                             onClick={onClose}
-                            className="flex items-center rounded-xl px-4 py-4 transition-colors hover:bg-foreground/5"
+                            className={cn(
+                              "flex items-center gap-3 rounded-xl px-4 py-4 transition-colors",
+                              active ? "bg-accent-teal/10" : "hover:bg-foreground/5",
+                            )}
                           >
+                            {Icon ? (
+                              <Icon
+                                className={cn(
+                                  "size-5 shrink-0 transition-colors",
+                                  active ? "text-accent-teal" : "text-foreground/50",
+                                )}
+                                strokeWidth={1.5}
+                                aria-hidden
+                              />
+                            ) : null}
                             <span
                               className={cn(
                                 "text-lg font-medium transition-colors",
-                                active ? "text-foreground" : "text-foreground/70",
+                                active ? "text-accent-teal" : "text-foreground/70",
                               )}
                             >
                               {link.label}

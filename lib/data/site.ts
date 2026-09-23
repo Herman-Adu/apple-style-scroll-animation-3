@@ -1,3 +1,4 @@
+import { BookOpen, Home, Info, Mail, Newspaper, Package } from "lucide-react"
 import type { NavLink } from "@/lib/types"
 import { getAllArticles } from "@/lib/data/articles"
 
@@ -18,6 +19,7 @@ export const mainNav: NavLink[] = [
   {
     label: "Home",
     href: "/",
+    icon: Home,
     sections: [
       { label: "Philosophy", href: "/#statement", hint: "What we believe" },
       { label: "The collection", href: "/#collection", hint: "Every product" },
@@ -27,6 +29,7 @@ export const mainNav: NavLink[] = [
   {
     label: "About",
     href: "/about",
+    icon: Info,
     sections: [
       { label: "Our story", href: "/about#intro", hint: "How Momo began" },
       { label: "Values", href: "/about#values", hint: "What guides us" },
@@ -37,6 +40,7 @@ export const mainNav: NavLink[] = [
   {
     label: "Products",
     href: "/products",
+    icon: Package,
     sections: [
       { label: "All products", href: "/products", hint: "The full collection" },
       { label: "Headphones", href: "/products?category=Headphones", hint: "Over-ear reference" },
@@ -47,6 +51,7 @@ export const mainNav: NavLink[] = [
   {
     label: "Articles",
     href: "/articles",
+    icon: Newspaper,
     sections: featuredArticles.map((article) => ({
       label: article.title,
       href: `/articles/${article.slug}`,
@@ -56,10 +61,12 @@ export const mainNav: NavLink[] = [
   {
     label: "Docs",
     href: "/docs",
+    icon: BookOpen,
   },
   {
     label: "Contact",
     href: "/contact",
+    icon: Mail,
     sections: [
       { label: "Send an enquiry", href: "/contact#enquiry", hint: "Pick a topic" },
       { label: "Opening hours", href: "/contact#hours", hint: "When we're around" },

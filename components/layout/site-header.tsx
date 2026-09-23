@@ -80,7 +80,7 @@ export function SiteHeader() {
           {siteConfig.shortName}
         </Link>
 
-        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex">
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex">
           {mainNav.map((link) => (
             <NavDropdown key={link.href} link={link} activeId={activeId} category={category} onDark={onDark} />
           ))}

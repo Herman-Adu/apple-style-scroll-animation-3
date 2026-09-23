@@ -3,8 +3,8 @@
  * re-exports the domain types now owned by each feature's Zod schema.
  *
  * Domain types (Product, Article, and their sub-types) are inferred from the
- * schemas in `features/*/schema` so there is a single source of truth. This
- * file keeps the historical `@/lib/types` import path working and hosts the
+ * schemas in each feature's schema module so there is a single source of
+ * truth. This file keeps the historical `@/lib/types` import path working and hosts the
  * genuinely shared, cross-feature types (cart, navigation, page hero).
  */
 export type {

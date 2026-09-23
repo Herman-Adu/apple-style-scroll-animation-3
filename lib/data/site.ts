@@ -1,4 +1,22 @@
-import { BookOpen, Home, Info, Mail, Newspaper, Package } from "lucide-react"
+import {
+  BookOpen,
+  Clock,
+  Compass,
+  Ear,
+  FileText,
+  Headphones,
+  History,
+  Home,
+  Info,
+  LayoutGrid,
+  Mail,
+  MapPin,
+  MessageSquare,
+  Newspaper,
+  Package,
+  Speaker,
+  Sparkles,
+} from "lucide-react"
 import type { NavLink } from "@/lib/types"
 import { getAllArticles } from "@/lib/data/articles"
 
@@ -21,9 +39,9 @@ export const mainNav: NavLink[] = [
     href: "/",
     icon: Home,
     sections: [
-      { label: "Philosophy", href: "/#statement", hint: "What we believe" },
-      { label: "The collection", href: "/#collection", hint: "Every product" },
-      { label: "Journal", href: "/#journal", hint: "Latest field notes" },
+      { label: "Philosophy", href: "/#statement", hint: "What we believe", icon: Sparkles },
+      { label: "The collection", href: "/#collection", hint: "Every product", icon: LayoutGrid },
+      { label: "Journal", href: "/#journal", hint: "Latest field notes", icon: Newspaper },
     ],
   },
   {
@@ -31,10 +49,10 @@ export const mainNav: NavLink[] = [
     href: "/about",
     icon: Info,
     sections: [
-      { label: "Our story", href: "/about#intro", hint: "How Momo began" },
-      { label: "Values", href: "/about#values", hint: "What guides us" },
-      { label: "Timeline", href: "/about#timeline", hint: "A decade of listening" },
-      { label: "Visit us", href: "/about#visit", hint: "Come and listen" },
+      { label: "Our story", href: "/about#intro", hint: "How Momo began", icon: BookOpen },
+      { label: "Values", href: "/about#values", hint: "What guides us", icon: Compass },
+      { label: "Timeline", href: "/about#timeline", hint: "A decade of listening", icon: History },
+      { label: "Visit us", href: "/about#visit", hint: "Come and listen", icon: MapPin },
     ],
   },
   {
@@ -42,10 +60,10 @@ export const mainNav: NavLink[] = [
     href: "/products",
     icon: Package,
     sections: [
-      { label: "All products", href: "/products", hint: "The full collection" },
-      { label: "Headphones", href: "/products?category=Headphones", hint: "Over-ear reference" },
-      { label: "Earbuds", href: "/products?category=Earbuds", hint: "Pocketable precision" },
-      { label: "Speakers", href: "/products?category=Speakers", hint: "Fill the room" },
+      { label: "All products", href: "/products", hint: "The full collection", icon: LayoutGrid },
+      { label: "Headphones", href: "/products?category=Headphones", hint: "Over-ear reference", icon: Headphones },
+      { label: "Earbuds", href: "/products?category=Earbuds", hint: "Pocketable precision", icon: Ear },
+      { label: "Speakers", href: "/products?category=Speakers", hint: "Fill the room", icon: Speaker },
     ],
   },
   {
@@ -56,6 +74,7 @@ export const mainNav: NavLink[] = [
       label: article.title,
       href: `/articles/${article.slug}`,
       hint: `${article.category} · ${article.readingMinutes} min read`,
+      icon: FileText,
     })),
   },
   {
@@ -68,9 +87,9 @@ export const mainNav: NavLink[] = [
     href: "/contact",
     icon: Mail,
     sections: [
-      { label: "Send an enquiry", href: "/contact#enquiry", hint: "Pick a topic" },
-      { label: "Opening hours", href: "/contact#hours", hint: "When we're around" },
-      { label: "Our studios", href: "/contact#studios", hint: "Find us on the map" },
+      { label: "Send an enquiry", href: "/contact#enquiry", hint: "Pick a topic", icon: MessageSquare },
+      { label: "Opening hours", href: "/contact#hours", hint: "When we're around", icon: Clock },
+      { label: "Our studios", href: "/contact#studios", hint: "Find us on the map", icon: MapPin },
     ],
   },
 ]

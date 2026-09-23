@@ -52,7 +52,7 @@ function NavLinks({
               collapsed ? "justify-center px-0 py-2.5" : size === "large" ? "" : "px-3 py-2",
               active
                 ? "bg-accent-teal/12 text-accent-teal"
-                : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
+                : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
             )}
           >
             {active && !collapsed ? (

@@ -26,13 +26,16 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
 
   // Pill treatment mirrors the admin sidebar: teal active state, subtle hover.
   // Inactive text adapts to the transparent-over-dark-hero header.
+  // Hover intentionally mirrors the active (on-page) treatment so a hovered item
+  // reads exactly like the selected one.
   const pill = cn(
     "group relative inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium uppercase tracking-[0.15em] transition-colors",
     onPage
       ? "bg-accent-teal/12 text-accent-teal"
-      : onDark
-        ? "text-white/70 hover:bg-white/10 hover:text-white"
-        : "text-foreground/60 hover:bg-foreground/5 hover:text-foreground",
+      : cn(
+          "hover:bg-accent-teal/12 hover:text-accent-teal",
+          onDark ? "text-white/70" : "text-foreground/60",
+        ),
   )
 
   if (!link.sections?.length) {
@@ -90,28 +93,40 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
             <div className="glass backdrop-blur-xl backdrop-saturate-150 overflow-hidden rounded-2xl border p-2 shadow-2xl">
               {link.sections.map((section) => {
                 const active = isSectionActive(section.href, pathname, category, activeId)
+                const SectionIcon = section.icon
                 return (
                   <Link
                     key={section.href}
                     href={section.href}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors",
-                      active ? "bg-accent-teal/10" : "hover:bg-foreground/5",
+                      "group/row flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors",
+                      active ? "bg-accent-teal/10" : "hover:bg-accent-teal/10",
                     )}
                   >
-                    <span
-                      className={cn(
-                        "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
-                        active ? "bg-accent-teal" : "bg-foreground/25",
-                      )}
-                      aria-hidden
-                    />
+                    {SectionIcon ? (
+                      <SectionIcon
+                        className={cn(
+                          "mt-0.5 size-4 shrink-0 transition-colors",
+                          active ? "text-accent-teal" : "text-foreground/40 group-hover/row:text-accent-teal",
+                        )}
+                        strokeWidth={1.75}
+                        aria-hidden
+                      />
+                    ) : (
+                      <span
+                        className={cn(
+                          "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
+                          active ? "bg-accent-teal" : "bg-foreground/25 group-hover/row:bg-accent-teal",
+                        )}
+                        aria-hidden
+                      />
+                    )}
                     <span className="min-w-0">
                       <span
                         className={cn(
                           "block text-sm font-medium transition-colors",
-                          active ? "text-accent-teal" : "text-foreground/80",
+                          active ? "text-accent-teal" : "text-foreground/80 group-hover/row:text-accent-teal",
                         )}
                       >
                         {section.label}

@@ -39,6 +39,8 @@ export interface NavSection {
   href: string
   /** Optional one-line description shown in the desktop dropdown. */
   hint?: string
+  /** Optional leading icon, matching the top-level nav treatment. */
+  icon?: LucideIcon
 }
 
 export interface NavLink {

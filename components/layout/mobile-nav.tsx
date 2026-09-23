@@ -117,28 +117,40 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
 
                       {submenu.sections?.map((section) => {
                         const active = isSectionActive(section.href, pathname, category, activeId)
+                        const SectionIcon = section.icon
                         return (
                           <Link
                             key={section.href}
                             href={section.href}
                             onClick={onClose}
                             className={cn(
-                              "flex items-start gap-3 rounded-xl px-4 py-3.5 transition-colors",
-                              active ? "bg-foreground/10" : "hover:bg-foreground/5",
+                              "group/row flex items-start gap-3 rounded-xl px-4 py-3.5 transition-colors",
+                              active ? "bg-accent-teal/10" : "hover:bg-accent-teal/10",
                             )}
                           >
-                            <span
-                              className={cn(
-                                "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
-                                active ? "bg-accent-teal" : "bg-foreground/25",
-                              )}
-                              aria-hidden
-                            />
+                            {SectionIcon ? (
+                              <SectionIcon
+                                className={cn(
+                                  "mt-0.5 size-5 shrink-0 transition-colors",
+                                  active ? "text-accent-teal" : "text-foreground/40 group-hover/row:text-accent-teal",
+                                )}
+                                strokeWidth={1.5}
+                                aria-hidden
+                              />
+                            ) : (
+                              <span
+                                className={cn(
+                                  "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
+                                  active ? "bg-accent-teal" : "bg-foreground/25 group-hover/row:bg-accent-teal",
+                                )}
+                                aria-hidden
+                              />
+                            )}
                             <span className="min-w-0">
                               <span
                                 className={cn(
                                   "block text-base font-medium transition-colors",
-                                  active ? "text-accent-teal" : "text-foreground/80",
+                                  active ? "text-accent-teal" : "text-foreground/80 group-hover/row:text-accent-teal",
                                 )}
                               >
                                 {section.label}
@@ -246,8 +258,8 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                               type="button"
                               onClick={() => setSubmenu(link)}
                               className={cn(
-                                "flex w-full items-center justify-between rounded-xl px-4 py-4 text-left transition-colors",
-                                active ? "bg-accent-teal/10" : "hover:bg-foreground/5",
+                                "group flex w-full items-center justify-between rounded-xl px-4 py-4 text-left transition-colors",
+                                active ? "bg-accent-teal/10" : "hover:bg-accent-teal/10",
                               )}
                             >
                               <span className="flex items-center gap-3">
@@ -255,7 +267,7 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                                   <Icon
                                     className={cn(
                                       "size-5 shrink-0 transition-colors",
-                                      active ? "text-accent-teal" : "text-foreground/50",
+                                      active ? "text-accent-teal" : "text-foreground/50 group-hover:text-accent-teal",
                                     )}
                                     strokeWidth={1.5}
                                     aria-hidden
@@ -264,7 +276,7 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                                 <span
                                   className={cn(
                                     "text-lg font-medium transition-colors",
-                                    active ? "text-accent-teal" : "text-foreground/70",
+                                    active ? "text-accent-teal" : "text-foreground/70 group-hover:text-accent-teal",
                                   )}
                                 >
                                   {link.label}
@@ -280,15 +292,15 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                             href={link.href}
                             onClick={onClose}
                             className={cn(
-                              "flex items-center gap-3 rounded-xl px-4 py-4 transition-colors",
-                              active ? "bg-accent-teal/10" : "hover:bg-foreground/5",
+                              "group flex items-center gap-3 rounded-xl px-4 py-4 transition-colors",
+                              active ? "bg-accent-teal/10" : "hover:bg-accent-teal/10",
                             )}
                           >
                             {Icon ? (
                               <Icon
                                 className={cn(
                                   "size-5 shrink-0 transition-colors",
-                                  active ? "text-accent-teal" : "text-foreground/50",
+                                  active ? "text-accent-teal" : "text-foreground/50 group-hover:text-accent-teal",
                                 )}
                                 strokeWidth={1.5}
                                 aria-hidden
@@ -297,7 +309,7 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                             <span
                               className={cn(
                                 "text-lg font-medium transition-colors",
-                                active ? "text-accent-teal" : "text-foreground/70",
+                                active ? "text-accent-teal" : "text-foreground/70 group-hover:text-accent-teal",
                               )}
                             >
                               {link.label}

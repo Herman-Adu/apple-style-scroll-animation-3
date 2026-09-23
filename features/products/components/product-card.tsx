@@ -4,16 +4,9 @@ import { ArrowUpRight } from "lucide-react"
 import type { Product } from "@/lib/types"
 import { formatMoney } from "@/lib/format"
 import { Reveal } from "@/components/primitives"
-
-const statusLabel: Record<Product["releaseStatus"], string | null> = {
-  available: null,
-  preorder: "Pre-order",
-  "coming-soon": "Coming soon",
-}
+import { ProductStockBadge } from "./product-stock-badge"
 
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
-  const badge = statusLabel[product.releaseStatus]
-
   return (
     <Reveal delay={index * 0.06} className="h-full">
       <Link
@@ -33,11 +26,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
-          {badge && (
-            <span className="absolute left-4 top-4 rounded-full bg-foreground/10 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.15em] text-foreground backdrop-blur-md">
-              {badge}
-            </span>
-          )}
+          <ProductStockBadge product={product} />
         </div>
 
         <div className="flex flex-1 flex-col p-6">

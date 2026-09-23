@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { LogOut, Package, UserRound } from "lucide-react"
+import { LayoutDashboard, LogOut, Package, UserRound } from "lucide-react"
 import { useAuth } from "@/lib/auth/auth-context"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { cn } from "@/lib/utils"
@@ -106,6 +106,14 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
                   onSelect={() => setOpen(false)}
                   icon={<Package className="h-4 w-4" strokeWidth={1.5} />}
                 />
+                {user.role === "admin" && (
+                  <MenuLink
+                    href="/admin"
+                    label="Admin dashboard"
+                    onSelect={() => setOpen(false)}
+                    icon={<LayoutDashboard className="h-4 w-4" strokeWidth={1.5} />}
+                  />
+                )}
                 <button
                   type="button"
                   role="menuitem"

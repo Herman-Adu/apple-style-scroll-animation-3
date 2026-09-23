@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowUpRight, ChevronLeft, ChevronRight, LogOut, MapPin, Mail, Package, User, UserRound, X } from "lucide-react"
+import { ArrowUpRight, ChevronLeft, ChevronRight, LayoutDashboard, LogOut, MapPin, Mail, Package, User, UserRound, X } from "lucide-react"
 import type { NavLink } from "@/lib/types"
 import { mainNav, siteConfig } from "@/lib/data/site"
 import { isSectionActive, isTopLevelActive } from "@/lib/nav"
@@ -117,28 +117,40 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
 
                       {submenu.sections?.map((section) => {
                         const active = isSectionActive(section.href, pathname, category, activeId)
+                        const SectionIcon = section.icon
                         return (
                           <Link
                             key={section.href}
                             href={section.href}
                             onClick={onClose}
                             className={cn(
-                              "flex items-start gap-3 rounded-xl px-4 py-3.5 transition-colors",
-                              active ? "bg-foreground/10" : "hover:bg-foreground/5",
+                              "group/row flex items-start gap-3 rounded-xl px-4 py-3.5 transition-colors",
+                              active ? "bg-accent-teal/10" : "hover:bg-accent-teal/10",
                             )}
                           >
-                            <span
-                              className={cn(
-                                "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
-                                active ? "bg-accent-teal" : "bg-foreground/25",
-                              )}
-                              aria-hidden
-                            />
+                            {SectionIcon ? (
+                              <SectionIcon
+                                className={cn(
+                                  "mt-0.5 size-5 shrink-0 transition-colors",
+                                  active ? "text-accent-teal" : "text-foreground/40 group-hover/row:text-accent-teal",
+                                )}
+                                strokeWidth={1.5}
+                                aria-hidden
+                              />
+                            ) : (
+                              <span
+                                className={cn(
+                                  "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
+                                  active ? "bg-accent-teal" : "bg-foreground/25 group-hover/row:bg-accent-teal",
+                                )}
+                                aria-hidden
+                              />
+                            )}
                             <span className="min-w-0">
                               <span
                                 className={cn(
                                   "block text-base font-medium transition-colors",
-                                  active ? "text-foreground" : "text-foreground/80",
+                                  active ? "text-accent-teal" : "text-foreground/80 group-hover/row:text-accent-teal",
                                 )}
                               >
                                 {section.label}
@@ -206,6 +218,16 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                         <Package className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
                         <span className="text-base font-medium text-foreground/80">Orders &amp; invoices</span>
                       </Link>
+                      {user.role === "admin" && (
+                        <Link
+                          href="/admin"
+                          onClick={onClose}
+                          className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
+                        >
+                          <LayoutDashboard className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
+                          <span className="text-base font-medium text-foreground/80">Admin dashboard</span>
+                        </Link>
+                      )}
                       <button
                         type="button"
                         onClick={handleSignOut}
@@ -228,21 +250,37 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                     <nav className="flex-1 overflow-y-auto px-4 py-4">
                       {mainNav.map((link) => {
                         const active = isTopLevelActive(link.href, pathname)
+                        const Icon = link.icon
                         if (link.sections?.length) {
                           return (
                             <button
                               key={link.href}
                               type="button"
                               onClick={() => setSubmenu(link)}
-                              className="flex w-full items-center justify-between rounded-xl px-4 py-4 text-left transition-colors hover:bg-foreground/5"
+                              className={cn(
+                                "group flex w-full items-center justify-between rounded-xl px-4 py-4 text-left transition-colors",
+                                active ? "bg-accent-teal/10" : "hover:bg-accent-teal/10",
+                              )}
                             >
-                              <span
-                                className={cn(
-                                  "text-lg font-medium transition-colors",
-                                  active ? "text-foreground" : "text-foreground/70",
-                                )}
-                              >
-                                {link.label}
+                              <span className="flex items-center gap-3">
+                                {Icon ? (
+                                  <Icon
+                                    className={cn(
+                                      "size-5 shrink-0 transition-colors",
+                                      active ? "text-accent-teal" : "text-foreground/50 group-hover:text-accent-teal",
+                                    )}
+                                    strokeWidth={1.5}
+                                    aria-hidden
+                                  />
+                                ) : null}
+                                <span
+                                  className={cn(
+                                    "text-lg font-medium transition-colors",
+                                    active ? "text-accent-teal" : "text-foreground/70 group-hover:text-accent-teal",
+                                  )}
+                                >
+                                  {link.label}
+                                </span>
                               </span>
                               <ChevronRight className="h-5 w-5 text-foreground/40" strokeWidth={1.5} />
                             </button>
@@ -253,12 +291,25 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                             key={link.href}
                             href={link.href}
                             onClick={onClose}
-                            className="flex items-center rounded-xl px-4 py-4 transition-colors hover:bg-foreground/5"
+                            className={cn(
+                              "group flex items-center gap-3 rounded-xl px-4 py-4 transition-colors",
+                              active ? "bg-accent-teal/10" : "hover:bg-accent-teal/10",
+                            )}
                           >
+                            {Icon ? (
+                              <Icon
+                                className={cn(
+                                  "size-5 shrink-0 transition-colors",
+                                  active ? "text-accent-teal" : "text-foreground/50 group-hover:text-accent-teal",
+                                )}
+                                strokeWidth={1.5}
+                                aria-hidden
+                              />
+                            ) : null}
                             <span
                               className={cn(
                                 "text-lg font-medium transition-colors",
-                                active ? "text-foreground" : "text-foreground/70",
+                                active ? "text-accent-teal" : "text-foreground/70 group-hover:text-accent-teal",
                               )}
                             >
                               {link.label}

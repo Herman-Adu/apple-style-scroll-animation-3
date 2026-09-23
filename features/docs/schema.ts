@@ -8,15 +8,103 @@
  * the future mapper is a 1:1 translation.
  */
 
+/**
+ * Audiences segment the library by *who* a guide is for, and access is enforced
+ * per audience (see `docAudienceMeta`): user guides are public; content and
+ * developer guides are admin-only. Pre-Strapi this gating is client-side
+ * (localStorage auth, same model as the admin dashboard); once auth moves
+ * server-side with Strapi the same `access` field drives real enforcement.
+ */
+export const DOC_AUDIENCES = ["user", "content", "developer"] as const
+
+export type DocAudience = (typeof DOC_AUDIENCES)[number]
+
+export type DocAccess = "public" | "admin"
+
+export const docAudienceMeta = {
+  user: {
+    label: "User guides",
+    title: "User guides",
+    blurb: "Set up, pair, care for, and get the most out of your Momo Audio devices.",
+    access: "public",
+  },
+  content: {
+    label: "Content management",
+    title: "Content management",
+    blurb: "Run the store day to day — products, stock, orders, and customer email.",
+    access: "admin",
+  },
+  developer: {
+    label: "Developer & CTO",
+    title: "Developer & CTO",
+    blurb: "Architecture, the Strapi migration, DevOps, commerce internals, and positioning.",
+    access: "admin",
+  },
+} satisfies Record<DocAudience, { label: string; title: string; blurb: string; access: DocAccess }>
+
+/**
+ * Categories are the second level of the taxonomy, nested under an audience.
+ * The explorer renders each non-empty category as its own collapsible dropdown,
+ * so this list can grow freely — new categories (e.g. as Strapi, analytics, and
+ * integrations content lands) simply appear as new dropdowns under the right
+ * audience once a doc is assigned to them. Empty categories never render.
+ */
 export const DOC_CATEGORIES = [
+  // User guides (public)
+  "Getting Started",
+  "Product Care",
+  "Troubleshooting",
+  "FAQ",
+  "Warranty & Returns",
+  // Content management (admin)
+  "Catalog",
+  "Store Operations",
+  "Orders & Fulfillment",
+  "Customers",
+  "Email & Campaigns",
+  "Media Library",
+  "CMS & Publishing",
+  // Developer & CTO (admin)
+  "Architecture",
   "Next.js",
   "Migration",
   "DevOps",
   "Commerce",
+  "Data & Analytics",
+  "Security & Auth",
+  "API & Integrations",
   "Positioning",
 ] as const
 
 export type DocCategory = (typeof DOC_CATEGORIES)[number]
+
+/** Which audience each category belongs to — drives grouping and the sidebar. */
+export const DOC_CATEGORY_AUDIENCE: Record<DocCategory, DocAudience> = {
+  // User guides
+  "Getting Started": "user",
+  "Product Care": "user",
+  Troubleshooting: "user",
+  FAQ: "user",
+  "Warranty & Returns": "user",
+  // Content management
+  Catalog: "content",
+  "Store Operations": "content",
+  "Orders & Fulfillment": "content",
+  Customers: "content",
+  "Email & Campaigns": "content",
+  "Media Library": "content",
+  "CMS & Publishing": "content",
+  // Developer & CTO
+  Architecture: "developer",
+  "Next.js": "developer",
+  Migration: "developer",
+  DevOps: "developer",
+  Commerce: "developer",
+  "Data & Analytics": "developer",
+  "Security & Auth": "developer",
+  "API & Integrations": "developer",
+  Positioning: "developer",
+}
 
 /** A single series in a chart block. `color` is a CSS color (usually a token var). */
 export type DocChartSeries = {
@@ -35,7 +123,7 @@ export type DocChartDatum = Record<string, string | number>
 export type DocBlock =
   | { type: "paragraph"; text: string }
   | { type: "heading"; text: string }
-  | { type: "callout"; variant: "info" | "warning" | "success" | "tip"; title?: string; text: string }
+  | { type: "callout"; variant: "info" | "note" | "warning" | "success" | "tip"; title?: string; text: string }
   | { type: "code"; language: string; title?: string; code: string }
   | { type: "list"; ordered?: boolean; items: string[] }
   | { type: "steps"; items: { title: string; text: string }[] }
@@ -58,6 +146,10 @@ export type Doc = {
   slug: string
   title: string
   category: DocCategory
+  /** Who the guide is for. */
+  audience: DocAudience
+  /** Visibility: "public" anyone, "admin" gated to admin accounts. */
+  access: DocAccess
   summary: string
   /** Estimated reading time in minutes. */
   readingMinutes: number
@@ -67,4 +159,22 @@ export type Doc = {
   updatedAt: string
   tags: string[]
   body: DocBlock[]
+}
+
+/**
+ * The card-level projection of a Doc — everything the listing/hub needs without
+ * the (potentially large, potentially gated) `body`. Passing summaries to
+ * client islands keeps the payload small and avoids shipping admin doc bodies
+ * to the browser.
+ */
+export type DocSummary = Pick<
+  Doc,
+  "slug" | "title" | "summary" | "category" | "audience" | "access" | "readingMinutes" | "order" | "tags"
+> & {
+  /**
+   * Flattened plain-text of the doc body for full-text search. Only populated
+   * server-side for docs the viewer may read, so admin body text is never
+   * shipped to non-admin browsers. Absent when the viewer can't read the body.
+   */
+  searchText?: string
 }

@@ -8,6 +8,8 @@ import { ArrowLeft, Lock, ShoppingBag } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth/auth-context"
 import { useOrders } from "@/hooks/use-orders"
+import { useCatalog } from "@/features/catalog"
+import { sendOrderConfirmation } from "@/features/email/actions"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { Spinner } from "@/components/ui/spinner"
 import { formatMoney } from "@/lib/format"
@@ -17,14 +19,25 @@ export function CheckoutView() {
   const { lines, subtotal, currency, itemCount, clear } = useCart()
   const { user } = useAuth()
   const { createOrder } = useOrders(user?.id)
+  const { recordSale } = useCatalog()
   const router = useRouter()
   const [placing, setPlacing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [order, setOrder] = useState<Order | null>(null)
 
   const displayName = user?.profile.displayName || user?.name || "there"
 
   async function placeOrder() {
     if (!user || lines.length === 0 || placing) return
+    setError(null)
+    // Decrement stock and enforce the oversell / last-unit rule at the point of
+    // sale. Pre-Strapi this is the authoritative stock check (stock lives in the
+    // shared catalog store); with Strapi it moves server-side unchanged.
+    const sale = recordSale(lines.map((line) => ({ slug: line.product.slug, quantity: line.quantity })))
+    if (!sale.ok) {
+      setError(sale.error ?? "Some items are no longer available.")
+      return
+    }
     // Records the order through the OrdersAdapter port. A real integration
     // (e.g. Stripe) swaps that adapter for a server-side Checkout Session —
     // this component stays the same.
@@ -49,6 +62,12 @@ export function CheckoutView() {
       })
       setOrder(created)
       clear()
+      // Fire-and-forget confirmation email; never block order success on it.
+      void sendOrderConfirmation({
+        to: created.email,
+        name: displayName,
+        order: created,
+      }).catch(() => {})
     } finally {
       setPlacing(false)
     }
@@ -186,6 +205,14 @@ export function CheckoutView() {
                 {formatMoney({ amount: subtotal, currency })}
               </span>
             </div>
+            {error && (
+              <p
+                role="alert"
+                className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-center text-xs text-destructive"
+              >
+                {error}
+              </p>
+            )}
             <button
               type="button"
               onClick={placeOrder}

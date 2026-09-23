@@ -1,4 +1,9 @@
 import type { Doc } from "../schema"
+import { gettingStartedWithYourDevice } from "./getting-started-with-your-device"
+import { caringForYourHeadphones } from "./caring-for-your-headphones"
+import { troubleshootingCommonIssues } from "./troubleshooting-common-issues"
+import { managingTheProductCatalog } from "./managing-the-product-catalog"
+import { ordersAndEmailOperations } from "./orders-and-email-operations"
 import { serverFirstPlaybook } from "./server-first-playbook"
 import { strapiMigrationRunbook } from "./strapi-migration-runbook"
 import { strapiContentModeling } from "./strapi-content-modeling"
@@ -12,6 +17,14 @@ import { positioningAndSelling } from "./positioning-and-selling"
  * this module is retired (see the Strapi Migration Runbook).
  */
 export const docs: Doc[] = [
+  // User guides (public)
+  gettingStartedWithYourDevice,
+  caringForYourHeadphones,
+  troubleshootingCommonIssues,
+  // Content management (admin)
+  managingTheProductCatalog,
+  ordersAndEmailOperations,
+  // Developer & CTO (admin)
   serverFirstPlaybook,
   strapiMigrationRunbook,
   strapiContentModeling,

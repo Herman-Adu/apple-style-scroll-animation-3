@@ -1,9 +1,10 @@
 import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
-import type { Doc } from "../schema"
+import { ArrowUpRight, Lock } from "lucide-react"
+import type { DocSummary } from "../schema"
 import { Reveal } from "@/components/primitives"
 
-export function DocCard({ doc, index = 0 }: { doc: Doc; index?: number }) {
+export function DocCard({ doc, index = 0, snippet }: { doc: DocSummary; index?: number; snippet?: string }) {
+  const isAdmin = doc.access === "admin"
   return (
     <Reveal delay={index * 0.05} className="h-full">
       <Link
@@ -18,9 +19,26 @@ export function DocCard({ doc, index = 0 }: { doc: Doc; index?: number }) {
           {doc.title}
         </h3>
         <p className="mt-2 flex-1 text-sm leading-relaxed text-foreground/50">{doc.summary}</p>
-        <div className="mt-5 flex items-center gap-1.5 text-xs font-medium text-foreground/50 transition-colors group-hover:text-foreground">
-          Read guide
-          <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.5} />
+        {snippet ? (
+          <p className="mt-3 border-l-2 border-accent-teal/40 pl-3 text-xs leading-relaxed text-foreground/45">
+            <span className="mr-1.5 font-mono text-[9px] uppercase tracking-[0.15em] text-accent-teal/70">Match</span>
+            {snippet}
+          </p>
+        ) : null}
+        <div className="mt-5 flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-foreground/50 transition-colors group-hover:text-foreground">
+            Read guide
+            <ArrowUpRight
+              className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              strokeWidth={1.5}
+            />
+          </span>
+          {isAdmin ? (
+            <span className="flex items-center gap-1 rounded-full border border-accent-amber/30 bg-accent-amber/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.15em] text-accent-amber">
+              <Lock className="h-2.5 w-2.5" strokeWidth={2} />
+              Internal
+            </span>
+          ) : null}
         </div>
       </Link>
     </Reveal>

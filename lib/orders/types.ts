@@ -47,5 +47,9 @@ export interface CreateOrderInput {
 /** Infrastructure port. A Stripe adapter would implement this same contract. */
 export interface OrdersAdapter {
   list(userId: string): Promise<Order[]>
+  /** All orders across every customer — for the admin dashboard. */
+  listAll(): Promise<Order[]>
   create(input: CreateOrderInput): Promise<Order>
+  /** Update an order's fulfilment status (admin). */
+  updateStatus(orderId: string, status: OrderStatus): Promise<Order>
 }

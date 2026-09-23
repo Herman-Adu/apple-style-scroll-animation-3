@@ -1,16 +1,14 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Suspense } from "react"
 
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Inter } from "next/font/google"
 import { CartProvider } from "@/lib/cart-context"
+import { CatalogProvider } from "@/features/catalog"
 import { AuthProvider } from "@/lib/auth/auth-context"
 import { ThemeProvider } from "@/components/theme-provider"
-import { SiteHeader } from "@/components/layout/site-header"
-import { SiteFooter } from "@/components/layout/site-footer"
-import { CartDrawer } from "@/components/layout/cart-drawer"
+import { SiteChrome } from "@/components/layout/site-chrome"
 import { getAllProducts } from "@/lib/data/products"
 import { siteConfig } from "@/lib/data/site"
 import { getBaseUrl } from "@/lib/seo/site"
@@ -85,16 +83,11 @@ export default function RootLayout({
         <JsonLd data={[organizationLd(), websiteLd()]} />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <AuthProvider>
-            <CartProvider catalog={catalog}>
-              <Suspense fallback={null}>
-                <SiteHeader />
-              </Suspense>
-              {children}
-              <SiteFooter />
-              <Suspense fallback={null}>
-                <CartDrawer />
-              </Suspense>
-            </CartProvider>
+            <CatalogProvider initialProducts={catalog}>
+              <CartProvider catalog={catalog}>
+                <SiteChrome>{children}</SiteChrome>
+              </CartProvider>
+            </CatalogProvider>
           </AuthProvider>
         </ThemeProvider>
         <Analytics />

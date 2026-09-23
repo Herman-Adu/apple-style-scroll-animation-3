@@ -3,7 +3,7 @@
 // works in preview with zero backend. Implements the same OrdersAdapter port a
 // real Stripe/server adapter would, so the application layer cannot tell them apart.
 
-import type { CreateOrderInput, Order, OrdersAdapter } from "../types"
+import type { CreateOrderInput, Order, OrderStatus, OrdersAdapter } from "../types"
 
 const ORDERS_KEY = "momo.orders"
 
@@ -38,6 +38,11 @@ export function createLocalOrdersAdapter(): OrdersAdapter {
         .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
     },
 
+    async listAll(): Promise<Order[]> {
+      await tick()
+      return readAll().sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    },
+
     async create(input: CreateOrderInput): Promise<Order> {
       await tick()
       const all = readAll()
@@ -51,6 +56,16 @@ export function createLocalOrdersAdapter(): OrdersAdapter {
       all.push(order)
       writeAll(all)
       return order
+    },
+
+    async updateStatus(orderId: string, status: OrderStatus): Promise<Order> {
+      await tick()
+      const all = readAll()
+      const index = all.findIndex((order) => order.id === orderId)
+      if (index === -1) throw new Error("Order not found")
+      all[index] = { ...all[index], status }
+      writeAll(all)
+      return all[index]
     },
   }
 }

@@ -4,6 +4,8 @@ export const positioningAndSelling: Doc = {
   slug: "positioning-and-selling-the-platform",
   title: "Positioning & Selling the Platform",
   category: "Positioning",
+  audience: "developer",
+  access: "admin",
   summary:
     "How to frame this stack to a buyer: the market it fits, the value it delivers over a template, and the objections to answer before they are raised.",
   readingMinutes: 10,

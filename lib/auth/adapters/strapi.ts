@@ -7,7 +7,8 @@
 // mapping helpers below to match your exact content-type — that is the only place
 // backend-specific shape lives.
 
-import { authConfig } from "../config"
+import { authConfig, resolveRole } from "../config"
+import { clearSession, establishSession } from "../actions"
 import {
   AuthAdapter,
   AuthError,
@@ -45,10 +46,15 @@ function toUser(raw: any): User {
     newsletter: raw.profile?.newsletter ?? false,
     bio: raw.profile?.bio,
   }
+  // Prefer Strapi's users-permissions role name; fall back to the local
+  // allowlist so admin bootstrapping keeps working before roles are configured.
+  const strapiRole = String(raw.role?.name ?? raw.role?.type ?? "").toLowerCase()
+  const role = strapiRole === "admin" ? "admin" : resolveRole(raw.email ?? "")
   return {
     id: String(raw.id),
     email: raw.email,
     name: raw.name ?? raw.username ?? raw.email,
+    role,
     profile,
     onboardingStatus: raw.onboardingStatus ?? "pending",
     createdAt: raw.createdAt ?? new Date().toISOString(),
@@ -92,12 +98,20 @@ export function createStrapiAdapter(): AuthAdapter {
   return {
     async getSession(): Promise<Session | null> {
       const token = readToken()
-      if (!token) return null
+      if (!token) {
+        await clearSession()
+        return null
+      }
       try {
         const raw = await api<any>("/api/users/me?populate=*", { method: "GET" }, token)
-        return { user: toUser(raw), token }
+        const user = toUser(raw)
+        // Hand the JWT to the server action, which re-verifies it against Strapi
+        // and derives the trusted role from that verified response.
+        await establishSession({ id: user.id, email: user.email, name: user.name, strapiJwt: token })
+        return { user, token }
       } catch {
         writeToken(null)
+        await clearSession()
         return null
       }
     },
@@ -113,7 +127,9 @@ export function createStrapiAdapter(): AuthAdapter {
         }),
       })
       writeToken(data.jwt)
-      return { user: toUser(data.user), token: data.jwt }
+      const user = toUser(data.user)
+      await establishSession({ id: user.id, email: user.email, name: user.name, strapiJwt: data.jwt })
+      return { user, token: data.jwt }
     },
 
     async signIn(input: SignInInput): Promise<Session> {
@@ -122,11 +138,14 @@ export function createStrapiAdapter(): AuthAdapter {
         body: JSON.stringify({ identifier: input.email, password: input.password }),
       })
       writeToken(data.jwt)
-      return { user: toUser(data.user), token: data.jwt }
+      const user = toUser(data.user)
+      await establishSession({ id: user.id, email: user.email, name: user.name, strapiJwt: data.jwt })
+      return { user, token: data.jwt }
     },
 
     async signOut() {
       writeToken(null)
+      await clearSession()
     },
 
     async updateProfile(update: ProfileUpdate): Promise<User> {

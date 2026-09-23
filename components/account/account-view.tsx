@@ -1,9 +1,10 @@
 "use client"
 
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { LogOut } from "lucide-react"
+import { LayoutDashboard, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProfileForm } from "@/components/account/profile-form"
@@ -68,16 +69,30 @@ export function AccountView() {
             </div>
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleSignOut}
-            disabled={signingOut}
-            className="border-foreground/15 bg-transparent text-foreground hover:bg-foreground/5"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign out
-          </Button>
+          <div className="flex items-center gap-3">
+            {user.role === "admin" && (
+              <Button
+                asChild
+                type="button"
+                className="bg-foreground text-background hover:bg-foreground/90"
+              >
+                <Link href="/admin">
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  Admin dashboard
+                </Link>
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleSignOut}
+              disabled={signingOut}
+              className="border-foreground/15 bg-transparent text-foreground hover:bg-foreground/5"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign out
+            </Button>
+          </div>
         </motion.header>
 
         <motion.div

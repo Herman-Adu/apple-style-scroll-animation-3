@@ -3,7 +3,8 @@
 // with zero backend. Mirrors the exact AuthAdapter contract the Strapi adapter uses,
 // so the application layer cannot tell them apart.
 
-import { authConfig } from "../config"
+import { authConfig, resolveRole } from "../config"
+import { clearSession, establishSession } from "../actions"
 import {
   AuthAdapter,
   AuthError,
@@ -66,7 +67,13 @@ function normalizeProfile(profile: Record<string, unknown>): UserProfile {
 
 function stripPassword(user: StoredUser): User {
   const { password: _password, ...safe } = user
-  return { ...safe, profile: normalizeProfile(safe.profile as unknown as Record<string, unknown>) }
+  // Role is always derived from the current allowlist, so promoting/demoting an
+  // email takes effect on next read without rewriting stored records.
+  return {
+    ...safe,
+    role: resolveRole(safe.email),
+    profile: normalizeProfile(safe.profile as unknown as Record<string, unknown>),
+  }
 }
 
 function emptyProfile(): UserProfile {
@@ -80,10 +87,20 @@ export function createLocalAdapter(): AuthAdapter {
   return {
     async getSession() {
       const token = readToken()
-      if (!token) return null
+      if (!token) {
+        await clearSession()
+        return null
+      }
       const user = readUsers().find((u) => u.id === token)
-      if (!user) return null
-      return { user: stripPassword(user), token }
+      if (!user) {
+        await clearSession()
+        return null
+      }
+      const safe = stripPassword(user)
+      // Re-mint the httpOnly session cookie on every load so accounts created
+      // before it existed self-heal, and so the server-trusted role stays fresh.
+      await establishSession({ id: safe.id, email: safe.email, name: safe.name })
+      return { user: safe, token }
     },
 
     async signUp(input: SignUpInput): Promise<Session> {
@@ -96,6 +113,7 @@ export function createLocalAdapter(): AuthAdapter {
         id: crypto.randomUUID(),
         email: input.email,
         name: input.name,
+        role: resolveRole(input.email),
         password: input.password,
         profile: emptyProfile(),
         onboardingStatus: "pending",
@@ -104,7 +122,9 @@ export function createLocalAdapter(): AuthAdapter {
       users.push(user)
       writeUsers(users)
       writeToken(user.id)
-      return { user: stripPassword(user), token: user.id }
+      const safe = stripPassword(user)
+      await establishSession({ id: safe.id, email: safe.email, name: safe.name })
+      return { user: safe, token: user.id }
     },
 
     async signIn(input: SignInInput): Promise<Session> {
@@ -116,11 +136,14 @@ export function createLocalAdapter(): AuthAdapter {
         throw new AuthError("Incorrect email or password.", "invalid_credentials")
       }
       writeToken(user.id)
-      return { user: stripPassword(user), token: user.id }
+      const safe = stripPassword(user)
+      await establishSession({ id: safe.id, email: safe.email, name: safe.name })
+      return { user: safe, token: user.id }
     },
 
     async signOut() {
       writeToken(null)
+      await clearSession()
     },
 
     async updateProfile(update: ProfileUpdate): Promise<User> {

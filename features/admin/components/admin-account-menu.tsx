@@ -1,9 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { useTheme } from "next-themes"
-import { ArrowUpRight, LogOut, Moon, Package, Settings, Sun, UserRound } from "lucide-react"
+import { useState } from "react"
+import { ArrowUpRight, LogOut, Package, Settings, UserRound } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,16 +30,11 @@ export function AdminAccountMenu({
   side?: "top" | "right" | "bottom" | "left"
 }) {
   const { user } = useAuth()
-  const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
   const [signOutOpen, setSignOutOpen] = useState(false)
-
-  useEffect(() => setMounted(true), [])
 
   if (!user) return null
 
   const displayName = user.profile.displayName || user.name
-  const isDark = resolvedTheme === "dark"
 
   return (
     <>
@@ -85,23 +79,6 @@ export function AdminAccountMenu({
               <ArrowUpRight className="size-4" strokeWidth={1.5} aria-hidden />
               Storefront
             </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem
-            className="gap-3 rounded-xl px-2 py-2.5"
-            onSelect={(e) => {
-              e.preventDefault()
-              setTheme(isDark ? "light" : "dark")
-            }}
-          >
-            {mounted && isDark ? (
-              <Sun className="size-4" strokeWidth={1.5} aria-hidden />
-            ) : (
-              <Moon className="size-4" strokeWidth={1.5} aria-hidden />
-            )}
-            {mounted && isDark ? "Light theme" : "Dark theme"}
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

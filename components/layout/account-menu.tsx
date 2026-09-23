@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { LayoutDashboard, LogOut, Package, UserRound } from "lucide-react"
@@ -23,6 +24,7 @@ interface AccountMenuProps {
  */
 export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
   const { user, signOut } = useAuth()
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -97,6 +99,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
                 <MenuLink
                   href="/account"
                   label="Profile"
+                  active={pathname === "/account"}
                   onSelect={() => setOpen(false)}
                   icon={<UserRound className="h-4 w-4" strokeWidth={1.5} />}
                 />
@@ -110,6 +113,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
                   <MenuLink
                     href="/admin"
                     label="Admin dashboard"
+                    active={pathname.startsWith("/admin")}
                     onSelect={() => setOpen(false)}
                     icon={<LayoutDashboard className="h-4 w-4" strokeWidth={1.5} />}
                   />
@@ -119,7 +123,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
                   role="menuitem"
                   onClick={handleSignOut}
                   disabled={signingOut}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-foreground/80 transition-colors hover:bg-foreground/5 disabled:opacity-60"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-foreground/80 transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-60"
                 >
                   <LogOut className="h-4 w-4" strokeWidth={1.5} />
                   {signingOut ? "Signing out…" : "Sign out"}
@@ -137,11 +141,13 @@ function MenuLink({
   href,
   label,
   icon,
+  active = false,
   onSelect,
 }: {
   href: string
   label: string
   icon: React.ReactNode
+  active?: boolean
   onSelect: () => void
 }) {
   return (
@@ -149,7 +155,13 @@ function MenuLink({
       href={href}
       onClick={onSelect}
       role="menuitem"
-      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-foreground/5"
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+        active
+          ? "bg-accent-teal/10 text-accent-teal"
+          : "text-foreground/80 hover:bg-accent-teal/10 hover:text-accent-teal",
+      )}
     >
       {icon}
       {label}

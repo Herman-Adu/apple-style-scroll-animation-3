@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { ArrowUpRight, LogOut, Package, Settings, UserRound } from "lucide-react"
 import {
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/lib/auth/auth-context"
 import { UserAvatar } from "@/components/account/user-avatar"
+import { cn } from "@/lib/utils"
 import { SignOutConfirmDialog } from "./sign-out-confirm"
 
 /**
@@ -30,9 +32,16 @@ export function AdminAccountMenu({
   side?: "top" | "right" | "bottom" | "left"
 }) {
   const { user } = useAuth()
+  const pathname = usePathname()
   const [signOutOpen, setSignOutOpen] = useState(false)
 
   if (!user) return null
+
+  const itemClass = (active: boolean) =>
+    cn(
+      "gap-3 rounded-xl px-2 py-2.5 focus:bg-accent-teal/10 focus:text-accent-teal",
+      active && "bg-accent-teal/10 text-accent-teal",
+    )
 
   const displayName = user.profile.displayName || user.name
 
@@ -56,25 +65,25 @@ export function AdminAccountMenu({
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem asChild className="gap-3 rounded-xl px-2 py-2.5">
+          <DropdownMenuItem asChild className={itemClass(pathname === "/admin/profile")}>
             <Link href="/admin/profile">
               <UserRound className="size-4" strokeWidth={1.5} aria-hidden />
               Company profile
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className="gap-3 rounded-xl px-2 py-2.5">
+          <DropdownMenuItem asChild className={itemClass(pathname.startsWith("/admin/orders"))}>
             <Link href="/admin/orders">
               <Package className="size-4" strokeWidth={1.5} aria-hidden />
               Orders &amp; invoices
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className="gap-3 rounded-xl px-2 py-2.5">
+          <DropdownMenuItem asChild className={itemClass(pathname.startsWith("/admin/settings"))}>
             <Link href="/admin/settings">
               <Settings className="size-4" strokeWidth={1.5} aria-hidden />
               Settings
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className="gap-3 rounded-xl px-2 py-2.5">
+          <DropdownMenuItem asChild className={itemClass(false)}>
             <Link href="/">
               <ArrowUpRight className="size-4" strokeWidth={1.5} aria-hidden />
               Storefront

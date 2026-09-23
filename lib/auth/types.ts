@@ -10,6 +10,25 @@ export type OnboardingStatus = "pending" | "complete"
  */
 export type UserRole = "admin" | "customer"
 
+/** Account standing. Blocked accounts are refused at sign-in and ejected on reload. */
+export type UserStatus = "active" | "blocked"
+
+/**
+ * A personal offer tag an admin attaches to a customer. This is a *label* for the
+ * team — Stripe still enforces the real discount at checkout. `value` is the
+ * percent (for `percent`) or a free amount is implied (for `shipping`); `custom`
+ * is a free-form label.
+ */
+export interface OfferTag {
+  id: string
+  label: string
+  kind: "percent" | "shipping" | "custom"
+  /** Percent amount for `percent` offers. Ignored for other kinds. */
+  value?: number
+  note?: string
+  createdAt: string
+}
+
 export interface User {
   id: string
   email: string
@@ -20,6 +39,15 @@ export interface User {
   profile: UserProfile
   onboardingStatus: OnboardingStatus
   createdAt: string
+  /** Account standing. Missing on legacy records → treated as "active". */
+  status?: UserStatus
+  /**
+   * Explicit admin role override. When set it wins over the email-allowlist
+   * derivation, so an admin can promote/demote without editing env config.
+   */
+  roleOverride?: UserRole
+  /** Personal offer tags managed by admins. Missing → treated as []. */
+  offers?: OfferTag[]
 }
 
 export interface UserProfile {
@@ -72,6 +100,21 @@ export interface AuthAdapter {
   updateProfile(update: ProfileUpdate): Promise<User>
   /** Mark onboarding finished and return the updated user. */
   completeOnboarding(update: ProfileUpdate): Promise<User>
+
+  // --- Admin-only management methods ---
+  // These power the admin Customers area. The application layer stays
+  // backend-agnostic: swapping adapters swaps the implementation, not callers.
+
+  /** List every account (admin only). */
+  listUsers(): Promise<User[]>
+  /** Block or unblock an account. */
+  setUserStatus(id: string, status: UserStatus): Promise<User>
+  /** Promote/demote via an explicit role override. */
+  setUserRole(id: string, role: UserRole): Promise<User>
+  /** Toggle a customer's newsletter opt-in. */
+  setUserNewsletter(id: string, newsletter: boolean): Promise<User>
+  /** Replace a customer's personal offer tags. */
+  setUserOffers(id: string, offers: OfferTag[]): Promise<User>
 }
 
 /** Raised by adapters for expected auth failures so the UI can show friendly copy. */

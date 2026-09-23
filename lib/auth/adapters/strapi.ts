@@ -180,5 +180,24 @@ export function createStrapiAdapter(): AuthAdapter {
       )
       return toUser(raw)
     },
+
+    // Admin management endpoints are not wired for Strapi yet. They throw a clear
+    // error rather than pretend to succeed, so the type contract is satisfied and
+    // the failure is obvious if the app is switched to Strapi before these exist.
+    async listUsers(): Promise<User[]> {
+      throw new AuthError("Customer management is not implemented for Strapi yet.", "unknown")
+    },
+    async setUserStatus(): Promise<User> {
+      throw new AuthError("Customer management is not implemented for Strapi yet.", "unknown")
+    },
+    async setUserRole(): Promise<User> {
+      throw new AuthError("Customer management is not implemented for Strapi yet.", "unknown")
+    },
+    async setUserNewsletter(): Promise<User> {
+      throw new AuthError("Customer management is not implemented for Strapi yet.", "unknown")
+    },
+    async setUserOffers(): Promise<User> {
+      throw new AuthError("Customer management is not implemented for Strapi yet.", "unknown")
+    },
   }
 }

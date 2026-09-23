@@ -8,12 +8,15 @@ import { clearSession, establishSession } from "../actions"
 import {
   AuthAdapter,
   AuthError,
+  OfferTag,
   ProfileUpdate,
   Session,
   SignInInput,
   SignUpInput,
   User,
   UserProfile,
+  UserRole,
+  UserStatus,
 } from "../types"
 
 const USERS_KEY = "momo.auth.users"
@@ -67,11 +70,17 @@ function normalizeProfile(profile: Record<string, unknown>): UserProfile {
 
 function stripPassword(user: StoredUser): User {
   const { password: _password, ...safe } = user
-  // Role is always derived from the current allowlist, so promoting/demoting an
-  // email takes effect on next read without rewriting stored records.
+  // An explicit admin override wins; otherwise the role is derived from the
+  // current allowlist, so promoting/demoting an email still works out of the box.
+  const role: UserRole =
+    safe.roleOverride === "admin" || safe.roleOverride === "customer"
+      ? safe.roleOverride
+      : resolveRole(safe.email)
   return {
     ...safe,
-    role: resolveRole(safe.email),
+    role,
+    status: safe.status ?? "active",
+    offers: Array.isArray(safe.offers) ? safe.offers : [],
     profile: normalizeProfile(safe.profile as unknown as Record<string, unknown>),
   }
 }
@@ -93,6 +102,12 @@ export function createLocalAdapter(): AuthAdapter {
       }
       const user = readUsers().find((u) => u.id === token)
       if (!user) {
+        await clearSession()
+        return null
+      }
+      // A live session for an account blocked after sign-in is ejected on reload.
+      if (user.status === "blocked") {
+        writeToken(null)
         await clearSession()
         return null
       }
@@ -135,6 +150,9 @@ export function createLocalAdapter(): AuthAdapter {
       if (!user || user.password !== input.password) {
         throw new AuthError("Incorrect email or password.", "invalid_credentials")
       }
+      if (user.status === "blocked") {
+        throw new AuthError("This account has been suspended.", "invalid_credentials")
+      }
       writeToken(user.id)
       const safe = stripPassword(user)
       await establishSession({ id: safe.id, email: safe.email, name: safe.name })
@@ -169,6 +187,50 @@ export function createLocalAdapter(): AuthAdapter {
         profile: { ...users[idx].profile, ...update },
         onboardingStatus: "complete",
       }
+      writeUsers(users)
+      return stripPassword(users[idx])
+    },
+
+    async listUsers(): Promise<User[]> {
+      await tick()
+      return readUsers().map(stripPassword)
+    },
+
+    async setUserStatus(id: string, status: UserStatus): Promise<User> {
+      const users = readUsers()
+      const idx = users.findIndex((u) => u.id === id)
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
+      users[idx] = { ...users[idx], status }
+      writeUsers(users)
+      return stripPassword(users[idx])
+    },
+
+    async setUserRole(id: string, role: UserRole): Promise<User> {
+      const users = readUsers()
+      const idx = users.findIndex((u) => u.id === id)
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
+      users[idx] = { ...users[idx], roleOverride: role }
+      writeUsers(users)
+      return stripPassword(users[idx])
+    },
+
+    async setUserNewsletter(id: string, newsletter: boolean): Promise<User> {
+      const users = readUsers()
+      const idx = users.findIndex((u) => u.id === id)
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
+      users[idx] = {
+        ...users[idx],
+        profile: { ...users[idx].profile, newsletter },
+      }
+      writeUsers(users)
+      return stripPassword(users[idx])
+    },
+
+    async setUserOffers(id: string, offers: OfferTag[]): Promise<User> {
+      const users = readUsers()
+      const idx = users.findIndex((u) => u.id === id)
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
+      users[idx] = { ...users[idx], offers }
       writeUsers(users)
       return stripPassword(users[idx])
     },

@@ -1,17 +1,17 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowUpRight, Bell, ChevronRight, PanelLeftClose, PanelLeftOpen, Menu, X } from "lucide-react"
+import { ArrowUpRight, Bell, ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen, Menu, X } from "lucide-react"
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/lib/auth/auth-context"
 import { useCatalog } from "@/features/catalog"
 import { inventorySummary } from "@/features/orders"
 import { UserAvatar } from "@/components/account/user-avatar"
-import { adminNav, isActive } from "../lib/nav"
+import { adminNav, isActive, isChildActive, type AdminNavItem } from "../lib/nav"
 import { AdminAccountMenu } from "./admin-account-menu"
 import { AdminOnboarding } from "./admin-onboarding"
 
@@ -23,6 +23,185 @@ const labelMotion = {
   transition: { duration: 0.15, ease: "easeOut" as const },
 }
 
+type NavSize = "default" | "large"
+
+/** A single (childless) nav link. */
+function NavLeaf({
+  item,
+  active,
+  collapsed,
+  onNavigate,
+  size,
+}: {
+  item: AdminNavItem
+  active: boolean
+  collapsed?: boolean
+  onNavigate?: () => void
+  size: NavSize
+}) {
+  const Icon = item.icon
+  return (
+    <Link
+      href={item.href}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      title={collapsed ? item.label : undefined}
+      className={cn(
+        "group relative flex items-center gap-3 overflow-hidden rounded-lg font-medium transition-colors",
+        size === "large" ? "px-3 py-3 text-base" : "text-sm",
+        collapsed ? "justify-center px-0 py-2.5" : size === "large" ? "" : "px-3 py-2",
+        active
+          ? "bg-accent-teal/12 text-accent-teal"
+          : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
+      )}
+    >
+      {active && !collapsed ? (
+        <span
+          className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-accent-teal"
+          aria-hidden
+        />
+      ) : null}
+      <Icon className={cn("shrink-0", size === "large" ? "size-5" : "size-4")} aria-hidden />
+      <AnimatePresence initial={false}>
+        {!collapsed && (
+          <motion.span {...labelMotion} className="whitespace-nowrap">
+            {item.label}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </Link>
+  )
+}
+
+/** An expandable nav group with children (e.g. Customers). */
+function NavGroup({
+  item,
+  pathname,
+  activeSegment,
+  collapsed,
+  onNavigate,
+  size,
+}: {
+  item: AdminNavItem
+  pathname: string
+  activeSegment: string | null
+  collapsed?: boolean
+  onNavigate?: () => void
+  size: NavSize
+}) {
+  const parentActive = isActive(pathname, item)
+  const [open, setOpen] = useState(parentActive)
+  const Icon = item.icon
+  const children = item.children ?? []
+  const groupId = `nav-group-${item.href.replace(/\W+/g, "-")}`
+
+  // Auto-expand whenever a child route becomes active.
+  useEffect(() => {
+    if (parentActive) setOpen(true)
+  }, [parentActive])
+
+  // Collapsed icon-rail: parent icon links to the base route, children appear in
+  // a hover flyout so the section stays reachable without expanding the rail.
+  if (collapsed) {
+    return (
+      <div className="group/flyout relative">
+        <NavLeaf item={item} active={parentActive} collapsed size={size} />
+        <div className="pointer-events-none absolute left-full top-0 z-50 ml-2 hidden min-w-44 rounded-xl border border-border bg-card p-1.5 shadow-xl group-hover/flyout:pointer-events-auto group-hover/flyout:block">
+          <p className="px-2 py-1 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
+            {item.label}
+          </p>
+          {children.map((child) => {
+            const childActive = isChildActive(pathname, activeSegment, item.href, child)
+            return (
+              <Link
+                key={child.href}
+                href={child.href}
+                onClick={onNavigate}
+                aria-current={childActive ? "page" : undefined}
+                className={cn(
+                  "block rounded-lg px-2 py-1.5 text-sm transition-colors",
+                  childActive
+                    ? "bg-accent-teal/12 text-accent-teal"
+                    : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
+                )}
+              >
+                {child.label}
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls={groupId}
+        className={cn(
+          "group relative flex w-full items-center gap-3 rounded-lg font-medium transition-colors",
+          size === "large" ? "px-3 py-3 text-base" : "px-3 py-2 text-sm",
+          parentActive
+            ? "text-accent-teal"
+            : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
+        )}
+      >
+        {parentActive ? (
+          <span
+            className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-accent-teal"
+            aria-hidden
+          />
+        ) : null}
+        <Icon className={cn("shrink-0", size === "large" ? "size-5" : "size-4")} aria-hidden />
+        <span className="flex-1 whitespace-nowrap text-left">{item.label}</span>
+        <ChevronDown
+          className={cn("size-4 shrink-0 transition-transform duration-200", open && "rotate-180")}
+          aria-hidden
+        />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.ul
+            id={groupId}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="overflow-hidden"
+          >
+            <div className="ml-[19px] mt-1 flex flex-col gap-0.5 border-l border-border pl-3">
+              {children.map((child) => {
+                const childActive = isChildActive(pathname, activeSegment, item.href, child)
+                return (
+                  <li key={child.href}>
+                    <Link
+                      href={child.href}
+                      onClick={onNavigate}
+                      aria-current={childActive ? "page" : undefined}
+                      className={cn(
+                        "block rounded-lg px-3 py-1.5 transition-colors",
+                        size === "large" ? "text-sm" : "text-[13px]",
+                        childActive
+                          ? "bg-accent-teal/12 font-medium text-accent-teal"
+                          : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
+                      )}
+                    >
+                      {child.label}
+                    </Link>
+                  </li>
+                )
+              })}
+            </div>
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 function NavLinks({
   pathname,
   collapsed,
@@ -32,46 +211,34 @@ function NavLinks({
   pathname: string
   collapsed?: boolean
   onNavigate?: () => void
-  size?: "default" | "large"
+  size?: NavSize
 }) {
+  const searchParams = useSearchParams()
+  const activeSegment = searchParams.get("segment")
   return (
     <nav className="flex flex-col gap-1" aria-label="Admin sections">
-      {adminNav.map((item) => {
-        const active = isActive(pathname, item)
-        const Icon = item.icon
-        return (
-          <Link
+      {adminNav.map((item) =>
+        item.children && item.children.length > 0 ? (
+          <NavGroup
             key={item.href}
-            href={item.href}
-            onClick={onNavigate}
-            aria-current={active ? "page" : undefined}
-            title={collapsed ? item.label : undefined}
-            className={cn(
-              "group relative flex items-center gap-3 overflow-hidden rounded-lg font-medium transition-colors",
-              size === "large" ? "px-3 py-3 text-base" : "text-sm",
-              collapsed ? "justify-center px-0 py-2.5" : size === "large" ? "" : "px-3 py-2",
-              active
-                ? "bg-accent-teal/12 text-accent-teal"
-                : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
-            )}
-          >
-            {active && !collapsed ? (
-              <span
-                className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-accent-teal"
-                aria-hidden
-              />
-            ) : null}
-            <Icon className={cn("shrink-0", size === "large" ? "size-5" : "size-4")} aria-hidden />
-            <AnimatePresence initial={false}>
-              {!collapsed && (
-                <motion.span {...labelMotion} className="whitespace-nowrap">
-                  {item.label}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </Link>
-        )
-      })}
+            item={item}
+            pathname={pathname}
+            activeSegment={activeSegment}
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+            size={size}
+          />
+        ) : (
+          <NavLeaf
+            key={item.href}
+            item={item}
+            active={isActive(pathname, item)}
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+            size={size}
+          />
+        ),
+      )}
     </nav>
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { CheckCircle2, Mail, Send, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -23,6 +24,7 @@ const TEMPLATES = [
 ]
 
 export function EmailManager() {
+  const searchParams = useSearchParams()
   const [configured, setConfigured] = useState(false)
   const [testTo, setTestTo] = useState("")
   const [sending, setSending] = useState(false)
@@ -31,13 +33,19 @@ export function EmailManager() {
     getEmailConfigured().then(setConfigured)
   }, [])
 
+  // Prefill the recipient when arriving from a customer's "Email" action.
+  useEffect(() => {
+    const to = searchParams.get("to")
+    if (to) setTestTo(to)
+  }, [searchParams])
+
   async function onSendTest() {
     if (!testTo.trim()) {
       toast.error("Enter a recipient email.")
       return
     }
     setSending(true)
-    const result = await sendTestEmail(testTo.trim())
+    const result = await sendTestEmail({ to: testTo.trim() })
     setSending(false)
     if (result.ok) {
       toast.success(`Test email sent to ${testTo.trim()}`)
@@ -66,7 +74,7 @@ export function EmailManager() {
               </p>
               <p className="text-sm text-muted-foreground">
                 {configured
-                  ? `Sending from ${status?.from ?? "your verified domain"}.`
+                  ? "Sending from your verified domain."
                   : "Add RESEND_API_KEY in project settings to enable sending. Templates are ready and will activate automatically."}
               </p>
             </div>

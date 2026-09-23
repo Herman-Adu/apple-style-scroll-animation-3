@@ -13,6 +13,7 @@ import { inventorySummary } from "@/features/orders"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { adminNav, isActive } from "../lib/nav"
 import { AdminAccountMenu } from "./admin-account-menu"
+import { AdminOnboarding } from "./admin-onboarding"
 
 /** Quick fade/slide used for labels that appear as the sidebar expands. */
 const labelMotion = {
@@ -343,6 +344,9 @@ export function AdminShell({ title, children }: { title: string; children: React
 
         <main className="p-4 sm:p-6">{children}</main>
       </div>
+
+      {/* First-run company onboarding — self-gates on the stored company profile. */}
+      <AdminOnboarding />
 
       <Toaster position="top-right" />
     </div>

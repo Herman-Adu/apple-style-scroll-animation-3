@@ -57,13 +57,13 @@ export function AdminAccountMenu({
           <DropdownMenuSeparator />
 
           <DropdownMenuItem asChild className="gap-3 rounded-xl px-2 py-2.5">
-            <Link href="/account">
+            <Link href="/admin/profile">
               <UserRound className="size-4" strokeWidth={1.5} aria-hidden />
-              Profile
+              Company profile
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="gap-3 rounded-xl px-2 py-2.5">
-            <Link href="/account?tab=orders">
+            <Link href="/admin/orders">
               <Package className="size-4" strokeWidth={1.5} aria-hidden />
               Orders &amp; invoices
             </Link>

@@ -4,12 +4,15 @@ import { caringForYourHeadphones } from "./caring-for-your-headphones"
 import { troubleshootingCommonIssues } from "./troubleshooting-common-issues"
 import { managingTheProductCatalog } from "./managing-the-product-catalog"
 import { ordersAndEmailOperations } from "./orders-and-email-operations"
+import { companyProfileAndSetup } from "./company-profile-and-setup"
 import { serverFirstPlaybook } from "./server-first-playbook"
 import { strapiMigrationRunbook } from "./strapi-migration-runbook"
 import { strapiContentModeling } from "./strapi-content-modeling"
 import { devopsDeployObservability } from "./devops-deploy-observability"
 import { commerceCartCheckout } from "./commerce-cart-checkout"
+import { authenticationAndAccess } from "./authentication-and-access"
 import { positioningAndSelling } from "./positioning-and-selling"
+import { pricingAndPackaging } from "./pricing-and-packaging"
 
 /**
  * The local docs corpus. This is the single source that the api/ seam reads
@@ -24,11 +27,14 @@ export const docs: Doc[] = [
   // Content management (admin)
   managingTheProductCatalog,
   ordersAndEmailOperations,
+  companyProfileAndSetup,
   // Developer & CTO (admin)
   serverFirstPlaybook,
   strapiMigrationRunbook,
   strapiContentModeling,
   devopsDeployObservability,
   commerceCartCheckout,
+  authenticationAndAccess,
   positioningAndSelling,
+  pricingAndPackaging,
 ]

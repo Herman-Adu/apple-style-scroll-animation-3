@@ -65,16 +65,16 @@ export function AdminAccountMenu({
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem asChild className={itemClass(pathname === "/account")}>
-            <Link href="/account">
-              <UserRound className="size-4" strokeWidth={1.5} aria-hidden />
-              Your profile
-            </Link>
-          </DropdownMenuItem>
           <DropdownMenuItem asChild className={itemClass(pathname === "/admin/profile")}>
             <Link href="/admin/profile">
               <Building2 className="size-4" strokeWidth={1.5} aria-hidden />
               Company profile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className={itemClass(pathname === "/account")}>
+            <Link href="/account">
+              <UserRound className="size-4" strokeWidth={1.5} aria-hidden />
+              Your profile
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className={itemClass(pathname.startsWith("/admin/orders"))}>

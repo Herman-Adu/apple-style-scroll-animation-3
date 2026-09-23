@@ -7,12 +7,24 @@
 
 import { useCallback } from "react"
 import { useSyncExternalStore } from "react"
-import { DEFAULT_COMPANY, type CompanyProfile } from "@/lib/data/company"
+import { DEFAULT_COMPANY, EMPTY_ADDRESS, type CompanyProfile } from "@/lib/data/company"
 
 const STORAGE_KEY = "admin:company"
 
 const listeners = new Set<() => void>()
 let cache: CompanyProfile | null = null
+
+// Reconciles stored data with the current shape. Notably migrates the legacy
+// freeform `address` string into the structured address object.
+function normalize(stored: Partial<CompanyProfile> & { address?: unknown }): CompanyProfile {
+  const merged = { ...DEFAULT_COMPANY, ...stored } as CompanyProfile
+  if (typeof stored.address === "string") {
+    merged.address = { ...EMPTY_ADDRESS, line1: stored.address }
+  } else {
+    merged.address = { ...EMPTY_ADDRESS, ...(stored.address as Partial<CompanyProfile["address"]>) }
+  }
+  return merged
+}
 
 function read(): CompanyProfile {
   if (cache) return cache
@@ -22,7 +34,7 @@ function read(): CompanyProfile {
   }
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY)
-    cache = raw ? { ...DEFAULT_COMPANY, ...(JSON.parse(raw) as Partial<CompanyProfile>) } : DEFAULT_COMPANY
+    cache = raw ? normalize(JSON.parse(raw) as Partial<CompanyProfile>) : DEFAULT_COMPANY
   } catch {
     cache = DEFAULT_COMPANY
   }

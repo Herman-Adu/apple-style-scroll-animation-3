@@ -5,10 +5,18 @@ import { AnimatePresence, motion } from "framer-motion"
 import { ArrowLeft, ArrowRight, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { OnboardingFieldControl } from "@/components/auth/onboarding-field"
+import { CompanyFieldset } from "./company-field"
 import { useCompanyProfile } from "../hooks/use-company-profile"
-import { companyOnboardingSteps, type CompanyProfile } from "@/lib/data/company"
-import type { OnboardingField } from "@/lib/data/onboarding"
+import {
+  addressSubFields,
+  companyOnboardingSteps,
+  isAddressEmpty,
+  validateAddress,
+  validateCompanyField,
+  type CompanyAddressSubKey,
+  type CompanyProfile,
+  type CompanyScalarKey,
+} from "@/lib/data/company"
 
 /**
  * First-run company onboarding, shown as a full-screen takeover inside the admin
@@ -22,7 +30,7 @@ export function AdminOnboarding() {
   const [stepIndex, setStepIndex] = useState(0)
   const [direction, setDirection] = useState(1)
   const [submitting, setSubmitting] = useState(false)
-  const [draft, setDraft] = useState<Partial<CompanyProfile>>({})
+  const [draft, setDraft] = useState<CompanyProfile>(company)
 
   useEffect(() => {
     setMounted(true)
@@ -30,14 +38,7 @@ export function AdminOnboarding() {
 
   // Seed the draft from any existing values once, when the overlay first mounts.
   useEffect(() => {
-    setDraft({
-      companyName: company.companyName,
-      industry: company.industry,
-      contactPerson: company.contactPerson,
-      supportPhone: company.supportPhone,
-      address: company.address,
-      vatNumber: company.vatNumber,
-    })
+    setDraft(company)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -45,18 +46,65 @@ export function AdminOnboarding() {
   const isLast = stepIndex === companyOnboardingSteps.length - 1
   const progress = ((stepIndex + 1) / companyOnboardingSteps.length) * 100
 
-  const stepValid = useMemo(() => {
-    return step.fields.every((field) => {
-      if (!field.required) return true
-      const value = draft[field.key]
-      return value !== undefined && String(value).trim() !== ""
-    })
+  const hasAddressField = step.fields.some((field) => field.type === "address")
+
+  // Gating errors (required + format) — used to disable Continue / Finish.
+  const gateScalarErrors = useMemo(() => {
+    const errs: Partial<Record<CompanyScalarKey, string>> = {}
+    for (const field of step.fields) {
+      if (field.type === "address") continue
+      const key = field.key as CompanyScalarKey
+      const err = validateCompanyField(field, draft[key])
+      if (err) errs[key] = err
+    }
+    return errs
   }, [step, draft])
+
+  const gateAddressErrors = useMemo(() => {
+    if (!hasAddressField) return {}
+    // An empty address is allowed (the whole flow is skippable); only validate once
+    // the admin starts filling it in.
+    return isAddressEmpty(draft.address) ? {} : validateAddress(draft.address)
+  }, [hasAddressField, draft.address])
+
+  const stepValid = Object.keys(gateScalarErrors).length === 0 && Object.keys(gateAddressErrors).length === 0
+
+  // Live (format-only) errors — shown as the admin types, without nagging about
+  // required-but-empty fields (the disabled button already signals that).
+  const liveScalarErrors = useMemo(() => {
+    const errs: Partial<Record<CompanyScalarKey, string>> = {}
+    for (const field of step.fields) {
+      if (field.type === "address" || !field.validate) continue
+      const key = field.key as CompanyScalarKey
+      const value = (draft[key] as string) ?? ""
+      if (!value.trim()) continue
+      const err = field.validate(value)
+      if (err) errs[key] = err
+    }
+    return errs
+  }, [step, draft])
+
+  const liveAddressErrors = useMemo(() => {
+    const errs: Partial<Record<CompanyAddressSubKey, string>> = {}
+    if (!hasAddressField) return errs
+    for (const sub of addressSubFields) {
+      if (!sub.validate) continue
+      const value = draft.address[sub.key] ?? ""
+      if (!value.trim()) continue
+      const err = sub.validate(value)
+      if (err) errs[sub.key] = err
+    }
+    return errs
+  }, [hasAddressField, draft.address])
 
   if (!mounted || company.onboarded) return null
 
-  function setValue(key: keyof CompanyProfile, value: unknown) {
+  function setScalar(key: CompanyScalarKey, value: string) {
     setDraft((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function setAddress(key: CompanyAddressSubKey, value: string) {
+    setDraft((prev) => ({ ...prev, address: { ...prev.address, [key]: value } }))
   }
 
   function goNext() {
@@ -130,17 +178,15 @@ export function AdminOnboarding() {
             <h1 className="text-3xl font-semibold tracking-tight text-foreground text-balance">{step.title}</h1>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{step.subtitle}</p>
 
-            <div className="mt-10 space-y-8">
-              {step.fields.map((field) => (
-                <div key={field.key} className="space-y-3">
-                  <label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{field.label}</label>
-                  <OnboardingFieldControl
-                    field={field as unknown as OnboardingField}
-                    value={draft[field.key]}
-                    onChange={(value) => setValue(field.key, value)}
-                  />
-                </div>
-              ))}
+            <div className="mt-10">
+              <CompanyFieldset
+                fields={step.fields}
+                draft={draft}
+                scalarErrors={liveScalarErrors}
+                addressErrors={liveAddressErrors}
+                onScalarChange={setScalar}
+                onAddressChange={setAddress}
+              />
             </div>
           </motion.div>
         </AnimatePresence>

@@ -3,7 +3,7 @@ import { ArrowUpRight, Lock } from "lucide-react"
 import type { DocSummary } from "../schema"
 import { Reveal } from "@/components/primitives"
 
-export function DocCard({ doc, index = 0 }: { doc: DocSummary; index?: number }) {
+export function DocCard({ doc, index = 0, snippet }: { doc: DocSummary; index?: number; snippet?: string }) {
   const isAdmin = doc.access === "admin"
   return (
     <Reveal delay={index * 0.05} className="h-full">
@@ -19,6 +19,12 @@ export function DocCard({ doc, index = 0 }: { doc: DocSummary; index?: number })
           {doc.title}
         </h3>
         <p className="mt-2 flex-1 text-sm leading-relaxed text-foreground/50">{doc.summary}</p>
+        {snippet ? (
+          <p className="mt-3 border-l-2 border-accent-teal/40 pl-3 text-xs leading-relaxed text-foreground/45">
+            <span className="mr-1.5 font-mono text-[9px] uppercase tracking-[0.15em] text-accent-teal/70">Match</span>
+            {snippet}
+          </p>
+        ) : null}
         <div className="mt-5 flex items-center justify-between">
           <span className="flex items-center gap-1.5 text-xs font-medium text-foreground/50 transition-colors group-hover:text-foreground">
             Read guide

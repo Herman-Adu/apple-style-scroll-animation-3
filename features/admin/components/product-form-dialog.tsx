@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from "react"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -77,7 +76,7 @@ export function ProductFormDialog({
   const [form, setForm] = useState<FormState>(() => toForm(product))
   const [error, setError] = useState<string | null>(null)
 
-  // Reset the form whenever the dialog opens for a different product.
+  // Reset the form whenever the sheet opens for a different product.
   useEffect(() => {
     if (open) {
       setForm(toForm(product))
@@ -100,49 +99,40 @@ export function ProductFormDialog({
     if (!Number.isInteger(lowStockThreshold) || lowStockThreshold < 0)
       return setError("Low-stock threshold must be a whole number.")
 
+    const payload = {
+      name: form.name.trim(),
+      category: form.category,
+      priceAmount,
+      currency: form.currency,
+      tagline: form.tagline,
+      summary: form.summary,
+      releaseStatus: form.releaseStatus,
+      stock,
+      lowStockThreshold,
+      featured: form.featured,
+    }
+
     if (editing && product) {
-      onUpdate(product.slug, {
-        name: form.name.trim(),
-        category: form.category,
-        priceAmount,
-        currency: form.currency,
-        tagline: form.tagline,
-        summary: form.summary,
-        releaseStatus: form.releaseStatus,
-        stock,
-        lowStockThreshold,
-        featured: form.featured,
-      })
+      onUpdate(product.slug, payload)
     } else {
-      onCreate({
-        name: form.name.trim(),
-        category: form.category,
-        priceAmount,
-        currency: form.currency,
-        tagline: form.tagline,
-        summary: form.summary,
-        releaseStatus: form.releaseStatus,
-        stock,
-        lowStockThreshold,
-        featured: form.featured,
-      })
+      onCreate(payload)
     }
     onOpenChange(false)
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{editing ? "Edit product" : "New product"}</DialogTitle>
-          <DialogDescription>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
+        <SheetHeader className="border-b border-border px-6 py-5">
+          <SheetTitle>{editing ? "Edit product" : "New product"}</SheetTitle>
+          <SheetDescription>
             {editing
               ? "Update the catalog entry. Changes reflect on the storefront immediately."
               : "Create a catalog entry. Rich marketing content can be added later once Strapi is connected."}
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
-        <div className="flex flex-col gap-4 py-2">
+        <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-6 py-5">
           <div className="flex flex-col gap-2">
             <Label htmlFor="p-name">Name</Label>
             <Input id="p-name" value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Momo X" />
@@ -256,13 +246,13 @@ export function ProductFormDialog({
           {error ? <p className="text-sm text-red-500">{error}</p> : null}
         </div>
 
-        <DialogFooter>
+        <div className="flex items-center justify-end gap-2 border-t border-border px-6 py-4">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button onClick={submit}>{editing ? "Save changes" : "Create product"}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </SheetContent>
+    </Sheet>
   )
 }

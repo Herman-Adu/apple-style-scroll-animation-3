@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import { PageHero } from "@/components/layout/page-hero"
 import { pageHeroes } from "@/lib/data/heroes"
-import { DocsExplorer, toDocSummary } from "@/features/docs"
+import { DocsExplorer, toDocSummary, canViewDoc } from "@/features/docs"
 import { fetchDocs } from "@/features/docs/api"
+import { getServerRole } from "@/lib/auth/server"
 
 export const metadata: Metadata = {
   title: "Documentation",
@@ -12,9 +13,13 @@ export const metadata: Metadata = {
 
 export default async function DocsPage() {
   const all = await fetchDocs()
-  // Ship only card-level summaries to the client explorer — never doc bodies,
-  // so admin-only guide content is never sent to non-admin browsers.
-  const summaries = all.map(toDocSummary)
+  const role = await getServerRole()
+  const isAdmin = role === "admin"
+  // Ship only card-level summaries to the client explorer — never full doc
+  // bodies. Flattened body text (for full-text search) is attached only for
+  // docs this viewer may read, so admin content never reaches non-admin
+  // browsers even as a search string.
+  const summaries = all.map((doc) => toDocSummary(doc, canViewDoc(doc, isAdmin)))
 
   return (
     <main className="bg-background">

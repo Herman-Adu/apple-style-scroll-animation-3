@@ -138,4 +138,11 @@ export type Doc = {
 export type DocSummary = Pick<
   Doc,
   "slug" | "title" | "summary" | "category" | "audience" | "access" | "readingMinutes" | "order" | "tags"
->
+> & {
+  /**
+   * Flattened plain-text of the doc body for full-text search. Only populated
+   * server-side for docs the viewer may read, so admin body text is never
+   * shipped to non-admin browsers. Absent when the viewer can't read the body.
+   */
+  searchText?: string
+}

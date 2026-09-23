@@ -3,10 +3,12 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
-import { ArrowUpRight, LogOut, Menu, X } from "lucide-react"
+import { ArrowUpRight, Bell, LogOut, Menu, X } from "lucide-react"
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/lib/auth/auth-context"
+import { useCatalog } from "@/features/catalog"
+import { inventorySummary } from "@/features/orders"
 import { adminNav, isActive } from "../lib/nav"
 
 function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
@@ -22,12 +24,15 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+              "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               active
-                ? "bg-foreground text-background"
+                ? "bg-accent-teal/12 text-accent-teal"
                 : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
             )}
           >
+            {active ? (
+              <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-accent-teal" aria-hidden />
+            ) : null}
             <Icon className="size-4 shrink-0" aria-hidden />
             {item.label}
           </Link>
@@ -45,7 +50,7 @@ function SidebarBody({ pathname, onNavigate }: { pathname: string; onNavigate?: 
         <Link href="/admin" onClick={onNavigate} className="text-sm font-bold tracking-[0.35em]">
           MOMO
         </Link>
-        <span className="rounded-sm border border-border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+        <span className="rounded-sm border border-accent-teal/30 bg-accent-teal/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-accent-teal">
           Admin
         </span>
       </div>
@@ -61,7 +66,7 @@ function SidebarBody({ pathname, onNavigate }: { pathname: string; onNavigate?: 
           <ArrowUpRight className="size-3.5" aria-hidden />
           View storefront
         </Link>
-        <div className="flex items-center justify-between gap-2 rounded-md bg-foreground/5 px-3 py-2">
+        <div className="flex items-center justify-between gap-2 rounded-lg bg-foreground/5 px-3 py-2">
           <div className="min-w-0">
             <p className="truncate text-xs font-medium text-foreground">{user?.name ?? "Admin"}</p>
             <p className="truncate text-[11px] text-muted-foreground">{user?.email}</p>
@@ -83,6 +88,18 @@ function SidebarBody({ pathname, onNavigate }: { pathname: string; onNavigate?: 
 export function AdminShell({ title, children }: { title: string; children: React.ReactNode }) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { user } = useAuth()
+  const { products } = useCatalog()
+  const inventory = inventorySummary(products)
+  const alerts = inventory.lowStockCount + inventory.outOfStockCount
+
+  const initials = (user?.name ?? "Admin")
+    .split(" ")
+    .map((s) => s[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase()
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -114,25 +131,54 @@ export function AdminShell({ title, children }: { title: string; children: React
       )}
 
       <div className="lg:pl-60">
-        {/* Mobile-only bar: keeps the drawer toggle. Desktop uses the sidebar for context. */}
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md lg:hidden">
+        {/* Top header — section title pinned to the top of the page, under the nav. */}
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/70 bg-background/70 px-4 backdrop-blur-xl backdrop-saturate-150 sm:px-6">
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground transition-colors hover:text-foreground lg:hidden"
             aria-label="Open menu"
           >
             <Menu className="size-5" aria-hidden />
           </button>
-          <span className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">Admin</span>
+
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-muted-foreground">
+              Welcome back, {(user?.name ?? "Admin").split(" ")[0]}
+            </p>
+            <h1 className="truncate text-lg font-semibold tracking-tight text-balance sm:text-xl">{title}</h1>
+          </div>
+
+          <Link
+            href="/"
+            className="hidden items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-accent-teal/40 hover:text-foreground sm:inline-flex"
+          >
+            <ArrowUpRight className="size-3.5" aria-hidden />
+            Storefront
+          </Link>
+
+          <Link
+            href="/admin/products"
+            aria-label={alerts > 0 ? `${alerts} restock alerts` : "No restock alerts"}
+            className="relative flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-accent-teal/40 hover:text-foreground"
+          >
+            <Bell className="size-4" aria-hidden />
+            {alerts > 0 ? (
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent-teal px-1 text-[10px] font-semibold text-background">
+                {alerts}
+              </span>
+            ) : null}
+          </Link>
+
+          <span
+            className="flex size-9 items-center justify-center rounded-full bg-accent-teal/15 text-xs font-semibold text-accent-teal ring-1 ring-accent-teal/30"
+            aria-hidden
+          >
+            {initials}
+          </span>
         </header>
 
-        <main className="p-4 sm:p-6">
-          <header className="mb-6 border-b border-border pb-4">
-            <h1 className="text-2xl font-semibold tracking-tight text-balance">{title}</h1>
-          </header>
-          {children}
-        </main>
+        <main className="p-4 sm:p-6">{children}</main>
       </div>
 
       <Toaster position="top-right" />

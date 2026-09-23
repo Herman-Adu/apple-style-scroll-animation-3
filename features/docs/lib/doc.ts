@@ -45,8 +45,59 @@ export function groupDocsByCategory(docs: Doc[]): { category: DocCategory; docs:
   })).filter((group) => group.docs.length > 0)
 }
 
-/** Project a full Doc down to the card-level summary shipped to client islands. */
-export function toDocSummary(doc: Doc): DocSummary {
+/**
+ * Flatten a doc's rich body blocks into a single plain-text string for
+ * full-text search. Walks every text-bearing block type in the union so search
+ * covers headings, paragraphs, lists, steps, callouts, tables, quotes, and
+ * code. Pure; no I/O.
+ */
+export function flattenDocBody(doc: Doc): string {
+  const parts: string[] = []
+  for (const block of doc.body) {
+    switch (block.type) {
+      case "paragraph":
+      case "heading":
+      case "quote":
+        parts.push(block.text)
+        break
+      case "callout":
+        if (block.title) parts.push(block.title)
+        parts.push(block.text)
+        break
+      case "code":
+        if (block.title) parts.push(block.title)
+        parts.push(block.code)
+        break
+      case "list":
+        parts.push(block.items.join(" "))
+        break
+      case "steps":
+        for (const step of block.items) parts.push(step.title, step.text)
+        break
+      case "mermaid":
+      case "chart":
+        if (block.title) parts.push(block.title)
+        if (block.caption) parts.push(block.caption)
+        break
+      case "table":
+        if (block.title) parts.push(block.title)
+        parts.push(block.headers.join(" "))
+        for (const row of block.rows) parts.push(row.join(" "))
+        break
+      case "divider":
+        break
+    }
+  }
+  return parts.join(" ").replace(/\s+/g, " ").trim()
+}
+
+/**
+ * Project a full Doc down to the card-level summary shipped to client islands.
+ * When `includeBody` is true, the flattened body text is attached for full-text
+ * search — callers MUST pass true only for docs the viewer may read, so admin
+ * body text never reaches non-admin browsers.
+ */
+export function toDocSummary(doc: Doc, includeBody = false): DocSummary {
   return {
     slug: doc.slug,
     title: doc.title,
@@ -57,6 +108,7 @@ export function toDocSummary(doc: Doc): DocSummary {
     readingMinutes: doc.readingMinutes,
     order: doc.order,
     tags: doc.tags,
+    ...(includeBody ? { searchText: flattenDocBody(doc) } : {}),
   }
 }
 

@@ -4,7 +4,8 @@ import { useMemo, useState } from "react"
 import { Lock, Search } from "lucide-react"
 import type { DocAudience, DocSummary } from "../schema"
 import { DOC_AUDIENCES, docAudienceMeta } from "../schema"
-import { filterDocs, groupDocsByAudience, visibleDocs } from "../lib/doc"
+import { groupDocsByAudience, visibleDocs } from "../lib/doc"
+import { useDocSearch } from "../lib/use-doc-search"
 import { DocCard } from "./doc-card"
 import { useAuth } from "@/lib/auth/auth-context"
 import { cn } from "@/lib/utils"
@@ -33,7 +34,12 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
     [visible],
   )
 
-  const searched = useMemo(() => filterDocs(visible, query), [visible, query])
+  const { rankedSlugs, snippets } = useDocSearch(visible, query)
+  const searched = useMemo(() => {
+    if (!rankedSlugs) return visible
+    const bySlug = new Map(visible.map((doc) => [doc.slug, doc]))
+    return rankedSlugs.map((slug) => bySlug.get(slug)).filter((doc): doc is DocSummary => Boolean(doc))
+  }, [visible, rankedSlugs])
   const scoped = tab === "all" ? searched : searched.filter((doc) => doc.audience === tab)
   const groups = useMemo(() => groupDocsByAudience(scoped), [scoped])
 
@@ -99,7 +105,7 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
               <p className="mb-6 max-w-2xl text-sm leading-relaxed text-foreground/50">{group.meta.blurb}</p>
               <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 {group.docs.map((doc, index) => (
-                  <DocCard key={doc.slug} doc={doc} index={index} />
+                  <DocCard key={doc.slug} doc={doc} index={index} snippet={snippets.get(doc.slug)} />
                 ))}
               </div>
             </section>

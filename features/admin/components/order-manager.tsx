@@ -1,7 +1,6 @@
 "use client"
 
-import { Fragment, useMemo, useState } from "react"
-import { ChevronDown } from "lucide-react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import {
   Select,
@@ -10,6 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import type { Order, OrderStatus } from "@/features/orders"
 import { formatMoney } from "@/lib/format"
@@ -38,12 +44,14 @@ function formatDateTime(iso: string): string {
 export function OrderManager() {
   const { orders, loading, updateStatus } = useAdminOrders()
   const [filter, setFilter] = useState<OrderStatus | "all">("all")
-  const [expanded, setExpanded] = useState<string | null>(null)
+  const [activeId, setActiveId] = useState<string | null>(null)
 
   const visible = useMemo(
     () => (filter === "all" ? orders : orders.filter((o) => o.status === filter)),
     [orders, filter],
   )
+
+  const active = useMemo(() => orders.find((o) => o.id === activeId) ?? null, [orders, activeId])
 
   async function onStatusChange(order: Order, status: OrderStatus) {
     await updateStatus(order.id, status)
@@ -96,73 +104,44 @@ export function OrderManager() {
                 </tr>
               ) : (
                 visible.map((order) => {
-                  const isOpen = expanded === order.id
                   const units = order.items.reduce((n, i) => n + i.quantity, 0)
                   return (
-                    <Fragment key={order.id}>
-                      <tr className="transition-colors hover:bg-foreground/5">
-                        <td className="px-4 py-3">
-                          <button
-                            type="button"
-                            onClick={() => setExpanded(isOpen ? null : order.id)}
-                            className="flex items-center gap-1.5 font-mono text-xs font-medium"
-                            aria-expanded={isOpen}
-                          >
-                            <ChevronDown
-                              className={cn("size-3.5 text-muted-foreground transition-transform", isOpen && "rotate-180")}
-                              aria-hidden
-                            />
-                            {order.number}
-                          </button>
-                          <p className="mt-0.5 pl-5 text-xs text-muted-foreground">{units} items</p>
-                        </td>
-                        <td className="px-4 py-3">
-                          <p className="max-w-[16ch] truncate text-muted-foreground">{order.email}</p>
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground">{formatDateTime(order.createdAt)}</td>
-                        <td className="px-4 py-3 font-mono tabular-nums">
-                          {formatMoney({ amount: order.total, currency: order.currency })}
-                        </td>
-                        <td className="px-4 py-3">
-                          <OrderStatusBadge status={order.status} />
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex justify-end">
-                            <Select value={order.status} onValueChange={(v) => onStatusChange(order, v as OrderStatus)}>
-                              <SelectTrigger className="h-8 w-36" aria-label={`Set status for ${order.number}`}>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {STATUS_OPTIONS.map((s) => (
-                                  <SelectItem key={s} value={s} className="capitalize">
-                                    {s}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </td>
-                      </tr>
-                      {isOpen ? (
-                        <tr className="bg-foreground/[0.03]">
-                          <td colSpan={6} className="px-4 py-3">
-                            <div className="flex flex-col gap-2 pl-5">
-                              {order.items.map((item, i) => (
-                                <div key={`${item.slug}-${i}`} className="flex items-center justify-between text-xs">
-                                  <span>
-                                    {item.quantity} × {item.name}
-                                    {item.color ? <span className="text-muted-foreground"> · {item.color}</span> : null}
-                                  </span>
-                                  <span className="font-mono tabular-nums text-muted-foreground">
-                                    {formatMoney({ amount: item.unitAmount * item.quantity, currency: item.currency })}
-                                  </span>
-                                </div>
+                    <tr
+                      key={order.id}
+                      onClick={() => setActiveId(order.id)}
+                      className="cursor-pointer transition-colors hover:bg-foreground/5"
+                    >
+                      <td className="px-4 py-3">
+                        <p className="font-mono text-xs font-medium">{order.number}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">{units} items</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="max-w-[16ch] truncate text-muted-foreground">{order.email}</p>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">{formatDateTime(order.createdAt)}</td>
+                      <td className="px-4 py-3 font-mono tabular-nums">
+                        {formatMoney({ amount: order.total, currency: order.currency })}
+                      </td>
+                      <td className="px-4 py-3">
+                        <OrderStatusBadge status={order.status} />
+                      </td>
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end">
+                          <Select value={order.status} onValueChange={(v) => onStatusChange(order, v as OrderStatus)}>
+                            <SelectTrigger className="h-8 w-36" aria-label={`Set status for ${order.number}`}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {STATUS_OPTIONS.map((s) => (
+                                <SelectItem key={s} value={s} className="capitalize">
+                                  {s}
+                                </SelectItem>
                               ))}
-                            </div>
-                          </td>
-                        </tr>
-                      ) : null}
-                    </Fragment>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </td>
+                    </tr>
                   )
                 })
               )}
@@ -170,6 +149,68 @@ export function OrderManager() {
           </table>
         </div>
       </div>
+
+      <Sheet open={Boolean(active)} onOpenChange={(open) => !open && setActiveId(null)}>
+        <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
+          {active ? (
+            <>
+              <SheetHeader className="border-b border-border px-6 py-5">
+                <div className="flex items-center justify-between gap-3">
+                  <SheetTitle className="font-mono">{active.number}</SheetTitle>
+                  <OrderStatusBadge status={active.status} />
+                </div>
+                <SheetDescription>
+                  {active.email} · {formatDateTime(active.createdAt)}
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-6 py-5">
+                <div className="flex flex-col gap-3">
+                  <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Items</p>
+                  {active.items.map((item, i) => (
+                    <div key={`${item.slug}-${i}`} className="flex items-start justify-between gap-3 text-sm">
+                      <span className="min-w-0">
+                        <span className="font-medium">
+                          {item.quantity} × {item.name}
+                        </span>
+                        {item.color ? <span className="text-muted-foreground"> · {item.color}</span> : null}
+                      </span>
+                      <span className="shrink-0 font-mono tabular-nums text-muted-foreground">
+                        {formatMoney({ amount: item.unitAmount * item.quantity, currency: item.currency })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between border-t border-border pt-4">
+                  <span className="text-sm font-medium">Total</span>
+                  <span className="font-mono text-base font-semibold tabular-nums">
+                    {formatMoney({ amount: active.total, currency: active.currency })}
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                    Order status
+                  </label>
+                  <Select value={active.status} onValueChange={(v) => onStatusChange(active, v as OrderStatus)}>
+                    <SelectTrigger aria-label={`Set status for ${active.number}`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATUS_OPTIONS.map((s) => (
+                        <SelectItem key={s} value={s} className="capitalize">
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </>
+          ) : null}
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }

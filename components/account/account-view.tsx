@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { LayoutDashboard, LogOut } from "lucide-react"
@@ -26,7 +26,6 @@ function optionLabel(fieldKey: string, value?: string) {
 
 export function AccountView() {
   const { user, signOut } = useAuth()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [signingOut, setSigningOut] = useState(false)
 
@@ -43,7 +42,9 @@ export function AccountView() {
   async function handleSignOut() {
     setSigningOut(true)
     await signOut()
-    router.replace("/")
+    // Hard navigation home so the page's RouteGuard can't intercept the now-
+    // unauthenticated session and bounce us to /sign-in mid-transition.
+    window.location.replace("/")
   }
 
   const displayName = user.profile.displayName || user.name

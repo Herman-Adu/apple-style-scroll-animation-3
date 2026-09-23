@@ -1,4 +1,4 @@
-"use client"
+ets have a quick chat about whats left to do on this amazing siteConfig"use client"
 
 import Link from "next/link"
 import { AlertTriangle, DollarSign, Package, Receipt, TrendingUp } from "lucide-react"
@@ -8,6 +8,7 @@ import { formatMoney } from "@/lib/format"
 import { StatCard } from "./stat-card"
 import { StockBadge } from "./status-badges"
 import { useAdminOrders } from "../hooks/use-admin-orders"
+import { siteConfig } from "@/lib/data/site"
 
 export function DashboardOverview() {
   const { products } = useCatalog()

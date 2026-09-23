@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
-import { ArrowUpRight, LogOut, Package, Settings, UserRound } from "lucide-react"
+import { ArrowUpRight, Building2, LogOut, Package, Settings, UserRound } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,9 +65,15 @@ export function AdminAccountMenu({
 
           <DropdownMenuSeparator />
 
+          <DropdownMenuItem asChild className={itemClass(pathname === "/account")}>
+            <Link href="/account">
+              <UserRound className="size-4" strokeWidth={1.5} aria-hidden />
+              Your profile
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem asChild className={itemClass(pathname === "/admin/profile")}>
             <Link href="/admin/profile">
-              <UserRound className="size-4" strokeWidth={1.5} aria-hidden />
+              <Building2 className="size-4" strokeWidth={1.5} aria-hidden />
               Company profile
             </Link>
           </DropdownMenuItem>

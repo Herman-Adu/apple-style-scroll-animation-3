@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { LayoutDashboard, LogOut, Package, UserRound } from "lucide-react"
@@ -24,7 +23,6 @@ interface AccountMenuProps {
  */
 export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
   const { user, signOut } = useAuth()
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -47,7 +45,9 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
     setSigningOut(true)
     setOpen(false)
     await signOut()
-    router.replace("/")
+    // Hard navigation home so a guarded page's RouteGuard can't intercept the
+    // now-unauthenticated session and bounce us to /sign-in mid-transition.
+    window.location.replace("/")
   }
 
   const displayName = user.profile.displayName || user.name

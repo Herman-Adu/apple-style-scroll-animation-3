@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { LogOut } from "lucide-react"
 import {
   AlertDialog,
@@ -28,13 +27,14 @@ export function SignOutConfirmDialog({
   onOpenChange: (open: boolean) => void
 }) {
   const { signOut } = useAuth()
-  const router = useRouter()
   const [busy, setBusy] = useState(false)
 
   async function confirm() {
     setBusy(true)
     await signOut()
-    router.replace("/")
+    // Hard navigation home so the admin RouteGuard can't intercept the now-
+    // unauthenticated session and bounce us to /sign-in mid-transition.
+    window.location.replace("/")
   }
 
   return (

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ArrowUpRight, ChevronLeft, ChevronRight, LayoutDashboard, LogOut, MapPin, Mail, Package, User, UserRound, X } from "lucide-react"
@@ -21,7 +21,6 @@ interface MobileNavProps {
 
 export function MobileNav({ open, onClose, activeId, category }: MobileNavProps) {
   const pathname = usePathname()
-  const router = useRouter()
   const { status, user, signOut } = useAuth()
   const [submenu, setSubmenu] = useState<NavLink | null>(null)
   const [accountOpen, setAccountOpen] = useState(false)
@@ -29,7 +28,9 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
   async function handleSignOut() {
     onClose()
     await signOut()
-    router.replace("/")
+    // Hard navigation home so a guarded page's RouteGuard can't intercept the
+    // now-unauthenticated session and bounce us to /sign-in mid-transition.
+    window.location.replace("/")
   }
 
   // Reset to the root panel whenever the sheet closes, and lock body scroll.

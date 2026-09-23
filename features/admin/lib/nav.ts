@@ -1,4 +1,4 @@
-import { BarChart3, LayoutDashboard, Mail, Package, Receipt } from "lucide-react"
+import { BarChart3, BookOpen, LayoutDashboard, Mail, Package, Receipt } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 export interface AdminNavItem {
@@ -15,6 +15,7 @@ export const adminNav: AdminNavItem[] = [
   { href: "/admin/orders", label: "Orders", icon: Receipt },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/email", label: "Email", icon: Mail },
+  { href: "/admin/docs", label: "Docs", icon: BookOpen },
 ]
 
 export function isActive(pathname: string, item: AdminNavItem): boolean {

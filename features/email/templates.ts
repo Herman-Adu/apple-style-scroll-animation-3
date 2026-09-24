@@ -79,6 +79,89 @@ export function orderConfirmationEmail(params: { name: string; order: Order }): 
   return { subject: `Order confirmed — ${order.number}`, html, text }
 }
 
+export function businessOrderNotificationEmail(params: { order: Order; customerName?: string }): {
+  subject: string
+  html: string
+  text: string
+} {
+  const { order, customerName } = params
+  const rows = order.items
+    .map(
+      (item) => `
+      <tr>
+        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};color:${BRAND};font-size:14px;">
+          ${item.name}<br /><span style="color:${MUTED};font-size:12px;">${item.color ?? ""}${item.color ? " · " : ""}Qty ${item.quantity}</span>
+        </td>
+        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};text-align:right;color:${BRAND};font-size:14px;white-space:nowrap;">
+          ${formatMoney({ amount: item.unitAmount * item.quantity, currency: item.currency })}
+        </td>
+      </tr>`,
+    )
+    .join("")
+
+  const discountRow =
+    order.discount && order.discount > 0
+      ? `
+      <tr>
+        <td style="padding:8px 0;color:#059669;font-size:13px;">Discount${
+          order.appliedOffers && order.appliedOffers.length
+            ? ` (${order.appliedOffers.map((o) => o.label).join(", ")})`
+            : ""
+        }</td>
+        <td style="padding:8px 0;text-align:right;color:#059669;font-size:13px;white-space:nowrap;">
+          −${formatMoney({ amount: order.discount, currency: order.currency })}
+        </td>
+      </tr>`
+      : ""
+
+  const html = layout(
+    "New order received",
+    `
+    <p style="margin:0 0 16px;color:${MUTED};font-size:14px;line-height:1.6;">
+      A new order <strong style="color:${BRAND};">${order.number}</strong> was just placed${
+        customerName ? ` by <strong style="color:${BRAND};">${customerName}</strong>` : ""
+      }.
+    </p>
+    <table style="width:100%;border-collapse:collapse;margin:0 0 8px;">
+      <tr>
+        <td style="padding:4px 0;color:${MUTED};font-size:13px;">Customer</td>
+        <td style="padding:4px 0;text-align:right;color:${BRAND};font-size:13px;">${order.email}</td>
+      </tr>
+      <tr>
+        <td style="padding:4px 0;color:${MUTED};font-size:13px;">Placed</td>
+        <td style="padding:4px 0;text-align:right;color:${BRAND};font-size:13px;">${new Date(order.createdAt).toLocaleString()}</td>
+      </tr>
+    </table>
+    <table style="width:100%;border-collapse:collapse;margin:8px 0 0;">
+      ${rows}
+      <tr>
+        <td style="padding:12px 0 0;color:${MUTED};font-size:13px;">Subtotal</td>
+        <td style="padding:12px 0 0;text-align:right;color:${BRAND};font-size:13px;white-space:nowrap;">${formatMoney({ amount: order.subtotal, currency: order.currency })}</td>
+      </tr>
+      ${discountRow}
+      <tr>
+        <td style="padding:8px 0;color:${MUTED};font-size:13px;">Shipping</td>
+        <td style="padding:8px 0;text-align:right;color:${BRAND};font-size:13px;white-space:nowrap;">${order.shipping === 0 ? "Free" : formatMoney({ amount: order.shipping, currency: order.currency })}</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 0 0;color:${BRAND};font-size:15px;font-weight:700;">Total</td>
+        <td style="padding:12px 0 0;text-align:right;color:${BRAND};font-size:15px;font-weight:700;white-space:nowrap;">${formatMoney({ amount: order.total, currency: order.currency })}</td>
+      </tr>
+    </table>
+    <p style="margin:20px 0 0;color:${MUTED};font-size:13px;line-height:1.6;">
+      Manage this order in the admin dashboard under Orders.
+    </p>`,
+  )
+
+  const text = `New order received — ${order.number}\n\n${customerName ? customerName + " · " : ""}${order.email}\nPlaced: ${new Date(order.createdAt).toLocaleString()}\n\n${order.items
+    .map((i) => `${i.name}${i.color ? ` (${i.color})` : ""} x${i.quantity} — ${formatMoney({ amount: i.unitAmount * i.quantity, currency: i.currency })}`)
+    .join("\n")}\n\nSubtotal: ${formatMoney({ amount: order.subtotal, currency: order.currency })}${
+    order.discount && order.discount > 0 ? `\nDiscount: −${formatMoney({ amount: order.discount, currency: order.currency })}` : ""
+  }\nShipping: ${order.shipping === 0 ? "Free" : formatMoney({ amount: order.shipping, currency: order.currency })}\nTotal: ${formatMoney({ amount: order.total, currency: order.currency })}`
+
+  return { subject: `New order — ${order.number} · ${formatMoney({ amount: order.total, currency: order.currency })}`, html, text }
+}
+
 export function testEmail(): { subject: string; html: string; text: string } {
   const html = layout(
     "Test email",

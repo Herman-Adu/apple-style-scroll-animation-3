@@ -9,7 +9,7 @@ import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth/auth-context"
 import { useOrders } from "@/hooks/use-orders"
 import { useCatalog } from "@/features/catalog"
-import { sendOrderConfirmation } from "@/features/email/actions"
+import { sendOrderConfirmation, sendOrderNotification } from "@/features/email/actions"
 import { priceCheckout } from "@/features/checkout"
 import { quoteCheckout } from "@/features/checkout/actions"
 import { UserAvatar } from "@/components/account/user-avatar"
@@ -98,6 +98,11 @@ export function CheckoutView() {
         to: created.email,
         name: displayName,
         order: created,
+      }).catch(() => {})
+      // Fire-and-forget business notification to EMAIL_TO; never block order success.
+      void sendOrderNotification({
+        order: created,
+        customerName: displayName,
       }).catch(() => {})
     } finally {
       setPlacing(false)

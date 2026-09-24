@@ -31,9 +31,29 @@ export function isEmailConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY)
 }
 
+/**
+ * Resolve the sender safely. EMAIL_FROM must be an email address, optionally in
+ * `Name <addr@domain>` form. If it is missing OR malformed (a common misconfig
+ * is pasting a Resend `re_` API key into this slot), fall back to the verified
+ * onboarding sender so a bad value can never break delivery — Resend rejects a
+ * non-address `from`, which would otherwise fail every send silently.
+ */
+function resolveFrom(): string {
+  const raw = process.env.EMAIL_FROM?.trim()
+  if (!raw) return DEFAULT_FROM
+  if (!raw.includes("@")) {
+    console.log(
+      "[v0] EMAIL_FROM is not a valid sender address (no '@'); using onboarding default. " +
+        "Set EMAIL_FROM to an address on a domain verified in Resend.",
+    )
+    return DEFAULT_FROM
+  }
+  return raw
+}
+
 export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
   const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.EMAIL_FROM || DEFAULT_FROM
+  const from = resolveFrom()
 
   if (!apiKey) {
     console.log("[v0] Email skipped (RESEND_API_KEY not set):", input.subject, "->", input.to)

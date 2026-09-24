@@ -37,6 +37,12 @@ export interface OfferTag {
   redeemedAt?: string
   /** How many orders have used this offer. Missing → 0. Record-only. */
   redemptionCount?: number
+  /**
+   * ISO timestamp of the last time the branded offer email was sent to the
+   * customer for this offer. Missing → never emailed. Drives the "sent →
+   * redeemed" conversion reporting in admin analytics.
+   */
+  notifiedAt?: string
 }
 
 export interface User {

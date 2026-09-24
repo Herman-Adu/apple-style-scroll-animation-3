@@ -17,6 +17,17 @@ const TEMPLATES = [
     status: "Live",
   },
   {
+    name: "Order notification (business)",
+    trigger: "Sent to your team inbox (EMAIL_TO) when a new order is placed.",
+    status: "Live",
+  },
+  {
+    name: "Personal offer",
+    trigger:
+      "Branded email sent when you grant a customer an offer with “Email the customer” on — preview and re-send it from the customer's profile.",
+    status: "Live",
+  },
+  {
     name: "Low-stock alert",
     trigger: "Sent to the store owner when a product drops to its low-stock threshold.",
     status: "Live",

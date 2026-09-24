@@ -36,7 +36,18 @@ export const adminNav: AdminNavItem[] = [
     ],
   },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/email", label: "Email", icon: Mail },
+  {
+    href: "/admin/email",
+    label: "Email",
+    icon: Mail,
+    children: [
+      { href: "/admin/email", label: "Overview" },
+      { href: "/admin/email/templates", label: "Templates" },
+      { href: "/admin/email/campaigns", label: "Campaigns" },
+      { href: "/admin/email/messages", label: "Messages" },
+      { href: "/admin/email/settings", label: "Settings" },
+    ],
+  },
   { href: "/admin/docs", label: "Docs", icon: BookOpen },
 ]
 

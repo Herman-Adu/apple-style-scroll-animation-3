@@ -1,98 +1,43 @@
 import { formatMoney } from "@/lib/format"
 import type { Order } from "@/lib/orders/types"
+import { renderEmail, renderText, type RenderContext } from "./blocks/render"
+import { getSystemTemplate } from "./blocks/system-templates"
+import { DEFAULT_BRANDING, type EmailBlock, type EmailBranding } from "./blocks/types"
 
 /**
- * Plain HTML email templates. Kept as string builders (no react-email
- * dependency) so they render identically anywhere and stay easy to port to
- * Strapi-managed content later. Inline styles only — email clients ignore
- * <style> and external CSS.
+ * Transactional + branded email templates, now rendered through the block
+ * engine (features/email/blocks). Each function keeps its original signature so
+ * existing callers (checkout, offer grants, admin) are unchanged, and each
+ * accepts OPTIONAL `branding` / `blocks` overrides so the server can render an
+ * admin-customized version pulled from the database. With no overrides they
+ * render the built-in system layout — pure and synchronous, so the admin live
+ * preview can call them directly with no network round-trip.
  */
 
-const BRAND = "#0a0a0a"
+const INK = "#0a0a0a"
 const MUTED = "#6b7280"
 const BORDER = "#e5e7eb"
 
-function layout(title: string, body: string): string {
-  return `<!doctype html>
-<html>
-  <body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-    <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
-      <div style="text-align:center;padding:8px 0 24px;">
-        <span style="font-size:18px;font-weight:700;letter-spacing:0.35em;color:${BRAND};">MOMO</span>
-      </div>
-      <div style="background:#ffffff;border:1px solid ${BORDER};border-radius:16px;padding:32px;">
-        <h1 style="margin:0 0 8px;font-size:20px;color:${BRAND};">${title}</h1>
-        ${body}
-      </div>
-      <p style="text-align:center;color:${MUTED};font-size:12px;margin:24px 0 0;">
-        MOMO Audio · London · Copenhagen · Accra · Tokyo
-      </p>
-    </div>
-  </body>
-</html>`
+type Rendered = { subject: string; html: string; text: string }
+
+function brand(partial?: Partial<EmailBranding>): EmailBranding {
+  return { ...DEFAULT_BRANDING, ...(partial ?? {}) }
 }
 
-export function orderConfirmationEmail(params: { name: string; order: Order }): {
-  subject: string
-  html: string
-  text: string
-} {
-  const { name, order } = params
+function fillSubject(subject: string, vars: Record<string, string>): string {
+  return subject.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, k) => vars[k] ?? "")
+}
+
+/** Dynamic order line-item table injected into the orderSummary block slot. */
+function orderSummaryHtml(order: Order): string {
   const rows = order.items
     .map(
       (item) => `
       <tr>
-        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};color:${BRAND};font-size:14px;">
-          ${item.name}<br /><span style="color:${MUTED};font-size:12px;">${item.color} · Qty ${item.quantity}</span>
+        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};color:${INK};font-size:14px;">
+          ${item.name}<br /><span style="color:${MUTED};font-size:12px;">${item.color ? `${item.color} · ` : ""}Qty ${item.quantity}</span>
         </td>
-        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};text-align:right;color:${BRAND};font-size:14px;white-space:nowrap;">
-          ${formatMoney({ amount: item.unitAmount * item.quantity, currency: item.currency })}
-        </td>
-      </tr>`,
-    )
-    .join("")
-
-  const html = layout(
-    "Order confirmed",
-    `
-    <p style="margin:0 0 16px;color:${MUTED};font-size:14px;line-height:1.6;">
-      Thanks, ${name}. We&apos;ve received your order <strong style="color:${BRAND};">${order.number}</strong> and it&apos;s being prepared.
-    </p>
-    <table style="width:100%;border-collapse:collapse;margin:8px 0 16px;">
-      ${rows}
-      <tr>
-        <td style="padding:16px 0 0;color:${BRAND};font-size:15px;font-weight:700;">Total</td>
-        <td style="padding:16px 0 0;text-align:right;color:${BRAND};font-size:15px;font-weight:700;">
-          ${formatMoney({ amount: order.total, currency: order.currency })}
-        </td>
-      </tr>
-    </table>
-    <p style="margin:16px 0 0;color:${MUTED};font-size:13px;line-height:1.6;">
-      You can view this order and its invoice anytime under Orders in your account.
-    </p>`,
-  )
-
-  const text = `Order confirmed — ${order.number}\n\nThanks, ${name}. We've received your order and it's being prepared.\n\n${order.items
-    .map((i) => `${i.name} (${i.color}) x${i.quantity} — ${formatMoney({ amount: i.unitAmount * i.quantity, currency: i.currency })}`)
-    .join("\n")}\n\nTotal: ${formatMoney({ amount: order.total, currency: order.currency })}`
-
-  return { subject: `Order confirmed — ${order.number}`, html, text }
-}
-
-export function businessOrderNotificationEmail(params: { order: Order; customerName?: string }): {
-  subject: string
-  html: string
-  text: string
-} {
-  const { order, customerName } = params
-  const rows = order.items
-    .map(
-      (item) => `
-      <tr>
-        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};color:${BRAND};font-size:14px;">
-          ${item.name}<br /><span style="color:${MUTED};font-size:12px;">${item.color ?? ""}${item.color ? " · " : ""}Qty ${item.quantity}</span>
-        </td>
-        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};text-align:right;color:${BRAND};font-size:14px;white-space:nowrap;">
+        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};text-align:right;color:${INK};font-size:14px;white-space:nowrap;">
           ${formatMoney({ amount: item.unitAmount * item.quantity, currency: item.currency })}
         </td>
       </tr>`,
@@ -101,70 +46,66 @@ export function businessOrderNotificationEmail(params: { order: Order; customerN
 
   const discountRow =
     order.discount && order.discount > 0
-      ? `
-      <tr>
-        <td style="padding:8px 0;color:#059669;font-size:13px;">Discount${
-          order.appliedOffers && order.appliedOffers.length
-            ? ` (${order.appliedOffers.map((o) => o.label).join(", ")})`
-            : ""
-        }</td>
-        <td style="padding:8px 0;text-align:right;color:#059669;font-size:13px;white-space:nowrap;">
-          −${formatMoney({ amount: order.discount, currency: order.currency })}
-        </td>
-      </tr>`
+      ? `<tr>
+          <td style="padding:8px 0;color:#059669;font-size:13px;">Discount${
+            order.appliedOffers && order.appliedOffers.length
+              ? ` (${order.appliedOffers.map((o) => o.label).join(", ")})`
+              : ""
+          }</td>
+          <td style="padding:8px 0;text-align:right;color:#059669;font-size:13px;white-space:nowrap;">−${formatMoney({ amount: order.discount, currency: order.currency })}</td>
+        </tr>`
       : ""
 
-  const html = layout(
-    "New order received",
-    `
-    <p style="margin:0 0 16px;color:${MUTED};font-size:14px;line-height:1.6;">
-      A new order <strong style="color:${BRAND};">${order.number}</strong> was just placed${
-        customerName ? ` by <strong style="color:${BRAND};">${customerName}</strong>` : ""
-      }.
-    </p>
-    <table style="width:100%;border-collapse:collapse;margin:0 0 8px;">
-      <tr>
-        <td style="padding:4px 0;color:${MUTED};font-size:13px;">Customer</td>
-        <td style="padding:4px 0;text-align:right;color:${BRAND};font-size:13px;">${order.email}</td>
-      </tr>
-      <tr>
-        <td style="padding:4px 0;color:${MUTED};font-size:13px;">Placed</td>
-        <td style="padding:4px 0;text-align:right;color:${BRAND};font-size:13px;">${new Date(order.createdAt).toLocaleString()}</td>
-      </tr>
-    </table>
-    <table style="width:100%;border-collapse:collapse;margin:8px 0 0;">
+  return `
+  <tr><td style="padding:20px 28px 0;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
       ${rows}
       <tr>
-        <td style="padding:12px 0 0;color:${MUTED};font-size:13px;">Subtotal</td>
-        <td style="padding:12px 0 0;text-align:right;color:${BRAND};font-size:13px;white-space:nowrap;">${formatMoney({ amount: order.subtotal, currency: order.currency })}</td>
+        <td style="padding:14px 0 0;color:${MUTED};font-size:13px;">Subtotal</td>
+        <td style="padding:14px 0 0;text-align:right;color:${MUTED};font-size:13px;white-space:nowrap;">${formatMoney({ amount: order.subtotal, currency: order.currency })}</td>
       </tr>
       ${discountRow}
       <tr>
         <td style="padding:8px 0;color:${MUTED};font-size:13px;">Shipping</td>
-        <td style="padding:8px 0;text-align:right;color:${BRAND};font-size:13px;white-space:nowrap;">${order.shipping === 0 ? "Free" : formatMoney({ amount: order.shipping, currency: order.currency })}</td>
+        <td style="padding:8px 0;text-align:right;color:${MUTED};font-size:13px;white-space:nowrap;">${order.shipping === 0 ? "Free" : formatMoney({ amount: order.shipping, currency: order.currency })}</td>
       </tr>
       <tr>
-        <td style="padding:12px 0 0;color:${BRAND};font-size:15px;font-weight:700;">Total</td>
-        <td style="padding:12px 0 0;text-align:right;color:${BRAND};font-size:15px;font-weight:700;white-space:nowrap;">${formatMoney({ amount: order.total, currency: order.currency })}</td>
+        <td style="padding:12px 0 0;color:${INK};font-size:15px;font-weight:700;">Total</td>
+        <td style="padding:12px 0 0;text-align:right;color:${INK};font-size:15px;font-weight:700;white-space:nowrap;">${formatMoney({ amount: order.total, currency: order.currency })}</td>
       </tr>
     </table>
-    <p style="margin:20px 0 0;color:${MUTED};font-size:13px;line-height:1.6;">
-      Manage this order in the admin dashboard under Orders.
-    </p>`,
-  )
+  </td></tr>`
+}
 
-  const text = `New order received — ${order.number}\n\n${customerName ? customerName + " · " : ""}${order.email}\nPlaced: ${new Date(order.createdAt).toLocaleString()}\n\n${order.items
-    .map((i) => `${i.name}${i.color ? ` (${i.color})` : ""} x${i.quantity} — ${formatMoney({ amount: i.unitAmount * i.quantity, currency: i.currency })}`)
-    .join("\n")}\n\nSubtotal: ${formatMoney({ amount: order.subtotal, currency: order.currency })}${
-    order.discount && order.discount > 0 ? `\nDiscount: −${formatMoney({ amount: order.discount, currency: order.currency })}` : ""
-  }\nShipping: ${order.shipping === 0 ? "Free" : formatMoney({ amount: order.shipping, currency: order.currency })}\nTotal: ${formatMoney({ amount: order.total, currency: order.currency })}`
+function shopUrl(vars?: Record<string, string>): string {
+  return vars?.shop_url || "/products"
+}
 
-  return { subject: `New order — ${order.number} · ${formatMoney({ amount: order.total, currency: order.currency })}`, html, text }
+export function orderConfirmationEmail(params: {
+  name: string
+  order: Order
+  branding?: Partial<EmailBranding>
+  blocks?: EmailBlock[]
+  shopUrl?: string
+}): Rendered {
+  const b = brand(params.branding)
+  const blocks = params.blocks ?? getSystemTemplate("order_confirmation")!.blocks
+  const vars: Record<string, string> = {
+    customer_name: params.name,
+    brand_name: b.brandName,
+    order_number: params.order.number,
+    shop_url: params.shopUrl ?? "/products",
+  }
+  const ctx: RenderContext = { vars, dynamic: { orderSummary: orderSummaryHtml(params.order) } }
+  return {
+    subject: fillSubject(getSystemTemplate("order_confirmation")!.subject, vars),
+    html: renderEmail(blocks, b, ctx),
+    text: renderText(blocks, b, ctx),
+  }
 }
 
 const ACCENT = "#0f766e"
 
-/** Headline describing an offer's benefit, e.g. "10% off" or "Free shipping". */
 function offerHeadline(offer: { kind: string; value?: number; label: string }): string {
   switch (offer.kind) {
     case "percent":
@@ -176,114 +117,132 @@ function offerHeadline(offer: { kind: string; value?: number; label: string }): 
   }
 }
 
-/**
- * Branded personal-offer email. Sent when an admin grants a customer an offer
- * and opts to notify them. Leads with the reward, makes clear it applies
- * automatically at checkout (no code to enter), and — when the offer expires —
- * states the valid-until date with gentle urgency.
- */
 export function personalOfferEmail(params: {
   name: string
   offer: { label: string; kind: string; value?: number; expiresAt?: string; note?: string }
   shopUrl: string
-}): { subject: string; html: string; text: string } {
-  const { name, offer, shopUrl } = params
-  const headline = offerHeadline(offer)
-  const validUntil = offer.expiresAt
-    ? new Date(offer.expiresAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+  branding?: Partial<EmailBranding>
+  blocks?: EmailBlock[]
+}): Rendered {
+  const b = brand(params.branding)
+  const blocks = params.blocks ?? getSystemTemplate("personal_offer")!.blocks
+  const headline = offerHeadline(params.offer)
+  const validUntil = params.offer.expiresAt
+    ? new Date(params.offer.expiresAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
     : null
+  const expiry = [validUntil ? `Valid until ${validUntil}.` : "", params.offer.note ?? ""].filter(Boolean).join(" ")
 
-  const expiryLine = validUntil
-    ? `<p style="margin:0 0 24px;color:${MUTED};font-size:13px;line-height:1.6;">
-         Valid until <strong style="color:${BRAND};">${validUntil}</strong> — applied automatically at checkout, no code needed.
-       </p>`
-    : `<p style="margin:0 0 24px;color:${MUTED};font-size:13px;line-height:1.6;">
-         Applied automatically at checkout — no code needed.
-       </p>`
-
-  const noteLine = offer.note
-    ? `<p style="margin:0 0 24px;color:${MUTED};font-size:13px;line-height:1.6;font-style:italic;">${offer.note}</p>`
-    : ""
-
-  const html = layout(
-    "A little something for you",
-    `
-    <p style="margin:0 0 20px;color:${MUTED};font-size:14px;line-height:1.6;">
-      ${name}, we&apos;ve added a personal offer to your MOMO account.
-    </p>
-    <div style="text-align:center;background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:28px 20px;margin:0 0 20px;">
-      <div style="font-size:32px;font-weight:800;color:${ACCENT};letter-spacing:-0.02em;">${headline}</div>
-      <div style="margin-top:6px;color:${MUTED};font-size:13px;">${offer.label}</div>
-    </div>
-    ${expiryLine}
-    ${noteLine}
-    <div style="text-align:center;margin:8px 0 4px;">
-      <a href="${shopUrl}" style="display:inline-block;background:${BRAND};color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:14px 32px;border-radius:9999px;">
-        Shop now
-      </a>
-    </div>`,
-  )
-
-  const text = `A little something for you\n\n${name}, we've added a personal offer to your MOMO account: ${headline} (${offer.label}).\n\n${
-    validUntil ? `Valid until ${validUntil}. ` : ""
-  }It applies automatically at checkout — no code needed.\n\nShop now: ${shopUrl}`
-
-  return { subject: `${name}, here's ${headline} at MOMO`, html, text }
+  const vars: Record<string, string> = {
+    customer_name: params.name,
+    brand_name: b.brandName,
+    shop_url: params.shopUrl,
+    offer_headline: headline,
+    offer_label: params.offer.label || "Special offer",
+    offer_expiry: expiry,
+  }
+  const ctx: RenderContext = { vars }
+  return {
+    subject: fillSubject(getSystemTemplate("personal_offer")!.subject, vars),
+    html: renderEmail(blocks, b, ctx),
+    text: renderText(blocks, b, ctx),
+  }
 }
 
-export function testEmail(): { subject: string; html: string; text: string } {
-  const html = layout(
-    "Test email",
-    `<p style="margin:0 0 16px;color:${MUTED};font-size:14px;line-height:1.6;">
-      This is a test from your MOMO admin dashboard. If you're reading this, your Resend
-      configuration and sending domain are working correctly.
-    </p>`,
+/**
+ * Business order notification (internal). Kept as a focused branded summary —
+ * not block-based, since it targets the team inbox rather than customers.
+ */
+export function businessOrderNotificationEmail(params: { order: Order; customerName?: string }): Rendered {
+  const { order, customerName } = params
+  const b = brand()
+  const meta = `
+  <tr><td style="padding:20px 28px 0;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      <tr><td style="padding:4px 0;color:${MUTED};font-size:13px;">Customer</td><td style="padding:4px 0;text-align:right;color:${INK};font-size:13px;">${order.email}</td></tr>
+      <tr><td style="padding:4px 0;color:${MUTED};font-size:13px;">Placed</td><td style="padding:4px 0;text-align:right;color:${INK};font-size:13px;">${new Date(order.createdAt).toLocaleString()}</td></tr>
+    </table>
+  </td></tr>`
+
+  const blocks: EmailBlock[] = [
+    {
+      id: "hero",
+      type: "hero",
+      eyebrow: "New order received",
+      heading: `Order ${order.number}`,
+      subheading: `A new order was just placed${customerName ? ` by *${customerName}*` : ""}.`,
+      imageUrl: "",
+      align: "left",
+    },
+  ]
+  const html = renderEmail(blocks, b, {}).replace(
+    "<tr><td style=\"padding:0 28px 32px;\"></td></tr>",
+    `${meta}${orderSummaryHtml(order)}<tr><td style="padding:20px 28px 0;"><p style="margin:0;color:${MUTED};font-size:13px;line-height:1.6;">Manage this order in the admin dashboard under Orders.</p></td></tr><tr><td style="padding:0 28px 32px;"></td></tr>`,
   )
+  const text = `New order received — ${order.number}\n\n${customerName ? customerName + " · " : ""}${order.email}\nPlaced: ${new Date(order.createdAt).toLocaleString()}\n\nTotal: ${formatMoney({ amount: order.total, currency: order.currency })}`
+  return { subject: `New order — ${order.number} · ${formatMoney({ amount: order.total, currency: order.currency })}`, html, text }
+}
+
+export function testEmail(params?: { branding?: Partial<EmailBranding> }): Rendered {
+  const b = brand(params?.branding)
+  const blocks: EmailBlock[] = [
+    {
+      id: "hero",
+      type: "hero",
+      eyebrow: "Configuration test",
+      heading: "Your email is *live*",
+      subheading: "If you're reading this, your Resend key and sending domain are working correctly.",
+      imageUrl: "/email/hero-momo.png",
+      align: "left",
+    },
+    {
+      id: "text",
+      type: "text",
+      text: "This is a test from your MOMO admin dashboard. Branded templates render from the block engine and are ready to send.",
+      align: "left",
+    },
+  ]
   return {
-    subject: "MOMO — email configuration test",
-    html,
-    text: "This is a test from your MOMO admin dashboard. Your email configuration is working correctly.",
+    subject: `${b.brandName} — email configuration test`,
+    html: renderEmail(blocks, b, {}),
+    text: renderText(blocks, b, {}),
   }
 }
 
 export function lowStockAlertEmail(params: {
   items: { name: string; slug: string; stock: number; threshold: number }[]
-}): { subject: string; html: string; text: string } {
+}): Rendered {
   const { items } = params
+  const b = brand()
   const rows = items
     .map(
       (item) => `
       <tr>
-        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};color:${BRAND};font-size:14px;">
+        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};color:${INK};font-size:14px;">
           ${item.name}<br /><span style="color:${MUTED};font-size:12px;">${item.slug}</span>
         </td>
         <td style="padding:12px 0;border-bottom:1px solid ${BORDER};text-align:right;font-size:14px;white-space:nowrap;">
-          <span style="color:${item.stock === 0 ? "#dc2626" : "#d97706"};font-weight:600;">${item.stock} left</span>
-          <br /><span style="color:${MUTED};font-size:12px;">threshold ${item.threshold}</span>
+          <span style="color:${item.stock === 0 ? "#dc2626" : "#d97706"};font-weight:600;">${item.stock} left</span><br /><span style="color:${MUTED};font-size:12px;">threshold ${item.threshold}</span>
         </td>
       </tr>`,
     )
     .join("")
 
-  const html = layout(
-    "Low stock alert",
-    `
-    <p style="margin:0 0 16px;color:${MUTED};font-size:14px;line-height:1.6;">
-      The following ${items.length === 1 ? "product has" : "products have"} dropped to or below the low-stock threshold and may need restocking.
-    </p>
-    <table style="width:100%;border-collapse:collapse;margin:8px 0 0;">${rows}</table>
-    <p style="margin:20px 0 0;color:${MUTED};font-size:13px;line-height:1.6;">
-      Review inventory in the admin dashboard to restock or pause sales.
-    </p>`,
+  const blocks: EmailBlock[] = [
+    {
+      id: "hero",
+      type: "hero",
+      eyebrow: "Inventory",
+      heading: "Low stock alert",
+      subheading: `${items.length} ${items.length === 1 ? "product needs" : "products need"} attention.`,
+      imageUrl: "",
+      align: "left",
+    },
+  ]
+  const table = `<tr><td style="padding:20px 28px 0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${rows}</table></td></tr>`
+  const html = renderEmail(blocks, b, {}).replace(
+    "<tr><td style=\"padding:0 28px 32px;\"></td></tr>",
+    `${table}<tr><td style="padding:20px 28px 0;"><p style="margin:0;color:${MUTED};font-size:13px;line-height:1.6;">Review inventory in the admin dashboard to restock or pause sales.</p></td></tr><tr><td style="padding:0 28px 32px;"></td></tr>`,
   )
-
-  const text = `Low stock alert\n\n${items
-    .map((i) => `${i.name} (${i.slug}) — ${i.stock} left, threshold ${i.threshold}`)
-    .join("\n")}`
-
-  return {
-    subject: `Low stock alert — ${items.length} ${items.length === 1 ? "product" : "products"}`,
-    html,
-    text,
-  }
+  const text = `Low stock alert\n\n${items.map((i) => `${i.name} (${i.slug}) — ${i.stock} left, threshold ${i.threshold}`).join("\n")}`
+  return { subject: `Low stock alert — ${items.length} ${items.length === 1 ? "product" : "products"}`, html, text }
 }

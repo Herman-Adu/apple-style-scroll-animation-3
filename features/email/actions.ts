@@ -1,7 +1,7 @@
 "use server"
 
 import { isEmailConfigured, sendEmail } from "./provider"
-import { orderConfirmationEmail, lowStockAlertEmail, testEmail } from "./templates"
+import { orderConfirmationEmail, businessOrderNotificationEmail, lowStockAlertEmail, testEmail } from "./templates"
 import type { Order } from "@/lib/orders/types"
 
 /**
@@ -27,6 +27,18 @@ export async function sendLowStockAlert(params: {
   if (params.items.length === 0) return { ok: true as const, id: null, skipped: true as const, reason: "no items" }
   const { subject, html, text } = lowStockAlertEmail({ items: params.items })
   return sendEmail({ to: params.to, subject, html, text })
+}
+
+/**
+ * Notify the business that a new order was placed. Sends to EMAIL_TO, falling
+ * back to EMAIL_FROM so the shop is still alerted if EMAIL_TO isn't configured.
+ * Fire-and-forget: callers must never block an order on this.
+ */
+export async function sendOrderNotification(params: { order: Order; customerName?: string }) {
+  const to = process.env.EMAIL_TO || process.env.EMAIL_FROM
+  if (!to) return { ok: true as const, id: null, skipped: true as const, reason: "no recipient configured" }
+  const { subject, html, text } = businessOrderNotificationEmail({ order: params.order, customerName: params.customerName })
+  return sendEmail({ to, subject, html, text })
 }
 
 /** Admin: report whether a Resend key is configured (server-side env read). */

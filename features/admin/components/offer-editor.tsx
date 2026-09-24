@@ -257,10 +257,10 @@ export function OfferEditor({
             <button
               type="button"
               onClick={add}
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-md bg-foreground px-4 text-sm font-medium text-background transition-opacity hover:opacity-90"
+              className="inline-flex h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-foreground px-4 text-sm font-medium text-background transition-opacity hover:opacity-90"
             >
               <Plus className="size-4" />
-              Add offer
+              Add
             </button>
           </div>
         </div>

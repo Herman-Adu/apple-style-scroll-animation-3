@@ -24,6 +24,8 @@ interface AuthContextValue {
   signOut: () => Promise<void>
   updateProfile: (update: ProfileUpdate) => Promise<User>
   completeOnboarding: (update: ProfileUpdate) => Promise<User>
+  /** Record that offers were used on an order and refresh the local session. */
+  redeemOffers: (offerIds: string[]) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -92,6 +94,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [adapter, applyUser],
   )
 
+  const redeemOffers = useCallback(
+    async (offerIds: string[]) => {
+      const current = session?.user
+      if (!current || offerIds.length === 0) return
+      try {
+        applyUser(await adapter.markOffersRedeemed(current.id, offerIds))
+      } catch {
+        // Redemption tracking is record-only; never block the order flow on it.
+      }
+    },
+    [adapter, applyUser, session],
+  )
+
   const value = useMemo<AuthContextValue>(
     () => ({
       status,
@@ -101,8 +116,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signOut,
       updateProfile,
       completeOnboarding,
+      redeemOffers,
     }),
-    [status, session, signUp, signIn, signOut, updateProfile, completeOnboarding],
+    [status, session, signUp, signIn, signOut, updateProfile, completeOnboarding, redeemOffers],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

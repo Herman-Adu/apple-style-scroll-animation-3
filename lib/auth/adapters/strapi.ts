@@ -199,5 +199,8 @@ export function createStrapiAdapter(): AuthAdapter {
     async setUserOffers(): Promise<User> {
       throw new AuthError("Customer management is not implemented for Strapi yet.", "unknown")
     },
+    async markOffersRedeemed(): Promise<User> {
+      throw new AuthError("Customer management is not implemented for Strapi yet.", "unknown")
+    },
   }
 }

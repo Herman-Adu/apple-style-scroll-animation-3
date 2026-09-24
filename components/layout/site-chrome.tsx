@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { SiteHeader } from "./site-header"
 import { SiteFooter } from "./site-footer"
 import { CartDrawer } from "./cart-drawer"
+import { OfferBanner } from "./offer-banner"
 
 /**
  * Renders the marketing chrome (storefront header, footer, cart drawer) around
@@ -20,6 +21,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
 
   return (
     <>
+      <OfferBanner />
       <Suspense fallback={null}>
         <SiteHeader />
       </Suspense>

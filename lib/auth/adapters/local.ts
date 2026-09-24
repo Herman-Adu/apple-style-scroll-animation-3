@@ -234,5 +234,21 @@ export function createLocalAdapter(): AuthAdapter {
       writeUsers(users)
       return stripPassword(users[idx])
     },
+
+    async markOffersRedeemed(userId: string, offerIds: string[]): Promise<User> {
+      const users = readUsers()
+      const idx = users.findIndex((u) => u.id === userId)
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
+      const target = new Set(offerIds)
+      const now = new Date().toISOString()
+      const offers = (users[idx].offers ?? []).map((offer) =>
+        target.has(offer.id)
+          ? { ...offer, redeemedAt: now, redemptionCount: (offer.redemptionCount ?? 0) + 1 }
+          : offer,
+      )
+      users[idx] = { ...users[idx], offers }
+      writeUsers(users)
+      return stripPassword(users[idx])
+    },
   }
 }

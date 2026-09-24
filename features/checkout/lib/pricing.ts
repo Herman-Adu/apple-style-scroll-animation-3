@@ -34,6 +34,32 @@ function clampPercent(value: number | undefined): number {
   return Math.min(Math.max(value ?? 0, 0), MAX_PERCENT)
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Whether an offer is still valid at `now`. An offer with no `expiresAt` never
+ * expires; an unparseable date is treated as active (fail-open on display, since
+ * the value is admin-controlled). This is the guard the checkout uses so an
+ * expired offer can never discount an order.
+ */
+export function isOfferActive(offer: OfferTag, now: number = Date.now()): boolean {
+  if (!offer.expiresAt) return true
+  const expiry = new Date(offer.expiresAt).getTime()
+  if (Number.isNaN(expiry)) return true
+  return expiry > now
+}
+
+/**
+ * Whole days remaining before an offer expires. Returns `null` when the offer
+ * never expires, `0` on the final day, and a negative number once expired.
+ */
+export function offerDaysLeft(offer: OfferTag, now: number = Date.now()): number | null {
+  if (!offer.expiresAt) return null
+  const expiry = new Date(offer.expiresAt).getTime()
+  if (Number.isNaN(expiry)) return null
+  return Math.ceil((expiry - now) / DAY_MS)
+}
+
 /**
  * Price a checkout for a customer.
  *
@@ -49,19 +75,26 @@ export function priceCheckout({
   items,
   offers,
   shipping = 0,
+  now = Date.now(),
 }: {
   items: OrderItem[]
   offers: OfferTag[]
   shipping?: number
+  /** Evaluation time for expiry checks. Injectable for deterministic tests. */
+  now?: number
 }): PricedQuote {
   const currency = items[0]?.currency ?? "USD"
   const subtotal = money(items.reduce((sum, item) => sum + item.unitAmount * item.quantity, 0))
+
+  // Expired offers are dropped before any math runs — the checkout can never
+  // honour an offer past its expiry, on the client or the authoritative server.
+  const active = offers.filter((offer) => isOfferActive(offer, now))
 
   const appliedOffers: AppliedOffer[] = []
   let discount = 0
 
   // Best single percent offer (no stacking).
-  const bestPercent = offers
+  const bestPercent = active
     .filter((offer) => offer.kind === "percent" && clampPercent(offer.value) > 0)
     .reduce<OfferTag | null>((best, offer) => {
       if (!best || clampPercent(offer.value) > clampPercent(best.value)) return offer
@@ -77,7 +110,7 @@ export function priceCheckout({
 
   // Shipping waiver.
   let resolvedShipping = shipping
-  const shippingOffer = offers.find((offer) => offer.kind === "shipping")
+  const shippingOffer = active.find((offer) => offer.kind === "shipping")
   if (shippingOffer) {
     const waived = resolvedShipping
     resolvedShipping = 0
@@ -85,7 +118,7 @@ export function priceCheckout({
   }
 
   // Custom offers are label-only.
-  for (const offer of offers.filter((offer) => offer.kind === "custom")) {
+  for (const offer of active.filter((offer) => offer.kind === "custom")) {
     appliedOffers.push({ id: offer.id, label: offer.label, kind: "custom", amount: 0 })
   }
 

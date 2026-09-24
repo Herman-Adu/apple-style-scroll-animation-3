@@ -19,7 +19,7 @@ import type { Order, OrderItem } from "@/lib/orders/types"
 
 export function CheckoutView() {
   const { lines, subtotal, currency, itemCount, clear } = useCart()
-  const { user } = useAuth()
+  const { user, redeemOffers } = useAuth()
   const { createOrder } = useOrders(user?.id)
   const { recordSale } = useCatalog()
   const router = useRouter()
@@ -93,6 +93,10 @@ export function CheckoutView() {
       })
       setOrder(created)
       clear()
+      // Record which personal offers this order used (record-only; never blocks).
+      if (priced.appliedOffers.length > 0) {
+        void redeemOffers(priced.appliedOffers.map((offer) => offer.id))
+      }
       // Fire-and-forget confirmation email; never block order success on it.
       void sendOrderConfirmation({
         to: created.email,

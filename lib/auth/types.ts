@@ -27,6 +27,16 @@ export interface OfferTag {
   value?: number
   note?: string
   createdAt: string
+  /**
+   * ISO timestamp after which the offer no longer applies. Missing → never
+   * expires. Enforced by the checkout pricing engine, so an expired offer can
+   * never discount an order.
+   */
+  expiresAt?: string
+  /** ISO timestamp of the most recent order that used this offer. Record-only. */
+  redeemedAt?: string
+  /** How many orders have used this offer. Missing → 0. Record-only. */
+  redemptionCount?: number
 }
 
 export interface User {
@@ -115,6 +125,12 @@ export interface AuthAdapter {
   setUserNewsletter(id: string, newsletter: boolean): Promise<User>
   /** Replace a customer's personal offer tags. */
   setUserOffers(id: string, offers: OfferTag[]): Promise<User>
+  /**
+   * Record that the given offers were redeemed on an order: stamps `redeemedAt`
+   * and increments `redemptionCount`. Called at checkout by the customer's own
+   * session. Record-only — it never disables the offer (expiry does that).
+   */
+  markOffersRedeemed(userId: string, offerIds: string[]): Promise<User>
 }
 
 /** Raised by adapters for expected auth failures so the UI can show friendly copy. */

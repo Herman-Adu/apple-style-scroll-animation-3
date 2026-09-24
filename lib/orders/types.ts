@@ -18,6 +18,20 @@ export interface OrderItem {
   currency: string
 }
 
+/**
+ * A personal offer that was applied to an order, with its realized monetary
+ * effect recorded at purchase time. `amount` is the value subtracted from the
+ * order (0 for label-only `custom` offers). Recorded so invoices and history
+ * stay accurate even if the customer's offers change later.
+ */
+export interface AppliedOffer {
+  id: string
+  label: string
+  kind: "percent" | "shipping" | "custom"
+  /** Amount removed from the total in the currency's major units. */
+  amount: number
+}
+
 export interface Order {
   id: string
   /** Human-friendly reference, e.g. MOMO-2026-0001. Doubles as the invoice number. */
@@ -29,6 +43,10 @@ export interface Order {
   items: OrderItem[]
   subtotal: number
   shipping: number
+  /** Total offer savings applied. Missing on legacy orders → treated as 0. */
+  discount?: number
+  /** Personal offers realized on this order. Missing on legacy orders → []. */
+  appliedOffers?: AppliedOffer[]
   total: number
   currency: string
 }
@@ -40,6 +58,8 @@ export interface CreateOrderInput {
   items: OrderItem[]
   subtotal: number
   shipping: number
+  discount?: number
+  appliedOffers?: AppliedOffer[]
   total: number
   currency: string
 }

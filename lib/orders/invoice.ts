@@ -100,6 +100,11 @@ export function printInvoice(order: Order, billTo: BillTo) {
 
   <div class="totals">
     <div><span>Subtotal</span><span>${formatMoney({ amount: order.subtotal, currency: order.currency })}</span></div>
+    ${
+      order.discount && order.discount > 0
+        ? `<div><span>Offer savings</span><span>&minus;${formatMoney({ amount: order.discount, currency: order.currency })}</span></div>`
+        : ""
+    }
     <div><span>Shipping</span><span>${order.shipping === 0 ? "Free" : formatMoney({ amount: order.shipping, currency: order.currency })}</span></div>
     <div class="grand"><span>Total</span><span>${formatMoney({ amount: order.total, currency: order.currency })}</span></div>
   </div>

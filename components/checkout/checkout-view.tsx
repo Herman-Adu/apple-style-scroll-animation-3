@@ -3,17 +3,19 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { ArrowLeft, Lock, ShoppingBag } from "lucide-react"
+import { useMemo, useState } from "react"
+import { ArrowLeft, Lock, ShoppingBag, Tag } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth/auth-context"
 import { useOrders } from "@/hooks/use-orders"
 import { useCatalog } from "@/features/catalog"
 import { sendOrderConfirmation } from "@/features/email/actions"
+import { priceCheckout } from "@/features/checkout"
+import { quoteCheckout } from "@/features/checkout/actions"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { Spinner } from "@/components/ui/spinner"
 import { formatMoney } from "@/lib/format"
-import type { Order } from "@/lib/orders/types"
+import type { Order, OrderItem } from "@/lib/orders/types"
 
 export function CheckoutView() {
   const { lines, subtotal, currency, itemCount, clear } = useCart()
@@ -26,6 +28,29 @@ export function CheckoutView() {
   const [order, setOrder] = useState<Order | null>(null)
 
   const displayName = user?.profile.displayName || user?.name || "there"
+
+  // Resolve cart lines into order items, then price them with the customer's
+  // personal offers. This runs the same pure engine the server uses, so the
+  // savings shown here match exactly what gets charged and recorded.
+  const items = useMemo<OrderItem[]>(
+    () =>
+      lines.map((line) => ({
+        slug: line.product.slug,
+        name: line.product.name,
+        image: line.product.image,
+        color: line.color,
+        quantity: line.quantity,
+        unitAmount: line.product.price.amount,
+        currency: line.product.price.currency,
+      })),
+    [lines],
+  )
+  const quote = useMemo(
+    () => priceCheckout({ items, offers: user?.offers ?? [] }),
+    [items, user?.offers],
+  )
+  const savingsOffers = quote.appliedOffers.filter((offer) => offer.amount > 0)
+  const labelOffers = quote.appliedOffers.filter((offer) => offer.amount === 0)
 
   async function placeOrder() {
     if (!user || lines.length === 0 || placing) return
@@ -43,22 +68,28 @@ export function CheckoutView() {
     // this component stays the same.
     setPlacing(true)
     try {
+      // Re-price server-side: prices are rebuilt from the authoritative catalog
+      // and offer discounts recomputed, so the persisted totals can't be tampered
+      // with from the browser. The displayed `quote` uses the same engine, so the
+      // numbers match.
+      const priced = await quoteCheckout({
+        lines: lines.map((line) => ({
+          slug: line.product.slug,
+          color: line.color,
+          quantity: line.quantity,
+        })),
+        offers: user.offers ?? [],
+      })
       const created = await createOrder({
         userId: user.id,
         email: user.email,
-        items: lines.map((line) => ({
-          slug: line.product.slug,
-          name: line.product.name,
-          image: line.product.image,
-          color: line.color,
-          quantity: line.quantity,
-          unitAmount: line.product.price.amount,
-          currency: line.product.price.currency,
-        })),
-        subtotal,
-        shipping: 0,
-        total: subtotal,
-        currency,
+        items: priced.items,
+        subtotal: priced.subtotal,
+        shipping: priced.shipping,
+        discount: priced.discount,
+        appliedOffers: priced.appliedOffers,
+        total: priced.total,
+        currency: priced.currency,
       })
       setOrder(created)
       clear()
@@ -192,19 +223,48 @@ export function CheckoutView() {
             <dl className="mt-4 space-y-3 text-sm">
               <div className="flex items-center justify-between">
                 <dt className="text-foreground/50">Subtotal</dt>
-                <dd className="text-foreground">{formatMoney({ amount: subtotal, currency })}</dd>
+                <dd className="text-foreground">{formatMoney({ amount: quote.subtotal, currency: quote.currency })}</dd>
               </div>
+              {savingsOffers.map((offer) => (
+                <div key={offer.id} className="flex items-center justify-between">
+                  <dt className="flex items-center gap-1.5 text-foreground/60">
+                    <Tag className="h-3.5 w-3.5" strokeWidth={2} />
+                    {offer.label}
+                  </dt>
+                  <dd className="font-medium text-foreground">
+                    &minus;{formatMoney({ amount: offer.amount, currency: quote.currency })}
+                  </dd>
+                </div>
+              ))}
               <div className="flex items-center justify-between">
                 <dt className="text-foreground/50">Shipping</dt>
-                <dd className="text-foreground/70">Calculated next step</dd>
+                <dd className="text-foreground/70">{quote.shipping === 0 ? "Free" : formatMoney({ amount: quote.shipping, currency: quote.currency })}</dd>
               </div>
             </dl>
             <div className="mt-4 flex items-center justify-between border-t border-foreground/10 pt-4">
               <span className="text-sm text-foreground/50">Total</span>
               <span className="text-lg font-semibold text-foreground">
-                {formatMoney({ amount: subtotal, currency })}
+                {formatMoney({ amount: quote.total, currency: quote.currency })}
               </span>
             </div>
+            {quote.discount > 0 && (
+              <p className="mt-2 text-right text-xs text-foreground/50">
+                You saved {formatMoney({ amount: quote.discount, currency: quote.currency })}
+              </p>
+            )}
+            {labelOffers.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2 border-t border-foreground/10 pt-4">
+                {labelOffers.map((offer) => (
+                  <span
+                    key={offer.id}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 bg-foreground/5 px-3 py-1 text-xs text-foreground/70"
+                  >
+                    <Tag className="h-3 w-3" strokeWidth={2} />
+                    {offer.label}
+                  </span>
+                ))}
+              </div>
+            )}
             {error && (
               <p
                 role="alert"

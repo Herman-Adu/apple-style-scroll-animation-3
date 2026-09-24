@@ -5,7 +5,8 @@
 // today and a Strapi/Stripe-backed list later. No card/payment data anywhere.
 
 import type { Order } from "@/lib/orders/types"
-import type { User, UserRole } from "@/lib/auth/types"
+import type { OfferTag, User, UserRole } from "@/lib/auth/types"
+import { isOfferActive } from "@/features/checkout/lib/pricing"
 import type {
   CustomerKpis,
   CustomerRecord,
@@ -160,6 +161,71 @@ export function customerKpis(records: CustomerRecord[]): CustomerKpis {
     lifetimeRevenue,
     avgPerCustomer: paying > 0 ? lifetimeRevenue / paying : 0,
     currency: records.find((r) => r.stats.currency)?.stats.currency ?? "USD",
+  }
+}
+
+/** Aggregate performance of personal offers across all customers. */
+export interface OfferAnalytics {
+  /** Offers granted (all kinds, active + expired). */
+  total: number
+  /** Offers still valid at evaluation time. */
+  active: number
+  /** Offers past their expiry. */
+  expired: number
+  /** Offers a branded email was sent for (`notifiedAt` set). */
+  sent: number
+  /** Offers used at checkout at least once. */
+  redeemed: number
+  /** Total number of times offers were used (sum of redemption counts). */
+  redemptions: number
+  /** redeemed / sent, in 0..1. Zero when nothing has been emailed. */
+  conversionRate: number
+  /** Customers who currently hold at least one offer. */
+  customersWithOffers: number
+  /** Breakdown of offers by kind. */
+  byKind: { percent: number; shipping: number; custom: number }
+}
+
+/**
+ * Roll up every customer's offers into headline numbers for the admin Analytics
+ * page. Pure and I/O-free — expiry is judged with the same `isOfferActive` guard
+ * the checkout uses, so "active" here always matches what actually discounts.
+ */
+export function offerAnalytics(users: User[], now: number = Date.now()): OfferAnalytics {
+  let total = 0
+  let active = 0
+  let expired = 0
+  let sent = 0
+  let redeemed = 0
+  let redemptions = 0
+  let customersWithOffers = 0
+  const byKind = { percent: 0, shipping: 0, custom: 0 }
+
+  for (const user of users) {
+    const offers: OfferTag[] = user.offers ?? []
+    if (offers.length > 0) customersWithOffers += 1
+    for (const offer of offers) {
+      total += 1
+      if (isOfferActive(offer, now)) active += 1
+      else expired += 1
+      if (offer.notifiedAt) sent += 1
+      const count = offer.redemptionCount ?? 0
+      if (count > 0) redeemed += 1
+      redemptions += count
+      byKind[offer.kind] += 1
+    }
+  }
+
+  return {
+    total,
+    active,
+    expired,
+    sent,
+    redeemed,
+    redemptions,
+    conversionRate: sent > 0 ? redeemed / sent : 0,
+    customersWithOffers,
+    byKind,
   }
 }
 

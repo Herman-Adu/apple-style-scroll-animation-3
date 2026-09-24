@@ -22,6 +22,7 @@ import { OrderStatusBadge } from "./status-badges"
 import { CustomerStatusBadge, RoleBadge } from "./customer-badges"
 import { OfferEditor } from "./offer-editor"
 import { useAdminCustomers } from "../hooks/use-admin-customers"
+import { sendPersonalOffer } from "@/features/email"
 import type { OfferTag } from "@/lib/auth/types"
 
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
@@ -95,6 +96,56 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
 
   async function onOffersChange(next: OfferTag[]) {
     await setOffers(user.id, next)
+  }
+
+  /** Deliver the branded offer email, then stamp notifiedAt on success. */
+  async function emailOffer(offer: OfferTag): Promise<boolean> {
+    const res = await sendPersonalOffer({
+      to: user.email,
+      name: user.name,
+      offer: {
+        label: offer.label,
+        kind: offer.kind,
+        value: offer.value,
+        expiresAt: offer.expiresAt,
+        note: offer.note,
+      },
+    })
+    if (!res.ok) {
+      toast.error(res.error ?? "The offer email failed to send.")
+      return false
+    }
+    if (res.skipped) {
+      toast("Email skipped — Resend isn't configured.")
+      return false
+    }
+    return true
+  }
+
+  /** Add path when "Email the customer" is on: persist, send, then stamp. */
+  async function onOfferNotify(offer: OfferTag) {
+    const next = [...(user.offers ?? []), offer]
+    await setOffers(user.id, next)
+    const sent = await emailOffer(offer)
+    if (!sent) return
+    await setOffers(
+      user.id,
+      next.map((o) => (o.id === offer.id ? { ...o, notifiedAt: new Date().toISOString() } : o)),
+    )
+    toast.success(`Offer emailed to ${user.email}`)
+  }
+
+  /** Re-send the branded email for an existing offer and re-stamp notifiedAt. */
+  async function onOfferResend(offer: OfferTag) {
+    const sent = await emailOffer(offer)
+    if (!sent) return
+    await setOffers(
+      user.id,
+      (user.offers ?? []).map((o) =>
+        o.id === offer.id ? { ...o, notifiedAt: new Date().toISOString() } : o,
+      ),
+    )
+    toast.success(`Offer re-sent to ${user.email}`)
   }
 
   return (
@@ -181,7 +232,13 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
               Internal deal tags for this customer.
             </p>
             <div className="mt-4">
-              <OfferEditor offers={user.offers ?? []} onChange={onOffersChange} />
+              <OfferEditor
+                offers={user.offers ?? []}
+                onChange={onOffersChange}
+                onNotify={onOfferNotify}
+                onResend={onOfferResend}
+                customerName={user.name}
+              />
             </div>
           </section>
 

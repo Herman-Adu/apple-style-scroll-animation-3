@@ -162,6 +162,75 @@ export function businessOrderNotificationEmail(params: { order: Order; customerN
   return { subject: `New order — ${order.number} · ${formatMoney({ amount: order.total, currency: order.currency })}`, html, text }
 }
 
+const ACCENT = "#0f766e"
+
+/** Headline describing an offer's benefit, e.g. "10% off" or "Free shipping". */
+function offerHeadline(offer: { kind: string; value?: number; label: string }): string {
+  switch (offer.kind) {
+    case "percent":
+      return `${offer.value ?? 0}% off`
+    case "shipping":
+      return "Free shipping"
+    default:
+      return offer.label
+  }
+}
+
+/**
+ * Branded personal-offer email. Sent when an admin grants a customer an offer
+ * and opts to notify them. Leads with the reward, makes clear it applies
+ * automatically at checkout (no code to enter), and — when the offer expires —
+ * states the valid-until date with gentle urgency.
+ */
+export function personalOfferEmail(params: {
+  name: string
+  offer: { label: string; kind: string; value?: number; expiresAt?: string; note?: string }
+  shopUrl: string
+}): { subject: string; html: string; text: string } {
+  const { name, offer, shopUrl } = params
+  const headline = offerHeadline(offer)
+  const validUntil = offer.expiresAt
+    ? new Date(offer.expiresAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+    : null
+
+  const expiryLine = validUntil
+    ? `<p style="margin:0 0 24px;color:${MUTED};font-size:13px;line-height:1.6;">
+         Valid until <strong style="color:${BRAND};">${validUntil}</strong> — applied automatically at checkout, no code needed.
+       </p>`
+    : `<p style="margin:0 0 24px;color:${MUTED};font-size:13px;line-height:1.6;">
+         Applied automatically at checkout — no code needed.
+       </p>`
+
+  const noteLine = offer.note
+    ? `<p style="margin:0 0 24px;color:${MUTED};font-size:13px;line-height:1.6;font-style:italic;">${offer.note}</p>`
+    : ""
+
+  const html = layout(
+    "A little something for you",
+    `
+    <p style="margin:0 0 20px;color:${MUTED};font-size:14px;line-height:1.6;">
+      ${name}, we&apos;ve added a personal offer to your MOMO account.
+    </p>
+    <div style="text-align:center;background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:28px 20px;margin:0 0 20px;">
+      <div style="font-size:32px;font-weight:800;color:${ACCENT};letter-spacing:-0.02em;">${headline}</div>
+      <div style="margin-top:6px;color:${MUTED};font-size:13px;">${offer.label}</div>
+    </div>
+    ${expiryLine}
+    ${noteLine}
+    <div style="text-align:center;margin:8px 0 4px;">
+      <a href="${shopUrl}" style="display:inline-block;background:${BRAND};color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:14px 32px;border-radius:9999px;">
+        Shop now
+      </a>
+    </div>`,
+  )
+
+  const text = `A little something for you\n\n${name}, we've added a personal offer to your MOMO account: ${headline} (${offer.label}).\n\n${
+    validUntil ? `Valid until ${validUntil}. ` : ""
+  }It applies automatically at checkout — no code needed.\n\nShop now: ${shopUrl}`
+
+  return { subject: `${name}, here's ${headline} at MOMO`, html, text }
+}
+
 export function testEmail(): { subject: string; html: string; text: string } {
   const html = layout(
     "Test email",

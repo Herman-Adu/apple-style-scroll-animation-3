@@ -1,8 +1,15 @@
 "use server"
 
 import { isEmailConfigured, sendEmail } from "./provider"
-import { orderConfirmationEmail, businessOrderNotificationEmail, lowStockAlertEmail, testEmail } from "./templates"
+import {
+  orderConfirmationEmail,
+  businessOrderNotificationEmail,
+  personalOfferEmail,
+  lowStockAlertEmail,
+  testEmail,
+} from "./templates"
 import type { Order } from "@/lib/orders/types"
+import { getBaseUrl } from "@/lib/seo/site"
 
 /**
  * Server actions for transactional email. These are the only email entry points
@@ -39,6 +46,22 @@ export async function sendOrderNotification(params: { order: Order; customerName
   if (!to) return { ok: true as const, id: null, skipped: true as const, reason: "no recipient configured" }
   const { subject, html, text } = businessOrderNotificationEmail({ order: params.order, customerName: params.customerName })
   return sendEmail({ to, subject, html, text })
+}
+
+/**
+ * Send a customer a branded personal-offer email. Called when an admin grants an
+ * offer and opts to notify. The CTA links to the storefront products page on the
+ * canonical origin. Fire-and-forget: a failed send must never block saving the
+ * offer itself.
+ */
+export async function sendPersonalOffer(params: {
+  to: string
+  name: string
+  offer: { label: string; kind: string; value?: number; expiresAt?: string; note?: string }
+}) {
+  const shopUrl = `${getBaseUrl()}/products`
+  const { subject, html, text } = personalOfferEmail({ name: params.name, offer: params.offer, shopUrl })
+  return sendEmail({ to: params.to, subject, html, text })
 }
 
 /** Admin: report whether a Resend key is configured (server-side env read). */

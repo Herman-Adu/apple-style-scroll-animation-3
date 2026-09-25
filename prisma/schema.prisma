@@ -16,6 +16,82 @@ datasource db {
   directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
+// ---------------------------------------------------------------------------
+// Better Auth (identity + sessions). Better Auth is the permanent owner of
+// login; Strapi later consumes this identity, it never re-owns it. Field names
+// are the exact names Better Auth's Prisma adapter expects (camelCase); columns
+// are @map'd to snake_case to match the rest of the schema and stay
+// Strapi-forward. Custom app fields (role/status/onboarding/profile/offers) live
+// on the user row so a single query answers "who is this and what can they do".
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false) @map("email_verified")
+  image         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // App-specific fields (managed server-side; never settable by the client).
+  role             String  @default("customer")
+  status           String  @default("active")
+  onboardingStatus String  @default("pending") @map("onboarding_status")
+  roleOverride     String? @map("role_override")
+  profile          Json    @default("{}")
+  offers           Json    @default("[]")
+
+  sessions Session[]
+  accounts Account[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime @map("expires_at")
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id")
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("verification")
+}
+
 /// Singleton brand/config row (id is always 1). One source of truth for the
 /// branding every template and server-side send shares.
 model EmailSettings {

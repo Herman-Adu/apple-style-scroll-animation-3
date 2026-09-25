@@ -1,14 +1,17 @@
 // Configuration layer: selects which backend adapter is active.
 // Flip the provider with a single env var — no code changes required.
 
-export type AuthProviderName = "local" | "strapi"
+import type { UserRole } from "./types"
+
+export type AuthProviderName = "local" | "strapi" | "db"
 
 export const authConfig = {
   /**
-   * Which adapter to use. Defaults to "local" so the app works out of the box
-   * in preview. Set NEXT_PUBLIC_AUTH_PROVIDER=strapi to use the Strapi backend.
+   * Which adapter to use. Defaults to "db" (Better Auth + Neon Postgres), the
+   * permanent identity backend. Set NEXT_PUBLIC_AUTH_PROVIDER=local for the
+   * zero-backend localStorage reference, or =strapi for the legacy REST path.
    */
-  provider: (process.env.NEXT_PUBLIC_AUTH_PROVIDER as AuthProviderName) || "local",
+  provider: (process.env.NEXT_PUBLIC_AUTH_PROVIDER as AuthProviderName) || "db",
 
   /** Base URL of the Strapi (or any REST) backend, e.g. https://api.example.com */
   apiUrl: process.env.NEXT_PUBLIC_API_URL || "",
@@ -43,6 +46,22 @@ export const adminEmails: string[] = (
   .filter(Boolean)
 
 /** Resolve a role from an email against the local admin allowlist. */
-export function resolveRole(email: string): "admin" | "customer" {
+export function resolveRole(email: string): UserRole {
   return adminEmails.includes(email.trim().toLowerCase()) ? "admin" : "customer"
+}
+
+/**
+ * The effective role for a user row/session. An explicit admin override wins;
+ * otherwise a stored role wins; otherwise it's derived from the email allowlist.
+ * This is the single place role precedence is decided, shared by the DB adapter
+ * (client-facing shape) and the server authorization seam.
+ */
+export function effectiveRole(u: {
+  email: string
+  role?: string | null
+  roleOverride?: string | null
+}): UserRole {
+  if (u.roleOverride === "admin" || u.roleOverride === "customer") return u.roleOverride
+  if (u.role === "admin" || u.role === "customer") return u.role
+  return resolveRole(u.email)
 }

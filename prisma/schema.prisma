@@ -44,6 +44,7 @@ model User {
 
   sessions Session[]
   accounts Account[]
+  orders   Order[]
 
   @@map("user")
 }
@@ -90,6 +91,34 @@ model Verification {
   updatedAt  DateTime @updatedAt @map("updated_at")
 
   @@map("verification")
+}
+
+/// A customer order. Mirrors the localStorage reference shape 1:1 so the
+/// OrdersAdapter port is backend-agnostic. Money is stored in the currency's
+/// major units (matching Product.price.amount and the app's JS number model).
+/// Line items and applied offers are JSON so the record is self-contained and
+/// stays accurate even if the catalog or the customer's offers change later.
+model Order {
+  id            String   @id
+  number        String   @unique
+  userId        String   @map("user_id")
+  email         String
+  status        String   @default("processing") // processing | fulfilled | cancelled | refunded
+  items         Json     @default("[]")
+  subtotal      Float
+  shipping      Float
+  discount      Float    @default(0)
+  appliedOffers Json     @default("[]") @map("applied_offers")
+  total         Float
+  currency      String
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("orders")
 }
 
 /// Singleton brand/config row (id is always 1). One source of truth for the

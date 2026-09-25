@@ -3,6 +3,7 @@
 
 import { authConfig } from "../config"
 import { AuthAdapter } from "../types"
+import { createDbAdapter } from "./db"
 import { createLocalAdapter } from "./local"
 import { createStrapiAdapter } from "./strapi"
 
@@ -15,8 +16,11 @@ export function getAuthAdapter(): AuthAdapter {
       instance = createStrapiAdapter()
       break
     case "local":
-    default:
       instance = createLocalAdapter()
+      break
+    case "db":
+    default:
+      instance = createDbAdapter()
       break
   }
   return instance

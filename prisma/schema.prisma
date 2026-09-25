@@ -121,6 +121,29 @@ model Order {
   @@map("orders")
 }
 
+/// A product review. Not FK-bound to a user because reviews may be submitted by
+/// guests (e.g. via the contact form); authorId, when present, is the account id
+/// used only to show an author their own still-pending review. Moderation status
+/// is authoritative and set server-side — the client never sets it.
+model Review {
+  id          String   @id
+  productSlug String   @map("product_slug")
+  authorId    String?  @map("author_id")
+  author      String
+  avatarUrl   String?  @map("avatar_url")
+  rating      Int
+  headline    String
+  body        String
+  status      String   @default("pending") // published | pending | rejected
+  source      String   @default("user") // seed | user
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([productSlug])
+  @@index([createdAt])
+  @@map("reviews")
+}
+
 /// Singleton brand/config row (id is always 1). One source of truth for the
 /// branding every template and server-side send shares.
 model EmailSettings {

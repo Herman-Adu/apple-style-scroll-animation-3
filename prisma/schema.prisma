@@ -259,3 +259,19 @@ model EmailLog {
 
   @@map("email_log")
 }
+
+/// Admin-managed overlay over the code-authored product seed. Marketing content
+/// (hero beats, features, specs) stays in code; this table stores the admin's
+/// edits (price, stock, name, etc.), created products, and deletions. At read
+/// time the overlay is merged onto the seed (overlay wins; `deleted` tombstones
+/// remove a seed product). `data` holds the full effective Product JSON so a
+/// row is self-contained; `deleted` rows keep an empty object and are skipped.
+model ProductOverlay {
+  slug      String   @id
+  data      Json     @default("{}")
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("product_overlay")
+}

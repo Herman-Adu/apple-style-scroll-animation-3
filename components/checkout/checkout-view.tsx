@@ -8,7 +8,6 @@ import { ArrowLeft, Lock, ShoppingBag, Tag } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth/auth-context"
 import { useOrders } from "@/hooks/use-orders"
-import { useCatalog } from "@/features/catalog"
 import { sendOrderConfirmation, sendOrderNotification } from "@/features/email/actions"
 import { priceCheckout } from "@/features/checkout"
 import { quoteCheckout } from "@/features/checkout/actions"
@@ -55,17 +54,12 @@ export function CheckoutView() {
   async function placeOrder() {
     if (!user || lines.length === 0 || placing) return
     setError(null)
-    // Decrement stock and enforce the oversell / last-unit rule at the point of
-    // sale. Pre-Strapi this is the authoritative stock check (stock lives in the
-    // shared catalog store); with Strapi it moves server-side unchanged.
-    const sale = recordSale(lines.map((line) => ({ slug: line.product.slug, quantity: line.quantity })))
-    if (!sale.ok) {
-      setError(sale.error ?? "Some items are no longer available.")
-      return
-    }
     // Records the order through the OrdersAdapter port. A real integration
     // (e.g. Stripe) swaps that adapter for a server-side Checkout Session —
-    // this component stays the same.
+    // this component stays the same. Stock is decremented and the oversell /
+    // last-unit rule enforced server-side, in the same transaction as the order
+    // insert, so a failed guard surfaces here as a thrown error and nothing is
+    // charged or recorded.
     setPlacing(true)
     try {
       // Re-price server-side: prices are rebuilt from the authoritative catalog

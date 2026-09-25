@@ -12,6 +12,9 @@ import type { Prisma } from "@prisma/client"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db/prisma"
 import { effectiveRole } from "@/lib/auth/config"
+import { getAllProducts } from "@/lib/data/products"
+import { productSchema } from "@/features/products"
+import { recordSale, toMap, type ProductMap } from "@/features/catalog/store"
 import type { CreateOrderInput, Order, OrderStatus } from "./types"
 
 const VALID_STATUSES: OrderStatus[] = ["processing", "fulfilled", "cancelled", "refunded"]
@@ -124,27 +127,85 @@ export async function listAllOrdersAction(): Promise<Order[]> {
   return rows.map(toOrder)
 }
 
+/** Effective (seed + overlay) product map for a specific set of slugs. Used to
+ * run the authoritative stock guard at the point of sale. */
+async function effectiveProductsFor(
+  slugs: string[],
+  tx: Prisma.TransactionClient,
+): Promise<ProductMap> {
+  const rows = await tx.productOverlay.findMany({
+    where: { slug: { in: slugs } },
+    select: { slug: true, data: true, deleted: true },
+  })
+  const map: ProductMap = toMap(getAllProducts().filter((p) => slugs.includes(p.slug)))
+  for (const row of rows) {
+    if (row.deleted) {
+      delete map[row.slug]
+      continue
+    }
+    const parsed = productSchema.safeParse(row.data)
+    if (parsed.success) map[row.slug] = parsed.data
+  }
+  return map
+}
+
 /** Record an order for the signed-in customer. Identity (userId/email) is taken
- * from the session, never from the client payload. */
+ * from the session, never from the client payload. Stock is decremented and the
+ * oversell / last-unit rule enforced against the authoritative Neon catalog in
+ * the SAME transaction as the order insert, so a sale and its stock change are
+ * atomic — a failed guard rolls back the whole thing and nothing is charged. */
 export async function createOrderAction(input: CreateOrderInput): Promise<Order> {
   const user = await requireUser()
-  const row = await prisma.order.create({
-    data: {
-      id: crypto.randomUUID(),
-      number: await nextNumber(),
-      userId: user.id,
-      email: user.email || input.email,
-      status: "processing",
-      items: input.items as unknown as Prisma.InputJsonValue,
-      subtotal: input.subtotal,
-      shipping: input.shipping,
-      discount: input.discount ?? 0,
-      appliedOffers: (input.appliedOffers ?? []) as unknown as Prisma.InputJsonValue,
-      total: input.total,
-      currency: input.currency,
-    },
-    select: orderSelect,
+  const lines = input.items
+    .filter((item) => item.quantity > 0)
+    .map((item) => ({ slug: item.slug, quantity: item.quantity }))
+
+  const row = await prisma.$transaction(async (tx) => {
+    const slugs = [...new Set(lines.map((l) => l.slug))]
+    const before = await effectiveProductsFor(slugs, tx)
+
+    // Pure oversell / last-unit guard, shared with the storefront so the rules
+    // are identical everywhere.
+    const sale = recordSale(before, lines)
+    if (!sale.ok) throw new Error(sale.error ?? "Some items are no longer available.")
+
+    // Persist only the products whose physical stock actually changed
+    // (pre-orders and unknown slugs are left untouched by recordSale).
+    for (const slug of slugs) {
+      const prev = before[slug]
+      const next = sale.map[slug]
+      if (!prev || !next || prev.stock === next.stock) continue
+      const data = next as unknown as Prisma.InputJsonValue
+      await tx.productOverlay.upsert({
+        where: { slug },
+        create: { slug, data, deleted: false },
+        update: { data, deleted: false },
+      })
+    }
+
+    const year = new Date().getFullYear()
+    const count = await tx.order.count({ where: { number: { startsWith: `MOMO-${year}-` } } })
+    const number = `MOMO-${year}-${String(count + 1).padStart(4, "0")}`
+
+    return tx.order.create({
+      data: {
+        id: crypto.randomUUID(),
+        number,
+        userId: user.id,
+        email: user.email || input.email,
+        status: "processing",
+        items: input.items as unknown as Prisma.InputJsonValue,
+        subtotal: input.subtotal,
+        shipping: input.shipping,
+        discount: input.discount ?? 0,
+        appliedOffers: (input.appliedOffers ?? []) as unknown as Prisma.InputJsonValue,
+        total: input.total,
+        currency: input.currency,
+      },
+      select: orderSelect,
+    })
   })
+
   return toOrder(row)
 }
 

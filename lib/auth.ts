@@ -3,6 +3,7 @@ import "server-only"
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { nextCookies } from "better-auth/next-js"
+import { dash } from "@better-auth/infra"
 
 import { prisma } from "@/lib/db/prisma"
 import { resolveRole } from "@/lib/auth/config"
@@ -109,5 +110,13 @@ export const auth = betterAuth({
       }
     : {}),
 
-  plugins: [nextCookies()],
+  // `dash()` exposes the @better-auth/infra endpoints that dash.better-auth.com
+  // probes to verify ownership of this auth server. `nextCookies()` must stay
+  // last so it can attach Set-Cookie headers after every other plugin runs.
+  plugins: [
+    ...(process.env.BETTER_AUTH_API_KEY
+      ? [dash({ apiKey: process.env.BETTER_AUTH_API_KEY })]
+      : []),
+    nextCookies(),
+  ],
 })

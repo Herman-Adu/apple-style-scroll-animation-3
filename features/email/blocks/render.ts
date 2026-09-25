@@ -89,32 +89,31 @@ function renderBlock(block: EmailBlock, brand: EmailBranding, ctx: RenderContext
     case "hero": {
       const img = resolveSrc(block.imageUrl || brand.heroImageUrl, ctx.baseUrl)
       const align = alignToCss(block.align)
-      const underlineAlign = align === "center" ? "margin:20px auto 0;" : align === "right" ? "margin:20px 0 0auto;" : "margin:20px 0 0;"
+      const underlineAlign =
+        align === "center" ? "margin:22px auto 0;" : align === "right" ? "margin:22px 0 0 auto;" : "margin:22px 0 0;"
       return `
       <tr>
-        <td style="padding:0;">
-          <div style="background:${HERO_BG};border-radius:16px 16px 0 0;overflow:hidden;">
+        <td style="padding:0;background:${HERO_BG};">
+          ${
+            img
+              ? `<img src="${esc(img)}" alt="" width="600" style="display:block;width:100%;max-width:600px;height:auto;border:0;margin:0;" />`
+              : ""
+          }
+          <div style="padding:36px 32px 40px;text-align:${align};background:${HERO_BG};">
             ${
-              img
-                ? `<img src="${esc(img)}" alt="" width="100%" style="display:block;width:100%;max-height:280px;object-fit:cover;border:0;" />`
+              block.eyebrow
+                ? `<div style="font-size:11px;font-weight:700;letter-spacing:0.32em;text-transform:uppercase;color:${accent};margin:0 0 16px;">${esc(prep(block.eyebrow, vars))}</div>`
                 : ""
             }
-            <div style="padding:32px 28px;text-align:${align};">
-              ${
-                block.eyebrow
-                  ? `<div style="font-size:11px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:${accent};margin:0 0 14px;">${esc(prep(block.eyebrow, vars))}</div>`
-                  : ""
-              }
-              <div style="font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-0.02em;color:#ffffff;">
-                ${accentize(prep(block.heading, vars), accent)}
-              </div>
-              ${
-                block.subheading
-                  ? `<div style="margin:14px 0 0;font-size:15px;line-height:1.6;color:${HERO_MUTED};">${accentize(prep(block.subheading, vars), accent)}</div>`
-                  : ""
-              }
-              <div style="width:56px;height:3px;background:${accent};border-radius:2px;${underlineAlign}"></div>
+            <div style="font-size:34px;line-height:1.12;font-weight:800;letter-spacing:-0.02em;color:#ffffff;margin:0;">
+              ${accentize(prep(block.heading, vars), accent)}
             </div>
+            ${
+              block.subheading
+                ? `<div style="margin:16px 0 0;font-size:15px;line-height:1.65;color:${HERO_MUTED};">${accentize(prep(block.subheading, vars), accent)}</div>`
+                : ""
+            }
+            <div style="width:60px;height:3px;background:${accent};border-radius:2px;${underlineAlign}"></div>
           </div>
         </td>
       </tr>`
@@ -208,25 +207,56 @@ export function renderBlocks(blocks: EmailBlock[], brand: EmailBranding, ctx: Re
   return blocks.map((b) => renderBlock(b, brand, ctx)).join("")
 }
 
-/** Wrap rendered rows in the branded email shell (canvas, card, footer). */
+/**
+ * Wrap rendered rows in the branded email shell. The brand header (wordmark) and
+ * the company footer are applied automatically to EVERY email from the shared
+ * EmailSettings branding — they are not blocks an admin adds per template, so the
+ * legally-required company details stay consistent and change in one place only.
+ */
 export function renderEmail(blocks: EmailBlock[], brand: EmailBranding, ctx: RenderContext = {}): string {
   const b = { ...DEFAULT_BRANDING, ...brand }
   const inner = renderBlocks(blocks, b, ctx)
+  const accent = b.accentColor || DEFAULT_BRANDING.accentColor
   const footerText = b.footerText || DEFAULT_BRANDING.footerText
+  const year = new Date().getFullYear()
+
+  const wordmark = (size: number, color: string) =>
+    `<span style="font-size:${size}px;font-weight:800;letter-spacing:0.4em;text-transform:uppercase;color:${color};padding-left:0.4em;">${esc(b.brandName)}</span>`
 
   return `<!doctype html>
 <html>
   <body style="margin:0;padding:0;background:${CANVAS};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
     <div style="max-width:600px;margin:0 auto;padding:28px 12px 40px;">
+      <!-- Brand header (automatic) -->
+      <div style="text-align:center;padding:2px 0 20px;">
+        ${wordmark(19, INK)}
+      </div>
+
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${PAPER};border:1px solid ${BORDER};border-radius:16px;border-collapse:separate;overflow:hidden;">
         ${inner}
         <tr><td style="padding:0 28px 32px;"></td></tr>
       </table>
-      <p style="text-align:center;color:${MUTED};font-size:12px;line-height:1.6;margin:20px 0 0;">
-        ${esc(footerText)}<br />
-        <span style="color:#9ca3af;">${esc(b.brandName)} · ${esc(b.footerCities)}</span>
-        ${b.address ? `<br /><span style="color:#9ca3af;">${esc(b.address)}</span>` : ""}
-      </p>
+
+      <!-- Company footer (automatic — sourced from brand settings) -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+        <tr>
+          <td style="padding:26px 20px 0;text-align:center;">
+            <div style="margin:0 0 10px;">${wordmark(13, "#9ca3af")}</div>
+            <p style="margin:0 0 14px;color:${MUTED};font-size:12px;line-height:1.6;">${esc(footerText)}</p>
+            <div style="width:40px;height:1px;background:${accent};opacity:0.5;margin:0 auto 14px;line-height:1px;font-size:0;">&nbsp;</div>
+            <p style="margin:0;color:#9ca3af;font-size:12px;line-height:1.7;">
+              ${esc(b.brandName)}${b.footerCities ? ` &middot; ${esc(b.footerCities)}` : ""}
+              ${b.address ? `<br />${esc(b.address)}` : ""}
+              ${
+                b.supportEmail
+                  ? `<br /><a href="mailto:${esc(b.supportEmail)}" style="color:#9ca3af;text-decoration:underline;">${esc(b.supportEmail)}</a>`
+                  : ""
+              }
+            </p>
+            <p style="margin:14px 0 0;color:#b6bcc6;font-size:11px;line-height:1.6;">&copy; ${year} ${esc(b.brandName)}. All rights reserved.</p>
+          </td>
+        </tr>
+      </table>
     </div>
   </body>
 </html>`

@@ -2,7 +2,7 @@ import "server-only"
 
 import { prisma } from "@/lib/db/prisma"
 import { DEFAULT_BRANDING, type EmailBlock, type EmailBranding } from "./blocks/types"
-import { SYSTEM_TEMPLATES } from "./blocks/system-templates"
+import { SYSTEM_TEMPLATES, SYSTEM_PRESETS } from "./blocks/system-templates"
 
 /**
  * Server-only data access for the email system. All admin server actions go
@@ -190,7 +190,17 @@ export async function resetSystemTemplate(id: number): Promise<void> {
 
 // ---------- Presets ----------
 
+/** Insert the built-in reply presets once, so Messages starts with usable snippets. */
+export async function seedPresets(): Promise<void> {
+  const count = await prisma.messagePreset.count()
+  if (count > 0) return
+  for (const p of SYSTEM_PRESETS) {
+    await prisma.messagePreset.create({ data: p })
+  }
+}
+
 export async function listPresets() {
+  await seedPresets()
   return prisma.messagePreset.findMany({ orderBy: { updatedAt: "desc" } })
 }
 export async function createPreset(input: { name: string; category: string; subject: string; body: string }) {

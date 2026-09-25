@@ -134,11 +134,122 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
       {
         id: bid("text"),
         type: "text",
-        text: "Write your campaign message here. Add sections from the block palette — headings, images, buttons, and more.",
+        text: "Write your campaign message here. Add sections from the block palette — or drop in a ready-made section preset to move faster.",
         align: "left",
+      },
+      {
+        id: bid("heading"),
+        type: "heading",
+        text: "Why people choose MOMO",
+        align: "left",
+      },
+      {
+        id: bid("list"),
+        type: "list",
+        title: "",
+        items: [
+          "One lab, one tuning standard across every product.",
+          "30-day home trial — listen before you commit.",
+          "2-year warranty and lifetime support.",
+        ],
+        ordered: false,
+      },
+      {
+        id: bid("callout"),
+        type: "callout",
+        title: "Members save first",
+        body: "Subscribers hear about *new releases and offers* before anyone else.",
       },
       { id: bid("btn"), type: "button", label: "Explore the collection", href: "{{shop_url}}", align: "left" },
     ],
+  },
+]
+
+/**
+ * Ready-made section presets for the builder's "Insert a section" row. Each is a
+ * small group of blocks an admin can drop in with one click, then edit — so a
+ * complete, on-brand email comes together without wiring every block by hand.
+ * Blocks are stored without ids; the editor assigns fresh ids on insert.
+ */
+export interface BlockPreset {
+  key: string
+  label: string
+  blocks: Omit<EmailBlock, "id">[]
+}
+
+export const BLOCK_PRESETS: BlockPreset[] = [
+  {
+    key: "feature_cta",
+    label: "Feature + button",
+    blocks: [
+      { type: "heading", text: "A headline for this section", align: "left" },
+      { type: "text", text: "Describe the product or news here. Use *asterisks* to accent key words.", align: "left" },
+      { type: "button", label: "Shop now", href: "{{shop_url}}", align: "left" },
+    ],
+  },
+  {
+    key: "steps",
+    label: "Numbered steps",
+    blocks: [
+      {
+        type: "list",
+        title: "What happens next",
+        items: ["First step goes here.", "Then this happens.", "And finally this."],
+        ordered: true,
+      },
+    ],
+  },
+  {
+    key: "highlight",
+    label: "Highlight note",
+    blocks: [{ type: "callout", title: "Good to know", body: "A highlighted note that stands out from the body copy." }],
+  },
+  {
+    key: "image_caption",
+    label: "Image + caption",
+    blocks: [
+      { type: "image", src: "/email/hero-offer.png", alt: "", href: "" },
+      { type: "text", text: "Add a short caption for the image above.", align: "center" },
+    ],
+  },
+  {
+    key: "signoff",
+    label: "Sign-off",
+    blocks: [
+      { type: "divider" },
+      { type: "text", text: "Questions? Just reply to this email — a real person reads every message.", align: "center" },
+    ],
+  },
+]
+
+/**
+ * Default reply presets for the Messages composer. Seeded into the DB on first
+ * use so staff start with reusable snippets instead of a blank inbox.
+ */
+export const SYSTEM_PRESETS: { name: string; category: string; subject: string; body: string }[] = [
+  {
+    name: "Delivery instructions",
+    category: "shipping",
+    subject: "About your MOMO delivery",
+    body: "Hi {{customer_name}},\n\nThanks for your order. Could you confirm any delivery instructions (safe place, buzzer code, preferred day)? We'll pass them to the courier.\n\nBest,\nThe MOMO team",
+  },
+  {
+    name: "Order update",
+    category: "orders",
+    subject: "An update on your MOMO order",
+    body: "Hi {{customer_name}},\n\nA quick update on order {{order_number}}: [add the update here].\n\nReply to this email if you have any questions.\n\nBest,\nThe MOMO team",
+  },
+  {
+    name: "Thank you",
+    category: "general",
+    subject: "Thank you from MOMO",
+    body: "Hi {{customer_name}},\n\nThank you for choosing MOMO. We hope you're enjoying the sound. If anything isn't perfect, just reply — we're here to help.\n\nBest,\nThe MOMO team",
+  },
+  {
+    name: "Back in stock",
+    category: "general",
+    subject: "It's back — your MOMO pick is in stock",
+    body: "Hi {{customer_name}},\n\nGood news: the item you were waiting for is back in stock. Reply if you'd like us to hold one for you.\n\nBest,\nThe MOMO team",
   },
 ]
 

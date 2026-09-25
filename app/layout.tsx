@@ -9,7 +9,7 @@ import { CatalogProvider } from "@/features/catalog"
 import { AuthProvider } from "@/lib/auth/auth-context"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SiteChrome } from "@/components/layout/site-chrome"
-import { getAllProducts } from "@/lib/data/products"
+import { getCatalogProducts } from "@/lib/catalog/db-actions"
 import { siteConfig } from "@/lib/data/site"
 import { getBaseUrl } from "@/lib/seo/site"
 import { JsonLd } from "@/components/seo/json-ld"
@@ -70,12 +70,12 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const catalog = getAllProducts()
+  const catalog = await getCatalogProducts()
 
   return (
     <html lang="en" className="bg-background" suppressHydrationWarning>

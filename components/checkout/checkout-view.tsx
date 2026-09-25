@@ -20,7 +20,6 @@ export function CheckoutView() {
   const { lines, subtotal, currency, itemCount, clear } = useCart()
   const { user, redeemOffers } = useAuth()
   const { createOrder } = useOrders(user?.id)
-  const { recordSale } = useCatalog()
   const router = useRouter()
   const [placing, setPlacing] = useState(false)
   const [error, setError] = useState<string | null>(null)

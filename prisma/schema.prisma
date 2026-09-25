@@ -1,0 +1,133 @@
+// MOMO Email System — Prisma schema (Neon Postgres).
+//
+// Strapi-forward by design: plural snake_case table names via @@map, standard
+// id / created_at / updated_at columns, and JSON columns for structured content
+// (blocks, audience, stats). A Strapi v5 backend can later adopt these tables
+// directly, or round-trip via `prisma db pull` / `pg_dump`. No Postgres-only
+// exotic types are used.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+/// Singleton brand/config row (id is always 1). One source of truth for the
+/// branding every template and server-side send shares.
+model EmailSettings {
+  id           Int      @id @default(autoincrement())
+  brandName    String   @default("MOMO") @map("brand_name")
+  fromName     String   @default("MOMO Audio") @map("from_name")
+  supportEmail String   @default("") @map("support_email")
+  heroImageUrl String   @default("") @map("hero_image_url")
+  accentColor  String   @default("#2dd4bf") @map("accent_color")
+  footerText   String   @default("") @map("footer_text")
+  footerCities String   @default("London · Copenhagen · Accra · Tokyo") @map("footer_cities")
+  address      String   @default("")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("email_settings")
+}
+
+/// A block-based email template. `blocks` holds the ordered section/block model
+/// as JSON so non-technical staff can add / reorder sections without code.
+model EmailTemplate {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  name        String
+  category    String   @default("marketing") // transactional | marketing | system
+  subject     String   @default("")
+  previewText String   @default("") @map("preview_text")
+  description String   @default("")
+  blocks      Json     @default("[]")
+  isSystem    Boolean  @default(false) @map("is_system")
+  version     Int      @default(1)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  campaigns Campaign[]
+
+  @@map("email_templates")
+}
+
+/// Reusable snippet for replying to customers (delivery instructions, next
+/// steps, etc.).
+model MessagePreset {
+  id        Int      @id @default(autoincrement())
+  name      String
+  category  String   @default("general")
+  subject   String   @default("")
+  body      String   @default("")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("message_presets")
+}
+
+/// Log of an outbound admin -> customer message.
+model CustomerMessage {
+  id            Int      @id @default(autoincrement())
+  customerEmail String   @map("customer_email")
+  customerName  String   @default("") @map("customer_name")
+  subject       String
+  body          String
+  presetId      Int?     @map("preset_id")
+  replyTo       String   @default("") @map("reply_to")
+  resendId      String   @default("") @map("resend_id")
+  status        String   @default("sent")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("customer_messages")
+}
+
+/// A marketing campaign built from a template and sent to an audience.
+model Campaign {
+  id          Int       @id @default(autoincrement())
+  name        String
+  templateId  Int?      @map("template_id")
+  subject     String    @default("")
+  previewText String    @default("") @map("preview_text")
+  audience    Json      @default("{}")
+  status      String    @default("draft") // draft | scheduled | sending | sent
+  stats       Json      @default("{}")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  sentAt      DateTime? @map("sent_at")
+
+  template EmailTemplate? @relation(fields: [templateId], references: [id])
+
+  @@map("campaigns")
+}
+
+/// Newsletter / marketing audience. Opt-in respected on send.
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String   @default("")
+  optedIn   Boolean  @default(true) @map("opted_in")
+  source    String   @default("manual")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("subscribers")
+}
+
+/// Unified record of every send (transactional, campaign, customer message)
+/// powering the Overview dashboard.
+model EmailLog {
+  id          Int      @id @default(autoincrement())
+  to          String
+  subject     String
+  templateKey String   @default("") @map("template_key")
+  type        String   @default("transactional") // transactional | campaign | message | test
+  relatedId   String   @default("") @map("related_id")
+  resendId    String   @default("") @map("resend_id")
+  status      String   @default("sent") // sent | skipped | failed
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("email_log")
+}

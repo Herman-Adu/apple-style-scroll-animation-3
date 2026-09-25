@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import type { BlockType, EmailBlock, EmailBranding } from "@/features/email/blocks/types"
-import { TEMPLATE_TOKENS } from "@/features/email/blocks/system-templates"
+import { TEMPLATE_TOKENS, BLOCK_PRESETS } from "@/features/email/blocks/system-templates"
 import {
   resetTemplateAction,
   saveTemplateAction,
@@ -141,6 +141,14 @@ export function TemplateEditor({ template, branding }: { template: EditorTemplat
     const block = makeBlock(type)
     mutate(() => setBlocks((prev) => [...prev, block]))
     setSelectedId(block.id)
+  }
+
+  function addPreset(key: string) {
+    const preset = BLOCK_PRESETS.find((p) => p.key === key)
+    if (!preset) return
+    const added = preset.blocks.map((b) => ({ ...b, id: uid() }) as EmailBlock)
+    mutate(() => setBlocks((prev) => [...prev, ...added]))
+    setSelectedId(added[0]?.id ?? null)
   }
 
   function removeBlock(id: string) {
@@ -325,6 +333,26 @@ export function TemplateEditor({ template, branding }: { template: EditorTemplat
                 >
                   <p.icon className="size-3.5" aria-hidden />
                   {p.label}
+                </button>
+              ))}
+            </div>
+
+            <h3 className="mb-3 mt-6 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+              Quick presets
+            </h3>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Add a whole ready-made section — you can edit every part afterwards.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {BLOCK_PRESETS.map((preset) => (
+                <button
+                  key={preset.key}
+                  type="button"
+                  onClick={() => addPreset(preset.key)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-border bg-background px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-accent-teal/40 hover:text-accent-teal"
+                >
+                  <Plus className="size-3.5" aria-hidden />
+                  {preset.label}
                 </button>
               ))}
             </div>

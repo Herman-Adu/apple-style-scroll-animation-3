@@ -96,7 +96,7 @@ export async function sendTemplateTestAction(input: { id: number; to: string }) 
   const [tpl, branding] = await Promise.all([getTemplate(input.id), getBranding()])
   if (!tpl) return { ok: false as const, error: "Template not found" }
   const vars = sampleVars(branding)
-  const html = renderEmail(tpl.blocks, branding, { vars })
+  const html = renderEmail(tpl.blocks, branding, { vars, baseUrl: getBaseUrl() })
   const text = renderText(tpl.blocks, branding, { vars })
   const subject = fill(tpl.subject, vars)
   const result = await sendEmail({ to: input.to, subject, html, text, replyTo: branding.supportEmail || undefined })
@@ -172,7 +172,7 @@ export async function sendCustomerMessageAction(input: {
       .filter(Boolean)
       .map<EmailBlock>((para, i) => ({ id: `p-${i}`, type: "text", text: para, align: "left" })),
   ]
-  const html = renderEmail(blocks, branding, { vars })
+  const html = renderEmail(blocks, branding, { vars, baseUrl: getBaseUrl() })
   const text = renderText(blocks, branding, { vars })
   const replyTo = branding.supportEmail || process.env.EMAIL_TO || undefined
 
@@ -279,7 +279,7 @@ export async function sendCampaignAction(id: number) {
       shop_url: shopUrl,
     }
     const subject = fill(campaign.subject || tpl.subject, vars)
-    const html = renderEmail(tpl.blocks, branding, { vars })
+    const html = renderEmail(tpl.blocks, branding, { vars, baseUrl: getBaseUrl() })
     const text = renderText(tpl.blocks, branding, { vars })
     const result = await sendEmail({ to: r.email, subject, html, text, replyTo: branding.supportEmail || undefined })
     if (!result.ok) failed++

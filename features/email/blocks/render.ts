@@ -20,6 +20,27 @@ export interface RenderContext {
   vars?: Record<string, string>
   /** Pre-rendered HTML for dynamic blocks, keyed by block type. */
   dynamic?: Partial<Record<EmailBlock["type"], string>>
+  /**
+   * Absolute origin (e.g. "https://momoaudio.com") used to rewrite root-relative
+   * image paths like "/email/hero-momo.png" into fully-qualified URLs. Emails have
+   * no page origin, so relative image src never loads in a mail client. Set this at
+   * send time; the admin live preview omits it and relies on the page origin.
+   */
+  baseUrl?: string
+}
+
+/**
+ * Resolve an image path to an absolute URL when a baseUrl is provided. Already
+ * absolute URLs (http/https, protocol-relative, data:) pass through untouched so
+ * CMS media and admin-entered full URLs are never double-prefixed. Without a
+ * baseUrl the value is returned as-is (client preview against the page origin).
+ */
+function resolveSrc(src: string, baseUrl?: string): string {
+  const s = String(src ?? "")
+  if (!baseUrl || !s) return s
+  if (/^(https?:)?\/\//i.test(s) || s.startsWith("data:")) return s
+  const base = baseUrl.replace(/\/$/, "")
+  return `${base}${s.startsWith("/") ? s : `/${s}`}`
 }
 
 /** Escape user text destined for an HTML context. */
@@ -66,7 +87,7 @@ function renderBlock(block: EmailBlock, brand: EmailBranding, ctx: RenderContext
 
   switch (block.type) {
     case "hero": {
-      const img = block.imageUrl || brand.heroImageUrl
+      const img = resolveSrc(block.imageUrl || brand.heroImageUrl, ctx.baseUrl)
       const align = alignToCss(block.align)
       const underlineAlign = align === "center" ? "margin:20px auto 0;" : align === "right" ? "margin:20px 0 0auto;" : "margin:20px 0 0;"
       return `
@@ -130,7 +151,7 @@ function renderBlock(block: EmailBlock, brand: EmailBranding, ctx: RenderContext
     }
 
     case "image": {
-      const tag = `<img src="${esc(prep(block.src, vars))}" alt="${esc(block.alt)}" width="100%" style="display:block;width:100%;border:0;border-radius:12px;" />`
+      const tag = `<img src="${esc(resolveSrc(prep(block.src, vars), ctx.baseUrl))}" alt="${esc(block.alt)}" width="100%" style="display:block;width:100%;border:0;border-radius:12px;" />`
       return `
       <tr><td style="padding:16px 28px 0;">
         ${block.href ? `<a href="${esc(prep(block.href, vars))}" style="text-decoration:none;">${tag}</a>` : tag}

@@ -87,6 +87,7 @@ export function orderConfirmationEmail(params: {
   branding?: Partial<EmailBranding>
   blocks?: EmailBlock[]
   shopUrl?: string
+  baseUrl?: string
 }): Rendered {
   const b = brand(params.branding)
   const blocks = params.blocks ?? getSystemTemplate("order_confirmation")!.blocks
@@ -96,7 +97,7 @@ export function orderConfirmationEmail(params: {
     order_number: params.order.number,
     shop_url: params.shopUrl ?? "/products",
   }
-  const ctx: RenderContext = { vars, dynamic: { orderSummary: orderSummaryHtml(params.order) } }
+  const ctx: RenderContext = { vars, dynamic: { orderSummary: orderSummaryHtml(params.order) }, baseUrl: params.baseUrl }
   return {
     subject: fillSubject(getSystemTemplate("order_confirmation")!.subject, vars),
     html: renderEmail(blocks, b, ctx),
@@ -123,6 +124,7 @@ export function personalOfferEmail(params: {
   shopUrl: string
   branding?: Partial<EmailBranding>
   blocks?: EmailBlock[]
+  baseUrl?: string
 }): Rendered {
   const b = brand(params.branding)
   const blocks = params.blocks ?? getSystemTemplate("personal_offer")!.blocks
@@ -140,7 +142,7 @@ export function personalOfferEmail(params: {
     offer_label: params.offer.label || "Special offer",
     offer_expiry: expiry,
   }
-  const ctx: RenderContext = { vars }
+  const ctx: RenderContext = { vars, baseUrl: params.baseUrl }
   return {
     subject: fillSubject(getSystemTemplate("personal_offer")!.subject, vars),
     html: renderEmail(blocks, b, ctx),
@@ -182,7 +184,7 @@ export function businessOrderNotificationEmail(params: { order: Order; customerN
   return { subject: `New order — ${order.number} · ${formatMoney({ amount: order.total, currency: order.currency })}`, html, text }
 }
 
-export function testEmail(params?: { branding?: Partial<EmailBranding> }): Rendered {
+export function testEmail(params?: { branding?: Partial<EmailBranding>; baseUrl?: string }): Rendered {
   const b = brand(params?.branding)
   const blocks: EmailBlock[] = [
     {
@@ -203,7 +205,7 @@ export function testEmail(params?: { branding?: Partial<EmailBranding> }): Rende
   ]
   return {
     subject: `${b.brandName} — email configuration test`,
-    html: renderEmail(blocks, b, {}),
+    html: renderEmail(blocks, b, { baseUrl: params?.baseUrl }),
     text: renderText(blocks, b, {}),
   }
 }

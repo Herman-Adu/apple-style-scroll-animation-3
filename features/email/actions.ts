@@ -32,6 +32,7 @@ export async function sendOrderConfirmation(params: { to: string; name: string; 
     branding,
     blocks: blocks ?? undefined,
     shopUrl: `${getBaseUrl()}/products`,
+    baseUrl: getBaseUrl(),
   })
   const result = await sendEmail({ to: params.to, subject, html, text })
   await recordLog({
@@ -94,6 +95,7 @@ export async function sendPersonalOffer(params: {
     shopUrl,
     branding,
     blocks: blocks ?? undefined,
+    baseUrl: getBaseUrl(),
   })
   const result = await sendEmail({ to: params.to, subject, html, text })
   await recordLog({
@@ -115,7 +117,7 @@ export async function getEmailConfigured(): Promise<boolean> {
 /** Admin: send a test email to verify Resend + sending domain are working. */
 export async function sendTestEmail(params: { to: string }) {
   const branding = await getBranding()
-  const { subject, html, text } = testEmail({ branding })
+  const { subject, html, text } = testEmail({ branding, baseUrl: getBaseUrl() })
   const result = await sendEmail({ to: params.to, subject, html, text })
   await recordLog({
     to: params.to,

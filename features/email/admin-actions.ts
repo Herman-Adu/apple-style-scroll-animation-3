@@ -5,6 +5,12 @@ import { sendEmail } from "./provider"
 import { renderEmail, renderText } from "./blocks/render"
 import type { EmailBlock, EmailBranding } from "./blocks/types"
 import { getBaseUrl } from "@/lib/seo/site"
+
+/**
+ * Final in-code fallback reply-to for customer messages, used when neither the
+ * branding support email nor EMAIL_TO is set. Points at the admin domain.
+ */
+const DEFAULT_ADMIN_EMAIL = "admin@adudev.co.uk"
 import {
   type AudienceSpec,
   createCampaign,
@@ -174,7 +180,7 @@ export async function sendCustomerMessageAction(input: {
   ]
   const html = renderEmail(blocks, branding, { vars, baseUrl: getBaseUrl() })
   const text = renderText(blocks, branding, { vars })
-  const replyTo = branding.supportEmail || process.env.EMAIL_TO || undefined
+  const replyTo = branding.supportEmail || process.env.EMAIL_TO || DEFAULT_ADMIN_EMAIL
 
   const result = await sendEmail({ to: input.to, subject: input.subject, html, text, replyTo })
   await recordMessage({

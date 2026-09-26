@@ -13,6 +13,13 @@ import type { Order } from "@/lib/orders/types"
 import { getBaseUrl } from "@/lib/seo/site"
 
 /**
+ * Final in-code fallback recipient for business notifications, used when neither
+ * EMAIL_TO nor EMAIL_FROM is set in the environment. Points at the admin domain
+ * so test-environment order alerts always land in a real inbox.
+ */
+const DEFAULT_ADMIN_EMAIL = "admin@adudev.co.uk"
+
+/**
  * Server actions for transactional email. These are the only email entry points
  * the app calls — callers never touch the transport directly. Each returns a
  * result but callers treat email as fire-and-forget: a failed or skipped send
@@ -66,7 +73,7 @@ export async function sendLowStockAlert(params: {
 }
 
 export async function sendOrderNotification(params: { order: Order; customerName?: string }) {
-  const to = process.env.EMAIL_TO || process.env.EMAIL_FROM
+  const to = process.env.EMAIL_TO || process.env.EMAIL_FROM || DEFAULT_ADMIN_EMAIL
   if (!to) return { ok: true as const, id: null, skipped: true as const, reason: "no recipient configured" }
   const { subject, html, text } = businessOrderNotificationEmail({ order: params.order, customerName: params.customerName })
   const result = await sendEmail({ to, subject, html, text })

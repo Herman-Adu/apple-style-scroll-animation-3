@@ -17,12 +17,28 @@ export interface EnquiryField {
   full?: boolean
 }
 
+/** Who may submit an enquiry type. Missing = "public" (anyone). */
+export type EnquiryAccess = "public" | "account"
+
+/** Guidance shown to signed-out users when a type is account-gated. */
+export interface EnquiryGate {
+  title: string
+  description: string
+  /** Optional secondary link (e.g. to the docs) shown alongside sign-in. */
+  href?: string
+  hrefLabel?: string
+}
+
 export interface EnquiryType {
   id: string
   label: string
   description: string
   /** Icon key mapped to a lucide icon in the UI layer. */
   icon: "message" | "lifebuoy" | "star" | "building" | "newspaper"
+  /** Access rule for submitting this type. Defaults to "public" when omitted. */
+  access?: EnquiryAccess
+  /** Copy shown to signed-out users when `access` is "account". */
+  gate?: EnquiryGate
   /** The dynamic fields collected for this enquiry type. */
   fields: EnquiryField[]
 }

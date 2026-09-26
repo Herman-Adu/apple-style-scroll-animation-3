@@ -5,6 +5,7 @@ import { enquiryTypes } from "@/lib/data/contact"
 import { enquiryInputSchema } from "@/lib/contact/schema"
 import { checkRateLimit } from "@/lib/contact/rate-limit"
 import { submitEnquiry } from "@/lib/contact/submit"
+import { getServerSession } from "@/lib/auth/server"
 import type { ContactActionResult } from "@/lib/contact/types"
 
 /**
@@ -49,6 +50,19 @@ export async function submitEnquiryAction(raw: unknown): Promise<ContactActionRe
   const type = enquiryTypes.find((t) => t.id === input.type)
   if (!type) {
     return { ok: false, error: "Unknown enquiry type.", fieldErrors: { type: ["Unknown enquiry type."] } }
+  }
+
+  // Account-gated topics (e.g. product support, reviews) require a valid
+  // session. This is the trust boundary — the client also hides these behind a
+  // sign-in prompt, but that is only UX and can be bypassed.
+  if (type.access === "account") {
+    const session = await getServerSession()
+    if (!session) {
+      return {
+        ok: false,
+        error: `Please sign in to submit a ${type.label.toLowerCase()}.`,
+      }
+    }
   }
 
   try {

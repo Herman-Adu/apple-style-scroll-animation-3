@@ -274,4 +274,31 @@ model ProductOverlay {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("product_overlay")
-}
+  }
+
+// Singleton row holding the store's business identity (company profile) and
+// operational settings. Replaces the former `admin:company` + `admin:settings`
+// localStorage stores so settings persist server-side and survive across
+// devices/browsers. Strapi-portable: plain columns + JSON address.
+model StoreSettings {
+  id                Int      @id @default(autoincrement())
+  // Company / legal identity
+  companyName       String   @default("") @map("company_name")
+  contactPerson     String   @default("") @map("contact_person")
+  contactEmail      String   @default("") @map("contact_email")
+  supportPhone      String   @default("") @map("support_phone")
+  address           Json     @default("{}")
+  vatNumber         String   @default("") @map("vat_number")
+  industry          String   @default("")
+  logoUrl           String?  @map("logo_url")
+  onboarded         Boolean  @default(false)
+  // Storefront-facing + operational settings
+  storeName         String   @default("MOMO Audio") @map("store_name")
+  supportEmail      String   @default("hello@momoaudio.com") @map("support_email")
+  currency          String   @default("GBP")
+  lowStockThreshold Int      @default(5) @map("low_stock_threshold")
+  emailAlerts       Boolean  @default(true) @map("email_alerts")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("store_settings")
+  }

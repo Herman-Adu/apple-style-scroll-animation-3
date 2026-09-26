@@ -21,6 +21,10 @@ export const strapiTags = {
   timeline: {
     all: () => "timeline",
   },
+  docs: {
+    all: () => "docs",
+    detail: (slug: string) => `doc:${slug}`,
+  },
 } as const
 
 /** Strapi content-type UID / model name -> the cache tags it should bust. */
@@ -32,6 +36,8 @@ export function tagsForModel(model: string, slug?: string): string[] {
       return slug ? [strapiTags.articles.all(), strapiTags.articles.detail(slug)] : [strapiTags.articles.all()]
     case "milestone":
       return [strapiTags.timeline.all()]
+    case "doc":
+      return slug ? [strapiTags.docs.all(), strapiTags.docs.detail(slug)] : [strapiTags.docs.all()]
     default:
       return []
   }

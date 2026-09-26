@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowLeft,
@@ -9,6 +10,7 @@ import {
   Check,
   LifeBuoy,
   Loader2,
+  Lock,
   MessageSquare,
   Newspaper,
   Star as StarIcon,
@@ -50,7 +52,7 @@ function isEmail(value: string) {
 }
 
 export function ContactForm() {
-  const { user } = useAuth()
+  const { user, status } = useAuth()
   const [step, setStep] = useState(0)
   const [typeId, setTypeId] = useState<string | null>(null)
   const [name, setName] = useState("")
@@ -92,6 +94,16 @@ export function ContactForm() {
     [typeId],
   )
 
+  // A topic is "locked" when it requires an account and the viewer is not
+  // authenticated. While auth is still resolving we treat it as locked too, so
+  // the flow never briefly exposes a gated form before the session loads.
+  const requiresAccount = selectedType?.access === "account"
+  const locked = requiresAccount && status !== "authenticated"
+  const showGate = requiresAccount && status === "unauthenticated"
+  const signInHref = typeId
+    ? `/sign-in?redirect=${encodeURIComponent(`/contact?topic=${typeId}`)}`
+    : "/sign-in"
+
   function setField(nameKey: string, value: string | number) {
     setValues((prev) => ({ ...prev, [nameKey]: value }))
   }
@@ -112,6 +124,11 @@ export function ContactForm() {
   }
 
   function goNext() {
+    // Never advance past topic selection into a gated topic while signed out.
+    if (step === 0 && locked) {
+      setTouched(true)
+      return
+    }
     if (!stepValid(step)) {
       setTouched(true)
       return
@@ -158,7 +175,7 @@ export function ContactForm() {
         }
       }
 
-      setResult(res.reference)
+      setResult(res.reference ?? "—")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
     } finally {
@@ -293,6 +310,41 @@ export function ContactForm() {
               </div>
               {touched && !typeId && (
                 <p className="text-xs text-red-400">Please choose a topic to continue.</p>
+              )}
+
+              {/* Auth gate — shown when a signed-out visitor picks an
+                  account-only topic (product support, reviews). */}
+              {showGate && selectedType?.gate && (
+                <div className="mt-1 flex flex-col gap-4 rounded-xl border border-foreground/15 bg-foreground/[0.04] p-5">
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-foreground/10 text-foreground/70">
+                      <Lock className="h-5 w-5" strokeWidth={1.5} />
+                    </span>
+                    <div className="flex flex-col gap-1">
+                      <h4 className="text-sm font-semibold text-foreground">{selectedType.gate.title}</h4>
+                      <p className="text-xs leading-relaxed text-foreground/55">
+                        {selectedType.gate.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Link
+                      href={signInHref}
+                      className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-90"
+                    >
+                      Sign in
+                      <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
+                    </Link>
+                    {selectedType.gate.href && (
+                      <Link
+                        href={selectedType.gate.href}
+                        className="inline-flex items-center rounded-full border border-foreground/15 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] text-foreground/70 transition-colors hover:border-foreground/30 hover:text-foreground"
+                      >
+                        {selectedType.gate.hrefLabel ?? "Learn more"}
+                      </Link>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -463,7 +515,18 @@ export function ContactForm() {
           <span />
         )}
 
-        {step < steps.length - 1 ? (
+        {step === 0 && locked ? (
+          // Signed-out visitor on an account-only topic: the gate card above
+          // carries the sign-in / docs actions, so suppress Continue here.
+          status === "loading" ? (
+            <span className="flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-foreground/40">
+              <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />
+              Checking your account
+            </span>
+          ) : (
+            <span />
+          )
+        ) : step < steps.length - 1 ? (
           <button
             type="button"
             onClick={goNext}

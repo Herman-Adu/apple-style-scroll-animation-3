@@ -109,6 +109,7 @@ export const enquiryTypes: EnquiryType[] = [
     label: "General enquiry",
     description: "Questions about products, orders, or anything else.",
     icon: "message",
+    access: "public",
     fields: [
       { name: "subject", label: "Subject", type: "text", placeholder: "How can we help?", required: true },
       {
@@ -126,6 +127,14 @@ export const enquiryTypes: EnquiryType[] = [
     label: "Product support",
     description: "Help with a device you already own.",
     icon: "lifebuoy",
+    access: "account",
+    gate: {
+      title: "Sign in for product support",
+      description:
+        "Support is tied to your account so we can see your orders and registered devices. Sign in to continue — or browse our help docs for quick answers to common questions.",
+      href: "/docs",
+      hrefLabel: "Browse help docs",
+    },
     fields: [
       { name: "product", label: "Product", type: "select", optionsSource: "products", required: true },
       { name: "orderNumber", label: "Order number", type: "text", placeholder: "MOMO-XXXXXX" },
@@ -144,6 +153,12 @@ export const enquiryTypes: EnquiryType[] = [
     label: "Leave a review",
     description: "Share your experience with a Momo product.",
     icon: "star",
+    access: "account",
+    gate: {
+      title: "Sign in to leave a review",
+      description:
+        "Reviews are linked to your account to keep them genuine and let you manage them later. Sign in or create an account to share your experience.",
+    },
     fields: [
       { name: "product", label: "Which product?", type: "select", optionsSource: "products", required: true },
       { name: "rating", label: "Your rating", type: "rating", required: true, full: true },
@@ -163,6 +178,7 @@ export const enquiryTypes: EnquiryType[] = [
     label: "Wholesale & partnership",
     description: "Stock Momo Audio or partner with us.",
     icon: "building",
+    access: "public",
     fields: [
       { name: "company", label: "Company", type: "text", placeholder: "Company name", required: true },
       { name: "country", label: "Country / region", type: "text", placeholder: "Where you operate", required: true },
@@ -181,6 +197,7 @@ export const enquiryTypes: EnquiryType[] = [
     label: "Press & media",
     description: "Interviews, review units, and assets.",
     icon: "newspaper",
+    access: "public",
     fields: [
       { name: "publication", label: "Publication", type: "text", placeholder: "Where you write", required: true },
       { name: "deadline", label: "Deadline", type: "text", placeholder: "Optional" },

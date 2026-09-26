@@ -1,22 +1,17 @@
-// Catalog persistence — pure store logic + browser IO.
+// Catalog store — pure map logic shared across the app.
 //
-// Pre-Strapi, this is the shared datastore the admin writes to and the
-// storefront reads from. It's seeded from the server catalog and persisted to
-// localStorage, so admin CRUD and stock changes survive reloads and reflect on
-// the storefront within the same browser. Every mutation is a pure function
-// over a ProductMap; the React provider in `catalog-context.tsx` orchestrates
-// state, persistence, and cross-tab sync.
-//
-// When Strapi is connected, these same operations map 1:1 onto
-// create/update/delete calls through `mutateStrapi`, and this local overlay is
-// bypassed (the server becomes the source of truth). The shapes below are the
-// contract that migration targets.
+// This module is persistence-free: the catalog lives in Neon (seed + admin
+// overlay) via `lib/catalog/db-actions.ts`, and the React provider in
+// `catalog-context.tsx` reads/writes through those server actions. What remains
+// here are the pure, side-effect-free operations over a ProductMap — slug
+// helpers, product construction, patching, and sale/stock accounting — reused
+// by both the client provider and the server actions so the rules live in one
+// place. These shapes are also the contract the eventual Strapi migration maps
+// onto 1:1.
 
 import type { Product } from "@/features/products"
 import { productSchema } from "@/features/products"
 import { effectiveStock } from "@/features/products"
-
-export const CATALOG_STORAGE_KEY = "momo.catalog.v1"
 
 export type ProductMap = Record<string, Product>
 
@@ -82,55 +77,12 @@ export function uniqueSlug(base: string, map: ProductMap): string {
   return slug
 }
 
-// --- Browser IO -------------------------------------------------------------
-
-export function readStoredCatalog(): ProductMap | null {
-  if (typeof window === "undefined") return null
-  try {
-    const raw = window.localStorage.getItem(CATALOG_STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw) as unknown
-    if (!parsed || typeof parsed !== "object") return null
-    // Re-parse each record through the schema so persisted data that predates a
-    // field (e.g. added inventory) is upgraded via defaults instead of trusted blindly.
-    const map: ProductMap = {}
-    for (const [slug, value] of Object.entries(parsed as Record<string, unknown>)) {
-      const result = productSchema.safeParse(value)
-      if (result.success) map[slug] = result.data
-    }
-    return map
-  } catch {
-    return null
-  }
-}
-
-export function writeStoredCatalog(map: ProductMap): void {
-  if (typeof window === "undefined") return
-  try {
-    window.localStorage.setItem(CATALOG_STORAGE_KEY, JSON.stringify(map))
-  } catch {
-    // Quota or serialization failure is non-fatal; the in-memory state still holds.
-  }
-}
-
 // --- Pure map operations ----------------------------------------------------
 
 export function toMap(products: Product[]): ProductMap {
   const map: ProductMap = {}
   for (const p of products) map[p.slug] = p
   return map
-}
-
-/**
- * Merge the server seed with any locally-persisted catalog. Persisted records
- * win (they carry admin edits), and seed products missing locally are added so
- * newly-shipped catalog entries appear without wiping local state.
- */
-export function mergeSeed(seed: Product[], stored: ProductMap | null): ProductMap {
-  if (!stored) return toMap(seed)
-  const merged: ProductMap = { ...stored }
-  for (const p of seed) if (!merged[p.slug]) merged[p.slug] = p
-  return merged
 }
 
 export function buildProduct(input: NewProductInput, map: ProductMap): Product {

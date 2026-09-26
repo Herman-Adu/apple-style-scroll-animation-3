@@ -19,6 +19,8 @@ import { commerceCartCheckout } from "./commerce-cart-checkout"
 import { authenticationAndAccess } from "./authentication-and-access"
 import { positioningAndSelling } from "./positioning-and-selling"
 import { pricingAndPackaging } from "./pricing-and-packaging"
+import { emailSellingPoints } from "./email-selling-points"
+import { showcaseAndPortfolio } from "./showcase-and-portfolio"
 
 /**
  * The local docs corpus. This is the single source that the api/ seam reads
@@ -49,4 +51,6 @@ export const docs: Doc[] = [
   authenticationAndAccess,
   positioningAndSelling,
   pricingAndPackaging,
+  emailSellingPoints,
+  showcaseAndPortfolio,
 ]

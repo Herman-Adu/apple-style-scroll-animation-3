@@ -7,6 +7,7 @@ import { warrantyAndReturnsGuide } from "./warranty-and-returns-guide"
 import { ordersAndFulfillment } from "./orders-and-fulfillment"
 import { managingCustomers } from "./managing-customers"
 import { mediaAndAssets } from "./media-and-assets"
+import { cmsAndPublishing } from "./cms-and-publishing"
 import { managingTheProductCatalog } from "./managing-the-product-catalog"
 import { ordersAndEmailOperations } from "./orders-and-email-operations"
 import { companyProfileAndSetup } from "./company-profile-and-setup"
@@ -45,6 +46,7 @@ export const docs: Doc[] = [
   ordersAndFulfillment,
   managingCustomers,
   mediaAndAssets,
+  cmsAndPublishing,
   // Content management (admin)
   managingTheProductCatalog,
   ordersAndEmailOperations,

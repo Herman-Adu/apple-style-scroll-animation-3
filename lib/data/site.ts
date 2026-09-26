@@ -78,11 +78,6 @@ export const mainNav: NavLink[] = [
     })),
   },
   {
-    label: "Docs",
-    href: "/docs",
-    icon: BookOpen,
-  },
-  {
     label: "Contact",
     href: "/contact",
     icon: Mail,
@@ -115,6 +110,7 @@ export const footerNav: { title: string; links: NavLink[] }[] = [
   {
     title: "Support",
     links: [
+      { label: "Help & Docs", href: "/docs" },
       { label: "Warranty", href: "/warranty" },
       { label: "Shipping", href: "/shipping" },
       { label: "Returns", href: "/returns" },

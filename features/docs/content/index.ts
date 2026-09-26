@@ -21,6 +21,9 @@ import { positioningAndSelling } from "./positioning-and-selling"
 import { pricingAndPackaging } from "./pricing-and-packaging"
 import { emailSellingPoints } from "./email-selling-points"
 import { showcaseAndPortfolio } from "./showcase-and-portfolio"
+import { socialAndRecruitmentMarketing } from "./social-and-recruitment-marketing"
+import { salesDemoAndObjections } from "./sales-demo-and-objections"
+import { productRoadmap } from "./product-roadmap"
 
 /**
  * The local docs corpus. This is the single source that the api/ seam reads
@@ -53,4 +56,7 @@ export const docs: Doc[] = [
   pricingAndPackaging,
   emailSellingPoints,
   showcaseAndPortfolio,
+  socialAndRecruitmentMarketing,
+  salesDemoAndObjections,
+  productRoadmap,
 ]

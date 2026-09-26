@@ -39,7 +39,7 @@ export function isStrapiConfigured(): boolean {
  * users-permissions role and this list is ignored.
  */
 export const adminEmails: string[] = (
-  process.env.NEXT_PUBLIC_ADMIN_EMAILS || "herman@adudev.co.uk,admin@momoaudio.com"
+  process.env.NEXT_PUBLIC_ADMIN_EMAILS || "herman@adudev.co.uk,admin@adudev.co.uk"
 )
   .split(",")
   .map((email) => email.trim().toLowerCase())

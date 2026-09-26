@@ -5,6 +5,8 @@ import { troubleshootingCommonIssues } from "./troubleshooting-common-issues"
 import { managingTheProductCatalog } from "./managing-the-product-catalog"
 import { ordersAndEmailOperations } from "./orders-and-email-operations"
 import { companyProfileAndSetup } from "./company-profile-and-setup"
+import { systemArchitecture } from "./system-architecture"
+import { dataLayerAndDatabase } from "./data-layer-and-database"
 import { serverFirstPlaybook } from "./server-first-playbook"
 import { strapiMigrationRunbook } from "./strapi-migration-runbook"
 import { strapiContentModeling } from "./strapi-content-modeling"
@@ -29,6 +31,8 @@ export const docs: Doc[] = [
   ordersAndEmailOperations,
   companyProfileAndSetup,
   // Developer & CTO (admin)
+  systemArchitecture,
+  dataLayerAndDatabase,
   serverFirstPlaybook,
   strapiMigrationRunbook,
   strapiContentModeling,

@@ -3,6 +3,7 @@ import { gettingStartedWithYourDevice } from "./getting-started-with-your-device
 import { caringForYourHeadphones } from "./caring-for-your-headphones"
 import { troubleshootingCommonIssues } from "./troubleshooting-common-issues"
 import { frequentlyAskedQuestions } from "./frequently-asked-questions"
+import { warrantyAndReturnsGuide } from "./warranty-and-returns-guide"
 import { managingTheProductCatalog } from "./managing-the-product-catalog"
 import { ordersAndEmailOperations } from "./orders-and-email-operations"
 import { companyProfileAndSetup } from "./company-profile-and-setup"
@@ -37,6 +38,7 @@ export const docs: Doc[] = [
   caringForYourHeadphones,
   troubleshootingCommonIssues,
   frequentlyAskedQuestions,
+  warrantyAndReturnsGuide,
   // Content management (admin)
   managingTheProductCatalog,
   ordersAndEmailOperations,

@@ -25,16 +25,12 @@ import {
  */
 export function AdminOnboarding() {
   const { company, completeOnboarding, skipOnboarding } = useCompanyProfile()
-  const [mounted, setMounted] = useState(false)
+  const [dismissed, setDismissed] = useState(false)
 
   const [stepIndex, setStepIndex] = useState(0)
   const [direction, setDirection] = useState(1)
   const [submitting, setSubmitting] = useState(false)
   const [draft, setDraft] = useState<CompanyProfile>(company)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Seed the draft from any existing values once, when the overlay first mounts.
   useEffect(() => {
@@ -97,7 +93,10 @@ export function AdminOnboarding() {
     return errs
   }, [hasAddressField, draft.address])
 
-  if (!mounted || company.onboarded) return null
+  // Once the admin chooses to leave (skip or finish), latch the overlay closed
+  // for this session so a slow or transient settings write can't yank it back.
+  // The choice is still persisted to Neon via the provider.
+  if (dismissed || company.onboarded) return null
 
   function setScalar(key: CompanyScalarKey, value: string) {
     setDraft((prev) => ({ ...prev, [key]: value }))
@@ -123,7 +122,13 @@ export function AdminOnboarding() {
 
   function finish() {
     setSubmitting(true)
+    setDismissed(true)
     completeOnboarding(draft)
+  }
+
+  function handleSkip() {
+    setDismissed(true)
+    skipOnboarding()
   }
 
   return (
@@ -142,7 +147,7 @@ export function AdminOnboarding() {
           </span>
           <button
             type="button"
-            onClick={skipOnboarding}
+            onClick={handleSkip}
             className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Skip for now

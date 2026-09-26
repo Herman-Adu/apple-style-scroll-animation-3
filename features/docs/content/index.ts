@@ -5,6 +5,12 @@ import { troubleshootingCommonIssues } from "./troubleshooting-common-issues"
 import { managingTheProductCatalog } from "./managing-the-product-catalog"
 import { ordersAndEmailOperations } from "./orders-and-email-operations"
 import { companyProfileAndSetup } from "./company-profile-and-setup"
+import { emailSystemOverview } from "./email-system-overview"
+import { emailTemplatesGuide } from "./email-templates-guide"
+import { emailCampaignWalkthrough } from "./email-campaign-walkthrough"
+import { emailCustomerMessages } from "./email-customer-messages"
+import { systemArchitecture } from "./system-architecture"
+import { dataLayerAndDatabase } from "./data-layer-and-database"
 import { serverFirstPlaybook } from "./server-first-playbook"
 import { strapiMigrationRunbook } from "./strapi-migration-runbook"
 import { strapiContentModeling } from "./strapi-content-modeling"
@@ -13,6 +19,8 @@ import { commerceCartCheckout } from "./commerce-cart-checkout"
 import { authenticationAndAccess } from "./authentication-and-access"
 import { positioningAndSelling } from "./positioning-and-selling"
 import { pricingAndPackaging } from "./pricing-and-packaging"
+import { emailSellingPoints } from "./email-selling-points"
+import { showcaseAndPortfolio } from "./showcase-and-portfolio"
 
 /**
  * The local docs corpus. This is the single source that the api/ seam reads
@@ -28,7 +36,13 @@ export const docs: Doc[] = [
   managingTheProductCatalog,
   ordersAndEmailOperations,
   companyProfileAndSetup,
+  emailSystemOverview,
+  emailTemplatesGuide,
+  emailCampaignWalkthrough,
+  emailCustomerMessages,
   // Developer & CTO (admin)
+  systemArchitecture,
+  dataLayerAndDatabase,
   serverFirstPlaybook,
   strapiMigrationRunbook,
   strapiContentModeling,
@@ -37,4 +51,6 @@ export const docs: Doc[] = [
   authenticationAndAccess,
   positioningAndSelling,
   pricingAndPackaging,
+  emailSellingPoints,
+  showcaseAndPortfolio,
 ]

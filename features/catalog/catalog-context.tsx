@@ -1,27 +1,30 @@
 "use client"
 
 // Client overlay over the server catalog. Seeded from server-rendered products
-// (so the first client render matches SSR — no hydration mismatch), then merged
-// with the locally-persisted catalog after mount. Admin mutations write through
-// here and persist; the storefront reads live product state from here so stock
-// and CRUD changes reflect immediately, including across tabs.
+// (so the first client render matches SSR — no hydration mismatch), then, after
+// mount, reconciled with the authoritative catalog in Neon (seed + admin
+// overlay). Admin mutations update the local map optimistically for instant
+// feedback and write through to Neon via server actions; the DB is the source
+// of truth, so a re-fetch after each write reconciles any divergence and other
+// sessions see the change on their next load.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import type { Product } from "@/features/products"
 import {
   applyPatch,
   buildProduct,
-  CATALOG_STORAGE_KEY,
-  mergeSeed,
-  readStoredCatalog,
-  recordSale,
   toMap,
-  writeStoredCatalog,
   type NewProductInput,
   type ProductMap,
   type ProductPatch,
   type SaleLine,
 } from "./store"
+import {
+  deleteProductOverlayAction,
+  getCatalogProducts,
+  resetCatalogOverlayAction,
+  saveProductOverlayAction,
+} from "@/lib/catalog/db-actions"
 
 interface CatalogContextValue {
   /** Live catalog, stable-sorted (featured first, then name). */
@@ -32,9 +35,7 @@ interface CatalogContextValue {
   deleteProduct: (slug: string) => void
   adjustStock: (slug: string, delta: number) => void
   setStock: (slug: string, value: number) => void
-  /** Apply a completed sale, decrementing stock. Returns an error string on oversell. */
-  recordSale: (lines: SaleLine[]) => { ok: boolean; error?: string }
-  /** Discard local edits and return to the server seed. */
+  /** Discard all admin edits and return to the code seed. */
   resetToSeed: () => void
 }
 
@@ -58,43 +59,40 @@ export function CatalogProvider({
   // First render uses the seed only, matching the server output exactly.
   const [map, setMap] = useState<ProductMap>(() => toMap(seed))
 
-  // After mount, merge in the persisted overlay.
-  useEffect(() => {
-    setMap(mergeSeed(seed, readStoredCatalog()))
-  }, [seed])
-
-  // Cross-tab sync: pick up writes made by the admin in another tab.
-  useEffect(() => {
-    function onStorage(event: StorageEvent) {
-      if (event.key !== CATALOG_STORAGE_KEY) return
-      setMap(mergeSeed(seed, readStoredCatalog()))
+  // Reconcile with the authoritative catalog (seed + admin overlay) in Neon.
+  const refresh = useCallback(async () => {
+    try {
+      const products = await getCatalogProducts()
+      setMap(toMap(products))
+    } catch {
+      // Network/DB hiccup is non-fatal; the current in-memory state still holds.
     }
-    window.addEventListener("storage", onStorage)
-    return () => window.removeEventListener("storage", onStorage)
-  }, [seed])
-
-  // Persist + update state in one place so every mutation stays consistent.
-  const commit = useCallback((next: ProductMap) => {
-    writeStoredCatalog(next)
-    setMap(next)
   }, [])
+
+  // After mount, pull the live catalog from the server (replaces the SSR seed).
+  useEffect(() => {
+    void refresh()
+  }, [refresh])
 
   const createProduct = useCallback(
     (input: NewProductInput) => {
       const product = buildProduct(input, map)
-      commit({ ...map, [product.slug]: product })
+      setMap({ ...map, [product.slug]: product }) // optimistic
+      void saveProductOverlayAction(product).then(refresh, refresh)
       return product
     },
-    [map, commit],
+    [map, refresh],
   )
 
   const updateProduct = useCallback(
     (slug: string, patch: ProductPatch) => {
       const current = map[slug]
       if (!current) return
-      commit({ ...map, [slug]: applyPatch(current, patch) })
+      const next = applyPatch(current, patch)
+      setMap({ ...map, [slug]: next })
+      void saveProductOverlayAction(next).then(refresh, refresh)
     },
-    [map, commit],
+    [map, refresh],
   )
 
   const deleteProduct = useCallback(
@@ -102,9 +100,10 @@ export function CatalogProvider({
       if (!map[slug]) return
       const next = { ...map }
       delete next[slug]
-      commit(next)
+      setMap(next)
+      void deleteProductOverlayAction(slug).then(refresh, refresh)
     },
-    [map, commit],
+    [map, refresh],
   )
 
   const adjustStock = useCallback(
@@ -112,9 +111,11 @@ export function CatalogProvider({
       const current = map[slug]
       if (!current) return
       const stock = Math.max(0, current.stock + delta)
-      commit({ ...map, [slug]: { ...current, stock } })
+      const next = { ...current, stock }
+      setMap({ ...map, [slug]: next })
+      void saveProductOverlayAction(next).then(refresh, refresh)
     },
-    [map, commit],
+    [map, refresh],
   )
 
   const setStock = useCallback(
@@ -122,24 +123,17 @@ export function CatalogProvider({
       const current = map[slug]
       if (!current) return
       const stock = Math.max(0, Math.floor(value) || 0)
-      commit({ ...map, [slug]: { ...current, stock } })
+      const next = { ...current, stock }
+      setMap({ ...map, [slug]: next })
+      void saveProductOverlayAction(next).then(refresh, refresh)
     },
-    [map, commit],
-  )
-
-  const applySale = useCallback(
-    (lines: SaleLine[]) => {
-      const result = recordSale(map, lines)
-      if (!result.ok) return { ok: false, error: result.error }
-      commit(result.map)
-      return { ok: true }
-    },
-    [map, commit],
+    [map, refresh],
   )
 
   const resetToSeed = useCallback(() => {
-    commit(toMap(seed))
-  }, [seed, commit])
+    setMap(toMap(seed))
+    void resetCatalogOverlayAction().then(refresh, refresh)
+  }, [seed, refresh])
 
   const value = useMemo<CatalogContextValue>(
     () => ({
@@ -150,10 +144,9 @@ export function CatalogProvider({
       deleteProduct,
       adjustStock,
       setStock,
-      recordSale: applySale,
       resetToSeed,
     }),
-    [map, createProduct, updateProduct, deleteProduct, adjustStock, setStock, applySale, resetToSeed],
+    [map, createProduct, updateProduct, deleteProduct, adjustStock, setStock, resetToSeed],
   )
 
   return <CatalogContext.Provider value={value}>{children}</CatalogContext.Provider>

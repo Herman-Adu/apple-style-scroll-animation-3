@@ -44,10 +44,16 @@ export const ordersAndEmailOperations: Doc = {
     {
       type: "steps",
       items: [
-        "Open the Orders section and select the order.",
-        "Move it to the next status as you fulfil it.",
-        "Add tracking details when you mark it Shipped so the customer's notification includes them.",
-        "Save — the customer receives the matching status email automatically.",
+        { title: "Open the order", text: "Go to the Orders section and select the order you are fulfilling." },
+        { title: "Advance the status", text: "Move it to the next status as you fulfil it." },
+        {
+          title: "Add tracking",
+          text: "When you mark it Shipped, add tracking details so the customer's notification includes them.",
+        },
+        {
+          title: "Save",
+          text: "Save the order — the customer receives the matching status email automatically.",
+        },
       ],
     },
     {

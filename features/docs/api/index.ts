@@ -2,7 +2,7 @@ import "server-only"
 import { getServerRole } from "@/lib/auth/server"
 import type { Doc } from "../schema"
 import { docs } from "../content"
-import { fetchStrapiDocs } from "../lib/strapi-source"
+import { fetchStrapiDoc, fetchStrapiDocs } from "../lib/strapi-source"
 import { canViewDoc, selectRelatedDocs, sortDocs } from "../lib/doc"
 
 /**
@@ -24,8 +24,11 @@ export async function fetchDocs(): Promise<Doc[]> {
 }
 
 export async function fetchDoc(slug: string): Promise<Doc | null> {
-  const all = await loadDocs()
-  return all.find((doc) => doc.slug === slug) ?? null
+  // Slug-filtered CMS read (one record) before any full-collection load.
+  const remote = await fetchStrapiDoc(slug)
+  if (remote) return remote
+  // Strapi unconfigured/unreachable/miss → seeded corpus is the fallback.
+  return docs.find((doc) => doc.slug === slug) ?? null
 }
 
 /**
@@ -38,8 +41,8 @@ export async function fetchDoc(slug: string): Promise<Doc | null> {
  * renderable — only admin guides opt into per-viewer dynamic rendering.
  */
 export async function fetchDocForViewer(slug: string): Promise<{ doc: Doc; authorized: boolean } | null> {
-  const all = await loadDocs()
-  const doc = all.find((d) => d.slug === slug)
+  const remote = await fetchStrapiDoc(slug)
+  const doc = remote ?? docs.find((d) => d.slug === slug) ?? null
   if (!doc) return null
   if (doc.access === "public") return { doc, authorized: true }
 

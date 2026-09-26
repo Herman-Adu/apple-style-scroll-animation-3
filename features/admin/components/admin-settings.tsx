@@ -10,26 +10,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
+import { useStoreSettings } from "@/features/admin/hooks/use-settings"
+import type { Currency } from "@/lib/settings/types"
 
-interface StoreSettings {
-  storeName: string
-  supportEmail: string
-  currency: "GBP" | "USD" | "EUR"
-  lowStockThreshold: number
-  emailAlerts: boolean
-}
-
-const DEFAULTS: StoreSettings = {
-  storeName: "MOMO Audio",
-  supportEmail: "hello@momoaudio.com",
-  currency: "GBP",
-  lowStockThreshold: 5,
-  emailAlerts: true,
-}
-
-const STORAGE_KEY = "admin:settings"
-
-const currencies: { value: StoreSettings["currency"]; label: string; symbol: string }[] = [
+const currencies: { value: Currency; label: string; symbol: string }[] = [
   { value: "GBP", label: "GBP", symbol: "£" },
   { value: "USD", label: "USD", symbol: "$" },
   { value: "EUR", label: "EUR", symbol: "€" },
@@ -48,24 +32,19 @@ const fade = {
 
 export function AdminSettings() {
   const { theme, setTheme } = useTheme()
+  // Store settings persist to Neon (singleton row) via the settings provider —
+  // no localStorage. Writes are optimistic and reconciled with the DB row.
+  const { settings, update } = useStoreSettings()
   const [mounted, setMounted] = useState(false)
-  const [settings, setSettings] = useState<StoreSettings>(DEFAULTS)
 
-  useEffect(() => {
-    setMounted(true)
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY)
-      if (raw) setSettings({ ...DEFAULTS, ...(JSON.parse(raw) as Partial<StoreSettings>) })
-    } catch {
-      // ignore malformed storage
-    }
-  }, [])
+  // Local draft for the store-details form, committed on submit. Seeded from
+  // the authoritative settings, which are SSR-seeded so correct on first render.
+  const [storeName, setStoreName] = useState(settings.storeName)
+  const [supportEmail, setSupportEmail] = useState(settings.supportEmail)
+  const [currency, setCurrency] = useState<Currency>(settings.currency)
+  const [lowStockThreshold, setLowStockThreshold] = useState(settings.lowStockThreshold)
 
-  function persist(next: StoreSettings, message: string) {
-    setSettings(next)
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-    toast.success(message)
-  }
+  useEffect(() => setMounted(true), [])
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
@@ -120,36 +99,33 @@ export function AdminSettings() {
           className="mt-5 flex flex-col gap-5"
           onSubmit={(e) => {
             e.preventDefault()
-            persist(settings, "Store details saved")
+            update({ storeName, supportEmail, currency })
+            toast.success("Store details saved")
           }}
         >
           <div className="grid gap-2">
             <Label htmlFor="storeName">Store name</Label>
-            <Input
-              id="storeName"
-              value={settings.storeName}
-              onChange={(e) => setSettings((s) => ({ ...s, storeName: e.target.value }))}
-            />
+            <Input id="storeName" value={storeName} onChange={(e) => setStoreName(e.target.value)} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="supportEmail">Support email</Label>
             <Input
               id="supportEmail"
               type="email"
-              value={settings.supportEmail}
-              onChange={(e) => setSettings((s) => ({ ...s, supportEmail: e.target.value }))}
+              value={supportEmail}
+              onChange={(e) => setSupportEmail(e.target.value)}
             />
           </div>
           <div className="grid gap-2">
             <Label>Currency</Label>
             <div className="grid grid-cols-3 gap-2">
               {currencies.map((c) => {
-                const active = settings.currency === c.value
+                const active = currency === c.value
                 return (
                   <button
                     key={c.value}
                     type="button"
-                    onClick={() => setSettings((s) => ({ ...s, currency: c.value }))}
+                    onClick={() => setCurrency(c.value)}
                     aria-pressed={active}
                     className={cn(
                       "flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors",
@@ -192,7 +168,10 @@ export function AdminSettings() {
             </div>
             <Switch
               checked={settings.emailAlerts}
-              onCheckedChange={(checked) => persist({ ...settings, emailAlerts: checked }, "Notification preference saved")}
+              onCheckedChange={(checked) => {
+                update({ emailAlerts: checked })
+                toast.success("Notification preference saved")
+              }}
             />
           </div>
           <div className="grid gap-2">
@@ -202,10 +181,8 @@ export function AdminSettings() {
                 id="lowStock"
                 type="number"
                 min={0}
-                value={settings.lowStockThreshold}
-                onChange={(e) =>
-                  setSettings((s) => ({ ...s, lowStockThreshold: Math.max(0, Number(e.target.value) || 0) }))
-                }
+                value={lowStockThreshold}
+                onChange={(e) => setLowStockThreshold(Math.max(0, Number(e.target.value) || 0))}
                 className="w-28"
               />
               <span className="text-sm text-muted-foreground">units or fewer flags a product</span>
@@ -214,7 +191,10 @@ export function AdminSettings() {
           <div className="flex justify-end">
             <Button
               type="button"
-              onClick={() => persist(settings, "Notification settings saved")}
+              onClick={() => {
+                update({ lowStockThreshold })
+                toast.success("Notification settings saved")
+              }}
               className="bg-accent-teal text-background hover:bg-accent-teal/90"
             >
               Save changes

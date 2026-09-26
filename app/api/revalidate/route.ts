@@ -48,8 +48,10 @@ export async function POST(request: Request) {
     )
   }
 
+  // Next.js 16: revalidateTag takes a cacheLife profile as the second arg so the
+  // stale entry is served while the fresh one is fetched (stale-while-revalidate).
   for (const tag of tags) {
-    revalidateTag(tag)
+    revalidateTag(tag, "max")
   }
 
   return NextResponse.json({ revalidated: true, tags, now: Date.now() })

@@ -141,6 +141,28 @@ function Block({ block }: { block: DocBlock }) {
         </div>
       )
 
+    case "image":
+      return (
+        <figure className="my-10">
+          <div className="overflow-hidden rounded-2xl border border-foreground/10 bg-card/60">
+            {/* eslint-disable-next-line @next/next/no-img-element -- doc figures are local static assets sized via intrinsic width/height */}
+            <img
+              src={block.src || "/placeholder.svg"}
+              alt={block.alt}
+              width={block.width}
+              height={block.height}
+              loading="lazy"
+              className="h-auto w-full"
+            />
+          </div>
+          {block.caption && (
+            <figcaption className="mt-3 text-center text-sm leading-relaxed text-foreground/40">
+              {block.caption}
+            </figcaption>
+          )}
+        </figure>
+      )
+
     case "divider":
       return <hr className="my-12 border-foreground/10" />
 

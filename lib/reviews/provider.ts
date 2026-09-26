@@ -1,6 +1,7 @@
 import { env } from "@/lib/env"
 import { seedReviews } from "@/lib/data/reviews"
 import { moderateReview } from "./moderation"
+import { addReviewAction, listReviewsAction } from "./db-actions"
 import type { Review, ReviewInput, ReviewsProvider, ReviewSummary } from "./types"
 
 // Transport / persistence layer for reviews.
@@ -109,7 +110,22 @@ const strapiProvider: ReviewsProvider = {
   },
 }
 
-export const reviewsProvider: ReviewsProvider = endpoint ? strapiProvider : localProvider
+// Reviews persist in Neon via Server Actions (moderation + visibility enforced
+// server-side), matching the auth and orders layers. An explicit REST endpoint
+// still wins for a Strapi-style backend; NEXT_PUBLIC_AUTH_PROVIDER=local selects
+// the zero-backend localStorage reference. The UI depends only on the port.
+const dbProvider: ReviewsProvider = {
+  list: (productSlug, viewerId) => listReviewsAction(productSlug, viewerId),
+  add: (input) => addReviewAction(input),
+}
+
+const provider = process.env.NEXT_PUBLIC_AUTH_PROVIDER || "db"
+
+export const reviewsProvider: ReviewsProvider = endpoint
+  ? strapiProvider
+  : provider === "local"
+    ? localProvider
+    : dbProvider
 
 /** Pure helper: derive an aggregate summary from a list of reviews. */
 export function summarize(reviews: Review[]): ReviewSummary {

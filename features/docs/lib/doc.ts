@@ -79,6 +79,10 @@ export function flattenDocBody(doc: Doc): string {
         if (block.title) parts.push(block.title)
         if (block.caption) parts.push(block.caption)
         break
+      case "image":
+        parts.push(block.alt)
+        if (block.caption) parts.push(block.caption)
+        break
       case "table":
         if (block.title) parts.push(block.title)
         parts.push(block.headers.join(" "))

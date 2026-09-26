@@ -85,6 +85,20 @@ function mapBlock(component: any): DocBlock | null {
         data: Array.isArray(component.data) ? component.data : [],
         series: Array.isArray(component.series) ? component.series : [],
       }
+    case "image": {
+      // Strapi media field: url → src, alternativeText → alt, caption → caption.
+      const media = attrs(component.image?.data ?? component.image)
+      const url = media.url ?? component.src ?? ""
+      const src = typeof url === "string" && url.startsWith("/") ? `${authConfig.apiUrl}${url}` : String(url)
+      return {
+        type: "image",
+        src,
+        alt: String(media.alternativeText ?? component.alt ?? ""),
+        caption: component.caption ?? media.caption ?? undefined,
+        width: media.width ?? component.width ?? undefined,
+        height: media.height ?? component.height ?? undefined,
+      }
+    }
     default:
       return null
   }
@@ -134,6 +148,35 @@ export async function fetchStrapiDocs(): Promise<Doc[] | null> {
     const items = Array.isArray(json?.data) ? json.data : []
     const mapped = items.map(mapDoc).filter((d: Doc) => d.slug)
     return mapped.length > 0 ? mapped : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Fetch a single doc from Strapi by slug. This is the performance-critical read
+ * path: rather than pulling the whole collection and finding one, it filters
+ * server-side (`filters[slug][$eq]`) and caps the page to 1, so a single doc
+ * page fetches exactly one record. Tagged with both the collection tag `docs`
+ * and a granular `doc:<slug>` tag so a Strapi webhook can revalidate just the
+ * one page on publish. Returns null when Strapi is unconfigured, unreachable,
+ * or has no matching doc — the caller then falls back to the seeded corpus.
+ */
+export async function fetchStrapiDoc(slug: string): Promise<Doc | null> {
+  if (!isStrapiConfigured() || !slug) return null
+  try {
+    const res = await fetch(
+      `${authConfig.apiUrl}/api/docs?filters[slug][$eq]=${encodeURIComponent(
+        slug,
+      )}&populate[body][populate]=*&pagination[pageSize]=1`,
+      { headers: authHeaders(), next: { revalidate: 300, tags: ["docs", `doc:${slug}`] } },
+    )
+    if (!res.ok) return null
+    const json = (await res.json()) as any
+    const items = Array.isArray(json?.data) ? json.data : []
+    if (items.length === 0) return null
+    const doc = mapDoc(items[0])
+    return doc.slug ? doc : null
   } catch {
     return null
   }

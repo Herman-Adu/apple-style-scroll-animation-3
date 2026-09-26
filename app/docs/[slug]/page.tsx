@@ -5,6 +5,16 @@ import { ArrowLeft, ArrowUpRight, Clock, Lock } from "lucide-react"
 import { DocBlocks, DocLockedNotice, DocsSidebar, getDocHeadings, toDocSummary } from "@/features/docs"
 import { fetchDoc, fetchDocForViewer, fetchDocs, fetchDocSlugs, fetchRelatedDocs } from "@/features/docs/api"
 
+/**
+ * ISR: prerender the known slugs at build (generateStaticParams), but allow
+ * slugs that only exist in Strapi to render on-demand and be cached. `revalidate`
+ * gives time-based refresh in addition to the tag-based revalidation the Strapi
+ * source wires up (`docs` + `doc:<slug>`), so a newly published CMS doc appears
+ * without a redeploy.
+ */
+export const dynamicParams = true
+export const revalidate = 300
+
 export async function generateStaticParams() {
   const slugs = await fetchDocSlugs()
   return slugs.map((slug) => ({ slug }))
@@ -36,7 +46,9 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
   const headings = authorized ? getDocHeadings(doc) : []
   const related = authorized ? await fetchRelatedDocs(slug) : []
   // Card-level summaries only (no bodies) power the role-aware nav rail.
-  const allSummaries = (await fetchDocs()).map(toDocSummary)
+  // Explicit arrow so Array.map's index is never read as `includeBody` — the
+  // nav rail must never carry flattened body text (incl. admin bodies).
+  const allSummaries = (await fetchDocs()).map((doc) => toDocSummary(doc))
 
   return (
     <main className="bg-background">

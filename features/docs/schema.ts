@@ -140,6 +140,21 @@ export type DocBlock =
     }
   | { type: "table"; title?: string; headers: string[]; rows: string[][] }
   | { type: "quote"; text: string; attribution?: string }
+  | {
+      /**
+       * A figure — screenshot, diagram export, or photo. `src` is a local
+       * public path (e.g. /docs/email/campaign-compose.png) so it stays stable
+       * across the Strapi migration; a Strapi media field maps to the same
+       * shape (url → src, alternativeText → alt, caption → caption).
+       */
+      type: "image"
+      src: string
+      alt: string
+      caption?: string
+      /** Optional intrinsic dimensions to reserve layout space and avoid CLS. */
+      width?: number
+      height?: number
+    }
   | { type: "divider" }
 
 export type Doc = {

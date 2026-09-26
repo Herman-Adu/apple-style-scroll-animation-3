@@ -36,10 +36,10 @@ export function SiteFooter() {
             © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </span>
           <div className="flex gap-6">
-            <Link href="/about" className="transition-colors hover:text-foreground/60">
+            <Link href="/privacy" className="transition-colors hover:text-foreground/60">
               Privacy
             </Link>
-            <Link href="/about" className="transition-colors hover:text-foreground/60">
+            <Link href="/terms" className="transition-colors hover:text-foreground/60">
               Terms
             </Link>
             <Link href={`mailto:${siteConfig.email}`} className="transition-colors hover:text-foreground/60">

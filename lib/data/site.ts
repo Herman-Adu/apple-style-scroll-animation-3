@@ -115,9 +115,16 @@ export const footerNav: { title: string; links: NavLink[] }[] = [
   {
     title: "Support",
     links: [
-      { label: "Warranty", href: "/about" },
-      { label: "Shipping", href: "/about" },
-      { label: "Returns", href: "/about" },
+      { label: "Warranty", href: "/warranty" },
+      { label: "Shipping", href: "/shipping" },
+      { label: "Returns", href: "/returns" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
     ],
   },
 ]

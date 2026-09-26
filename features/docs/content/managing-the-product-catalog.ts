@@ -29,10 +29,19 @@ export const managingTheProductCatalog: Doc = {
     {
       type: "steps",
       items: [
-        "Open the Admin dashboard and go to the Products section.",
-        "Choose 'New product' and fill in the name, price, category, and description.",
-        "Add the colour options customers can choose, and set the starting stock for each.",
-        "Save. The product appears in the storefront as soon as it has stock and is published.",
+        { title: "Open Products", text: "Open the Admin dashboard and go to the Products section." },
+        {
+          title: "Create the product",
+          text: "Choose 'New product' and fill in the name, price, category, and description.",
+        },
+        {
+          title: "Add options and stock",
+          text: "Add the colour options customers can choose, and set the starting stock for each.",
+        },
+        {
+          title: "Save",
+          text: "Save. The product appears in the storefront as soon as it has stock and is published.",
+        },
       ],
     },
     {

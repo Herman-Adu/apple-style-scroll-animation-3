@@ -50,10 +50,22 @@ export const gettingStartedWithYourDevice: Doc = {
     {
       type: "steps",
       items: [
-        "Put the device into pairing mode: hold the power button (headphones) or open the case lid and hold the case button (earbuds) until the light blinks.",
-        "On your phone, open Settings, then Bluetooth, and make sure Bluetooth is on.",
-        "Tap your Momo device when it appears in the list of available devices.",
-        "Wait for the confirmation tone — that means you're connected.",
+        {
+          title: "Enter pairing mode",
+          text: "Hold the power button (headphones) or open the case lid and hold the case button (earbuds) until the light blinks.",
+        },
+        {
+          title: "Open Bluetooth",
+          text: "On your phone, open Settings, then Bluetooth, and make sure Bluetooth is on.",
+        },
+        {
+          title: "Select your device",
+          text: "Tap your Momo device when it appears in the list of available devices.",
+        },
+        {
+          title: "Confirm",
+          text: "Wait for the confirmation tone — that means you're connected.",
+        },
       ],
     },
     {

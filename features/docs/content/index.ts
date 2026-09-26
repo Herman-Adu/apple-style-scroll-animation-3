@@ -5,6 +5,10 @@ import { troubleshootingCommonIssues } from "./troubleshooting-common-issues"
 import { managingTheProductCatalog } from "./managing-the-product-catalog"
 import { ordersAndEmailOperations } from "./orders-and-email-operations"
 import { companyProfileAndSetup } from "./company-profile-and-setup"
+import { emailSystemOverview } from "./email-system-overview"
+import { emailTemplatesGuide } from "./email-templates-guide"
+import { emailCampaignWalkthrough } from "./email-campaign-walkthrough"
+import { emailCustomerMessages } from "./email-customer-messages"
 import { systemArchitecture } from "./system-architecture"
 import { dataLayerAndDatabase } from "./data-layer-and-database"
 import { serverFirstPlaybook } from "./server-first-playbook"
@@ -30,6 +34,10 @@ export const docs: Doc[] = [
   managingTheProductCatalog,
   ordersAndEmailOperations,
   companyProfileAndSetup,
+  emailSystemOverview,
+  emailTemplatesGuide,
+  emailCampaignWalkthrough,
+  emailCustomerMessages,
   // Developer & CTO (admin)
   systemArchitecture,
   dataLayerAndDatabase,

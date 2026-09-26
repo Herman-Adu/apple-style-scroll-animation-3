@@ -43,10 +43,22 @@ export const troubleshootingCommonIssues: Doc = {
     {
       type: "steps",
       items: [
-        "On your phone, open Bluetooth settings and choose 'Forget' for your Momo device.",
-        "Place earbuds in the case with the lid open, or power on the headphones.",
-        "Hold the button (case button for earbuds, power button for headphones) for about 10 seconds until the light flashes twice.",
-        "Release, then pair again from scratch using the Getting Started steps.",
+        {
+          title: "Forget the device",
+          text: "On your phone, open Bluetooth settings and choose 'Forget' for your Momo device.",
+        },
+        {
+          title: "Power on",
+          text: "Place earbuds in the case with the lid open, or power on the headphones.",
+        },
+        {
+          title: "Hold to reset",
+          text: "Hold the button (case button for earbuds, power button for headphones) for about 10 seconds until the light flashes twice.",
+        },
+        {
+          title: "Pair again",
+          text: "Release, then pair again from scratch using the Getting Started steps.",
+        },
       ],
     },
     {

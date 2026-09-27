@@ -28,8 +28,14 @@ export async function submitEnquiryAction(raw: unknown): Promise<ContactActionRe
   const input = parsed.data
 
   // Honeypot tripped: respond as if it succeeded so bots get no signal, but
-  // never actually send anything downstream.
+  // never actually send anything downstream. Logged (not silent) because a
+  // false positive here — e.g. browser autofill filling the hidden field —
+  // would otherwise make a genuine enquiry vanish with no trace.
   if (input.website && input.website.trim().length > 0) {
+    console.log(
+      "[v0] Contact honeypot tripped — dropping submission. If this was a real user, their browser likely autofilled the hidden field.",
+      { type: input.type, email: input.email },
+    )
     return { ok: true, reference: "MOMO-RECEIVED" }
   }
 

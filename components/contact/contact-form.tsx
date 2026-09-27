@@ -243,16 +243,24 @@ export function ContactForm() {
         ))}
       </div>
 
-      {/* Honeypot — visually hidden and off the tab order. Real users never
-          reach it; a filled value marks the submission as a bot on the server. */}
-      <div aria-hidden="true" className="absolute left-[-9999px] top-[-9999px] h-0 w-0 overflow-hidden">
-        <label htmlFor="contact-website">Company website</label>
+      {/* Honeypot — a decoy field only bots fill. It MUST be un-autofillable:
+          when a signed-out user types their name/email, the browser's autofill
+          and password managers will also populate any hidden text input that is
+          merely positioned off-screen, which silently flagged genuine enquiries
+          as spam. `display:none` (Tailwind `hidden`) is the reliable fix — Chrome
+          autofill and 1Password/LastPass skip display:none fields — combined with
+          a neutral name and the ignore hints below. */}
+      <div aria-hidden="true" className="hidden">
+        <label htmlFor="contact-hp-field">Leave this field empty</label>
         <input
-          id="contact-website"
-          name="website"
+          id="contact-hp-field"
+          name="hp_field"
           type="text"
           tabIndex={-1}
           autoComplete="off"
+          data-1p-ignore="true"
+          data-lpignore="true"
+          data-form-type="other"
           value={website}
           onChange={(e) => setWebsite(e.target.value)}
         />

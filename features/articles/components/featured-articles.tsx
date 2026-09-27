@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import type { Article } from "../schema"
 import { Eyebrow, AccentDivider, Reveal } from "@/components/primitives"
+import { TwoToneTitle } from "@/components/primitives/two-tone-title"
 import { ArticleCard } from "./article-card"
 
 export function FeaturedArticles({ articles }: { articles: Article[] }) {
@@ -14,7 +15,7 @@ export function FeaturedArticles({ articles }: { articles: Article[] }) {
               From the lab
             </Eyebrow>
             <h2 className="max-w-xl text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-              Notes on sound, craft, and engineering.
+              <TwoToneTitle title="Notes on sound, craft, and engineering." accent="engineering." />
             </h2>
             <AccentDivider className="mt-6" />
           </div>

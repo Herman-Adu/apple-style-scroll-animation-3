@@ -24,6 +24,7 @@ export function SettingsForm({ branding }: { branding: EmailBranding }) {
     setForm((prev) => ({ ...prev, [key]: value }))
 
   const working = useMemo(() => form, [form])
+  const usingThemeAccent = !form.accentColor?.trim()
 
   function save() {
     startTransition(async () => {
@@ -59,18 +60,39 @@ export function SettingsForm({ branding }: { branding: EmailBranding }) {
               <Input id="fromName" value={form.fromName} onChange={(e) => set("fromName", e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="accentColor">Accent color</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="accentColor">Accent color</Label>
+                <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    checked={usingThemeAccent}
+                    onChange={(e) => set("accentColor", e.target.checked ? "" : "#2dd4bf")}
+                    className="size-3.5 accent-[var(--accent-teal)]"
+                  />
+                  Use site theme
+                </label>
+              </div>
               <div className="flex items-center gap-2">
                 <input
                   id="accentColor"
                   type="color"
-                  value={form.accentColor}
+                  value={form.accentColor || "#2dd4bf"}
                   onChange={(e) => set("accentColor", e.target.value)}
-                  className="size-9 shrink-0 cursor-pointer rounded-md border border-border bg-transparent"
+                  disabled={usingThemeAccent}
+                  className="size-9 shrink-0 cursor-pointer rounded-md border border-border bg-transparent disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Accent color picker"
                 />
-                <Input value={form.accentColor} onChange={(e) => set("accentColor", e.target.value)} className="font-mono" />
+                <Input
+                  value={usingThemeAccent ? "" : form.accentColor}
+                  onChange={(e) => set("accentColor", e.target.value)}
+                  disabled={usingThemeAccent}
+                  placeholder="Inherits from active theme"
+                  className="font-mono disabled:opacity-60"
+                />
               </div>
+              <p className="text-xs text-muted-foreground">
+                Emails inherit the active site theme accent. Set a colour here only to override it for this brand.
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="supportEmail">Support / reply-to email</Label>

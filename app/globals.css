@@ -27,6 +27,13 @@
   /* Muted titanium teal — the single accent color (slightly deeper for light bg contrast) */
   --accent-teal: oklch(0.58 0.09 197);
   --accent-teal-muted: oklch(0.52 0.08 198);
+  /* Whole-title gradient (heading style "gradient"); defaults to the two tones. */
+  --brand-gradient-from: var(--accent-teal);
+  --brand-gradient-to: var(--accent-teal-muted);
+  /* Cinematic media surfaces — always dark regardless of colour scheme. */
+  --media: oklch(0.02 0 0);
+  --on-media: oklch(1 0 0);
+  --on-media-muted: oklch(1 0 0 / 0.6);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -66,6 +73,8 @@
   --ring: oklch(0.4 0 0);
   --accent-teal: oklch(0.74 0.086 195);
   --accent-teal-muted: oklch(0.62 0.07 197);
+  --brand-gradient-from: var(--accent-teal);
+  --brand-gradient-to: var(--accent-teal-muted);
   --sidebar: oklch(0.05 0 0);
   --sidebar-foreground: oklch(0.95 0 0);
   --sidebar-primary: oklch(0.95 0 0);
@@ -100,6 +109,9 @@
   --color-ring: var(--ring);
   --color-accent-teal: var(--accent-teal);
   --color-accent-teal-muted: var(--accent-teal-muted);
+  --color-media: var(--media);
+  --color-on-media: var(--on-media);
+  --color-on-media-muted: var(--on-media-muted);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -126,6 +138,41 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/*
+ * Two-tone headline treatment. The shared `TwoToneTitle` primitive emits
+ * `.tt-title` on the heading and `.tt-accent` on the accented word; the visual
+ * mode is driven by `data-heading-style` on <html>, set once from the active
+ * theme. This lets the client switch every headline site-wide with no
+ * per-component edits and no hydration flash. Base (non-accent) text always
+ * keeps the heading's own `currentColor` — never a hardcoded white.
+ *
+ * - two-tone (default): the accent word is clipped to the teal gradient.
+ * - solid: the accent word is a single solid brand colour.
+ * - gradient: the whole headline is clipped to the brand gradient.
+ */
+.tt-accent {
+  background-image: linear-gradient(to right, var(--accent-teal), var(--accent-teal-muted));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-heading-style="solid"] .tt-accent {
+  background-image: none;
+  color: var(--accent-teal);
+  -webkit-text-fill-color: var(--accent-teal);
+}
+
+[data-heading-style="gradient"] .tt-title,
+[data-heading-style="gradient"] .tt-accent {
+  background-image: linear-gradient(to right, var(--brand-gradient-from), var(--brand-gradient-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 /*

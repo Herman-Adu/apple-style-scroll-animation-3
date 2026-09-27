@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, LayoutDashboard, Mail, Package, Receipt, Users } from "lucide-react"
+import { BarChart3, BookOpen, LayoutDashboard, Mail, Package, Palette, Receipt, Users } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 export interface AdminNavChild {
@@ -23,6 +23,17 @@ export interface AdminNavItem {
 
 export const adminNav: AdminNavItem[] = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
+  {
+    href: "/admin/theme",
+    label: "Theme",
+    icon: Palette,
+    children: [
+      { href: "/admin/theme", label: "Active & presets" },
+      { href: "/admin/theme/brand", label: "Brand colours" },
+      { href: "/admin/theme/headings", label: "Headings & style" },
+      { href: "/admin/theme/templates", label: "Theme templates" },
+    ],
+  },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: Receipt },
   {

@@ -5,6 +5,7 @@
 // fields can never drift, and the whole thing is Strapi-portable later.
 
 import { DEFAULT_COMPANY, type CompanyProfile } from "@/lib/data/company"
+import { DEFAULT_THEME_STATE, type ThemeState } from "./theme"
 
 export type Currency = "GBP" | "USD" | "EUR"
 
@@ -16,6 +17,8 @@ export interface StoreSettings extends CompanyProfile {
   currency: Currency
   lowStockThreshold: number
   emailAlerts: boolean
+  /** The single source of truth for brand identity (see lib/settings/theme.ts). */
+  theme: ThemeState
 }
 
 export const DEFAULT_STORE_SETTINGS: StoreSettings = {
@@ -25,6 +28,7 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   currency: "GBP",
   lowStockThreshold: 5,
   emailAlerts: true,
+  theme: DEFAULT_THEME_STATE,
 }
 
 /** Project the full settings down to just the company-profile shape, so the

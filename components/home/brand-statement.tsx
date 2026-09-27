@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/primitives"
+import { TwoToneTitle } from "@/components/primitives/two-tone-title"
 
 export function BrandStatement() {
   return (
@@ -9,8 +10,10 @@ export function BrandStatement() {
         </Reveal>
         <Reveal delay={0.1}>
           <h2 className="text-balance text-3xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl md:leading-[1.1]">
-            We do not tune for the demo. We tune for the truth of the recording — so the only thing between you and the
-            artist is air.
+            <TwoToneTitle
+              title="We do not tune for the demo. We tune for the truth of the recording — so the only thing between you and the artist is air."
+              accent="the truth of the recording"
+            />
           </h2>
         </Reveal>
       </div>

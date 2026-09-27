@@ -4,29 +4,9 @@ import Image from "next/image"
 import { motion, useReducedMotion } from "framer-motion"
 import type { PageHeroContent } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { TwoToneTitle } from "@/components/primitives/two-tone-title"
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
-
-/**
- * Renders a headline with an optional accent substring in a subtle teal
- * gradient (two-tone). Falls back to the plain title if the accent isn't found.
- */
-function TwoToneTitle({ title, accent }: { title: string; accent?: string }) {
-  if (!accent) return <>{title}</>
-  const at = title.indexOf(accent)
-  if (at === -1) return <>{title}</>
-  const before = title.slice(0, at)
-  const after = title.slice(at + accent.length)
-  return (
-    <>
-      {before}
-      <span className="bg-gradient-to-r from-accent-teal to-accent-teal-muted bg-clip-text text-transparent">
-        {accent}
-      </span>
-      {after}
-    </>
-  )
-}
 
 /**
  * Shared, data-driven hero header used on top-level pages (Home keeps its own

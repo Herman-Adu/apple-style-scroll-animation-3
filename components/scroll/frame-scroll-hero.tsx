@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion"
 import type { FrameHero, Product, StoryBeat } from "@/lib/types"
 import { AddToCartButton } from "@/features/products"
+import { TwoToneTitle } from "@/components/primitives/two-tone-title"
 
 function getFramePath(basePath: string, index: number): string {
   return `${basePath}${index.toString().padStart(5, "0")}.jpg`
@@ -30,19 +31,19 @@ function BeatOverlay({
 
   return (
     <motion.div className="absolute inset-x-0 bottom-0" style={{ opacity }}>
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/75 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-media via-media/75 to-transparent" />
       <div className="relative px-6 pb-16 md:px-12 md:pb-20 lg:px-20">
         <div className={`mx-auto flex max-w-7xl flex-col ${alignmentClass[beat.align]}`}>
-          <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-white/60">
+          <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-on-media/60">
             {beat.index}
           </p>
           <h2
-            className="whitespace-pre-line text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl"
+            className="whitespace-pre-line text-4xl font-bold tracking-tight text-on-media md:text-5xl lg:text-6xl"
             style={{ textShadow: "0 4px 30px rgba(0,0,0,0.4)" }}
           >
-            {beat.title}
+            <TwoToneTitle title={beat.title} />
           </h2>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/60 md:text-base">{beat.description}</p>
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-on-media/60 md:text-base">{beat.description}</p>
           {isLast && (
             <div className="mt-8">
               <AddToCartButton product={product} color={product.colors[0]} />
@@ -166,19 +167,19 @@ export function FrameScrollHero({ hero, product }: { hero: FrameHero; product: P
   return (
     <>
       {!isLoaded && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#050505]">
-          <div className="mb-4 text-xl font-medium tracking-tight text-white/80">{product.name}</div>
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-media">
+          <div className="mb-4 text-xl font-medium tracking-tight text-on-media/80">{product.name}</div>
           <div className="mb-6">
-            <div className="h-[2px] w-56 overflow-hidden rounded-full bg-white/10">
+            <div className="h-[2px] w-56 overflow-hidden rounded-full bg-on-media/10">
               <motion.div
-                className="h-full bg-white/80"
+                className="h-full bg-accent"
                 initial={{ width: 0 }}
                 animate={{ width: `${loadingProgress}%` }}
                 transition={{ duration: 0.2 }}
               />
             </div>
           </div>
-          <p className="font-mono text-xs tracking-widest text-white/30">Loading {loadingProgress}%</p>
+          <p className="font-mono text-xs tracking-widest text-on-media/30">Loading {loadingProgress}%</p>
           {loadingProgress === 100 && successCount === 0 && (
             <p className="mt-4 text-xs text-red-400">No images loaded. Check image paths.</p>
           )}
@@ -192,11 +193,11 @@ export function FrameScrollHero({ hero, product }: { hero: FrameHero; product: P
           <div className="pointer-events-none absolute inset-0">
             {/* Intro */}
             <motion.div className="absolute inset-x-0 bottom-0" style={{ opacity: titleOpacity }}>
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-media via-media/80 to-transparent" />
               <div className="relative px-6 pb-16 md:px-12 md:pb-20 lg:px-20">
                 <div className="mx-auto max-w-7xl">
                   <motion.p
-                    className="mb-4 text-[10px] font-semibold uppercase tracking-[0.5em] text-white/70"
+                    className="mb-4 text-[10px] font-semibold uppercase tracking-[0.5em] text-on-media/70"
                     initial={{ y: 10, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3, duration: 0.6 }}
@@ -204,16 +205,16 @@ export function FrameScrollHero({ hero, product }: { hero: FrameHero; product: P
                     {hero.intro.kicker}
                   </motion.p>
                   <motion.h1
-                    className="text-6xl font-bold tracking-tighter text-white md:text-8xl lg:text-9xl"
+                    className="text-6xl font-bold tracking-tighter text-on-media md:text-8xl lg:text-9xl"
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.5, duration: 0.8 }}
                     style={{ textShadow: "0 4px 30px rgba(0,0,0,0.5)" }}
                   >
-                    {hero.intro.title}
+                    <TwoToneTitle title={hero.intro.title} />
                   </motion.h1>
                   <motion.p
-                    className="mt-4 max-w-md text-base font-normal tracking-wide text-white/70 md:text-lg"
+                    className="mt-4 max-w-md text-base font-normal tracking-wide text-on-media/70 md:text-lg"
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.7, duration: 0.8 }}
@@ -226,12 +227,12 @@ export function FrameScrollHero({ hero, product }: { hero: FrameHero; product: P
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.2, duration: 0.6 }}
                   >
-                    <div className="h-px w-8 bg-white/30" />
-                    <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-white/50">
+                    <div className="h-px w-8 bg-on-media/30" />
+                    <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-on-media/50">
                       Scroll to explore
                     </span>
                     <motion.span
-                      className="text-white/50"
+                      className="text-on-media/50"
                       animate={{ y: [0, 4, 0] }}
                       transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5 }}
                     >

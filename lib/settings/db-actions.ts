@@ -15,6 +15,7 @@ import { prisma } from "@/lib/db/prisma"
 import { effectiveRole } from "@/lib/auth/config"
 import { EMPTY_ADDRESS, type CompanyAddress } from "@/lib/data/company"
 import { DEFAULT_STORE_SETTINGS, type Currency, type StoreSettings } from "./types"
+import { normalizeThemeState } from "./theme"
 
 async function requireAdmin(): Promise<void> {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -55,6 +56,7 @@ type SettingsRow = {
   currency: string
   lowStockThreshold: number
   emailAlerts: boolean
+  theme: unknown
 }
 
 function toStoreSettings(row: SettingsRow): StoreSettings {
@@ -73,6 +75,7 @@ function toStoreSettings(row: SettingsRow): StoreSettings {
     currency: normalizeCurrency(row.currency),
     lowStockThreshold: row.lowStockThreshold,
     emailAlerts: row.emailAlerts,
+    theme: normalizeThemeState(row.theme),
   }
 }
 
@@ -112,6 +115,9 @@ function toUpdateData(patch: Partial<StoreSettings>): Prisma.StoreSettingsUpdate
     data.lowStockThreshold = Math.max(0, Math.floor(patch.lowStockThreshold) || 0)
   }
   if (patch.emailAlerts !== undefined) data.emailAlerts = patch.emailAlerts
+  if (patch.theme !== undefined) {
+    data.theme = normalizeThemeState(patch.theme) as unknown as Prisma.InputJsonValue
+  }
   return data
 }
 

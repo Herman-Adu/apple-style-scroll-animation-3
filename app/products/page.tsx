@@ -7,6 +7,7 @@ import { pageHeroes } from "@/lib/data/heroes"
 import { PageHero } from "@/components/layout/page-hero"
 import { SearchField } from "@/components/primitives"
 import { ScrollToResults } from "@/features/products/components/scroll-to-results"
+import { ProductsOfferCallout } from "@/features/products/components/offer-callout"
 import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
@@ -57,6 +58,8 @@ export default async function ProductsPage({
               ? `Our ${activeCategory.toLowerCase()}, engineered in the same lab and tuned to the same standard.`
               : "Four ways to hear the truth of a recording — engineered in the same lab, tuned to the same standard."}
           </p>
+
+          <ProductsOfferCallout />
 
           <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <nav aria-label="Filter products by category" className="flex flex-wrap gap-2">

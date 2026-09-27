@@ -1,15 +1,18 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowRight, Minus, Plus, ShoppingBag, User, X } from "lucide-react"
+import { ArrowRight, Minus, Plus, ShoppingBag, Sparkles, Tag, User, X } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth/auth-context"
+import { priceCheckout } from "@/features/checkout"
+import { offerHeadline, pickActiveOffer } from "@/lib/offers/active-offer"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { formatMoney } from "@/lib/format"
+import type { OrderItem } from "@/lib/orders/types"
 
 export function CartDrawer() {
   const { isOpen, openCart, closeCart, lines, subtotal, currency, itemCount, updateQuantity, removeItem } =
@@ -19,6 +22,25 @@ export function CartDrawer() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const isAuthenticated = status === "authenticated" && !!user
+
+  // Price the cart with the customer's personal offers using the same pure
+  // engine as checkout, so the savings shown here match what gets charged.
+  const items = useMemo<OrderItem[]>(
+    () =>
+      lines.map((line) => ({
+        slug: line.product.slug,
+        name: line.product.name,
+        image: line.product.image,
+        color: line.color,
+        quantity: line.quantity,
+        unitAmount: line.product.price.amount,
+        currency: line.product.price.currency,
+      })),
+    [lines],
+  )
+  const quote = useMemo(() => priceCheckout({ items, offers: user?.offers ?? [] }), [items, user?.offers])
+  const savingsOffers = quote.appliedOffers.filter((offer) => offer.amount > 0)
+  const activeOffer = useMemo(() => pickActiveOffer(user?.offers ?? []), [user?.offers])
 
   // Reopen the cart when the visitor returns from sign-in with a checkout intent.
   useEffect(() => {
@@ -192,13 +214,49 @@ export function CartDrawer() {
                   </ul>
                 </div>
 
-                <div className="border-t border-foreground/10 px-6 py-5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-foreground/50">Subtotal</span>
-                    <span className="text-lg font-semibold text-foreground">
-                      {formatMoney({ amount: subtotal, currency })}
+                {activeOffer && savingsOffers.length > 0 ? (
+                  <div className="flex items-center gap-2 border-t border-foreground/10 bg-foreground/[0.02] px-6 py-2.5 text-xs">
+                    <Sparkles className="size-3.5 shrink-0 text-foreground/50" strokeWidth={2} aria-hidden />
+                    <span className="text-foreground/70">
+                      <span className="font-semibold text-foreground">{offerHeadline(activeOffer)}</span> applied —
+                      you save {formatMoney({ amount: quote.discount, currency })}
                     </span>
                   </div>
+                ) : null}
+
+                <div className="border-t border-foreground/10 px-6 py-5">
+                  {savingsOffers.length > 0 ? (
+                    <dl className="space-y-2 text-sm">
+                      <div className="flex items-center justify-between">
+                        <dt className="text-foreground/50">Subtotal</dt>
+                        <dd className="text-foreground">{formatMoney({ amount: quote.subtotal, currency })}</dd>
+                      </div>
+                      {savingsOffers.map((offer) => (
+                        <div key={offer.id} className="flex items-center justify-between">
+                          <dt className="flex items-center gap-1.5 text-foreground/60">
+                            <Tag className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+                            {offer.label}
+                          </dt>
+                          <dd className="font-medium text-foreground">
+                            &minus;{formatMoney({ amount: offer.amount, currency })}
+                          </dd>
+                        </div>
+                      ))}
+                      <div className="flex items-center justify-between border-t border-foreground/10 pt-2">
+                        <dt className="text-foreground/50">Total</dt>
+                        <dd className="text-lg font-semibold text-foreground">
+                          {formatMoney({ amount: quote.total, currency })}
+                        </dd>
+                      </div>
+                    </dl>
+                  ) : (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-foreground/50">Subtotal</span>
+                      <span className="text-lg font-semibold text-foreground">
+                        {formatMoney({ amount: subtotal, currency })}
+                      </span>
+                    </div>
+                  )}
                   <p className="mt-1 text-xs text-foreground/40">Shipping and taxes calculated at checkout.</p>
                   <button
                     type="button"

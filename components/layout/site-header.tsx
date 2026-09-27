@@ -63,7 +63,7 @@ export function SiteHeader() {
     <>
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-colors duration-300",
+        "relative z-50 transition-colors duration-300",
         scrolled || menuOpen
           ? "border-b border-foreground/10 bg-background/80 backdrop-blur-xl"
           : "border-b border-transparent bg-transparent",

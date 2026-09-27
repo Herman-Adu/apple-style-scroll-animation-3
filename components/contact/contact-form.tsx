@@ -228,13 +228,13 @@ export function ContactForm() {
             <div
               className={cn(
                 "h-1 rounded-full transition-colors",
-                i <= step ? "bg-foreground" : "bg-foreground/10",
+                i <= step ? "bg-accent-teal" : "bg-foreground/10",
               )}
             />
             <span
               className={cn(
                 "text-[10px] uppercase tracking-[0.15em] transition-colors",
-                i === step ? "text-foreground" : "text-foreground/40",
+                i === step ? "text-accent-teal" : "text-foreground/40",
               )}
             >
               {label}
@@ -291,23 +291,32 @@ export function ContactForm() {
                         setValues({})
                       }}
                       className={cn(
-                        "flex items-start gap-3 rounded-xl border p-4 text-left transition-colors",
+                        "group/topic flex items-start gap-3 rounded-xl border p-4 text-left transition-colors",
                         selected
-                          ? "border-foreground/40 bg-foreground/[0.06]"
-                          : "border-foreground/10 bg-foreground/[0.02] hover:border-foreground/20 hover:bg-foreground/[0.04]",
+                          ? "border-accent-teal/40 bg-accent-teal/[0.08]"
+                          : "border-foreground/10 bg-foreground/[0.02] hover:border-accent-teal/30 hover:bg-accent-teal/[0.06]",
                       )}
                       aria-pressed={selected}
                     >
                       <span
                         className={cn(
-                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
-                          selected ? "bg-foreground text-background" : "bg-foreground/5 text-foreground/70",
+                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors",
+                          selected
+                            ? "bg-accent-teal/15 text-accent-teal"
+                            : "bg-foreground/5 text-foreground/70 group-hover/topic:bg-accent-teal/15 group-hover/topic:text-accent-teal",
                         )}
                       >
                         <Icon className="h-5 w-5" strokeWidth={1.5} />
                       </span>
                       <span className="flex flex-col">
-                        <span className="text-sm font-medium text-foreground">{type.label}</span>
+                        <span
+                          className={cn(
+                            "text-sm font-medium transition-colors",
+                            selected ? "text-accent-teal" : "text-foreground group-hover/topic:text-accent-teal",
+                          )}
+                        >
+                          {type.label}
+                        </span>
                         <span className="mt-0.5 text-xs leading-relaxed text-foreground/45">
                           {type.description}
                         </span>

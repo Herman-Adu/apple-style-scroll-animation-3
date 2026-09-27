@@ -21,10 +21,14 @@ export function SiteChrome({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <OfferBanner />
-      <Suspense fallback={null}>
-        <SiteHeader />
-      </Suspense>
+      {/* Fixed chrome stack: the nav overlays the page, with the offer banner
+          docked directly beneath it so it never covers the navigation. */}
+      <div className="fixed inset-x-0 top-0 z-50">
+        <Suspense fallback={null}>
+          <SiteHeader />
+        </Suspense>
+        <OfferBanner />
+      </div>
       {children}
       <SiteFooter />
       <Suspense fallback={null}>

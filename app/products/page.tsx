@@ -72,8 +72,8 @@ export default async function ProductsPage({
                   className={cn(
                     "rounded-full border px-5 py-2 text-xs uppercase tracking-[0.2em] transition-colors",
                     filter.active
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-foreground/15 text-foreground/60 hover:border-foreground/40 hover:text-foreground",
+                      ? "border-accent-teal/40 bg-accent-teal/12 text-accent-teal"
+                      : "border-foreground/15 text-foreground/60 hover:border-accent-teal/30 hover:bg-accent-teal/12 hover:text-accent-teal",
                   )}
                 >
                   {filter.label}

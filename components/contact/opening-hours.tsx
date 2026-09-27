@@ -70,13 +70,13 @@ export function OpeningHours() {
               key={d.day}
               className={cn(
                 "flex items-center justify-between rounded-lg px-3 py-2 text-sm",
-                isToday ? "bg-foreground/5 text-foreground" : "text-foreground/60",
+                isToday ? "bg-accent-teal/10 text-accent-teal" : "text-foreground/60",
               )}
             >
               <span className="flex items-center gap-2">
                 {d.day}
                 {isToday && (
-                  <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] text-foreground/60">
+                  <span className="rounded-full bg-accent-teal/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] text-accent-teal">
                     Today
                   </span>
                 )}

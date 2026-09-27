@@ -67,9 +67,18 @@ export function isActive(pathname: string, item: AdminNavItem): boolean {
 }
 
 /**
- * Whether a child link is the active one. A child with a `segment` matches only
- * when on the base path AND the URL segment matches; a child without a segment
- * (the "All" entry) matches when on the base path with no segment selected.
+ * Whether a child link is the active one — exactly one child per group may be
+ * active at a time. Three kinds of children are supported:
+ *
+ * - Segment children share the parent's base path and are distinguished by the
+ *   URL's `segment` query param (e.g. Customers → Subscribers).
+ * - The index child points at the parent's own base path and is active only on
+ *   that exact path with no segment selected (e.g. Theme → Active & presets).
+ * - Path children have their own distinct path and are active on that path or a
+ *   nested detail route under it (e.g. Theme → Brand colours).
+ *
+ * Detail pages that live under the base path but match no child (e.g.
+ * /admin/customers/[id]) keep the parent open while highlighting no child.
  */
 export function isChildActive(
   pathname: string,
@@ -77,11 +86,18 @@ export function isChildActive(
   parentHref: string,
   child: AdminNavChild,
 ): boolean {
-  const basePath = parentHref.split("?")[0]
-  const onBase = pathname === basePath || pathname.startsWith(`${basePath}/`)
-  if (!onBase) return false
-  // Detail pages (/admin/customers/[id]) keep the parent open but highlight no child.
-  if (pathname !== basePath) return false
-  if (child.segment) return activeSegment === child.segment
-  return !activeSegment
+  const parentBase = parentHref.split("?")[0]
+  const childBase = child.href.split("?")[0]
+
+  if (child.segment) {
+    return pathname === childBase && activeSegment === child.segment
+  }
+
+  // Index child: the entry that reuses the parent's base path.
+  if (childBase === parentBase) {
+    return pathname === parentBase && !activeSegment
+  }
+
+  // Path child: exact match or a nested route beneath it.
+  return pathname === childBase || pathname.startsWith(`${childBase}/`)
 }

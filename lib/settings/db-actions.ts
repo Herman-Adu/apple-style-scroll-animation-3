@@ -129,6 +129,11 @@ export async function updateStoreSettingsAction(patch: Partial<StoreSettings>): 
     where: { id: row.id },
     data: toUpdateData(patch),
   })
-  revalidatePath("/admin")
+  // The theme (and other store settings) are injected by the ROOT layout on
+  // every page, so a change must purge the cached HTML for the whole site —
+  // not just /admin. Revalidating the root layout invalidates every route that
+  // shares it, so logged-out visitors get the new theme on their next load
+  // instead of stale statically-rendered HTML.
+  revalidatePath("/", "layout")
   return toStoreSettings(updated)
 }

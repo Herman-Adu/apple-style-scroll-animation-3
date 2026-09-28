@@ -13,6 +13,7 @@ import { AccountMenu } from "@/components/layout/account-menu"
 import { NavDropdown } from "@/components/layout/nav-dropdown"
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
+import { UserAvatar } from "@/components/account/user-avatar"
 import { cn } from "@/lib/utils"
 
 export function SiteHeader() {
@@ -24,6 +25,7 @@ export function SiteHeader() {
   const { status, user } = useAuth()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [menuPanel, setMenuPanel] = useState<"root" | "account">("root")
   // Auth state is client-only (persisted session), so the server always renders
   // the signed-out link. Gate the auth-aware UI on mount so the first client
   // render matches the server and we avoid a hydration mismatch.
@@ -94,7 +96,32 @@ export function SiteHeader() {
           */}
           <div className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2 md:static md:left-auto md:translate-x-0">
             {mounted && status === "authenticated" && user ? (
-              <AccountMenu chromeText={chromeText} chromeHover={chromeHover} />
+              <>
+                {/* Desktop (lg+): avatar link + hover dropdown. */}
+                <AccountMenu chromeText={chromeText} chromeHover={chromeHover} />
+                {/* Mobile / tablet (<lg): avatar slides in the account panel. */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuPanel("account")
+                    setMenuOpen(true)
+                  }}
+                  className={cn(
+                    "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors lg:hidden",
+                    chromeText,
+                    chromeHover,
+                  )}
+                  aria-label="Your account"
+                  aria-haspopup="dialog"
+                  aria-expanded={menuOpen && menuPanel === "account"}
+                >
+                  <UserAvatar
+                    name={user.profile.displayName || user.name}
+                    src={user.profile.avatarUrl}
+                    size={28}
+                  />
+                </button>
+              </>
             ) : (
               <Link
                 href="/sign-in"
@@ -132,9 +159,12 @@ export function SiteHeader() {
 
           <button
             type="button"
-            onClick={() => setMenuOpen(true)}
+            onClick={() => {
+              setMenuPanel("root")
+              setMenuOpen(true)
+            }}
             className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-full transition-colors md:hidden",
+              "flex h-10 w-10 items-center justify-center rounded-full transition-colors lg:hidden",
               chromeText,
               chromeHover,
             )}
@@ -150,6 +180,7 @@ export function SiteHeader() {
     <MobileNav
       open={menuOpen}
       onClose={() => setMenuOpen(false)}
+      initialPanel={menuPanel}
       activeId={activeId}
       category={category}
     />

@@ -1,5 +1,5 @@
 import "server-only"
-import { getServerRole } from "@/lib/auth/server"
+import { getServerRole, getServerIsOwner } from "@/lib/auth/server"
 import type { Doc } from "../schema"
 import { docs } from "../content"
 import { fetchStrapiDoc, fetchStrapiDocs } from "../lib/strapi-source"
@@ -46,8 +46,8 @@ export async function fetchDocForViewer(slug: string): Promise<{ doc: Doc; autho
   if (!doc) return null
   if (doc.access === "public") return { doc, authorized: true }
 
-  const role = await getServerRole()
-  const authorized = canViewDoc(doc, role === "admin")
+  const [role, isOwner] = await Promise.all([getServerRole(), getServerIsOwner()])
+  const authorized = canViewDoc(doc, { isAdmin: role === "admin", isOwner })
   return { doc: authorized ? doc : { ...doc, body: [] }, authorized }
 }
 

@@ -1,7 +1,7 @@
 import "server-only"
 import { cookies, headers } from "next/headers"
 import { auth } from "@/lib/auth"
-import { authConfig, effectiveRole } from "./config"
+import { authConfig, effectiveRole, isOwner } from "./config"
 import { SESSION_COOKIE } from "./session-cookie"
 import { verifySession, type SessionPayload } from "./session-token"
 import type { UserRole } from "./types"
@@ -48,4 +48,14 @@ export async function getServerSession(): Promise<SessionPayload | null> {
 export async function getServerRole(): Promise<UserRole | null> {
   const session = await getServerSession()
   return session?.role ?? null
+}
+
+/**
+ * Whether the current server-side viewer is the platform owner (super-admin).
+ * Trusts the verified session email against the owner allowlist — this is the
+ * authorization seam that decides whether owner-only doc bodies are serialized.
+ */
+export async function getServerIsOwner(): Promise<boolean> {
+  const session = await getServerSession()
+  return isOwner(session?.email)
 }

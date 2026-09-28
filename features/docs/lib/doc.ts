@@ -116,19 +116,29 @@ export function toDocSummary(doc: Doc, includeBody = false): DocSummary {
   }
 }
 
-/** Only the docs the current viewer may see. Admins see everything. */
-export function visibleDocs<T extends { access: DocSummary["access"] }>(items: T[], isAdmin: boolean): T[] {
-  if (isAdmin) return items
-  return items.filter((item) => item.access === "public")
+/**
+ * A viewer's capabilities for docs gating. `isAdmin` unlocks admin guides;
+ * `isOwner` additionally unlocks owner-only (super-admin) guides. Kept as an
+ * explicit object so the three-tier rule lives in one place and every caller
+ * — client nav and server data layer — passes the same shape.
+ */
+export type DocViewer = { isAdmin: boolean; isOwner: boolean }
+
+/** Only the docs the current viewer may see. */
+export function visibleDocs<T extends { access: DocSummary["access"] }>(items: T[], viewer: DocViewer): T[] {
+  return items.filter((item) => canViewDoc(item, viewer))
 }
 
 /**
- * Whether a viewer may read a doc's body. Public docs are always viewable; admin
- * docs require an admin. The single source of truth for the access rule, used by
- * both the client nav (visibleDocs) intent and the server data layer. Pure.
+ * Whether a viewer may read a doc's body. Public docs are always viewable;
+ * owner docs require the owner (super-admin); everything else requires an admin.
+ * The single source of truth for the access rule, used by both the client nav
+ * (visibleDocs) intent and the server data layer. Pure.
  */
-export function canViewDoc(doc: { access: DocSummary["access"] }, isAdmin: boolean): boolean {
-  return doc.access === "public" || isAdmin
+export function canViewDoc(doc: { access: DocSummary["access"] }, viewer: DocViewer): boolean {
+  if (doc.access === "public") return true
+  if (doc.access === "owner") return viewer.isOwner
+  return viewer.isAdmin
 }
 
 /** Filter by audience, or return all when audience is falsy. */

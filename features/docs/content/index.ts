@@ -4,6 +4,7 @@ import { caringForYourHeadphones } from "./caring-for-your-headphones"
 import { troubleshootingCommonIssues } from "./troubleshooting-common-issues"
 import { frequentlyAskedQuestions } from "./frequently-asked-questions"
 import { warrantyAndReturnsGuide } from "./warranty-and-returns-guide"
+import { yourOffersAndDiscounts } from "./your-offers-and-discounts"
 import { ordersAndFulfillment } from "./orders-and-fulfillment"
 import { managingCustomers } from "./managing-customers"
 import { mediaAndAssets } from "./media-and-assets"
@@ -11,6 +12,7 @@ import { cmsAndPublishing } from "./cms-and-publishing"
 import { apiAndIntegrations } from "./api-and-integrations"
 import { managingTheProductCatalog } from "./managing-the-product-catalog"
 import { ordersAndEmailOperations } from "./orders-and-email-operations"
+import { managingYourTheme } from "./managing-your-theme"
 import { companyProfileAndSetup } from "./company-profile-and-setup"
 import { emailSystemOverview } from "./email-system-overview"
 import { emailTemplatesGuide } from "./email-templates-guide"
@@ -18,6 +20,7 @@ import { emailCampaignWalkthrough } from "./email-campaign-walkthrough"
 import { emailCustomerMessages } from "./email-customer-messages"
 import { systemArchitecture } from "./system-architecture"
 import { dataLayerAndDatabase } from "./data-layer-and-database"
+import { theThemeSystem } from "./the-theme-system"
 import { serverFirstPlaybook } from "./server-first-playbook"
 import { strapiMigrationRunbook } from "./strapi-migration-runbook"
 import { strapiContentModeling } from "./strapi-content-modeling"
@@ -44,6 +47,7 @@ export const docs: Doc[] = [
   troubleshootingCommonIssues,
   frequentlyAskedQuestions,
   warrantyAndReturnsGuide,
+  yourOffersAndDiscounts,
   ordersAndFulfillment,
   managingCustomers,
   mediaAndAssets,
@@ -52,6 +56,7 @@ export const docs: Doc[] = [
   // Content management (admin)
   managingTheProductCatalog,
   ordersAndEmailOperations,
+  managingYourTheme,
   companyProfileAndSetup,
   emailSystemOverview,
   emailTemplatesGuide,
@@ -60,6 +65,7 @@ export const docs: Doc[] = [
   // Developer & CTO (admin)
   systemArchitecture,
   dataLayerAndDatabase,
+  theThemeSystem,
   serverFirstPlaybook,
   strapiMigrationRunbook,
   strapiContentModeling,

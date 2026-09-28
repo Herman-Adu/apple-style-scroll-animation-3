@@ -19,7 +19,13 @@ export const DOC_AUDIENCES = ["user", "content", "developer"] as const
 
 export type DocAudience = (typeof DOC_AUDIENCES)[number]
 
-export type DocAccess = "public" | "admin"
+/**
+ * Visibility tiers. "public" is everyone; "admin" is any admin account; "owner"
+ * is the platform owner alone (super-admin) — sales/positioning material that
+ * even other admins must not see. Owner docs are gated server-side: their body
+ * is never serialized to a non-owner (see features/docs/api).
+ */
+export type DocAccess = "public" | "admin" | "owner"
 
 export const docAudienceMeta = {
   user: {

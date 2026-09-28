@@ -5,7 +5,7 @@ export const pricingAndPackaging: Doc = {
   title: "Pricing & Packaging the Build",
   category: "Positioning",
   audience: "developer",
-  access: "admin",
+  access: "owner",
   summary:
     "Turn the platform into an offer: how to package it into tiers, price on value rather than hours, structure recurring revenue, and run a demo that closes.",
   readingMinutes: 9,

@@ -5,6 +5,7 @@ import { Lock } from "lucide-react"
 import type { DocSummary } from "../schema"
 import { groupDocsByAudience, visibleDocs } from "../lib/doc"
 import { useAuth } from "@/lib/auth/auth-context"
+import { isOwner } from "@/lib/auth/config"
 import { cn } from "@/lib/utils"
 
 /**
@@ -15,8 +16,9 @@ import { cn } from "@/lib/utils"
  */
 export function DocsSidebar({ docs, activeSlug }: { docs: DocSummary[]; activeSlug: string }) {
   const { user } = useAuth()
-  const isAdmin = user?.role === "admin"
-  const groups = groupDocsByAudience(visibleDocs(docs, isAdmin))
+  const groups = groupDocsByAudience(
+    visibleDocs(docs, { isAdmin: user?.role === "admin", isOwner: isOwner(user?.email) }),
+  )
 
   return (
     <nav aria-label="All documentation" className="sticky top-28 space-y-8">

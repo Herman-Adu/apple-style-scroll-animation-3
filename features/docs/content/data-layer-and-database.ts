@@ -10,12 +10,12 @@ export const dataLayerAndDatabase: Doc = {
     "Every piece of business data now lives in Neon Postgres via Prisma, reached through a port/adapter seam. This guide is the schema map, the merge-on-read catalog model, the transactional stock/order write path, and the cache-revalidation strategy — the ground truth for the Strapi migration.",
   readingMinutes: 13,
   order: 1,
-  updatedAt: "2026-09-26",
-  tags: ["database", "neon", "prisma", "postgres", "ports and adapters", "transactions", "caching", "ssr"],
+  updatedAt: "2026-09-28",
+  tags: ["database", "neon", "prisma", "postgres", "ports and adapters", "transactions", "caching", "ssr", "theme"],
   body: [
     {
       type: "paragraph",
-      text: "The app is fully server-backed: catalog, orders, reviews, auth, the email system, and store settings all persist in Neon. The only intentional exceptions are the shopping cart (anonymous pre-checkout state) and the theme preference (a device setting) — both correctly client-side. This guide covers how that data is shaped, read, and written.",
+      text: "The app is fully server-backed: catalog, orders, reviews, auth, the email system, store settings, and the brand theme all persist in Neon. The only intentional exceptions are the shopping cart (anonymous pre-checkout state) and the light/dark colour-scheme preference (a device setting) — both correctly client-side. This guide covers how that data is shaped, read, and written.",
     },
     {
       type: "heading",
@@ -30,9 +30,10 @@ export const dataLayerAndDatabase: Doc = {
         ["Reviews", "Neon", "Neon-backed provider behind the reviews port."],
         ["Auth", "Neon (Better Auth)", "user / account / session tables; role via allowlist + roleOverride."],
         ["Email system", "Neon", "settings, templates, campaigns, log, presets, messages, subscribers."],
-        ["Store settings", "Neon", "StoreSettings singleton (id = 1) with discrete typed columns."],
+        ["Store settings", "Neon", "StoreSettings singleton (id = 1) with discrete typed columns + a theme JSON column."],
+        ["Brand theme", "Neon", "StoreSettings.theme JSON — a library of theme templates, one active. See The Theme System."],
         ["Cart", "Client", "Anonymous pre-checkout state; persists to Neon only when an order is placed."],
-        ["Theme", "Client", "Device-level preference (next-themes), not business data."],
+        ["Colour scheme", "Client", "Light/dark device preference (next-themes), not business data. Distinct from the brand theme."],
       ],
     },
     {
@@ -75,6 +76,7 @@ export const dataLayerAndDatabase: Doc = {
         "    int lowStockThreshold",
         "    boolean emailAlerts",
         "    boolean onboarded",
+        "    json theme",
         "  }",
       ].join("\n"),
     },
@@ -83,6 +85,12 @@ export const dataLayerAndDatabase: Doc = {
       variant: "note",
       title: "Why discrete columns, not a JSON blob",
       text: "StoreSettings uses one row of typed columns rather than a JSON bag. This is deliberate: discrete columns map 1:1 onto a Strapi single-type's fields, so the CMS migration is a field-for-field translation instead of an unpack-and-reshape job.",
+    },
+    {
+      type: "callout",
+      variant: "note",
+      title: "The one deliberate JSON column: theme",
+      text: "theme is the exception, and for a reason: it stores a whole library of theme templates (each with colour tokens and a heading style) plus which one is active — a genuinely nested, variable-length structure, not a flat record. It is normalised on read and only ever mutated through pure transforms. See The Theme System (developer guide) for the full model.",
     },
     {
       type: "heading",

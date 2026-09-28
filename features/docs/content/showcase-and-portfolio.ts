@@ -5,7 +5,7 @@ export const showcaseAndPortfolio: Doc = {
   title: "Showcasing This Build: Portfolio & Social",
   category: "Positioning",
   audience: "developer",
-  access: "admin",
+  access: "owner",
   summary:
     "How to present this project as proof of senior engineering skill — on LinkedIn, Telegram, and a portfolio. What to highlight, ready-to-adapt post templates, the screenshots and links to attach, and where to drop the live URL once it is deployed.",
   readingMinutes: 9,

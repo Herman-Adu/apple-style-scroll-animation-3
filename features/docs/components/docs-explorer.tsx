@@ -34,8 +34,9 @@ import { DOC_AUDIENCES, docAudienceMeta } from "../schema"
 import { groupDocsByAudienceAndCategory, visibleDocs } from "../lib/doc"
 import { useDocSearch } from "../lib/use-doc-search"
 import { DocCard } from "./doc-card"
-import { useAuth } from "@/lib/auth/auth-context"
-import { cn } from "@/lib/utils"
+  import { useAuth } from "@/lib/auth/auth-context"
+  import { isOwner } from "@/lib/auth/config"
+  import { cn } from "@/lib/utils"
 
 type AudienceTab = "all" | DocAudience
 
@@ -80,6 +81,7 @@ const categoryIcon: Record<DocCategory, LucideIcon> = {
 export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
   const { user } = useAuth()
   const isAdmin = user?.role === "admin"
+  const isOwnerViewer = isOwner(user?.email)
 
   const [query, setQuery] = useState("")
   const [tab, setTab] = useState<AudienceTab>("all")
@@ -87,7 +89,10 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
   // force-opens everything so matches are never hidden behind a closed group.
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
 
-  const visible = useMemo(() => visibleDocs(docs, isAdmin), [docs, isAdmin])
+  const visible = useMemo(
+    () => visibleDocs(docs, { isAdmin, isOwner: isOwnerViewer }),
+    [docs, isAdmin, isOwnerViewer],
+  )
 
   // Only offer audience tabs the viewer can actually see content in.
   const availableAudiences = useMemo(

@@ -5,7 +5,7 @@ export const positioningAndSelling: Doc = {
   title: "Positioning & Selling the Platform",
   category: "Positioning",
   audience: "developer",
-  access: "admin",
+  access: "owner",
   summary:
     "How to frame this stack to a buyer: the market it fits, the value it delivers over a template, and the objections to answer before they are raised.",
   readingMinutes: 10,

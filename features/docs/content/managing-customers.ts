@@ -10,7 +10,7 @@ export const managingCustomers: Doc = {
     "Understand and act on your customer base — read the KPI row, segment and search the list, and open a profile to see lifetime value, order history, and to grant offers, manage roles, or block an account.",
   readingMinutes: 7,
   order: 1,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-09-28",
   tags: ["admin", "customers", "segments", "offers", "roles", "lifetime value"],
   body: [
     {
@@ -111,6 +111,12 @@ export const managingCustomers: Doc = {
       type: "callout",
       variant: "info",
       text: "Offer emails go out through Resend. If Resend isn't configured, the send is skipped with a clear notice and the offer tag is still saved — so the workflow never silently fails.",
+    },
+    {
+      type: "callout",
+      variant: "tip",
+      title: "The customer sees the offer too",
+      text: "An offer you grant isn't only an internal tag. It appears in the customer's own account under Account → Offers — with its value, any note, and a live countdown to expiry — and drives the site-wide offer banner. When the offer expires it drops off both automatically, so a customer never sees a stale deal. The customer-facing walkthrough is the Your Offers & Discounts guide.",
     },
     {
       type: "heading",

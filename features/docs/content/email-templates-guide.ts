@@ -10,8 +10,8 @@ export const emailTemplatesGuide: Doc = {
     "Templates are the branded, block-based emails your campaigns and customer messages are built from. This guide explains the four system templates, the difference between transactional and marketing, and how to duplicate one to make your own.",
   readingMinutes: 6,
   order: 2,
-  updatedAt: "2026-09-26",
-  tags: ["email", "templates", "blocks", "branding"],
+  updatedAt: "2026-09-28",
+  tags: ["email", "templates", "blocks", "branding", "theme"],
   body: [
     {
       type: "paragraph",
@@ -85,7 +85,7 @@ export const emailTemplatesGuide: Doc = {
         },
         {
           title: "Open it and edit the blocks",
-          text: "A template is a stack of blocks — a hero image, headings, paragraphs, buttons. Edit the text and images in place; the brand colours and footer are inherited from Settings, so you do not set them here.",
+          text: "A template is a stack of blocks — a hero image, headings, paragraphs, buttons. Edit the text and images in place; the accent colour and footer are inherited from your active theme, so you do not set them here.",
         },
         {
           title: "Preview with sample data",
@@ -102,6 +102,20 @@ export const emailTemplatesGuide: Doc = {
       variant: "tip",
       title: "Or start from New template",
       text: "The New template button in the top right gives you a blank branded shell if none of the system templates are close enough. It still inherits your brand, so you are never designing from a truly empty page.",
+    },
+    {
+      type: "heading",
+      text: "Email accent follows your theme",
+    },
+    {
+      type: "paragraph",
+      text: "The accent colour on buttons, links, and dividers is not fixed per template — it defaults from whichever theme is active under Theme → Active & presets. Switch your brand from teal to amber there and every email that uses the theme accent updates to match, with no template editing. The Email accent card in the Theme live preview shows exactly how a send will look.",
+    },
+    {
+      type: "callout",
+      variant: "note",
+      title: "You can still override per template",
+      text: "Inheriting from the active theme is the default, not a cage. A template that needs an off-brand accent — a one-off seasonal blast, say — can still set its own; it simply opts out of the shared default. See Managing Your Theme for how the accent is chosen.",
     },
   ],
 }

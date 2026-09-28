@@ -14,6 +14,7 @@ export {
   visibleDocs,
   canViewDoc,
 } from "./lib/doc"
+export type { DocViewer } from "./lib/doc"
 export { DocCard, DocCardSkeleton, DocGridSkeleton } from "./components/doc-card"
 export { DocBlocks } from "./components/doc-blocks"
 export { DocsExplorer } from "./components/docs-explorer"

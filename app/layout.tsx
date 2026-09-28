@@ -11,7 +11,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { SiteChrome } from "@/components/layout/site-chrome"
 import { BrandThemeStyle } from "@/components/theme/brand-theme-style"
 import { getStoreSettingsAction } from "@/lib/settings/db-actions"
-import { getActiveTheme } from "@/lib/settings/theme"
+import { getActiveTheme, getHeadingAccent } from "@/lib/settings/theme"
 import { getCatalogProducts } from "@/lib/catalog/db-actions"
 import { siteConfig } from "@/lib/data/site"
 import { getBaseUrl } from "@/lib/seo/site"
@@ -80,13 +80,16 @@ export default async function RootLayout({
 }>) {
   const [catalog, settings] = await Promise.all([getCatalogProducts(), getStoreSettingsAction()])
   const activeTheme = getActiveTheme(settings.theme)
+  const headingAccent = getHeadingAccent(activeTheme)
 
   return (
     <html
       lang="en"
       className="bg-background"
       data-heading-style={activeTheme.headingStyle}
-      data-heading-scope={activeTheme.headingScope ?? "primary"}
+      data-accent-h1={headingAccent.h1 ? "on" : "off"}
+      data-accent-h2={headingAccent.h2 ? "on" : "off"}
+      data-accent-cards={headingAccent.cards ? "on" : "off"}
       suppressHydrationWarning
     >
       <body className={`${inter.variable} font-sans antialiased`}>

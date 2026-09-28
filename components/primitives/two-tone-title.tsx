@@ -1,3 +1,4 @@
+import type { HeadingTier } from "@/lib/settings/theme"
 import { cn } from "@/lib/utils"
 
 /**
@@ -5,11 +6,15 @@ import { cn } from "@/lib/utils"
  * (two-tone teal / solid / whole-title gradient) is NOT decided here — it is
  * driven globally by `data-heading-style` on <html>, which the active theme
  * sets. This primitive only marks up the structure:
- *   - `.tt-title`  on the wrapper (so gradient mode can clip the whole title)
- *   - `.tt-accent` on the accented word
+ *   - `.tt-title` + `.tt-title--{tier}`  on the wrapper (gradient clips it)
+ *   - `.tt-accent` + `.tt-accent--{tier}` on the accented word
  * The CSS for these classes lives in globals.css. Base (non-accent) text keeps
  * the heading's own `currentColor` — never a hardcoded white — so it inherits
  * correctly on both light surfaces and always-dark cinematic media.
+ *
+ * The `tier` (h1 / h2 / card) marks WHICH accent toggle governs this heading.
+ * Each tier is switched on/off independently and site-wide by the active theme
+ * via `data-accent-h1|h2|cards` on <html> — pure CSS, no per-heading edits.
  *
  * Accent resolution:
  *   - An explicit `accent` substring always wins (page heroes pass one).
@@ -24,34 +29,30 @@ export function TwoToneTitle({
   title,
   accent,
   autoAccent = true,
-  emphasis = "primary",
+  tier = "h2",
   className,
 }: {
   title: string
   accent?: string
   autoAccent?: boolean
-  /**
-   * "primary" headings always carry the accent. "secondary" headings (repeated
-   * cards, list items) only light up when the active theme's `headingScope` is
-   * "all" — in "primary" scope they render as plain text. Purely a marker; the
-   * reach is decided globally in CSS via `data-heading-scope`.
-   */
-  emphasis?: "primary" | "secondary"
+  /** Which accent toggle governs this heading. Defaults to the "h2" tier. */
+  tier?: HeadingTier
   className?: string
 }) {
   const resolvedAccent = accent ?? (autoAccent ? lastWord(title) : undefined)
   const matchAt = resolvedAccent ? title.lastIndexOf(resolvedAccent) : -1
-  const secondary = emphasis === "secondary"
+  const titleTier = `tt-title--${tier}`
+  const accentTier = `tt-accent--${tier}`
 
   if (!resolvedAccent || matchAt === -1) {
     // No accent: still tag as a title so gradient mode can tint the whole thing.
-    return <span className={cn("tt-title", secondary && "tt-title--secondary", className)}>{title}</span>
+    return <span className={cn("tt-title", titleTier, className)}>{title}</span>
   }
 
   return (
-    <span className={cn("tt-title", secondary && "tt-title--secondary", className)}>
+    <span className={cn("tt-title", titleTier, className)}>
       {title.slice(0, matchAt)}
-      <span className={cn("tt-accent", secondary && "tt-accent--secondary")}>{resolvedAccent}</span>
+      <span className={cn("tt-accent", accentTier)}>{resolvedAccent}</span>
       {title.slice(matchAt + resolvedAccent.length)}
     </span>
   )

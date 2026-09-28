@@ -20,6 +20,27 @@ export type HeadingStyle = "two-tone" | "solid" | "gradient"
  */
 export type HeadingScope = "primary" | "all"
 
+/**
+ * Independent accent reach per heading tier. Each flag turns the brand accent
+ * on/off for that tier site-wide, so a client can, e.g., accent page titles
+ * (h1) but leave section headlines (h2) and small card titles plain — any
+ * combination. Injected as `data-accent-h1|h2|cards` on <html>; pure CSS gates
+ * each tier with no per-heading edits.
+ *  - h1:    page/hero titles (SectionHeading `as="h1"`, page & scroll heroes)
+ *  - h2:    section headlines (the default tier)
+ *  - cards: repeated/card & list/timeline titles (`emphasis="secondary"`)
+ */
+export interface HeadingAccent {
+  h1: boolean
+  h2: boolean
+  cards: boolean
+}
+
+/** The tasteful shipped default: titles + section headlines accented, cards calm. */
+export const DEFAULT_HEADING_ACCENT: HeadingAccent = { h1: true, h2: true, cards: false }
+
+export type HeadingTier = "h1" | "h2" | "card"
+
 export type ThemeKind = "system" | "custom" | "seasonal"
 
 /** The colour tokens a template controls. Values are any valid CSS colour
@@ -42,9 +63,12 @@ export interface ThemeTemplate {
   name: string
   kind: ThemeKind
   headingStyle: HeadingStyle
-  /** How far the accent reaches. Defaults to "primary" when absent so existing
-   * persisted themes round-trip unchanged. */
+  /** LEGACY. Superseded by `headingAccent`. Kept only so old persisted themes
+   * still migrate cleanly via `getHeadingAccent`. Do not write new values here. */
   headingScope?: HeadingScope
+  /** Per-tier accent reach (h1 / h2 / cards). Absent falls back to the legacy
+   * `headingScope`, then to `DEFAULT_HEADING_ACCENT`, so everything round-trips. */
+  headingAccent?: HeadingAccent
   tokens: ThemeTokens & {
     light?: Partial<ThemeTokens>
     dark?: Partial<ThemeTokens>
@@ -75,6 +99,7 @@ export const TITANIUM_TEAL: ThemeTemplate = {
   name: "Titanium Teal",
   kind: "system",
   headingStyle: "two-tone",
+  headingAccent: DEFAULT_HEADING_ACCENT,
   tokens: {
     accent: "oklch(0.74 0.086 195)",
     accentMuted: "oklch(0.62 0.07 197)",
@@ -162,6 +187,40 @@ export function getActiveTheme(state: ThemeState): ThemeTemplate {
 /** The accent reach for a template, defaulting to the tasteful "primary". */
 export function getHeadingScope(theme: ThemeTemplate): HeadingScope {
   return theme.headingScope ?? "primary"
+}
+
+/**
+ * The per-tier accent reach for a template. Prefers the new `headingAccent`;
+ * otherwise migrates the legacy `headingScope` ("all" lit everything; "primary"
+ * kept cards calm); otherwise the shipped default. Always returns a full object.
+ */
+export function getHeadingAccent(theme: ThemeTemplate): HeadingAccent {
+  if (theme.headingAccent) {
+    return {
+      h1: theme.headingAccent.h1 ?? DEFAULT_HEADING_ACCENT.h1,
+      h2: theme.headingAccent.h2 ?? DEFAULT_HEADING_ACCENT.h2,
+      cards: theme.headingAccent.cards ?? DEFAULT_HEADING_ACCENT.cards,
+    }
+  }
+  if (theme.headingScope === "all") return { h1: true, h2: true, cards: true }
+  return { ...DEFAULT_HEADING_ACCENT }
+}
+
+/**
+ * Restore the active template's *look* — heading style, per-tier accent reach
+ * and brand colour tokens — to the shipped Titanium Teal defaults, while keeping
+ * its id/name/kind so the client's named theme (and library) is preserved.
+ */
+export function resetActiveThemeToDefault(state: ThemeState): ThemeState {
+  const active = getActiveTheme(state)
+  const reset: ThemeTemplate = {
+    ...active,
+    headingStyle: TITANIUM_TEAL.headingStyle,
+    headingAccent: { ...DEFAULT_HEADING_ACCENT },
+    headingScope: undefined,
+    tokens: structuredCloneSafe(TITANIUM_TEAL.tokens),
+  }
+  return upsertTheme(state, reset)
 }
 
 /** Resolve the effective tokens for a colour scheme (base merged with override). */

@@ -1,14 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Loader2, Save } from "lucide-react"
+import { Check, Loader2, RotateCcw, Save } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { useStoreSettings } from "@/features/admin/hooks/use-settings"
 import {
+  DEFAULT_HEADING_ACCENT,
   getActiveTheme,
+  getHeadingAccent,
+  resetActiveThemeToDefault,
+  TITANIUM_TEAL,
   upsertTheme,
-  type HeadingScope,
+  type HeadingAccent,
   type HeadingStyle,
   type ThemeTemplate,
 } from "@/lib/settings/theme"
@@ -21,9 +25,10 @@ const OPTIONS: { value: HeadingStyle; label: string; desc: string }[] = [
   { value: "gradient", label: "Gradient", desc: "Whole title filled with your brand gradient." },
 ]
 
-const SCOPE_OPTIONS: { value: HeadingScope; label: string; desc: string }[] = [
-  { value: "primary", label: "Primary headings", desc: "Page titles and section headlines carry the accent. Small card titles stay solid." },
-  { value: "all", label: "Every heading", desc: "The accent reaches down to small card titles too — the boldest brand statement." },
+const TIER_OPTIONS: { key: keyof HeadingAccent; label: string; desc: string }[] = [
+  { key: "h1", label: "Page & hero titles", desc: "The largest headline on each page — heroes and page titles." },
+  { key: "h2", label: "Section headlines", desc: "The titles that introduce each section down the page." },
+  { key: "cards", label: "Card & list titles", desc: "Small repeated titles — value cards, list items, timeline milestones." },
 ]
 
 export function HeadingStyleForm() {
@@ -32,12 +37,38 @@ export function HeadingStyleForm() {
   const [draft, setDraft] = useState<ThemeTemplate>(active)
   const [saving, setSaving] = useState(false)
 
+  const accent = getHeadingAccent(draft)
+
   function save() {
     setSaving(true)
     update({ theme: upsertTheme(settings.theme, draft) })
     toast.success("Heading style updated")
     setTimeout(() => setSaving(false), 300)
   }
+
+  function toggleTier(key: keyof HeadingAccent) {
+    setDraft((prev) => {
+      const current = getHeadingAccent(prev)
+      return {
+        ...prev,
+        headingScope: undefined,
+        headingAccent: { ...current, [key]: !current[key] },
+      }
+    })
+  }
+
+  function resetToDefault() {
+    const nextState = resetActiveThemeToDefault(settings.theme)
+    setDraft(getActiveTheme(nextState))
+    update({ theme: nextState })
+    toast.success("Theme reset to Titanium Teal defaults")
+  }
+
+  const isDefault =
+    draft.headingStyle === TITANIUM_TEAL.headingStyle &&
+    accent.h1 === DEFAULT_HEADING_ACCENT.h1 &&
+    accent.h2 === DEFAULT_HEADING_ACCENT.h2 &&
+    accent.cards === DEFAULT_HEADING_ACCENT.cards
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
@@ -84,31 +115,37 @@ export function HeadingStyleForm() {
         <section className="rounded-2xl border border-border bg-card p-5">
           <h3 className="mb-1 text-sm font-semibold uppercase tracking-widest text-muted-foreground">Accent reach</h3>
           <p className="mb-4 text-xs text-muted-foreground">
-            Decide how far the accent travels. Keep it on primary headings for a refined look, or extend it to every
-            heading for a bolder brand presence.
+            Switch the brand accent on or off for each heading tier independently. Accent your page titles but keep
+            section headlines calm, light up everything, or any mix — the whole site updates instantly.
           </p>
           <div className="grid gap-3">
-            {SCOPE_OPTIONS.map((opt) => {
-              const selected = (draft.headingScope ?? "primary") === opt.value
+            {TIER_OPTIONS.map((opt) => {
+              const on = accent[opt.key]
               return (
                 <button
-                  key={opt.value}
+                  key={opt.key}
                   type="button"
-                  onClick={() => setDraft((prev) => ({ ...prev, headingScope: opt.value }))}
-                  aria-pressed={selected}
+                  onClick={() => toggleTier(opt.key)}
+                  role="switch"
+                  aria-checked={on}
                   className={cn(
                     "flex items-center gap-3 rounded-xl border p-4 text-left transition-colors",
-                    selected ? "border-accent-teal/50 bg-accent-teal/8" : "border-border hover:border-accent-teal/30",
+                    on ? "border-accent-teal/50 bg-accent-teal/8" : "border-border hover:border-accent-teal/30",
                   )}
                 >
                   <span
                     className={cn(
-                      "flex size-5 shrink-0 items-center justify-center rounded-full border",
-                      selected ? "border-accent-teal bg-accent-teal text-background" : "border-border",
+                      "relative flex h-5 w-9 shrink-0 items-center rounded-full transition-colors",
+                      on ? "bg-accent-teal" : "bg-border",
                     )}
                     aria-hidden
                   >
-                    {selected ? <Check className="size-3.5" /> : null}
+                    <span
+                      className={cn(
+                        "absolute size-4 rounded-full bg-background transition-transform",
+                        on ? "translate-x-[18px]" : "translate-x-0.5",
+                      )}
+                    />
                   </span>
                   <span className="min-w-0">
                     <span className="block text-sm font-medium text-foreground">{opt.label}</span>
@@ -120,7 +157,17 @@ export function HeadingStyleForm() {
           </div>
         </section>
 
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between gap-3">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={resetToDefault}
+            disabled={isDefault}
+            className="gap-1.5 text-muted-foreground hover:text-foreground"
+          >
+            <RotateCcw className="size-4" />
+            Reset to default
+          </Button>
           <Button onClick={save} disabled={saving} className="gap-1.5">
             {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
             Save style

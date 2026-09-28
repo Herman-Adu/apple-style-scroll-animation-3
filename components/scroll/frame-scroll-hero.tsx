@@ -211,7 +211,7 @@ export function FrameScrollHero({ hero, product }: { hero: FrameHero; product: P
                     transition={{ delay: 0.5, duration: 0.8 }}
                     style={{ textShadow: "0 4px 30px rgba(0,0,0,0.5)" }}
                   >
-                    <TwoToneTitle title={hero.intro.title} />
+                    <TwoToneTitle title={hero.intro.title} tier="h1" />
                   </motion.h1>
                   <motion.p
                     className="mt-4 max-w-md text-base font-normal tracking-wide text-on-media/70 md:text-lg"

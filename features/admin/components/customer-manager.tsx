@@ -25,6 +25,7 @@ import {
 import type { CustomerRecord, CustomerSegment, CustomerSort } from "@/features/customers"
 import { useAdminCustomers } from "../hooks/use-admin-customers"
 import { CustomerStatusBadge, RoleBadge, OfferChip } from "./customer-badges"
+import { isOwner } from "@/lib/auth/config"
 
 const SORT_OPTIONS: { value: CustomerSort; label: string }[] = [
   { value: "recent", label: "Newest" },
@@ -170,7 +171,7 @@ export function CustomerManager() {
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
                               <p className="truncate font-medium">{user.name}</p>
-                              <RoleBadge role={record.effectiveRole} />
+                              <RoleBadge role={record.effectiveRole} owner={isOwner(user.email)} />
                             </div>
                             <p className="truncate text-xs text-muted-foreground">{user.email}</p>
                           </div>

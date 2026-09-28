@@ -20,6 +20,7 @@ import { formatMoney, formatDate } from "@/lib/format"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { OrderStatusBadge } from "./status-badges"
 import { CustomerStatusBadge, RoleBadge } from "./customer-badges"
+import { isOwner } from "@/lib/auth/config"
 import { OfferEditor } from "./offer-editor"
 import { useAdminCustomers } from "../hooks/use-admin-customers"
 import { sendPersonalOffer } from "@/features/email"
@@ -167,7 +168,7 @@ export function CustomerDetail({ customerId }: { customerId: string }) {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-lg font-semibold">{user.name}</h2>
-              <RoleBadge role={record.effectiveRole} />
+              <RoleBadge role={record.effectiveRole} owner={isOwner(user.email)} />
               <CustomerStatusBadge status={user.status} />
             </div>
             <p className="mt-0.5 text-sm text-muted-foreground">{user.email}</p>

@@ -27,6 +27,11 @@ import { strapiContentModeling } from "./strapi-content-modeling"
 import { devopsDeployObservability } from "./devops-deploy-observability"
 import { commerceCartCheckout } from "./commerce-cart-checkout"
 import { authenticationAndAccess } from "./authentication-and-access"
+import { roiAndCostOfOwnership } from "./roi-and-cost-of-ownership"
+import { buildVsBuy } from "./build-vs-buy"
+import { whyThisStack } from "./why-this-stack"
+import { scaleAndReliability } from "./scale-and-reliability"
+import { securityAndCompliancePosture } from "./security-and-compliance-posture"
 import { positioningAndSelling } from "./positioning-and-selling"
 import { pricingAndPackaging } from "./pricing-and-packaging"
 import { emailSellingPoints } from "./email-selling-points"
@@ -62,7 +67,7 @@ export const docs: Doc[] = [
   emailTemplatesGuide,
   emailCampaignWalkthrough,
   emailCustomerMessages,
-  // Developer & CTO (admin)
+  // Developer (public)
   systemArchitecture,
   dataLayerAndDatabase,
   theThemeSystem,
@@ -72,6 +77,13 @@ export const docs: Doc[] = [
   devopsDeployObservability,
   commerceCartCheckout,
   authenticationAndAccess,
+  // CTO & decision makers (public)
+  roiAndCostOfOwnership,
+  buildVsBuy,
+  whyThisStack,
+  scaleAndReliability,
+  securityAndCompliancePosture,
+  // Owner (owner-only)
   positioningAndSelling,
   pricingAndPackaging,
   emailSellingPoints,

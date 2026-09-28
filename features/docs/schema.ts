@@ -10,15 +10,17 @@
 
 /**
  * Audiences segment the library by *who* a guide is for. The library is public
- * at the audience level — user, content, and developer guides are all readable
- * by anyone, so the documentation can be linked and shown off publicly (this is
- * the "public docs hub" the Social & Recruitment Playbook points at). The only
- * gated material is individual owner-tier docs (positioning/sales), restricted
- * to the platform owner via each doc's `access` field (see `canViewDoc`). Owner
- * gating is enforced server-side — those bodies are never serialized to a
- * non-owner (see features/docs/api) — and mirrored client-side for nav.
+ * at the audience level — user, content, developer, and CTO guides are all
+ * readable by anyone, so the documentation can be linked and shown off publicly
+ * (this is the "public docs hub" the Social & Recruitment Playbook points at,
+ * and the CTO audience is written specifically to be shared with buyers and
+ * hiring teams on socials). The only gated material is individual owner-tier
+ * docs (positioning/sales), restricted to the platform owner via each doc's
+ * `access` field (see `canViewDoc`). Owner gating is enforced server-side —
+ * those bodies are never serialized to a non-owner (see features/docs/api) —
+ * and mirrored client-side for nav.
  */
-export const DOC_AUDIENCES = ["user", "content", "developer", "owner"] as const
+export const DOC_AUDIENCES = ["user", "content", "developer", "cto", "owner"] as const
 
 export type DocAudience = (typeof DOC_AUDIENCES)[number]
 
@@ -44,9 +46,16 @@ export const docAudienceMeta = {
     access: "public",
   },
   developer: {
-    label: "Developer & CTO",
-    title: "Developer & CTO",
-    blurb: "Architecture, the Strapi migration, DevOps, and commerce internals.",
+    label: "Developer",
+    title: "Developer",
+    blurb: "Architecture, the Strapi migration, DevOps, data, and commerce internals — the hands-on engineering reference.",
+    access: "public",
+  },
+  cto: {
+    label: "CTO",
+    title: "CTO & Decision Makers",
+    blurb:
+      "The business case for the platform — ROI and total cost of ownership, technology strategy, and security posture. Written to be shared with buyers and hiring teams.",
     access: "public",
   },
   owner: {
@@ -79,7 +88,7 @@ export const DOC_CATEGORIES = [
   "Email & Campaigns",
   "Media Library",
   "CMS & Publishing",
-  // Developer & CTO (admin)
+  // Developer (public)
   "Architecture",
   "Next.js",
   "Migration",
@@ -88,6 +97,10 @@ export const DOC_CATEGORIES = [
   "Data & Analytics",
   "Security & Auth",
   "API & Integrations",
+  // CTO & decision makers (public)
+  "Business Case",
+  "Technology Strategy",
+  "Security & Trust",
   // Owner (owner-only)
   "Positioning",
 ] as const
@@ -110,7 +123,7 @@ export const DOC_CATEGORY_AUDIENCE: Record<DocCategory, DocAudience> = {
   "Email & Campaigns": "content",
   "Media Library": "content",
   "CMS & Publishing": "content",
-  // Developer & CTO
+  // Developer
   Architecture: "developer",
   "Next.js": "developer",
   Migration: "developer",
@@ -119,6 +132,10 @@ export const DOC_CATEGORY_AUDIENCE: Record<DocCategory, DocAudience> = {
   "Data & Analytics": "developer",
   "Security & Auth": "developer",
   "API & Integrations": "developer",
+  // CTO & decision makers
+  "Business Case": "cto",
+  "Technology Strategy": "cto",
+  "Security & Trust": "cto",
   // Owner
   Positioning: "owner",
 }

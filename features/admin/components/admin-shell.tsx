@@ -509,7 +509,7 @@ export function AdminShell({ title, children }: { title: string; children: React
           </AdminAccountMenu>
         </header>
 
-        <main className="p-4 sm:p-6">{children}</main>
+        <main className="min-w-0 overflow-x-clip p-4 sm:p-6">{children}</main>
       </div>
 
       {/* First-run company onboarding — self-gates on the stored company profile. */}

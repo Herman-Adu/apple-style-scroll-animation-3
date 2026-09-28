@@ -146,13 +146,6 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
         </label>
       </div>
 
-      {!isAdmin ? (
-        <p className="mb-10 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
-          <Lock className="h-3 w-3" strokeWidth={2} />
-          Showing public user guides — sign in with an admin account for internal guides
-        </p>
-      ) : null}
-
       {total === 0 ? (
         <p className="text-foreground/50">
           {query ? `No guides match “${query}”. Try a different search.` : "No guides here yet."}
@@ -168,12 +161,6 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
                 >
                   {group.meta.title}
                 </h2>
-                {group.meta.access === "admin" ? (
-                  <span className="flex items-center gap-1 rounded-full border border-accent-amber/30 bg-accent-amber/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.15em] text-accent-amber">
-                    <Lock className="h-2.5 w-2.5" strokeWidth={2} />
-                    Internal
-                  </span>
-                ) : null}
                 <span className="font-mono text-[10px] text-foreground/30">
                   {group.count} {group.count === 1 ? "guide" : "guides"}
                 </span>

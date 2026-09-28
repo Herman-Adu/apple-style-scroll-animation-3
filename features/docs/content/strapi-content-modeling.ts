@@ -5,7 +5,7 @@ export const strapiContentModeling: Doc = {
   title: "Content Modeling in Strapi: Schemas & Components",
   category: "Migration",
   audience: "developer",
-  access: "admin",
+  access: "public",
   summary:
     "The exact Strapi content types, components, and dynamic zones that back this app — with schema JSON you can paste into a fresh instance.",
   readingMinutes: 13,

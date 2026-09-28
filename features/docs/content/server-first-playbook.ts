@@ -5,7 +5,7 @@ export const serverFirstPlaybook: Doc = {
   title: "The Server-First Rendering Playbook",
   category: "Next.js",
   audience: "developer",
-  access: "admin",
+  access: "public",
   summary:
     "How this codebase decides between Server Components and client islands, how streaming works, and the rules that keep the client bundle small.",
   readingMinutes: 11,

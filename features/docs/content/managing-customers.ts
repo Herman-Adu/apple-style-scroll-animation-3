@@ -5,7 +5,7 @@ export const managingCustomers: Doc = {
   title: "Managing Customers",
   category: "Customers",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "Understand and act on your customer base — read the KPI row, segment and search the list, and open a profile to see lifetime value, order history, and to grant offers, manage roles, or block an account.",
   readingMinutes: 7,

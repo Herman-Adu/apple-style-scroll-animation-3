@@ -5,7 +5,7 @@ export const emailTemplatesGuide: Doc = {
   title: "Building & Editing Templates",
   category: "Email & Campaigns",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "Templates are the branded, block-based emails your campaigns and customer messages are built from. This guide explains the four system templates, the difference between transactional and marketing, and how to duplicate one to make your own.",
   readingMinutes: 6,

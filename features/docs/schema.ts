@@ -9,11 +9,14 @@
  */
 
 /**
- * Audiences segment the library by *who* a guide is for, and access is enforced
- * per audience (see `docAudienceMeta`): user guides are public; content and
- * developer guides are admin-only. Pre-Strapi this gating is client-side
- * (localStorage auth, same model as the admin dashboard); once auth moves
- * server-side with Strapi the same `access` field drives real enforcement.
+ * Audiences segment the library by *who* a guide is for. The library is public
+ * at the audience level — user, content, and developer guides are all readable
+ * by anyone, so the documentation can be linked and shown off publicly (this is
+ * the "public docs hub" the Social & Recruitment Playbook points at). The only
+ * gated material is individual owner-tier docs (positioning/sales), restricted
+ * to the platform owner via each doc's `access` field (see `canViewDoc`). Owner
+ * gating is enforced server-side — those bodies are never serialized to a
+ * non-owner (see features/docs/api) — and mirrored client-side for nav.
  */
 export const DOC_AUDIENCES = ["user", "content", "developer"] as const
 
@@ -38,13 +41,13 @@ export const docAudienceMeta = {
     label: "Content management",
     title: "Content management",
     blurb: "Run the store day to day — products, stock, orders, and customer email.",
-    access: "admin",
+    access: "public",
   },
   developer: {
     label: "Developer & CTO",
     title: "Developer & CTO",
     blurb: "Architecture, the Strapi migration, DevOps, commerce internals, and positioning.",
-    access: "admin",
+    access: "public",
   },
 } satisfies Record<DocAudience, { label: string; title: string; blurb: string; access: DocAccess }>
 

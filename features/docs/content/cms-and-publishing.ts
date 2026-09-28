@@ -5,7 +5,7 @@ export const cmsAndPublishing: Doc = {
   title: "CMS & Publishing",
   category: "CMS & Publishing",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "How content moves from draft to live — the Strapi-backed publishing model, the fallback that keeps the site working without a CMS, and the webhook that makes a publish appear instantly with no redeploy.",
   readingMinutes: 6,

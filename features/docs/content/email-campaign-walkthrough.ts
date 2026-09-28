@@ -5,7 +5,7 @@ export const emailCampaignWalkthrough: Doc = {
   title: "Create a Campaign: Step-by-Step",
   category: "Email & Campaigns",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "A complete, screenshot-by-screenshot walkthrough of composing and sending an email campaign — from the empty draft to a live preview to hitting send. Uses a real example launch so you can follow along without guessing.",
   readingMinutes: 9,

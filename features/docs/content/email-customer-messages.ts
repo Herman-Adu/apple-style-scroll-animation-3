@@ -5,7 +5,7 @@ export const emailCustomerMessages: Doc = {
   title: "Messaging Customers One-to-One",
   category: "Email & Campaigns",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "Send a single, branded email to one customer — a reply, a heads-up, a back-in-stock nudge — starting from a saved preset so you are not writing from scratch. Covers presets, the message composer, and the variables that personalise each send.",
   readingMinutes: 6,

@@ -26,9 +26,6 @@ export function DocsSidebar({ docs, activeSlug }: { docs: DocSummary[]; activeSl
         <div key={group.audience}>
           <p className="mb-3 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
             {group.meta.title}
-            {group.meta.access === "admin" ? (
-              <Lock className="h-2.5 w-2.5 text-accent-amber" strokeWidth={2} />
-            ) : null}
           </p>
           <ul className="space-y-1 border-l border-foreground/10">
             {group.docs.map((doc) => {

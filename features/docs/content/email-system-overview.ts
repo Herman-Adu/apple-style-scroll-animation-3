@@ -5,7 +5,7 @@ export const emailSystemOverview: Doc = {
   title: "The Email System: A Tour",
   category: "Email & Campaigns",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "One place to understand everything MOMO can send: automatic transactional emails, broadcast campaigns to your audience, and one-to-one customer messages. Start here, then follow the links into templates, the campaign walkthrough, and customer messaging.",
   readingMinutes: 7,

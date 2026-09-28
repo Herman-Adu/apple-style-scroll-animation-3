@@ -5,7 +5,7 @@ export const ordersAndFulfillment: Doc = {
   title: "Orders & Fulfillment",
   category: "Orders & Fulfillment",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "Work the order queue day to day — filter by status, open an order to see its lines and total, and move it through the processing → fulfilled lifecycle, plus how cancellations and refunds fit in.",
   readingMinutes: 6,

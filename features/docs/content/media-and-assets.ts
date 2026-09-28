@@ -5,7 +5,7 @@ export const mediaAndAssets: Doc = {
   title: "Media & Assets",
   category: "Media Library",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "How imagery and files work across the store — where product photos and brand assets live, how the Strapi media library fits in, and the naming, sizing, and alt-text conventions that keep the site fast and accessible.",
   readingMinutes: 6,

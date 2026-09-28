@@ -5,7 +5,7 @@ export const managingYourTheme: Doc = {
   title: "Managing Your Theme",
   category: "Store Operations",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "Run the store's look from one place. The Theme section controls brand colours, heading style (two-tone, solid, or gradient), and email accent — and every change flows to the storefront, the admin, and your emails at once. Covers the four tabs: Active & presets, Brand colours, Headings & style, and Theme templates.",
   readingMinutes: 8,

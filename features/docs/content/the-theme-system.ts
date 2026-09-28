@@ -5,7 +5,7 @@ export const theThemeSystem: Doc = {
   title: "The Theme System",
   category: "Architecture",
   audience: "developer",
-  access: "admin",
+  access: "public",
   summary:
     "How brand identity became a single source of truth: a library of named theme templates in the StoreSettings.theme JSON column, one active at a time, resolved server-side and injected as CSS variables after globals.css so the storefront, admin, and email all re-theme with zero per-component edits and no flash on first paint.",
   readingMinutes: 10,

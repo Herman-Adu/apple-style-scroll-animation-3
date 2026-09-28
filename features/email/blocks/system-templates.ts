@@ -171,10 +171,19 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
  * complete, on-brand email comes together without wiring every block by hand.
  * Blocks are stored without ids; the editor assigns fresh ids on insert.
  */
+/**
+ * A block without its id. `DistributiveOmit` applies `Omit` to each member of
+ * the union individually — distribution only happens over a naked type
+ * parameter, so a plain `Omit<EmailBlock, "id">` would instead collapse the
+ * union to only its shared keys.
+ */
+type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never
+export type EmailBlockDraft = DistributiveOmit<EmailBlock, "id">
+
 export interface BlockPreset {
   key: string
   label: string
-  blocks: Omit<EmailBlock, "id">[]
+  blocks: EmailBlockDraft[]
 }
 
 export const BLOCK_PRESETS: BlockPreset[] = [

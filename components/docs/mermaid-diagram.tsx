@@ -96,7 +96,6 @@ export function MermaidDiagram({ diagram, title, caption }: Props) {
           // lines instead of overflowing.
           flowchart: {
             htmlLabels: true,
-            wrap: true,
             useMaxWidth: true,
             padding: 14,
             nodeSpacing: 55,

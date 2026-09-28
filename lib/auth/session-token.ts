@@ -61,7 +61,7 @@ export async function verifySession(token: string): Promise<SessionPayload | nul
     valid = await crypto.subtle.verify(
       "HMAC",
       await hmacKey(),
-      fromBase64Url(signature),
+      fromBase64Url(signature) as BufferSource,
       encoder.encode(body),
     )
   } catch {

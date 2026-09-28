@@ -4,7 +4,7 @@ export const pricingAndPackaging: Doc = {
   slug: "pricing-and-packaging-the-build",
   title: "Pricing & Packaging the Build",
   category: "Positioning",
-  audience: "developer",
+  audience: "owner",
   access: "owner",
   summary:
     "Turn the platform into an offer: how to package it into tiers, price on value rather than hours, structure recurring revenue, and run a demo that closes.",

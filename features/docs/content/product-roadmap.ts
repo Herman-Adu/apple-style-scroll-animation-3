@@ -4,7 +4,7 @@ export const productRoadmap: Doc = {
   slug: "product-roadmap-and-phase-2",
   title: "Product Roadmap & Phase 2",
   category: "Positioning",
-  audience: "developer",
+  audience: "owner",
   access: "owner",
   summary:
     "What is shipped, what is next, and what is later — the honest roadmap. Use it to show depth in a pitch (there is a credible plan beyond today), to scope paid phases with a client, and to keep your own build sequence clear. Each item lists its value, rough effort, and dependency.",

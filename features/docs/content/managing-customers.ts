@@ -11,7 +11,7 @@ export const managingCustomers: Doc = {
   readingMinutes: 7,
   order: 1,
   updatedAt: "2026-09-28",
-  tags: ["admin", "customers", "segments", "offers", "roles", "lifetime value"],
+  tags: ["admin", "customers", "segments", "offers", "roles", "owner", "lifetime value"],
   body: [
     {
       type: "paragraph",
@@ -125,6 +125,12 @@ export const managingCustomers: Doc = {
     {
       type: "paragraph",
       text: "Every account has an effective role — customer or admin. Promoting a customer to admin grants full access to the dashboard, including products, orders, and other customers; demoting removes it. Both actions require a confirmation.",
+    },
+    {
+      type: "callout",
+      variant: "note",
+      title: "Owner vs admin",
+      text: "Admins share one role, but the list and profile also flag the platform owner with a distinct Owner badge next to Admin, so you can always tell the super-admin account apart from admins you've promoted. The owner is fixed by an allowlist, not by the promote/demote controls — promoting someone to admin never makes them the owner, and the owner can't be demoted from this screen.",
     },
     {
       type: "callout",

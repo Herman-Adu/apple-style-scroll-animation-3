@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import {
+  BadgeCheck,
   BarChart3,
   Boxes,
   ChevronDown,
@@ -11,6 +12,7 @@ import {
   GitBranch,
   HelpCircle,
   Image as ImageIcon,
+  Layers,
   Lock,
   Mail,
   Package,
@@ -23,6 +25,7 @@ import {
   Sparkles,
   Store,
   Target,
+  TrendingUp,
   Truck,
   Users,
   Webhook,
@@ -56,7 +59,7 @@ const categoryIcon: Record<DocCategory, LucideIcon> = {
   "Email & Campaigns": Mail,
   "Media Library": ImageIcon,
   "CMS & Publishing": FileText,
-  // Developer & CTO
+  // Developer
   Architecture: Boxes,
   "Next.js": Code2,
   Migration: GitBranch,
@@ -65,6 +68,11 @@ const categoryIcon: Record<DocCategory, LucideIcon> = {
   "Data & Analytics": BarChart3,
   "Security & Auth": ShieldCheck,
   "API & Integrations": Webhook,
+  // CTO & decision makers
+  "Business Case": TrendingUp,
+  "Technology Strategy": Layers,
+  "Security & Trust": BadgeCheck,
+  // Owner
   Positioning: Target,
 }
 

@@ -7,7 +7,7 @@ export const authenticationAndAccess: Doc = {
   audience: "developer",
   access: "public",
   summary:
-    "How sign-in, sessions, roles, server-side guards, and doc gating fit together. Authentication is now server-enforced with Better Auth on Neon — sessions are real, roles are verified on the server, and admin bodies never reach a non-admin browser.",
+    "How sign-in, sessions, roles, server-side guards, and doc gating fit together. Authentication is server-enforced with Better Auth on Neon — sessions are real, roles are verified on the server, and gated owner-tier bodies never reach a non-owner browser.",
   readingMinutes: 12,
   order: 1,
   updatedAt: "2026-09-26",
@@ -33,6 +33,7 @@ export const authenticationAndAccess: Doc = {
       rows: [
         ["Auth instance", "lib/auth.ts", "Better Auth config: email + password, sessions, autoSignIn, Neon adapter."],
         ["Role derivation", "lib/auth/config.ts", "effectiveRole() resolves admin from an email allowlist or a persisted roleOverride."],
+        ["Owner tier", "lib/auth/config.ts", "isOwner() marks the single platform owner (super-admin) — unlocks owner-only docs that even other admins can't read, and drives the Owner badge."],
         ["Client hook", "the auth client", "Exposes session/status and sign-in/out to client islands."],
         ["Route guard", "account layout", "Redirects unauthenticated visitors to sign-in."],
         ["Admin guard", "admin route-group layout", "Additionally requires the admin role, server-verified."],
@@ -96,14 +97,14 @@ export const authenticationAndAccess: Doc = {
     },
     {
       type: "table",
-      headers: ["Surface", "Anonymous", "Customer", "Admin"],
+      headers: ["Surface", "Anonymous", "Customer", "Admin", "Owner"],
       rows: [
-        ["Storefront, product pages", "View", "View", "View"],
-        ["Public user-guide docs", "Read", "Read", "Read"],
-        ["Account area", "Redirect to sign-in", "Full", "Full"],
-        ["Admin dashboard", "Redirect", "Redirect to storefront", "Full"],
-        ["Admin / developer doc bodies", "Summary only", "Summary only", "Full body"],
-        ["Catalog / settings / email writes", "Blocked", "Blocked", "Allowed (re-checked in action)"],
+        ["Storefront, product pages", "View", "View", "View", "View"],
+        ["Docs library (user, content, developer, CTO)", "Read", "Read", "Read", "Read"],
+        ["Owner docs (positioning / sales)", "Hidden", "Hidden", "Hidden", "Full body"],
+        ["Account area", "Redirect to sign-in", "Full", "Full", "Full"],
+        ["Admin dashboard", "Redirect", "Redirect to storefront", "Full", "Full"],
+        ["Catalog / settings / email writes", "Blocked", "Blocked", "Allowed (re-checked in action)", "Allowed"],
       ],
     },
     {
@@ -132,13 +133,13 @@ export const authenticationAndAccess: Doc = {
     },
     {
       type: "paragraph",
-      text: "Gated docs are not merely hidden with CSS. For a non-admin viewer, the doc body is never serialized into the payload — only the card summary is. Admin guide content cannot be recovered from view-source or the network tab, because it was never sent. The same effectiveRole check that guards the dashboard decides whether canViewDoc returns the body.",
+      text: "Gated docs are not merely hidden with CSS. The documentation library is public — user, content, developer, and CTO guides are readable by anyone, which is what makes it shareable on socials. The only gated tier is owner docs (positioning and sales). For anyone who is not the owner, an owner doc's body is never serialized into the payload and its card never appears, so that content cannot be recovered from view-source or the network tab, because it was never sent. canViewDoc is the single check that decides whether a body is returned.",
     },
     {
       type: "callout",
       variant: "info",
       title: "Defense in depth",
-      text: "Two independent layers protect admin content: the route/action guard (you cannot reach the surface) and body-stripping (even if you request the doc route, a non-admin receives only the summary). Neither depends on the client being honest.",
+      text: "Two independent layers protect owner content: nav filtering (the card never appears for a non-owner) and body-stripping (even if you request the doc route directly, a non-owner receives only the summary, or nothing). Neither depends on the client being honest.",
     },
     {
       type: "heading",

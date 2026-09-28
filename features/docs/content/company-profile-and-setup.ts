@@ -92,5 +92,28 @@ export const companyProfileAndSetup: Doc = {
       variant: "note",
       text: "Today the company record is persisted in the app's local storage layer, the same pattern as the demo auth. When the store moves server-side with Strapi, the record becomes a global/single-type and this workflow stays identical — you'll just be editing the same fields against the CMS.",
     },
+    {
+      type: "heading",
+      text: "Owner-only docs and the OWNER_EMAILS override",
+    },
+    {
+      type: "paragraph",
+      text: "Documentation has three access tiers: public (storefront visitors), admin (any signed-in admin), and owner (the template author alone). The owner tier gates the internal Positioning sales material — pricing, objection handling, roadmap, showcase — so it never surfaces to a client admin you hand the store to. Owner docs are stripped server-side, not just hidden in the UI.",
+    },
+    {
+      type: "paragraph",
+      text: "The owner allowlist defaults to a single address in code. To point it elsewhere without a code change — for example when you sell or transfer the template — set the OWNER_EMAILS environment variable to a comma-separated list of addresses. When present, it replaces the built-in default.",
+    },
+    {
+      type: "code",
+      language: "bash",
+      code: "# Comma-separated; whitespace and case are ignored\nOWNER_EMAILS=\"herman@adudev.co.uk,newowner@example.com\"",
+    },
+    {
+      type: "callout",
+      variant: "tip",
+      title: "Leave it unset for the default",
+      text: "If OWNER_EMAILS is not set, the allowlist falls back to the single built-in owner address. You only need to set it when the owner should change or when more than one person needs access to the internal sales docs.",
+    },
   ],
 }

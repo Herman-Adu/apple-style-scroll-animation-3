@@ -17,9 +17,11 @@ interface MobileNavProps {
   onClose: () => void
   activeId: string | null
   category: string | null
+  /** Which panel to reveal when the sheet opens. */
+  initialPanel?: "root" | "account"
 }
 
-export function MobileNav({ open, onClose, activeId, category }: MobileNavProps) {
+export function MobileNav({ open, onClose, activeId, category, initialPanel = "root" }: MobileNavProps) {
   const pathname = usePathname()
   const { status, user, signOut } = useAuth()
   const [submenu, setSubmenu] = useState<NavLink | null>(null)
@@ -40,19 +42,22 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
       setAccountOpen(false)
       return
     }
+    // Reveal whichever panel the trigger requested (avatar → account).
+    setSubmenu(null)
+    setAccountOpen(initialPanel === "account")
     const previous = document.body.style.overflow
     document.body.style.overflow = "hidden"
     return () => {
       document.body.style.overflow = previous
     }
-  }, [open])
+  }, [open, initialPanel])
 
   return (
     <AnimatePresence>
       {open && (
         <>
           <motion.div
-            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -60,7 +65,7 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
             aria-hidden
           />
           <motion.aside
-            className="glass backdrop-blur-xl backdrop-saturate-150 fixed inset-y-0 left-0 z-[70] flex w-[86%] max-w-sm flex-col border-r md:hidden"
+            className="glass backdrop-blur-xl backdrop-saturate-150 fixed inset-y-0 left-0 z-[70] flex w-[86%] max-w-sm flex-col border-r lg:hidden"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
@@ -191,8 +196,15 @@ export function MobileNav({ open, onClose, activeId, category }: MobileNavProps)
                           size={44}
                         />
                         <span className="min-w-0">
-                          <span className="block text-[11px] uppercase tracking-[0.15em] text-foreground/40">
-                            Account
+                          <span className="flex items-center gap-2">
+                            <span className="text-[11px] uppercase tracking-[0.15em] text-foreground/40">
+                              Account
+                            </span>
+                            {user.role === "admin" && (
+                              <span className="rounded-full bg-accent-teal/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-teal">
+                                Admin
+                              </span>
+                            )}
                           </span>
                           <span className="block truncate text-base font-semibold text-foreground">
                             {user.profile.displayName || user.name}

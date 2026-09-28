@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import type { Product } from "../schema"
 import { Eyebrow, AccentDivider, Reveal } from "@/components/primitives"
+import { TwoToneTitle } from "@/components/primitives/two-tone-title"
 import { ProductCard } from "./product-card"
 
 export function ProductShowcase({ products }: { products: Product[] }) {
@@ -14,7 +15,7 @@ export function ProductShowcase({ products }: { products: Product[] }) {
               The collection
             </Eyebrow>
             <h2 className="max-w-xl text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-              Engineered for every kind of listening.
+              <TwoToneTitle title="Engineered for every kind of listening." accent="listening." />
             </h2>
             <AccentDivider className="mt-6" />
           </div>

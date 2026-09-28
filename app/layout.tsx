@@ -9,6 +9,9 @@ import { CatalogProvider } from "@/features/catalog"
 import { AuthProvider } from "@/lib/auth/auth-context"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SiteChrome } from "@/components/layout/site-chrome"
+import { BrandThemeStyle } from "@/components/theme/brand-theme-style"
+import { getStoreSettingsAction } from "@/lib/settings/db-actions"
+import { getActiveTheme } from "@/lib/settings/theme"
 import { getCatalogProducts } from "@/lib/catalog/db-actions"
 import { siteConfig } from "@/lib/data/site"
 import { getBaseUrl } from "@/lib/seo/site"
@@ -75,11 +78,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const catalog = await getCatalogProducts()
+  const [catalog, settings] = await Promise.all([getCatalogProducts(), getStoreSettingsAction()])
+  const activeTheme = getActiveTheme(settings.theme)
 
   return (
-    <html lang="en" className="bg-background" suppressHydrationWarning>
+    <html
+      lang="en"
+      className="bg-background"
+      data-heading-style={activeTheme.headingStyle}
+      suppressHydrationWarning
+    >
       <body className={`${inter.variable} font-sans antialiased`}>
+        <BrandThemeStyle theme={activeTheme} />
         <JsonLd data={[organizationLd(), websiteLd()]} />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <AuthProvider>

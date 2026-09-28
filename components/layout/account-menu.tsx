@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { LayoutDashboard, LogOut, Package, UserRound } from "lucide-react"
+import { LayoutDashboard, LogOut, Package, Tag, UserRound } from "lucide-react"
 import { useAuth } from "@/lib/auth/auth-context"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { cn } from "@/lib/utils"
@@ -108,6 +108,12 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
                   label="Orders & invoices"
                   onSelect={() => setOpen(false)}
                   icon={<Package className="h-4 w-4" strokeWidth={1.5} />}
+                />
+                <MenuLink
+                  href="/account?tab=offers"
+                  label="Offers"
+                  onSelect={() => setOpen(false)}
+                  icon={<Tag className="h-4 w-4" strokeWidth={1.5} />}
                 />
                 {user.role === "admin" && (
                   <MenuLink

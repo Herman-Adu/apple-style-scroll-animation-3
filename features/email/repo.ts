@@ -3,6 +3,25 @@ import "server-only"
 import { prisma } from "@/lib/db/prisma"
 import { DEFAULT_BRANDING, type EmailBlock, type EmailBranding } from "./blocks/types"
 import { SYSTEM_TEMPLATES, SYSTEM_PRESETS } from "./blocks/system-templates"
+import { getStoreSettingsAction } from "@/lib/settings/db-actions"
+import { getActiveTheme, resolveTokens } from "@/lib/settings/theme"
+
+/**
+ * Resolve the accent the active site theme wants emails to use. This is the
+ * single-source-of-truth link: emails inherit the brand accent unless a
+ * campaign explicitly overrides it. Emails render on a light paper shell, so we
+ * take the theme's LIGHT-scheme accent. Failures fall back to the email default
+ * so a send never breaks on a settings read.
+ */
+async function getThemeAccent(): Promise<string> {
+  try {
+    const settings = await getStoreSettingsAction()
+    const theme = getActiveTheme(settings.theme)
+    return resolveTokens(theme, "light").accent
+  } catch {
+    return DEFAULT_BRANDING.accentColor
+  }
+}
 
 /**
  * Server-only data access for the email system. All admin server actions go
@@ -58,11 +77,22 @@ export async function updateEmailSettings(patch: Partial<EmailBranding>): Promis
   await prisma.emailSettings.update({ where: { id: current.id }, data: patch })
 }
 
-/** Branding for send/preview; falls back to defaults if the DB is unreachable. */
+/**
+ * Branding for send/preview; falls back to defaults if the DB is unreachable.
+ *
+ * The accent is the single-source-of-truth link: when the email settings leave
+ * `accentColor` blank (the default), emails inherit the active site theme's
+ * accent. A non-empty `accentColor` is an explicit per-brand override (e.g. a
+ * seasonal campaign) and always wins.
+ */
 export async function getBranding(): Promise<EmailBranding> {
   try {
     const s = await getEmailSettings()
-    return { ...DEFAULT_BRANDING, ...s }
+    const merged = { ...DEFAULT_BRANDING, ...s }
+    if (!s.accentColor?.trim()) {
+      merged.accentColor = await getThemeAccent()
+    }
+    return merged
   } catch {
     return DEFAULT_BRANDING
   }

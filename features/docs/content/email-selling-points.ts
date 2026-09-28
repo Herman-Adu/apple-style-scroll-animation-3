@@ -5,7 +5,7 @@ export const emailSellingPoints: Doc = {
   title: "Selling the Email System: Owned, Not Rented",
   category: "Positioning",
   audience: "developer",
-  access: "admin",
+  access: "owner",
   summary:
     "The commercial case for the built-in email system: it replaces a rented ESP (Klaviyo, Mailchimp) with email that runs on your own domain and database, beside real order data. Covers the core pitch, five durable selling points, the total-cost story, and the roadmap that proves depth.",
   readingMinutes: 11,

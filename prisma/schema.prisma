@@ -298,6 +298,8 @@ model StoreSettings {
   currency          String   @default("GBP")
   lowStockThreshold Int      @default(5) @map("low_stock_threshold")
   emailAlerts       Boolean  @default(true) @map("email_alerts")
+  // Single source of truth for brand identity (theme template library).
+  theme             Json     @default("{}")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
   @@map("store_settings")

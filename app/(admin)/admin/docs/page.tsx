@@ -3,7 +3,7 @@ import { ExternalLink } from "lucide-react"
 import { AdminShell } from "@/features/admin"
 import { DocsExplorer, toDocSummary, canViewDoc } from "@/features/docs"
 import { fetchDocs } from "@/features/docs/api"
-import { getServerRole } from "@/lib/auth/server"
+import { getServerRole, getServerIsOwner } from "@/lib/auth/server"
 
 /**
  * Internal documentation, embedded inside the admin dashboard chrome. Scoped to
@@ -15,11 +15,14 @@ import { getServerRole } from "@/lib/auth/server"
  */
 export default async function AdminDocsPage() {
   const all = await fetchDocs()
-  const role = await getServerRole()
+  const [role, isOwner] = await Promise.all([getServerRole(), getServerIsOwner()])
   const isAdmin = role === "admin"
+  const viewer = { isAdmin, isOwner }
 
-  const adminDocs = all.filter((doc) => doc.access === "admin")
-  const summaries = adminDocs.map((doc) => toDocSummary(doc, canViewDoc(doc, isAdmin)))
+  // Internal (admin) guides, plus owner-only guides for the owner alone —
+  // never serialize owner card metadata to other admins' browsers.
+  const adminDocs = all.filter((doc) => doc.access === "admin" || (doc.access === "owner" && isOwner))
+  const summaries = adminDocs.map((doc) => toDocSummary(doc, canViewDoc(doc, viewer)))
 
   return (
     <AdminShell title="Documentation">

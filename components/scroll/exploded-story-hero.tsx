@@ -5,6 +5,7 @@ import Image from "next/image"
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion"
 import type { ExplodedHero, ExplodedLayer, Product, StoryBeat } from "@/lib/types"
 import { AddToCartButton } from "@/features/products"
+import { TwoToneTitle } from "@/components/primitives/two-tone-title"
 
 const alignmentClass: Record<StoryBeat["align"], string> = {
   left: "items-start text-left",
@@ -64,8 +65,8 @@ function Layer({
           className="absolute right-0 top-1/2 hidden translate-x-[calc(100%+1.5rem)] -translate-y-1/2 items-center gap-3 md:flex"
           style={{ opacity: labelOpacity }}
         >
-          <span className="h-px w-10 bg-white/25" />
-          <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.35em] text-white/70">
+          <span className="h-px w-10 bg-on-media/25" />
+          <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.35em] text-on-media/70">
             {layer.label}
           </span>
         </motion.div>
@@ -90,16 +91,16 @@ function BeatOverlay({
 
   return (
     <motion.div className="absolute inset-x-0 bottom-0" style={{ opacity, y }}>
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/70 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-media via-media/70 to-transparent" />
       <div className="relative px-6 pb-16 md:px-12 md:pb-20 lg:px-20">
         <div className={`mx-auto flex max-w-7xl flex-col ${alignmentClass[beat.align]}`}>
-          <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-white/60">
+          <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-on-media/60">
             {beat.index}
           </p>
-          <h2 className="whitespace-pre-line text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
-            {beat.title}
+          <h2 className="whitespace-pre-line text-4xl font-bold tracking-tight text-on-media md:text-5xl lg:text-6xl">
+            <TwoToneTitle title={beat.title} />
           </h2>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/60 md:text-base">{beat.description}</p>
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-on-media/60 md:text-base">{beat.description}</p>
           {isLast && (
             <div className="mt-8">
               <AddToCartButton product={product} color={product.colors[0]} />
@@ -136,7 +137,7 @@ export function ExplodedStoryHero({ hero, product }: { hero: ExplodedHero; produ
 
   return (
     <div ref={containerRef} className="relative" style={{ height: `${hero.scrollVh}vh` }}>
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-black">
+      <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-media">
         {/* Accent glow behind the assembly */}
         <motion.div
           className="absolute left-1/2 top-1/2 h-[75vh] w-[75vh] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[130px]"
@@ -163,11 +164,11 @@ export function ExplodedStoryHero({ hero, product }: { hero: ExplodedHero; produ
         <div className="pointer-events-none absolute inset-0">
           {/* Intro */}
           <motion.div className="absolute inset-x-0 bottom-0" style={{ opacity: introOpacity }}>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/70 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-media via-media/70 to-transparent" />
             <div className="relative px-6 pb-16 md:px-12 md:pb-20 lg:px-20">
               <div className="mx-auto max-w-7xl">
                 <motion.p
-                  className="mb-4 text-[10px] font-semibold uppercase tracking-[0.5em] text-white/70"
+                  className="mb-4 text-[10px] font-semibold uppercase tracking-[0.5em] text-on-media/70"
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2, duration: 0.6 }}
@@ -175,15 +176,15 @@ export function ExplodedStoryHero({ hero, product }: { hero: ExplodedHero; produ
                   {hero.intro.kicker}
                 </motion.p>
                 <motion.h1
-                  className="text-6xl font-bold tracking-tighter text-white md:text-8xl lg:text-9xl"
+                  className="text-6xl font-bold tracking-tighter text-on-media md:text-8xl lg:text-9xl"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.35, duration: 0.8 }}
                 >
-                  {hero.intro.title}
+                  <TwoToneTitle title={hero.intro.title} />
                 </motion.h1>
                 <motion.p
-                  className="mt-4 max-w-md text-base font-normal tracking-wide text-white/70 md:text-lg"
+                  className="mt-4 max-w-md text-base font-normal tracking-wide text-on-media/70 md:text-lg"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.5, duration: 0.8 }}
@@ -196,12 +197,12 @@ export function ExplodedStoryHero({ hero, product }: { hero: ExplodedHero; produ
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.9, duration: 0.6 }}
                 >
-                  <div className="h-px w-8 bg-white/30" />
-                  <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-white/50">
+                  <div className="h-px w-8 bg-on-media/30" />
+                  <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-on-media/50">
                     Scroll to take it apart
                   </span>
                   <motion.span
-                    className="text-white/50"
+                    className="text-on-media/50"
                     animate={{ y: [0, 4, 0] }}
                     transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5 }}
                   >

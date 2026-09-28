@@ -51,6 +51,25 @@ export function resolveRole(email: string): UserRole {
 }
 
 /**
+ * Owner (super-admin) allowlist. An owner is the single account that may read
+ * the private positioning/selling docs — sales enablement material that even
+ * other admins must not see. Defaults to the platform owner alone; override
+ * with a comma-separated NEXT_PUBLIC_OWNER_EMAILS (public so the client nav can
+ * gate visibility for UX — real enforcement is server-side body stripping, see
+ * features/docs/api). Every owner email should also be an admin.
+ */
+export const ownerEmails: string[] = (process.env.NEXT_PUBLIC_OWNER_EMAILS || "herman@adudev.co.uk")
+  .split(",")
+  .map((email) => email.trim().toLowerCase())
+  .filter(Boolean)
+
+/** Whether an email belongs to the owner (super-admin) allowlist. */
+export function isOwner(email?: string | null): boolean {
+  if (!email) return false
+  return ownerEmails.includes(email.trim().toLowerCase())
+}
+
+/**
  * The effective role for a user row/session. An explicit admin override wins;
  * otherwise a stored role wins; otherwise it's derived from the email allowlist.
  * This is the single place role precedence is decided, shared by the DB adapter

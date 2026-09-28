@@ -9,9 +9,17 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProfileForm } from "@/components/account/profile-form"
 import { OrderHistory } from "@/components/account/order-history"
+import { OfferList } from "@/components/account/offer-list"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { onboardingSteps } from "@/lib/data/onboarding"
 import { useAuth } from "@/lib/auth/auth-context"
+
+type AccountTab = "profile" | "orders" | "offers"
+
+/** Deep-link tab resolution: /account?tab=orders|offers, defaulting to profile. */
+function resolveTab(param: string | null): AccountTab {
+  return param === "orders" || param === "offers" ? param : "profile"
+}
 
 /** Resolves the human-readable label for a stored option value from the data file. */
 function optionLabel(fieldKey: string, value?: string) {
@@ -32,9 +40,9 @@ export function AccountView() {
   // Deep-link support: /account?tab=orders opens the Orders tab, both on a
   // fresh mount and while the page is already mounted (e.g. from the header
   // dropdown or the mobile account submenu).
-  const [tab, setTab] = useState(() => (searchParams.get("tab") === "orders" ? "orders" : "profile"))
+  const [tab, setTab] = useState<AccountTab>(() => resolveTab(searchParams.get("tab")))
   useEffect(() => {
-    setTab(searchParams.get("tab") === "orders" ? "orders" : "profile")
+    setTab(resolveTab(searchParams.get("tab")))
   }, [searchParams])
 
   if (!user) return null
@@ -102,10 +110,11 @@ export function AccountView() {
           transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
           className="pt-10"
         >
-          <Tabs value={tab} onValueChange={setTab}>
+          <Tabs value={tab} onValueChange={(value) => setTab(value as AccountTab)}>
             <TabsList className="mb-8 bg-foreground/[0.04]">
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="orders">Orders &amp; invoices</TabsTrigger>
+              <TabsTrigger value="offers">Offers</TabsTrigger>
             </TabsList>
 
             <TabsContent value="profile">
@@ -151,6 +160,10 @@ export function AccountView() {
                 userId={user.id}
                 billTo={{ name: displayName, email: user.email }}
               />
+            </TabsContent>
+
+            <TabsContent value="offers">
+              <OfferList />
             </TabsContent>
           </Tabs>
         </motion.div>

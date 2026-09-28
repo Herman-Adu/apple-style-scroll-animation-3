@@ -4,6 +4,8 @@ import Link from "next/link"
 import { ArrowLeft, ArrowUpRight, Clock, Lock } from "lucide-react"
 import { DocBlocks, DocLockedNotice, DocsSidebar, getDocHeadings, toDocSummary } from "@/features/docs"
 import { fetchDoc, fetchDocForViewer, fetchDocs, fetchDocSlugs, fetchRelatedDocs } from "@/features/docs/api"
+import { SectionHeading } from "@/components/primitives/section-heading"
+import { PageToc } from "@/components/layout/page-toc"
 
 /**
  * ISR: prerender the known slugs at build (generateStaticParams), but allow
@@ -83,11 +85,18 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
                       <Lock className="h-2.5 w-2.5" strokeWidth={2} />
                       Internal
                     </span>
+                  ) : doc.access === "owner" ? (
+                    <span className="flex items-center gap-1 rounded-full border border-accent-amber/30 bg-accent-amber/10 px-3 py-1 text-accent-amber">
+                      <Lock className="h-2.5 w-2.5" strokeWidth={2} />
+                      Owner only
+                    </span>
                   ) : null}
                 </div>
-                <h1 className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-5xl">
-                  {doc.title}
-                </h1>
+                <SectionHeading
+                  as="h1"
+                  className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-foreground md:text-5xl"
+                  title={doc.title}
+                />
                 <p className="mt-5 text-pretty text-lg leading-relaxed text-foreground/60">{doc.summary}</p>
               </header>
 
@@ -109,23 +118,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
 
             {headings.length > 1 && (
               <aside className="hidden xl:block">
-                <nav aria-label="On this page" className="sticky top-28">
-                  <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
-                    On this page
-                  </p>
-                  <ul className="space-y-2.5 border-l border-foreground/10">
-                    {headings.map((heading) => (
-                      <li key={heading.id}>
-                        <a
-                          href={`#${heading.id}`}
-                          className="-ml-px block border-l border-transparent pl-4 text-sm leading-snug text-foreground/50 transition-colors hover:border-accent-teal hover:text-foreground"
-                        >
-                          {heading.text}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
+                <PageToc items={headings.map((heading) => ({ id: heading.id, label: heading.text }))} />
               </aside>
             )}
           </div>

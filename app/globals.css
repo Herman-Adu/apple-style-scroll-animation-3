@@ -176,6 +176,22 @@
 }
 
 /*
+ * Accent reach (`data-heading-scope` on <html>, set from the active theme).
+ * In the default "primary" scope, headings marked `emphasis="secondary"`
+ * (repeated cards, list/milestone titles) drop back to plain `currentColor`
+ * so only heroes and section titles carry the accent. In "all" scope these
+ * markers are inert and every heading lights up. Placed AFTER the style rules
+ * above so — at equal specificity — this reset wins for secondary headings,
+ * including under gradient mode. No per-heading edits needed to switch reach.
+ */
+[data-heading-scope="primary"] .tt-accent--secondary,
+[data-heading-scope="primary"] .tt-title--secondary {
+  background-image: none;
+  color: inherit;
+  -webkit-text-fill-color: currentColor;
+}
+
+/*
  * Glassmorphism surface — matches the nav's frosted material.
  * Used on overlays (cart drawer, mobile sheet) and key raised cards.
  * The inset highlight gives the top edge a faint sheen like real glass.

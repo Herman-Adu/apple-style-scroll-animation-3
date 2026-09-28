@@ -86,6 +86,7 @@ export default async function RootLayout({
       lang="en"
       className="bg-background"
       data-heading-style={activeTheme.headingStyle}
+      data-heading-scope={activeTheme.headingScope ?? "primary"}
       suppressHydrationWarning
     >
       <body className={`${inter.variable} font-sans antialiased`}>

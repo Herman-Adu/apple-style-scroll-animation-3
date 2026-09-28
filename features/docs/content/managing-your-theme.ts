@@ -128,21 +128,28 @@ export const managingYourTheme: Doc = {
     },
     {
       type: "paragraph",
-      text: "Below the style, the Accent reach control decides how far the accent spreads. It's a second, independent choice — the style sets how an accented heading looks, the reach sets which headings are accented at all.",
+      text: "Below the style, the Accent reach controls decide which headings are accented at all. It's a second, independent choice from the style — and it's split into three switches you can toggle in any combination, so you shape exactly how far the brand colour travels.",
     },
     {
       type: "table",
-      headers: ["Accent reach", "What lights up", "Best for"],
+      headers: ["Accent toggle", "What it controls", "Typical use"],
       rows: [
-        ["Primary headings", "Page heroes and section titles only. Smaller repeated titles — product cards, list and timeline items — stay in the plain foreground colour.", "A restrained, editorial look — the default."],
-        ["Every heading", "The accent reaches all the way down to the small repeated card and list titles too.", "A bold, fully branded storefront."],
+        ["Page & hero titles", "The single largest headline on each page — heroes and page titles.", "Almost always on — the boldest brand moment."],
+        ["Section headlines", "The titles that introduce each section down a page.", "On for a fully branded feel; off to keep sections calm."],
+        ["Card & list titles", "Small repeated titles — product and value cards, list items, timeline milestones.", "Off by default for a refined look; on for maximum brand presence."],
       ],
     },
     {
       type: "callout",
       variant: "note",
-      title: "Reach is one switch, site-wide",
-      text: "Like the style, Accent reach flows to every page the moment you save — the storefront, the admin, and the sections inside each page. There's nothing to set per page or per card; new headings pick up the current reach automatically.",
+      title: "Mix them any way you like",
+      text: "The three toggles are independent: accent your page titles but keep section headlines and cards plain, light up everything, or anything in between. Each switch flows to every page the moment you save — the storefront, the admin, and every section inside — with nothing to set per page or per card.",
+    },
+    {
+      type: "callout",
+      variant: "note",
+      title: "Reset to default anytime",
+      text: "The Reset to default button on the Headings & style page returns the style and all three accent toggles to the shipped Titanium Teal two-tone look — page and section titles accented, cards plain. Experiment freely; you're always one click from the original.",
     },
     {
       type: "heading",

@@ -72,7 +72,7 @@ export async function mutateStrapi<T = unknown>(path: string, options: MutateStr
 
   // Bust caches only after the write is known to have succeeded.
   for (const tag of revalidateTags) {
-    revalidateTag(tag)
+    revalidateTag(tag, "max")
   }
 
   if (method === "DELETE" || !parse) {

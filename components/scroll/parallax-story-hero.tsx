@@ -137,7 +137,7 @@ export function ParallaxStoryHero({ hero, product }: { hero: ParallaxHero; produ
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.35, duration: 0.8 }}
                 >
-                  <TwoToneTitle title={hero.intro.title} />
+                  <TwoToneTitle title={hero.intro.title} tier="h1" />
                 </motion.h1>
                 <motion.p
                   className="mt-4 max-w-md text-base font-normal tracking-wide text-on-media/70 md:text-lg"

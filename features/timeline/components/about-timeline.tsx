@@ -125,7 +125,7 @@ function TimelineItem({ milestone, index }: { milestone: Milestone; index: numbe
                 <motion.span
                   // Accent the final word as a secondary heading: it follows the
                   // theme's style and only lights up when scope is "all".
-                  className={cn("inline-block", wordIndex === words.length - 1 && "tt-accent tt-accent--secondary")}
+                  className={cn("inline-block", wordIndex === words.length - 1 && "tt-accent tt-accent--card")}
                   initial={{ y: "110%" }}
                   animate={inView ? { y: "0%" } : {}}
                   transition={{

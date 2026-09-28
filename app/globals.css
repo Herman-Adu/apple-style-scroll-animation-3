@@ -175,21 +175,26 @@
   -webkit-text-fill-color: transparent;
 }
 
-/*
- * Accent reach (`data-heading-scope` on <html>, set from the active theme).
- * In the default "primary" scope, headings marked `emphasis="secondary"`
- * (repeated cards, list/milestone titles) drop back to plain `currentColor`
- * so only heroes and section titles carry the accent. In "all" scope these
- * markers are inert and every heading lights up. Placed AFTER the style rules
- * above so — at equal specificity — this reset wins for secondary headings,
- * including under gradient mode. No per-heading edits needed to switch reach.
- */
-[data-heading-scope="primary"] .tt-accent--secondary,
-[data-heading-scope="primary"] .tt-title--secondary {
-  background-image: none;
-  color: inherit;
-  -webkit-text-fill-color: currentColor;
-}
+  /*
+   * Per-tier accent reach (`data-accent-h1|h2|cards` on <html>, set from the
+   * active theme). Each heading is tagged with its tier — `.tt-*--h1` (page &
+   * hero titles), `.tt-*--h2` (section headlines) or `.tt-*--card` (repeated
+   * cards, list/timeline titles). When a tier's toggle is "off", its accent
+   * drops back to plain `currentColor`; the three switch independently so a
+   * client can accent, say, h1 but not h2 or cards — any combination. Placed
+   * AFTER the style rules above so — at equal specificity — this reset wins,
+   * including under gradient mode. No per-heading edits needed to switch reach.
+   */
+  [data-accent-h1="off"] .tt-accent--h1,
+  [data-accent-h1="off"] .tt-title--h1,
+  [data-accent-h2="off"] .tt-accent--h2,
+  [data-accent-h2="off"] .tt-title--h2,
+  [data-accent-cards="off"] .tt-accent--card,
+  [data-accent-cards="off"] .tt-title--card {
+    background-image: none;
+    color: inherit;
+    -webkit-text-fill-color: currentColor;
+  }
 
 /*
  * Glassmorphism surface — matches the nav's frosted material.

@@ -101,6 +101,7 @@ export function ReviewForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!user) return
     setErrors([])
 
     const nextErrors: string[] = []

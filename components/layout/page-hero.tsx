@@ -86,7 +86,7 @@ function HeroCopy({
             : "text-4xl md:text-6xl lg:text-7xl",
         )}
       >
-        <TwoToneTitle title={title} accent={titleAccent} />
+        <TwoToneTitle title={title} accent={titleAccent} tier="h1" />
       </motion.h1>
       <motion.p
         initial={reduce ? false : { opacity: 0, y: 18 }}

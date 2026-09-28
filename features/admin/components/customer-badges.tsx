@@ -20,18 +20,28 @@ export function CustomerStatusBadge({ status = "active" }: { status?: UserStatus
   )
 }
 
-export function RoleBadge({ role }: { role: UserRole }) {
+export function RoleBadge({ role, owner = false }: { role: UserRole; owner?: boolean }) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium capitalize",
-        role === "admin"
-          ? "border-accent-teal/30 bg-accent-teal/10 text-accent-teal"
-          : "border-border bg-foreground/5 text-muted-foreground",
-      )}
-    >
-      {role}
-    </span>
+    <>
+      <span
+        className={cn(
+          "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium capitalize",
+          role === "admin"
+            ? "border-accent-teal/30 bg-accent-teal/10 text-accent-teal"
+            : "border-border bg-foreground/5 text-muted-foreground",
+        )}
+      >
+        {role}
+      </span>
+      {owner ? (
+        <span
+          className="inline-flex items-center rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-xs font-medium text-amber-400"
+          title="Platform owner (super-admin)"
+        >
+          Owner
+        </span>
+      ) : null}
+    </>
   )
 }
 

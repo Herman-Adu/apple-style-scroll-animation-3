@@ -10,7 +10,7 @@ export const managingYourTheme: Doc = {
     "Run the store's look from one place. The Theme section controls brand colours, heading style (two-tone, solid, or gradient), and email accent — and every change flows to the storefront, the admin, and your emails at once. Covers the four tabs: Active & presets, Brand colours, Headings & style, and Theme templates.",
   readingMinutes: 8,
   order: 3,
-  updatedAt: "2026-09-28",
+  updatedAt: "2026-09-29",
   tags: ["theme", "branding", "colours", "headings", "email", "store operations"],
   body: [
     {
@@ -33,7 +33,7 @@ export const managingYourTheme: Doc = {
       rows: [
         ["Active & presets", "Which theme is live, and a gallery of built-in palettes to start from.", "Switching the active look, or installing a preset as a starting point."],
         ["Brand colours", "The core brand colour and accents for the active theme.", "Fine-tuning your palette to match your brand exactly."],
-        ["Headings & style", "How headings render: two-tone, solid, or gradient.", "Setting the signature look of titles across the store."],
+        ["Headings & style", "How headings render (two-tone, solid, or gradient) and how far the accent reaches.", "Setting the signature look of titles across the store."],
         ["Theme templates", "Saving, duplicating, and managing your own reusable themes.", "Keeping a seasonal or campaign look ready to switch back on."],
       ],
     },
@@ -125,6 +125,24 @@ export const managingYourTheme: Doc = {
       variant: "tip",
       title: "Two-tone reads the accent word for you",
       text: "In two-tone mode the accent falls on the last word of a heading. Titles can also mark a specific accent word, so \"Titanium Performance.\" keeps \"Titanium\" in the foreground and colours \"Performance.\" — no manual styling required.",
+    },
+    {
+      type: "paragraph",
+      text: "Below the style, the Accent reach control decides how far the accent spreads. It's a second, independent choice — the style sets how an accented heading looks, the reach sets which headings are accented at all.",
+    },
+    {
+      type: "table",
+      headers: ["Accent reach", "What lights up", "Best for"],
+      rows: [
+        ["Primary headings", "Page heroes and section titles only. Smaller repeated titles — product cards, list and timeline items — stay in the plain foreground colour.", "A restrained, editorial look — the default."],
+        ["Every heading", "The accent reaches all the way down to the small repeated card and list titles too.", "A bold, fully branded storefront."],
+      ],
+    },
+    {
+      type: "callout",
+      variant: "note",
+      title: "Reach is one switch, site-wide",
+      text: "Like the style, Accent reach flows to every page the moment you save — the storefront, the admin, and the sections inside each page. There's nothing to set per page or per card; new headings pick up the current reach automatically.",
     },
     {
       type: "heading",

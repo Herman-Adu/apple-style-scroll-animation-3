@@ -148,9 +148,11 @@
  * per-component edits and no hydration flash. Base (non-accent) text always
  * keeps the heading's own `currentColor` — never a hardcoded white.
  *
+ * In every mode the base (non-accent) text keeps the heading's own
+ * `currentColor` (white); only the accent word is tinted.
  * - two-tone (default): the accent word is clipped to the teal gradient.
  * - solid: the accent word is a single solid brand colour.
- * - gradient: the whole headline is clipped to the brand gradient.
+ * - gradient: the accent word is clipped to the brand gradient.
  */
 .tt-accent {
   background-image: linear-gradient(to right, var(--accent-teal), var(--accent-teal-muted));
@@ -160,7 +162,6 @@
   -webkit-text-fill-color: transparent;
 }
 
-[data-heading-style="gradient"] .tt-title,
 [data-heading-style="gradient"] .tt-accent {
   background-image: linear-gradient(to right, var(--brand-gradient-from), var(--brand-gradient-to));
   -webkit-background-clip: text;
@@ -170,14 +171,13 @@
 }
 
 /*
- * Explicit non-gradient states, declared AFTER the gradient rule above. The
- * accent/title rules match on ANY ancestor carrying `data-heading-style`, so a
- * gradient theme live on <html> would otherwise bleed into a two-tone/solid
- * preview nested inside it — the Theme admin renders a live preview whose own
- * `data-heading-style` must fully govern its headings. At equal specificity,
- * source order lets the nearer preview state win: the whole-title clip is
- * cleared and the accent is re-tinted for the previewed mode.
+ * Base title always keeps its own colour. The accent rules match on ANY
+ * ancestor carrying `data-heading-style`, so these title resets — declared
+ * across every mode — guarantee the non-accent text is never gradient-clipped,
+ * both on real pages and inside the Theme admin's nested live preview (whose
+ * own `data-heading-style` must fully govern its headings).
  */
+[data-heading-style="gradient"] .tt-title,
 [data-heading-style="two-tone"] .tt-title,
 [data-heading-style="solid"] .tt-title {
   background-image: none;

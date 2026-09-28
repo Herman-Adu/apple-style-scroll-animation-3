@@ -24,25 +24,34 @@ export function TwoToneTitle({
   title,
   accent,
   autoAccent = true,
+  emphasis = "primary",
   className,
 }: {
   title: string
   accent?: string
   autoAccent?: boolean
+  /**
+   * "primary" headings always carry the accent. "secondary" headings (repeated
+   * cards, list items) only light up when the active theme's `headingScope` is
+   * "all" — in "primary" scope they render as plain text. Purely a marker; the
+   * reach is decided globally in CSS via `data-heading-scope`.
+   */
+  emphasis?: "primary" | "secondary"
   className?: string
 }) {
   const resolvedAccent = accent ?? (autoAccent ? lastWord(title) : undefined)
   const matchAt = resolvedAccent ? title.lastIndexOf(resolvedAccent) : -1
+  const secondary = emphasis === "secondary"
 
   if (!resolvedAccent || matchAt === -1) {
     // No accent: still tag as a title so gradient mode can tint the whole thing.
-    return <span className={cn("tt-title", className)}>{title}</span>
+    return <span className={cn("tt-title", secondary && "tt-title--secondary", className)}>{title}</span>
   }
 
   return (
-    <span className={cn("tt-title", className)}>
+    <span className={cn("tt-title", secondary && "tt-title--secondary", className)}>
       {title.slice(0, matchAt)}
-      <span className="tt-accent">{resolvedAccent}</span>
+      <span className={cn("tt-accent", secondary && "tt-accent--secondary")}>{resolvedAccent}</span>
       {title.slice(matchAt + resolvedAccent.length)}
     </span>
   )

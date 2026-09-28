@@ -3,6 +3,7 @@
 import { useRef } from "react"
 import { motion, useScroll, useSpring, useInView, type Variants } from "framer-motion"
 import { Compass, AudioWaveform, FlaskConical, Headphones, type LucideIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 import type { Milestone } from "../schema"
 
 const iconMap: Record<string, LucideIcon> = {
@@ -122,7 +123,9 @@ function TimelineItem({ milestone, index }: { milestone: Milestone; index: numbe
             {words.map((word, wordIndex) => (
               <span key={wordIndex} className="inline-block overflow-hidden">
                 <motion.span
-                  className="inline-block"
+                  // Accent the final word as a secondary heading: it follows the
+                  // theme's style and only lights up when scope is "all".
+                  className={cn("inline-block", wordIndex === words.length - 1 && "tt-accent tt-accent--secondary")}
                   initial={{ y: "110%" }}
                   animate={inView ? { y: "0%" } : {}}
                   transition={{

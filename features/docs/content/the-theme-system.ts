@@ -10,7 +10,7 @@ export const theThemeSystem: Doc = {
     "How brand identity became a single source of truth: a library of named theme templates in the StoreSettings.theme JSON column, one active at a time, resolved server-side and injected as CSS variables after globals.css so the storefront, admin, and email all re-theme with zero per-component edits and no flash on first paint.",
   readingMinutes: 10,
   order: 6,
-  updatedAt: "2026-09-28",
+  updatedAt: "2026-09-29",
   tags: ["theme", "branding", "css variables", "ssr", "prisma", "architecture"],
   body: [
     {
@@ -40,6 +40,7 @@ export const theThemeSystem: Doc = {
         "  name: string",
         "  kind: 'system' | 'custom' | 'seasonal'",
         "  headingStyle: 'two-tone' | 'solid' | 'gradient'",
+        "  headingScope: 'primary' | 'all'  // how far the accent reaches",
         "  tokens: ThemeTokens & { light?: Partial<ThemeTokens>; dark?: Partial<ThemeTokens> }",
         "}",
         "",
@@ -123,6 +124,20 @@ export const theThemeSystem: Doc = {
       text: "headingStyle on the active template drives the shared TwoToneTitle primitive. In two-tone mode the accent falls on the last whitespace-delimited word (so multi-line titles split on the newline correctly); a title may also mark an explicit accent word. Solid renders one colour; gradient fades --brand-gradient-from to --brand-gradient-to.",
     },
     {
+      type: "paragraph",
+      text: "Style is one axis; reach is the other. headingScope is injected as data-heading-scope on <html> alongside data-heading-style, and the SectionHeading primitive tags each heading with emphasis 'primary' or 'secondary'. In 'primary' scope, CSS neutralises the accent on secondary headings (repeated cards, list and timeline titles) back to currentColor; in 'all' scope they light up too. Both axes are pure CSS driven by the two data attributes — no component branches on the theme, so nothing re-renders and there's no per-page wiring.",
+    },
+    {
+      type: "code",
+      language: "tsx",
+      code: [
+        "// One entry point for every heading. Two-tone by default; the accent",
+        "// reach follows the active theme via data-heading-scope on <html>.",
+        "<SectionHeading as=\"h2\" title=\"A decade of listening.\" />              // primary — always accented",
+        "<SectionHeading as=\"h3\" title={milestone.title} emphasis=\"secondary\" /> // only accented in 'all' scope",
+      ].join("\n"),
+    },
+    {
       type: "mermaid",
       kind: "state",
       title: "Figure 2 — headingStyle drives the primitive",
@@ -136,6 +151,20 @@ export const theThemeSystem: Doc = {
         "  gradient --> two_tone: headingStyle = two-tone",
         "  solid --> gradient: headingStyle = gradient",
         "  gradient --> solid: headingStyle = solid",
+      ].join("\n"),
+    },
+    {
+      type: "mermaid",
+      kind: "flow",
+      title: "Figure 3 — headingScope gates secondary headings",
+      caption: "Style and reach are independent. A heading's emphasis marker plus data-heading-scope decide whether the accent applies, entirely in CSS.",
+      diagram: [
+        "flowchart TD",
+        "  H[Heading via SectionHeading] --> E{emphasis?}",
+        "  E -->|primary| ACC[Accent always applies]",
+        "  E -->|secondary| S{data-heading-scope?}",
+        "  S -->|all| ACC",
+        "  S -->|primary| PLAIN[Accent neutralised to currentColor]",
       ].join("\n"),
     },
     {

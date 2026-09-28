@@ -9,6 +9,17 @@
 /** How headlines are tinted. Drives the shared `TwoToneTitle` primitive. */
 export type HeadingStyle = "two-tone" | "solid" | "gradient"
 
+/**
+ * How far the accent treatment reaches.
+ *  - "primary": heroes + section titles carry the accent; repeated/card titles
+ *    (marked `emphasis="secondary"`) stay calm. The tasteful default.
+ *  - "all": the accent reaches down to small cards and repeated item titles for
+ *    a bolder, fully-branded look.
+ * Injected as `data-heading-scope` on <html>; pure CSS toggles the reach with
+ * no per-heading edits.
+ */
+export type HeadingScope = "primary" | "all"
+
 export type ThemeKind = "system" | "custom" | "seasonal"
 
 /** The colour tokens a template controls. Values are any valid CSS colour
@@ -31,6 +42,9 @@ export interface ThemeTemplate {
   name: string
   kind: ThemeKind
   headingStyle: HeadingStyle
+  /** How far the accent reaches. Defaults to "primary" when absent so existing
+   * persisted themes round-trip unchanged. */
+  headingScope?: HeadingScope
   tokens: ThemeTokens & {
     light?: Partial<ThemeTokens>
     dark?: Partial<ThemeTokens>
@@ -143,6 +157,11 @@ function isThemeTemplate(value: unknown): value is ThemeTemplate {
 /** The live template (falls back to the first, then the built-in default). */
 export function getActiveTheme(state: ThemeState): ThemeTemplate {
   return state.themes.find((t) => t.id === state.activeThemeId) ?? state.themes[0] ?? TITANIUM_TEAL
+}
+
+/** The accent reach for a template, defaulting to the tasteful "primary". */
+export function getHeadingScope(theme: ThemeTemplate): HeadingScope {
+  return theme.headingScope ?? "primary"
 }
 
 /** Resolve the effective tokens for a colour scheme (base merged with override). */

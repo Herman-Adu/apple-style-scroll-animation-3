@@ -17,7 +17,7 @@ export function SiteFooter() {
             <p className="mt-4 max-w-md text-sm leading-relaxed text-foreground/40 lg:max-w-xs">
               {siteConfig.description}
             </p>
-            <p className="mt-6 text-center text-xs uppercase tracking-[0.2em] text-foreground/30 lg:text-left">
+            <p className="mt-6 text-xs uppercase tracking-[0.2em] text-foreground/30">
               {siteConfig.location}
             </p>
           </div>

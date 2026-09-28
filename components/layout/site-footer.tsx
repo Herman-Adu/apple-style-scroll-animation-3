@@ -11,7 +11,7 @@ export function SiteFooter() {
           Large screens: brand keeps its wider column and the four groups line up
           as four equal columns to its right. Text is left-aligned throughout.
         */}
-        <div className="mx-auto grid max-w-xl grid-cols-2 gap-x-8 gap-y-12 lg:mx-0 lg:max-w-none lg:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))] lg:gap-12">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-12 lg:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))] lg:gap-12">
           <div className="col-span-2 lg:col-span-1">
             <p className="text-sm font-semibold uppercase tracking-[0.35em] text-foreground">{siteConfig.shortName}</p>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-foreground/40 lg:max-w-xs">

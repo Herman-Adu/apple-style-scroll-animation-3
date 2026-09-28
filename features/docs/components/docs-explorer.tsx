@@ -85,9 +85,10 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
 
   const [query, setQuery] = useState("")
   const [tab, setTab] = useState<AudienceTab>("all")
-  // Categories collapsed by the user. Everything is open by default; searching
-  // force-opens everything so matches are never hidden behind a closed group.
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
+  // Categories the user has expanded. Everything is collapsed by default so the
+  // whole library is scannable at a glance; searching force-opens everything so
+  // matches are never hidden behind a closed group.
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
 
   const visible = useMemo(
     () => visibleDocs(docs, { isAdmin, isOwner: isOwnerViewer }),
@@ -113,7 +114,7 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
   const total = scoped.length
 
   function toggleCategory(key: string) {
-    setCollapsed((prev) => {
+    setExpanded((prev) => {
       const next = new Set(prev)
       if (next.has(key)) next.delete(key)
       else next.add(key)
@@ -170,7 +171,7 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
               <div className="space-y-3">
                 {group.categories.map((cat) => {
                   const key = `${group.audience}:${cat.category}`
-                  const open = isSearching || !collapsed.has(key)
+                  const open = isSearching || expanded.has(key)
                   return (
                     <CategoryDisclosure
                       key={key}

@@ -18,7 +18,7 @@
  * gating is enforced server-side — those bodies are never serialized to a
  * non-owner (see features/docs/api) — and mirrored client-side for nav.
  */
-export const DOC_AUDIENCES = ["user", "content", "developer"] as const
+export const DOC_AUDIENCES = ["user", "content", "developer", "owner"] as const
 
 export type DocAudience = (typeof DOC_AUDIENCES)[number]
 
@@ -46,8 +46,14 @@ export const docAudienceMeta = {
   developer: {
     label: "Developer & CTO",
     title: "Developer & CTO",
-    blurb: "Architecture, the Strapi migration, DevOps, commerce internals, and positioning.",
+    blurb: "Architecture, the Strapi migration, DevOps, and commerce internals.",
     access: "public",
+  },
+  owner: {
+    label: "Owner",
+    title: "Owner",
+    blurb: "Positioning, pricing, sales, and go-to-market playbooks — visible to the platform owner only.",
+    access: "owner",
   },
 } satisfies Record<DocAudience, { label: string; title: string; blurb: string; access: DocAccess }>
 
@@ -82,6 +88,7 @@ export const DOC_CATEGORIES = [
   "Data & Analytics",
   "Security & Auth",
   "API & Integrations",
+  // Owner (owner-only)
   "Positioning",
 ] as const
 
@@ -112,7 +119,8 @@ export const DOC_CATEGORY_AUDIENCE: Record<DocCategory, DocAudience> = {
   "Data & Analytics": "developer",
   "Security & Auth": "developer",
   "API & Integrations": "developer",
-  Positioning: "developer",
+  // Owner
+  Positioning: "owner",
 }
 
 /** A single series in a chart block. `color` is a CSS color (usually a token var). */

@@ -329,6 +329,17 @@ html {
   background: color-mix(in oklch, var(--foreground) 35%, transparent);
 }
 
+/* Horizontally scrollable strips (e.g. admin tab switchers) that should
+ * slide without showing a scrollbar track. */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /*
  * Respect users who prefer reduced motion. Neutralizes CSS transitions,
  * animations (including skeleton pulses), and smooth scrolling site-wide.

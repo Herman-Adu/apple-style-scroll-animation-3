@@ -5,7 +5,7 @@ export const companyProfileAndSetup: Doc = {
   title: "Company Profile & Admin Setup",
   category: "Store Operations",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "Set up the business identity once and reuse it everywhere — the company profile, the guided admin onboarding, and how the structured address becomes the single source of truth for invoices, email footers, and Strapi.",
   readingMinutes: 8,

@@ -5,7 +5,7 @@ export const systemArchitecture: Doc = {
   title: "System Architecture Overview",
   category: "Architecture",
   audience: "developer",
-  access: "admin",
+  access: "public",
   summary:
     "The whole system on one page: the Next.js App Router front, the port/adapter data seam, Neon Postgres via Prisma, and the third-party edges (Resend, Stripe, and the planned Strapi CMS). Start here, then follow the links into auth and the data layer.",
   readingMinutes: 11,

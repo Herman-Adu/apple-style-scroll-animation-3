@@ -5,7 +5,7 @@ export const ordersAndEmailOperations: Doc = {
   title: "Orders & Email Operations",
   category: "Store Operations",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "Process orders through their lifecycle and manage the transactional emails customers receive.",
   readingMinutes: 6,

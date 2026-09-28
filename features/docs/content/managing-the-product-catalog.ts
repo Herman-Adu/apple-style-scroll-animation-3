@@ -5,7 +5,7 @@ export const managingTheProductCatalog: Doc = {
   title: "Managing the Product Catalog",
   category: "Catalog",
   audience: "content",
-  access: "admin",
+  access: "public",
   summary:
     "Add, edit, and retire products from the admin dashboard, and understand how stock controls what customers can buy.",
   readingMinutes: 7,

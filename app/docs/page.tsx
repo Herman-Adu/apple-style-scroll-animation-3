@@ -8,7 +8,7 @@ import { getServerRole, getServerIsOwner } from "@/lib/auth/server"
 export const metadata: Metadata = {
   title: "Documentation",
   description:
-    "Help and guides for Momo Audio: user guides for your devices, plus internal content-management and engineering references for the team.",
+    "Help and guides for Momo Audio: setup and device user guides, plus content-management and engineering references — all publicly available.",
 }
 
 export default async function DocsPage() {

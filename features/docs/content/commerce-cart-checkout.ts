@@ -5,7 +5,7 @@ export const commerceCartCheckout: Doc = {
   title: "The Shopping Cart & Checkout Architecture",
   category: "Commerce",
   audience: "developer",
-  access: "admin",
+  access: "public",
   summary:
     "How a server-first storefront handles a fundamentally client-side thing — the cart — plus the checkout flow and the server-side validation that protects it.",
   readingMinutes: 12,

@@ -5,7 +5,7 @@ export const strapiMigrationRunbook: Doc = {
   title: "Strapi Migration Runbook",
   category: "Migration",
   audience: "developer",
-  access: "admin",
+  access: "public",
   summary:
     "The end-to-end plan for swapping local content for a live Strapi instance: the data seam, cache tags, webhook revalidation, and the go-live checklist.",
   readingMinutes: 14,

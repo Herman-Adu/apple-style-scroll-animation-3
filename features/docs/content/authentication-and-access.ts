@@ -5,7 +5,7 @@ export const authenticationAndAccess: Doc = {
   title: "Authentication & Authorization",
   category: "Security & Auth",
   audience: "developer",
-  access: "admin",
+  access: "public",
   summary:
     "How sign-in, sessions, roles, server-side guards, and doc gating fit together. Authentication is now server-enforced with Better Auth on Neon — sessions are real, roles are verified on the server, and admin bodies never reach a non-admin browser.",
   readingMinutes: 12,

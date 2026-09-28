@@ -5,7 +5,7 @@ export const dataLayerAndDatabase: Doc = {
   title: "Data Layer & Database",
   category: "Data & Analytics",
   audience: "developer",
-  access: "admin",
+  access: "public",
   summary:
     "Every piece of business data now lives in Neon Postgres via Prisma, reached through a port/adapter seam. This guide is the schema map, the merge-on-read catalog model, the transactional stock/order write path, and the cache-revalidation strategy — the ground truth for the Strapi migration.",
   readingMinutes: 13,

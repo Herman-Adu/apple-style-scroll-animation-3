@@ -5,7 +5,7 @@ export const apiAndIntegrations: Doc = {
   title: "API & Integrations",
   category: "API & Integrations",
   audience: "developer",
-  access: "admin",
+  access: "public",
   summary:
     "The store's HTTP surface and third-party integrations — the route handlers it exposes, the services it depends on (Neon, Better Auth, Stripe, Resend, Strapi), and how secrets and webhooks are secured.",
   readingMinutes: 7,

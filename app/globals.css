@@ -160,12 +160,6 @@
   -webkit-text-fill-color: transparent;
 }
 
-[data-heading-style="solid"] .tt-accent {
-  background-image: none;
-  color: var(--accent-teal);
-  -webkit-text-fill-color: var(--accent-teal);
-}
-
 [data-heading-style="gradient"] .tt-title,
 [data-heading-style="gradient"] .tt-accent {
   background-image: linear-gradient(to right, var(--brand-gradient-from), var(--brand-gradient-to));
@@ -173,6 +167,36 @@
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
+}
+
+/*
+ * Explicit non-gradient states, declared AFTER the gradient rule above. The
+ * accent/title rules match on ANY ancestor carrying `data-heading-style`, so a
+ * gradient theme live on <html> would otherwise bleed into a two-tone/solid
+ * preview nested inside it — the Theme admin renders a live preview whose own
+ * `data-heading-style` must fully govern its headings. At equal specificity,
+ * source order lets the nearer preview state win: the whole-title clip is
+ * cleared and the accent is re-tinted for the previewed mode.
+ */
+[data-heading-style="two-tone"] .tt-title,
+[data-heading-style="solid"] .tt-title {
+  background-image: none;
+  color: inherit;
+  -webkit-text-fill-color: currentColor;
+}
+
+[data-heading-style="two-tone"] .tt-accent {
+  background-image: linear-gradient(to right, var(--accent-teal), var(--accent-teal-muted));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-heading-style="solid"] .tt-accent {
+  background-image: none;
+  color: var(--accent-teal);
+  -webkit-text-fill-color: var(--accent-teal);
 }
 
   /*

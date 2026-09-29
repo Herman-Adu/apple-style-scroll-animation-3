@@ -6,6 +6,7 @@ import type { CartLine, Product } from "@/lib/types"
 interface CartContextValue {
   lines: CartLine[]
   isOpen: boolean
+  hydrated: boolean
   itemCount: number
   subtotal: number
   currency: string
@@ -115,6 +116,7 @@ export function CartProvider({
   const value: CartContextValue = {
     lines,
     isOpen,
+    hydrated,
     itemCount,
     subtotal,
     currency,

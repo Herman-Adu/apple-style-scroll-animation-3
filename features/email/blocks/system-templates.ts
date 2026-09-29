@@ -59,7 +59,7 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         ],
         ordered: true,
       },
-      { id: bid("btn"), type: "button", label: "View your order", href: "{{shop_url}}", align: "left" },
+      { id: bid("btn"), type: "button", label: "View your order", href: "{{order_url}}", align: "left" },
     ],
   },
   {
@@ -272,6 +272,7 @@ export const TEMPLATE_TOKENS: { token: string; label: string }[] = [
   { token: "{{brand_name}}", label: "Brand name" },
   { token: "{{order_number}}", label: "Order number" },
   { token: "{{shop_url}}", label: "Shop URL" },
+  { token: "{{order_url}}", label: "Order URL" },
   { token: "{{offer_headline}}", label: "Offer headline" },
   { token: "{{offer_label}}", label: "Offer label" },
   { token: "{{offer_expiry}}", label: "Offer expiry line" },

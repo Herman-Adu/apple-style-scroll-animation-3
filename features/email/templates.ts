@@ -87,6 +87,7 @@ export function orderConfirmationEmail(params: {
   branding?: Partial<EmailBranding>
   blocks?: EmailBlock[]
   shopUrl?: string
+  orderUrl?: string
   baseUrl?: string
 }): Rendered {
   const b = brand(params.branding)
@@ -96,6 +97,9 @@ export function orderConfirmationEmail(params: {
     brand_name: b.brandName,
     order_number: params.order.number,
     shop_url: params.shopUrl ?? "/products",
+    // The order confirmation CTA links here — the customer's Orders & invoices
+    // tab — rather than back to the store.
+    order_url: params.orderUrl ?? "/account?tab=orders",
   }
   const ctx: RenderContext = { vars, dynamic: { orderSummary: orderSummaryHtml(params.order) }, baseUrl: params.baseUrl }
   return {

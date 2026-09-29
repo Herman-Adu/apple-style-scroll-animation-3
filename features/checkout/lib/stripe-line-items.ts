@@ -13,24 +13,43 @@ export function toMinorUnits(amount: number): number {
   return Math.round(amount * 100)
 }
 
-/** Build itemized Stripe line items from a priced quote. Images are deliberately
- * omitted — relative image URLs break the Checkout Session in this runtime. The
- * order-level discount and shipping are applied by the caller (coupon +
- * shipping_options), not as line items, since Stripe has no negative lines. */
+/** Turn a possibly-relative catalog image path into the absolute HTTPS URL
+ * Stripe requires. Stripe fetches product images from its own servers, so a
+ * relative path (`/products/x.png`) is rejected and breaks the Checkout Session
+ * — only include an image when we can make it absolute from a known origin.
+ * Already-absolute URLs (http/https) are passed through untouched. */
+function absoluteImageUrl(image: string | undefined, origin: string | undefined): string | undefined {
+  if (!image) return undefined
+  if (/^https?:\/\//i.test(image)) return image
+  if (!origin) return undefined
+  return `${origin.replace(/\/$/, "")}${image.startsWith("/") ? "" : "/"}${image}`
+}
+
+/** Build itemized Stripe line items from a priced quote. When an `origin` is
+ * provided, each line includes the product's image (made absolute) so it shows
+ * in Checkout; without an origin, images are omitted (a relative URL would
+ * break the session). The order-level discount and shipping are applied by the
+ * caller (coupon + shipping_options), not as line items, since Stripe has no
+ * negative lines. */
 export function buildStripeLineItems(
   quote: PricedQuote,
+  options?: { origin?: string },
 ): Stripe.Checkout.SessionCreateParams.LineItem[] {
   const currency = quote.currency.toLowerCase()
   return quote.items
     .filter((item) => item.quantity > 0)
-    .map((item) => ({
-      quantity: item.quantity,
-      price_data: {
-        currency,
-        unit_amount: toMinorUnits(item.unitAmount),
-        product_data: {
-          name: item.color ? `${item.name} — ${item.color}` : item.name,
+    .map((item) => {
+      const image = absoluteImageUrl(item.image, options?.origin)
+      return {
+        quantity: item.quantity,
+        price_data: {
+          currency,
+          unit_amount: toMinorUnits(item.unitAmount),
+          product_data: {
+            name: item.color ? `${item.name} — ${item.color}` : item.name,
+            ...(image ? { images: [image] } : {}),
+          },
         },
-      },
-    }))
+      }
+    })
 }

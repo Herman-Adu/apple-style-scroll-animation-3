@@ -176,7 +176,7 @@ export async function startStripeCheckout({
     const checkout = await stripe.checkout.sessions.create({
       ui_mode: "embedded_page",
       mode: "payment",
-      line_items: buildStripeLineItems(priced),
+      line_items: buildStripeLineItems(priced, { origin }),
       discounts,
       shipping_options,
       customer_email: email || undefined,

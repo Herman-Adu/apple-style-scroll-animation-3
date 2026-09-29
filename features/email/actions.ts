@@ -39,6 +39,7 @@ export async function sendOrderConfirmation(params: { to: string; name: string; 
     branding,
     blocks: blocks ?? undefined,
     shopUrl: `${getBaseUrl()}/products`,
+    orderUrl: `${getBaseUrl()}/account?tab=orders`,
     baseUrl: getBaseUrl(),
   })
   const result = await sendEmail({ to: params.to, subject, html, text })

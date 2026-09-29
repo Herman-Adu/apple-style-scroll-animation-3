@@ -11,6 +11,7 @@ import { ProfileForm } from "@/components/account/profile-form"
 import { OrderHistory } from "@/components/account/order-history"
 import { OfferList } from "@/components/account/offer-list"
 import { UserAvatar } from "@/components/account/user-avatar"
+import { SignOutConfirmDialog } from "@/components/account/sign-out-confirm"
 import { onboardingSteps } from "@/lib/data/onboarding"
 import { useAuth } from "@/lib/auth/auth-context"
 
@@ -36,6 +37,7 @@ export function AccountView() {
   const { user, signOut } = useAuth()
   const searchParams = useSearchParams()
   const [signingOut, setSigningOut] = useState(false)
+  const [signOutOpen, setSignOutOpen] = useState(false)
 
   // Deep-link support: /account?tab=orders opens the Orders tab, both on a
   // fresh mount and while the page is already mounted (e.g. from the header
@@ -48,6 +50,7 @@ export function AccountView() {
   if (!user) return null
 
   async function handleSignOut() {
+    setSignOutOpen(false)
     setSigningOut(true)
     await signOut()
     // Hard navigation home so the page's RouteGuard can't intercept the now-
@@ -105,7 +108,7 @@ export function AccountView() {
             <Button
               type="button"
               variant="outline"
-              onClick={handleSignOut}
+              onClick={() => setSignOutOpen(true)}
               disabled={signingOut}
               className="border-foreground/15 bg-transparent text-foreground hover:bg-foreground/5"
             >
@@ -179,6 +182,8 @@ export function AccountView() {
           </Tabs>
         </motion.div>
       </div>
+
+      <SignOutConfirmDialog open={signOutOpen} onOpenChange={setSignOutOpen} />
     </main>
   )
 }

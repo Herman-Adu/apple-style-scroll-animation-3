@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { LayoutDashboard, LogOut, Package, Tag, UserRound } from "lucide-react"
 import { useAuth } from "@/lib/auth/auth-context"
 import { UserAvatar } from "@/components/account/user-avatar"
+import { SignOutConfirmDialog } from "@/components/account/sign-out-confirm"
 import { cn } from "@/lib/utils"
 
 interface AccountMenuProps {
@@ -34,6 +35,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
+  const [signOutOpen, setSignOutOpen] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   if (!user) return null
@@ -51,6 +53,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
   }
 
   async function handleSignOut() {
+    setSignOutOpen(false)
     setSigningOut(true)
     setOpen(false)
     await signOut()
@@ -152,7 +155,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
                 <button
                   type="button"
                   role="menuitem"
-                  onClick={handleSignOut}
+                  onClick={() => setSignOutOpen(true)}
                   disabled={signingOut}
                   className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-foreground/80 transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-60"
                 >
@@ -164,6 +167,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
           </motion.div>
         )}
       </AnimatePresence>
+      <SignOutConfirmDialog open={signOutOpen} onOpenChange={setSignOutOpen} />
     </div>
   )
 }

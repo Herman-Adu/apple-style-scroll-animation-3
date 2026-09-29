@@ -10,6 +10,7 @@ import { mainNav, siteConfig } from "@/lib/data/site"
 import { isSectionActive, isTopLevelActive } from "@/lib/nav"
 import { useAuth } from "@/lib/auth/auth-context"
 import { UserAvatar } from "@/components/account/user-avatar"
+import { SignOutConfirmDialog } from "@/components/account/sign-out-confirm"
 import { cn } from "@/lib/utils"
 
 interface MobileNavProps {
@@ -26,8 +27,10 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
   const { status, user, signOut } = useAuth()
   const [submenu, setSubmenu] = useState<NavLink | null>(null)
   const [accountOpen, setAccountOpen] = useState(false)
+  const [signOutOpen, setSignOutOpen] = useState(false)
 
   async function handleSignOut() {
+    setSignOutOpen(false)
     onClose()
     await signOut()
     // Hard navigation home so a guarded page's RouteGuard can't intercept the
@@ -251,7 +254,7 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                       )}
                       <button
                         type="button"
-                        onClick={handleSignOut}
+                        onClick={() => setSignOutOpen(true)}
                         className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-colors hover:bg-foreground/5"
                       >
                         <LogOut className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
@@ -401,6 +404,7 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
           </motion.aside>
         </>
       )}
+      <SignOutConfirmDialog open={signOutOpen} onOpenChange={setSignOutOpen} />
     </AnimatePresence>
   )
 }

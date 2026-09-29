@@ -7,23 +7,18 @@ import { useMemo, useState } from "react"
 import { ArrowLeft, Lock, ShoppingBag, Tag } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth/auth-context"
-import { useOrders } from "@/hooks/use-orders"
-import { sendOrderConfirmation, sendOrderNotification } from "@/features/email/actions"
 import { priceCheckout } from "@/features/checkout"
-import { quoteCheckout } from "@/features/checkout/actions"
+import type { QuoteRequestLine } from "@/features/checkout/actions"
+import { EmbeddedPayment } from "@/components/checkout/embedded-payment"
 import { UserAvatar } from "@/components/account/user-avatar"
-import { Spinner } from "@/components/ui/spinner"
 import { formatMoney } from "@/lib/format"
-import type { Order, OrderItem } from "@/lib/orders/types"
+import type { OrderItem } from "@/lib/orders/types"
 
 export function CheckoutView() {
-  const { lines, subtotal, currency, itemCount, clear } = useCart()
-  const { user, redeemOffers } = useAuth()
-  const { createOrder } = useOrders(user?.id)
+  const { lines, itemCount } = useCart()
+  const { user } = useAuth()
   const router = useRouter()
-  const [placing, setPlacing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [order, setOrder] = useState<Order | null>(null)
+  const [pay, setPay] = useState(false)
 
   const displayName = user?.profile.displayName || user?.name || "there"
 
@@ -50,91 +45,18 @@ export function CheckoutView() {
   const savingsOffers = quote.appliedOffers.filter((offer) => offer.amount > 0)
   const labelOffers = quote.appliedOffers.filter((offer) => offer.amount === 0)
 
-  async function placeOrder() {
-    if (!user || lines.length === 0 || placing) return
-    setError(null)
-    // Records the order through the OrdersAdapter port. A real integration
-    // (e.g. Stripe) swaps that adapter for a server-side Checkout Session —
-    // this component stays the same. Stock is decremented and the oversell /
-    // last-unit rule enforced server-side, in the same transaction as the order
-    // insert, so a failed guard surfaces here as a thrown error and nothing is
-    // charged or recorded.
-    setPlacing(true)
-    try {
-      // Re-price server-side: prices are rebuilt from the authoritative catalog
-      // and offer discounts recomputed, so the persisted totals can't be tampered
-      // with from the browser. The displayed `quote` uses the same engine, so the
-      // numbers match.
-      const priced = await quoteCheckout({
-        lines: lines.map((line) => ({
-          slug: line.product.slug,
-          color: line.color,
-          quantity: line.quantity,
-        })),
-        offers: user.offers ?? [],
-      })
-      const created = await createOrder({
-        userId: user.id,
-        email: user.email,
-        items: priced.items,
-        subtotal: priced.subtotal,
-        shipping: priced.shipping,
-        discount: priced.discount,
-        appliedOffers: priced.appliedOffers,
-        total: priced.total,
-        currency: priced.currency,
-      })
-      setOrder(created)
-      clear()
-      // Record which personal offers this order used (record-only; never blocks).
-      if (priced.appliedOffers.length > 0) {
-        void redeemOffers(priced.appliedOffers.map((offer) => offer.id))
-      }
-      // Fire-and-forget confirmation email; never block order success on it.
-      void sendOrderConfirmation({
-        to: created.email,
-        name: displayName,
-        order: created,
-      }).catch(() => {})
-      // Fire-and-forget business notification to EMAIL_TO; never block order success.
-      void sendOrderNotification({
-        order: created,
-        customerName: displayName,
-      }).catch(() => {})
-    } finally {
-      setPlacing(false)
-    }
-  }
-
-  if (order) {
-    return (
-      <main className="mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center px-6 py-24 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-foreground/5">
-          <ShoppingBag className="h-7 w-7 text-foreground" strokeWidth={1.5} />
-        </div>
-        <h1 className="mt-6 text-2xl font-semibold text-foreground">Order confirmed</h1>
-        <p className="mt-2 font-mono text-sm text-foreground/70">{order.number}</p>
-        <p className="mt-2 max-w-md text-pretty text-sm leading-relaxed text-foreground/50">
-          Thanks, {displayName}. A confirmation is on its way to {user?.email}. You can find this
-          order and its invoice under Orders in your account.
-        </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            href="/account"
-            className="rounded-full bg-foreground px-6 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-90"
-          >
-            Go to account
-          </Link>
-          <Link
-            href="/products"
-            className="rounded-full border border-foreground/15 px-6 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-foreground/80 transition-colors hover:bg-foreground/5"
-          >
-            Continue shopping
-          </Link>
-        </div>
-      </main>
-    )
-  }
+  // What the payment step sends to the server. The server re-prices from the
+  // authoritative catalog and rebuilds offer discounts, so these are only a
+  // request for *which* items/qty — never prices.
+  const paymentLines = useMemo<QuoteRequestLine[]>(
+    () =>
+      lines.map((line) => ({
+        slug: line.product.slug,
+        color: line.color,
+        quantity: line.quantity,
+      })),
+    [lines],
+  )
 
   if (lines.length === 0) {
     return (
@@ -150,6 +72,30 @@ export function CheckoutView() {
         >
           Explore products
         </Link>
+      </main>
+    )
+  }
+
+  // Payment step: Stripe's embedded Checkout owns the money UI (it shows the
+  // itemized total, discount and shipping again inside the iframe).
+  if (pay) {
+    return (
+      <main className="mx-auto max-w-2xl px-6 py-16 sm:py-24">
+        <button
+          type="button"
+          onClick={() => setPay(false)}
+          className="flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-foreground/50 transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
+          Back to review
+        </button>
+        <h1 className="mt-6 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Payment</h1>
+        <p className="mt-2 text-sm text-foreground/50">
+          Paying {formatMoney({ amount: quote.total, currency: quote.currency })} — signed in as {user?.email}.
+        </p>
+        <div className="mt-8">
+          <EmbeddedPayment lines={paymentLines} />
+        </div>
       </main>
     )
   }
@@ -267,32 +213,34 @@ export function CheckoutView() {
                 ))}
               </div>
             )}
-            {error && (
-              <p
-                role="alert"
-                className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-center text-xs text-destructive"
-              >
-                {error}
-              </p>
-            )}
-            <button
-              type="button"
-              onClick={placeOrder}
-              disabled={placing}
-              className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-4 text-xs font-semibold uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-90 disabled:opacity-60"
-            >
-              {placing ? (
-                <Spinner className="size-4" />
-              ) : (
-                <>
+            {user ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setPay(true)}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-4 text-xs font-semibold uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-90"
+                >
                   <Lock className="h-3.5 w-3.5" strokeWidth={2} />
-                  Place order
-                </>
-              )}
-            </button>
-            <p className="mt-3 text-center text-xs text-foreground/40">
-              Secure checkout. You&apos;re signed in as {user?.email}.
-            </p>
+                  Continue to payment
+                </button>
+                <p className="mt-3 text-center text-xs text-foreground/40">
+                  Secure checkout. You&apos;re signed in as {user.email}.
+                </p>
+              </>
+            ) : (
+              <>
+                <Link
+                  href={`/sign-in?returnTo=${encodeURIComponent("/checkout")}`}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-4 text-xs font-semibold uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-90"
+                >
+                  <Lock className="h-3.5 w-3.5" strokeWidth={2} />
+                  Sign in to pay
+                </Link>
+                <p className="mt-3 text-center text-xs text-foreground/40">
+                  You need to be signed in to complete checkout.
+                </p>
+              </>
+            )}
           </div>
         </aside>
       </div>

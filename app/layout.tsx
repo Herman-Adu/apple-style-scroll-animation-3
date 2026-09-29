@@ -7,6 +7,7 @@ import { Inter } from "next/font/google"
 import { CartProvider } from "@/lib/cart-context"
 import { CatalogProvider } from "@/features/catalog"
 import { AuthProvider } from "@/lib/auth/auth-context"
+import { fetchAppSession } from "@/lib/auth/db-actions"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SiteChrome } from "@/components/layout/site-chrome"
 import { BrandThemeStyle } from "@/components/theme/brand-theme-style"
@@ -78,7 +79,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const [catalog, settings] = await Promise.all([getCatalogProducts(), getStoreSettingsAction()])
+  const [catalog, settings, initialSession] = await Promise.all([
+    getCatalogProducts(),
+    getStoreSettingsAction(),
+    fetchAppSession(),
+  ])
   const activeTheme = getActiveTheme(settings.theme)
   const headingAccent = getHeadingAccent(activeTheme)
 
@@ -96,7 +101,7 @@ export default async function RootLayout({
         <BrandThemeStyle theme={activeTheme} />
         <JsonLd data={[organizationLd(), websiteLd()]} />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <AuthProvider>
+          <AuthProvider initialSession={initialSession}>
             <CatalogProvider initialProducts={catalog}>
               <CartProvider catalog={catalog}>
                 <SiteChrome>{children}</SiteChrome>

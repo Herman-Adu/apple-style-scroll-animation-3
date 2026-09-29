@@ -87,7 +87,7 @@ export function AccountView() {
             >
               <Link href="/products">
                 <ShoppingBag className="mr-2 h-4 w-4" />
-                Continue shopping
+                Explore products
               </Link>
             </Button>
             {user.role === "admin" && (

@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { LayoutDashboard, LogOut } from "lucide-react"
+import { LayoutDashboard, LogOut, ShoppingBag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProfileForm } from "@/components/account/profile-form"
@@ -79,6 +79,17 @@ export function AccountView() {
           </div>
 
           <div className="flex items-center gap-3">
+            <Button
+              asChild
+              type="button"
+              variant="outline"
+              className="border-foreground/15 bg-transparent text-foreground hover:bg-foreground/5"
+            >
+              <Link href="/products">
+                <ShoppingBag className="mr-2 h-4 w-4" />
+                Continue shopping
+              </Link>
+            </Button>
             {user.role === "admin" && (
               <Button
                 asChild

@@ -12,6 +12,7 @@ import { cmsAndPublishing } from "./cms-and-publishing"
 import { apiAndIntegrations } from "./api-and-integrations"
 import { managingTheProductCatalog } from "./managing-the-product-catalog"
 import { ordersAndEmailOperations } from "./orders-and-email-operations"
+import { paymentsOperations } from "./payments-operations"
 import { managingYourTheme } from "./managing-your-theme"
 import { companyProfileAndSetup } from "./company-profile-and-setup"
 import { emailSystemOverview } from "./email-system-overview"
@@ -26,6 +27,7 @@ import { strapiMigrationRunbook } from "./strapi-migration-runbook"
 import { strapiContentModeling } from "./strapi-content-modeling"
 import { devopsDeployObservability } from "./devops-deploy-observability"
 import { commerceCartCheckout } from "./commerce-cart-checkout"
+import { commerceStripePayments } from "./commerce-stripe-payments"
 import { authenticationAndAccess } from "./authentication-and-access"
 import { roiAndCostOfOwnership } from "./roi-and-cost-of-ownership"
 import { buildVsBuy } from "./build-vs-buy"
@@ -61,6 +63,7 @@ export const docs: Doc[] = [
   // Content management (admin)
   managingTheProductCatalog,
   ordersAndEmailOperations,
+  paymentsOperations,
   managingYourTheme,
   companyProfileAndSetup,
   emailSystemOverview,
@@ -76,6 +79,7 @@ export const docs: Doc[] = [
   strapiContentModeling,
   devopsDeployObservability,
   commerceCartCheckout,
+  commerceStripePayments,
   authenticationAndAccess,
   // CTO & decision makers (public)
   roiAndCostOfOwnership,

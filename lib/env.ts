@@ -27,6 +27,12 @@ export const env = createEnv({
     // Shared secret in Strapi preview URLs. /api/preview enables Next draft mode
     // only when the URL's `secret` matches this. Unset = preview disabled.
     STRAPI_PREVIEW_SECRET: z.string().min(1).optional(),
+    // Stripe (own account, test keys for this prototype). Secret key signs
+    // server-side API calls; the webhook secret verifies inbound events. Both
+    // optional so the app still boots before they're set — checkout simply
+    // can't create/finalize a payment until they are.
+    STRIPE_SECRET_KEY: z.string().min(1).optional(),
+    STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
   },
   client: {
     // Canonical public origin used for metadata, sitemap, robots, OG images and
@@ -37,6 +43,9 @@ export const env = createEnv({
     NEXT_PUBLIC_CONTACT_ENDPOINT: z.string().url().optional(),
     NEXT_PUBLIC_REVIEWS_ENDPOINT: z.string().url().optional(),
     NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL: z.string().url().optional(),
+    // Stripe publishable key (pk_test_…) — safe to expose; Stripe.js needs it
+    // in the browser to mount embedded checkout.
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1).optional(),
   },
   /**
    * Next.js inlines `NEXT_PUBLIC_*` at build time, so each client var must be
@@ -49,11 +58,14 @@ export const env = createEnv({
     STRAPI_WEBHOOK_SECRET: process.env.STRAPI_WEBHOOK_SECRET,
     STRAPI_REVALIDATE_SECONDS: process.env.STRAPI_REVALIDATE_SECONDS,
     STRAPI_PREVIEW_SECRET: process.env.STRAPI_PREVIEW_SECRET,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     NEXT_PUBLIC_AUTH_PROVIDER: process.env.NEXT_PUBLIC_AUTH_PROVIDER,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_CONTACT_ENDPOINT: process.env.NEXT_PUBLIC_CONTACT_ENDPOINT,
     NEXT_PUBLIC_REVIEWS_ENDPOINT: process.env.NEXT_PUBLIC_REVIEWS_ENDPOINT,
     NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
   /** Treat empty strings as "unset" so blank values don't pass URL checks. */
   emptyStringAsUndefined: true,

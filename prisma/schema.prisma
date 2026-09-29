@@ -111,6 +111,9 @@ model Order {
   appliedOffers Json     @default("[]") @map("applied_offers")
   total         Float
   currency      String
+  // Set when the order was finalized from a Stripe Checkout Session. Unique so
+  // re-delivered webhooks can never create a duplicate order (idempotency key).
+  stripeSessionId String? @unique @map("stripe_session_id")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -119,6 +122,34 @@ model Order {
   @@index([userId])
   @@index([createdAt])
   @@map("orders")
+}
+
+/// A checkout that has been priced and had its stock reserved, but is not yet a
+/// real Order — it becomes one only when Stripe confirms payment via webhook.
+/// Holds the authoritative priced payload plus the exact stock deltas that were
+/// decremented at reservation time, so an abandoned/expired/failed checkout can
+/// restore that stock precisely. `status` is the single source of truth for the
+/// lifecycle: reserved -> completed (order created) | released (stock restored).
+model PendingCheckout {
+  id              String   @id
+  stripeSessionId String?  @unique @map("stripe_session_id")
+  userId          String   @map("user_id")
+  email           String
+  items           Json     @default("[]")
+  appliedOffers   Json     @default("[]") @map("applied_offers")
+  // Exact { slug, quantity } deltas removed from stock at reservation time.
+  reservedStock   Json     @default("[]") @map("reserved_stock")
+  subtotal        Float
+  shipping        Float
+  discount        Float    @default(0)
+  total           Float
+  currency        String
+  status          String   @default("reserved") // reserved | completed | released
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@map("pending_checkouts")
 }
 
 /// A product review. Not FK-bound to a user because reviews may be submitted by

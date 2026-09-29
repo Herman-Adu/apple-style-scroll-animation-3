@@ -26,6 +26,8 @@ interface AuthContextValue {
   completeOnboarding: (update: ProfileUpdate) => Promise<User>
   /** Record that offers were used on an order and refresh the local session. */
   redeemOffers: (offerIds: string[]) => Promise<void>
+  /** Close an offer's card on the account page and refresh the local session. */
+  dismissOffer: (offerId: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -128,6 +130,15 @@ export function AuthProvider({
     [adapter, applyUser, session],
   )
 
+  const dismissOffer = useCallback(
+    async (offerId: string) => {
+      const current = session?.user
+      if (!current) return
+      applyUser(await adapter.dismissOffer(current.id, offerId))
+    },
+    [adapter, applyUser, session],
+  )
+
   const value = useMemo<AuthContextValue>(
     () => ({
       status,
@@ -138,6 +149,7 @@ export function AuthProvider({
       updateProfile,
       completeOnboarding,
       redeemOffers,
+      dismissOffer,
     }),
     [status, session, signUp, signIn, signOut, updateProfile, completeOnboarding, redeemOffers],
   )

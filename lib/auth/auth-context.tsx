@@ -32,6 +32,25 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
+/**
+ * Cross-tab broadcast key. Sign-out only clears the session cookie for the
+ * tab that triggered it — a second tab left open on /admin or /account has no
+ * other way to learn the session is gone, so without this it keeps rendering
+ * as signed in (and RouteGuard/AdminGuard never re-run) until it's reloaded.
+ * Writing this key on every auth-state change fires a `storage` event in
+ * every OTHER tab on the same origin, which re-fetches the session there too.
+ */
+const AUTH_BROADCAST_KEY = "momo.auth.broadcast"
+
+function broadcastAuthChange() {
+  try {
+    window.localStorage.setItem(AUTH_BROADCAST_KEY, String(Date.now()))
+  } catch {
+    // Best-effort only (e.g. storage disabled) — the tab that performed the
+    // action is still correct; only cross-tab sync is skipped.
+  }
+}
+
 export function AuthProvider({
   children,
   initialSession,
@@ -76,11 +95,49 @@ export function AuthProvider({
     }
   }, [adapter])
 
+  // Re-sync with the server session whenever another tab signs in/out (via the
+  // storage broadcast below) or this tab regains focus. Without this, a tab
+  // left open on a guarded page never learns its session was cleared elsewhere
+  // and keeps rendering as signed in — RouteGuard/AdminGuard only react to
+  // `status`, and nothing was updating it.
+  useEffect(() => {
+    let active = true
+    const resync = () => {
+      adapter
+        .getSession()
+        .then((s) => {
+          if (!active) return
+          setSession(s)
+          setStatus(s ? "authenticated" : "unauthenticated")
+        })
+        .catch(() => {
+          // Transient failure — leave the current state as-is rather than
+          // signing the user out on a flaky request.
+        })
+    }
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === AUTH_BROADCAST_KEY) resync()
+    }
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") resync()
+    }
+    window.addEventListener("storage", onStorage)
+    document.addEventListener("visibilitychange", onVisibility)
+    window.addEventListener("focus", onVisibility)
+    return () => {
+      active = false
+      window.removeEventListener("storage", onStorage)
+      document.removeEventListener("visibilitychange", onVisibility)
+      window.removeEventListener("focus", onVisibility)
+    }
+  }, [adapter])
+
   const signUp = useCallback(
     async (input: SignUpInput) => {
       const s = await adapter.signUp(input)
       setSession(s)
       setStatus("authenticated")
+      broadcastAuthChange()
       return s.user
     },
     [adapter],
@@ -91,6 +148,7 @@ export function AuthProvider({
       const s = await adapter.signIn(input)
       setSession(s)
       setStatus("authenticated")
+      broadcastAuthChange()
       return s.user
     },
     [adapter],
@@ -100,6 +158,7 @@ export function AuthProvider({
     await adapter.signOut()
     setSession(null)
     setStatus("unauthenticated")
+    broadcastAuthChange()
   }, [adapter])
 
   const applyUser = useCallback((user: User) => {

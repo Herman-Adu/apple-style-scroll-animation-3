@@ -112,12 +112,18 @@ export const managingCustomers: Doc = {
       variant: "info",
       text: "Offer emails go out through Resend. If Resend isn't configured, the send is skipped with a clear notice and the offer tag is still saved — so the workflow never silently fails.",
     },
-    {
-      type: "callout",
-      variant: "tip",
-      title: "The customer sees the offer too",
-      text: "An offer you grant isn't only an internal tag. It appears in the customer's own account under Account → Offers — with its value, any note, and a live countdown to expiry — and drives the site-wide offer banner. When the offer expires it drops off both automatically, so a customer never sees a stale deal. The customer-facing walkthrough is the Your Offers & Discounts guide.",
-    },
+  {
+  type: "callout",
+  variant: "tip",
+  title: "The customer sees the offer too",
+  text: "An offer you grant isn't only an internal tag. It appears in the customer's own account under Account → Offers — with its value, any note, and a live countdown to expiry — and drives the site-wide offer banner. The customer-facing walkthrough is the Your Offers & Discounts guide.",
+  },
+  {
+  type: "callout",
+  variant: "info",
+  title: "Offers are one-time by default",
+  text: "Unless you set a higher redemption limit, a personal offer applies once. After the customer uses it at checkout it stops discounting future orders automatically — you don't need to expire or delete it. It stays visible to them (marked Used) until its original expiry date so they have a record, then it clears itself. To reward the same customer again, grant a new offer rather than expecting the old one to reapply.",
+  },
     {
       type: "heading",
       text: "Roles & access",

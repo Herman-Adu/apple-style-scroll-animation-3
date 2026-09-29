@@ -30,10 +30,29 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({
+  children,
+  initialSession,
+}: {
+  children: React.ReactNode
+  /**
+   * Session resolved on the server for the initial render. When provided, the
+   * header renders the correct auth state on first paint — no "loading" flash
+   * and no signed-out flicker after a hard navigation (which remounts this
+   * provider). `null` means the server confirmed no session; `undefined` means
+   * it wasn't seeded, so we fall back to fetching client-side.
+   */
+  initialSession?: Session | null
+}) {
   const adapter = useMemo(() => getAuthAdapter(), [])
-  const [session, setSession] = useState<Session | null>(null)
-  const [status, setStatus] = useState<AuthStatus>("loading")
+  const [session, setSession] = useState<Session | null>(initialSession ?? null)
+  const [status, setStatus] = useState<AuthStatus>(
+    initialSession !== undefined
+      ? initialSession
+        ? "authenticated"
+        : "unauthenticated"
+      : "loading",
+  )
 
   useEffect(() => {
     let active = true
@@ -46,7 +65,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       .catch(() => {
         if (!active) return
-        setStatus("unauthenticated")
+        // Keep any server-seeded session on a transient refresh failure;
+        // only fall back to unauthenticated when we had nothing to begin with.
+        setStatus((prev) => (prev === "loading" ? "unauthenticated" : prev))
       })
     return () => {
       active = false

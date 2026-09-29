@@ -230,7 +230,7 @@ export function CheckoutView() {
             ) : (
               <>
                 <Link
-                  href={`/sign-in?returnTo=${encodeURIComponent("/checkout")}`}
+                  href={`/sign-in?redirect=${encodeURIComponent("/checkout")}`}
                   className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-4 text-xs font-semibold uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-90"
                 >
                   <Lock className="h-3.5 w-3.5" strokeWidth={2} />

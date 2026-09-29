@@ -38,15 +38,21 @@ const DAY_MS = 24 * 60 * 60 * 1000
 
 /**
  * Whether an offer is still valid at `now`. An offer with no `expiresAt` never
- * expires; an unparseable date is treated as active (fail-open on display, since
- * the value is admin-controlled). This is the guard the checkout uses so an
- * expired offer can never discount an order.
+ * expires; an unparseable date is treated as active (fail-open on display,
+ * since the value is admin-controlled). Offers are one-time by default —
+ * `maxRedemptions` (default 1) caps how many orders may use it — so a used
+ * offer stops discounting immediately, not just once it expires. This is the
+ * single guard the checkout uses, so a used-up or expired offer can never
+ * discount an order.
  */
 export function isOfferActive(offer: OfferTag, now: number = Date.now()): boolean {
-  if (!offer.expiresAt) return true
-  const expiry = new Date(offer.expiresAt).getTime()
-  if (Number.isNaN(expiry)) return true
-  return expiry > now
+  if (offer.expiresAt) {
+    const expiry = new Date(offer.expiresAt).getTime()
+    if (!Number.isNaN(expiry) && expiry <= now) return false
+  }
+  const cap = offer.maxRedemptions ?? 1
+  if ((offer.redemptionCount ?? 0) >= cap) return false
+  return true
 }
 
 /**

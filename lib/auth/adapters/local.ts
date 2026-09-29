@@ -250,5 +250,18 @@ export function createLocalAdapter(): AuthAdapter {
       writeUsers(users)
       return stripPassword(users[idx])
     },
+
+    async dismissOffer(userId: string, offerId: string): Promise<User> {
+      const users = readUsers()
+      const idx = users.findIndex((u) => u.id === userId)
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
+      const now = new Date().toISOString()
+      const offers = (users[idx].offers ?? []).map((offer) =>
+        offer.id === offerId ? { ...offer, dismissedAt: now } : offer,
+      )
+      users[idx] = { ...users[idx], offers }
+      writeUsers(users)
+      return stripPassword(users[idx])
+    },
   }
 }

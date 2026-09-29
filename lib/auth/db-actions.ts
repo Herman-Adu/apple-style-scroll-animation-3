@@ -145,6 +145,29 @@ export async function completeOnboardingAction(update: ProfileUpdate): Promise<U
   return toAppUser(row)
 }
 
+/**
+ * Let the customer close an offer's card on their own account page once it's
+ * been used or has expired. Runs in the customer's own session and only ever
+ * touches that customer's offers. Record-only: it never re-enables an offer
+ * or affects checkout eligibility, which stays governed by expiry and the
+ * redemption cap.
+ */
+export async function dismissOfferAction(offerId: string): Promise<User> {
+  const id = await requireUserId()
+  const current = await prisma.user.findUnique({ where: { id }, select: { offers: true } })
+  const existing = Array.isArray(current?.offers) ? (current!.offers as unknown as OfferTag[]) : []
+  const now = new Date().toISOString()
+  const offers = existing.map((offer) =>
+    offer.id === offerId ? { ...offer, dismissedAt: now } : offer,
+  )
+  const row = await prisma.user.update({
+    where: { id },
+    data: { offers: offers as unknown as Prisma.InputJsonValue },
+    select: userSelect,
+  })
+  return toAppUser(row)
+}
+
 // --- admin management ------------------------------------------------------
 
 export async function listUsersAction(): Promise<User[]> {

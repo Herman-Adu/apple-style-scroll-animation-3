@@ -12,6 +12,7 @@
 import { authClient } from "@/lib/auth-client"
 import {
   completeOnboardingAction,
+  dismissOfferAction,
   fetchAppSession,
   listUsersAction,
   markOffersRedeemedAction,
@@ -123,6 +124,11 @@ export function createDbAdapter(): AuthAdapter {
     async markOffersRedeemed(_userId: string, offerIds: string[]): Promise<User> {
       // The server action ignores the passed id and acts on the session user.
       return markOffersRedeemedAction(offerIds)
+    },
+
+    async dismissOffer(_userId: string, offerId: string): Promise<User> {
+      // The server action ignores the passed id and acts on the session user.
+      return dismissOfferAction(offerId)
     },
   }
 }

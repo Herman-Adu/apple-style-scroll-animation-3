@@ -43,6 +43,18 @@ export interface OfferTag {
    * redeemed" conversion reporting in admin analytics.
    */
   notifiedAt?: string
+  /**
+   * Maximum number of orders this offer may discount. Missing → 1, i.e.
+   * one-time by default. Enforced by the checkout pricing engine alongside
+   * `expiresAt`, so a used one-time offer can never discount a second order.
+   */
+  maxRedemptions?: number
+  /**
+   * ISO timestamp set when the customer closes this offer's card on their own
+   * account page. Display-only — checkout eligibility is never affected by
+   * this field, only by expiry and the redemption cap.
+   */
+  dismissedAt?: string
 }
 
 export interface User {
@@ -137,6 +149,13 @@ export interface AuthAdapter {
    * session. Record-only — it never disables the offer (expiry does that).
    */
   markOffersRedeemed(userId: string, offerIds: string[]): Promise<User>
+  /**
+   * Let the customer close an offer's card on their own account page once
+   * it's been used or has expired. Record-only — it never re-enables an
+   * offer or affects checkout eligibility. Called by the customer's own
+   * session.
+   */
+  dismissOffer(userId: string, offerId: string): Promise<User>
 }
 
 /** Raised by adapters for expected auth failures so the UI can show friendly copy. */

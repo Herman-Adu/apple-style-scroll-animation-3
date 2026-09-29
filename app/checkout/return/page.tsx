@@ -70,7 +70,7 @@ export default async function CheckoutReturnPage({
           </div>
 
           <Link
-            href="/shop"
+            href="/products"
             className="mt-8 inline-flex h-11 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90"
           >
             Continue shopping

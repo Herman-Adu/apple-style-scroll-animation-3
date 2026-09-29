@@ -215,7 +215,7 @@ export async function finalizeCheckout(session: Stripe.Checkout.Session): Promis
   if (!created) return null
 
   // Record which personal offers were used (best-effort; never blocks the order).
-  const offerIds = (Array.isArray(created.appliedOffers) ? (created.appliedOffers as AppliedOffer[]) : [])
+  const offerIds = (Array.isArray(created.appliedOffers) ? (created.appliedOffers as unknown as AppliedOffer[]) : [])
     .map((o) => o.id)
     .filter(Boolean)
   if (offerIds.length > 0) {

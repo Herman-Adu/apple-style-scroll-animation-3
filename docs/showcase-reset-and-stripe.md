@@ -116,48 +116,60 @@ SQL
 
 ---
 
-## 2. Stripe: what's needed to process real payments
+## 2. Stripe: embedded checkout (built) + your setup steps
 
-### Current state (important)
+### Current state
 
-The checkout flow **does not call Stripe today**. `placeOrder` in `features/checkout/actions.ts` writes an order row straight into Neon (`orders`) and returns. The `STRIPE_*` references that exist in the codebase live in `features/docs/content/*`, which is documentation copy, not payment wiring.
+Stripe embedded Checkout is **now wired in**. The flow is:
 
-**Consequence:** adding live Stripe keys alone will **not** make the store charge cards. Two things are required:
+1. **Review step** — `components/checkout/checkout-view.tsx` shows the order summary, then "Pay now" calls the `startStripeCheckout` server action.
+2. **Server action** (`features/checkout/actions.ts`) re-prices the cart server-side (never trusts client amounts), writes a `pending_checkouts` row, and creates a Stripe Checkout Session with `ui_mode: "embedded_page"` and an idempotency key.
+3. **Embedded payment** — `components/checkout/embedded-payment.tsx` mounts Stripe's `<EmbeddedCheckout>` inline on `/checkout` using the session `client_secret`.
+4. **Webhook** (`app/api/stripe/webhook/route.ts`) is the source of truth: on `checkout.session.completed` (paid) it calls `finalizeCheckout` to atomically create the `orders` row + decrement stock, then dispatches confirmation emails. On `expired` / `async_payment_failed` it releases the reservation.
+5. **Return page** (`app/checkout/return/page.tsx`) shows the confirmed order (falls back to finalizing if the webhook hasn't landed yet — finalization is idempotent, so the order is created exactly once) and clears the cart.
 
-1. **Live keys** from Momo's Stripe dashboard (below).
-2. **A real Stripe Checkout integration** wired into checkout + a webhook that writes the order only after `checkout.session.completed`.
+**You do not need to change any code** — you only need to point it at your own Stripe account and add the webhook secret (below).
 
-### Keys to add (from Momo's Stripe dashboard)
+### Using your own Stripe account instead of the Vercel-managed sandbox
 
-In **Stripe Dashboard → Developers → API keys** (toggle **Test mode** off for live keys):
+The plan for this build is: **remove the Vercel Stripe integration** and use **your own Stripe account's test keys**, so you can watch test payments in your own ("momo") dashboard. Vercel stays responsible only for Neon. This is a full prototype — **test keys throughout, no live keys.**
 
-| Env var                              | Value from Stripe            | Notes                                             |
-| ------------------------------------ | ---------------------------- | ------------------------------------------------- |
-| `STRIPE_SECRET_KEY`                  | Secret key `sk_live_...`     | Server-only. Never exposed to the browser.        |
-| `STRIPE_PUBLISHABLE_KEY`             | Publishable key `pk_live_...`| Server-readable copy.                             |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Publishable key `pk_live_...`| Same value; exposed to the client for Stripe.js.  |
-| `STRIPE_WEBHOOK_SECRET`              | `whsec_...` (see below)      | Needed to verify webhook authenticity.            |
+Steps:
 
-To add them: **Vercel project → Settings → Environment Variables** (or the **Vars** panel in the v0 settings menu). Set them for the environments you demo from (Production and/or Preview), then redeploy.
+1. **Remove the Vercel Stripe integration** (so its injected keys stop overriding yours):
+   - **Vercel project → Settings → Integrations** (or the **Connect**/**Settings** panel in the v0 sidebar) → find **Stripe** → **Remove / Disconnect**.
+   - This deletes the sandbox-managed `STRIPE_SECRET_KEY` / `STRIPE_PUBLISHABLE_KEY` / `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` it was injecting.
+2. **Add your own test keys** in **Vercel project → Settings → Environment Variables** (or the **Vars** panel), from **your** Stripe Dashboard → **Developers → API keys** with **Test mode ON**:
 
-> Use **test keys** (`sk_test_` / `pk_test_`) while rehearsing so you can run Stripe's test cards (e.g. `4242 4242 4242 4242`). Swap to `sk_live_` / `pk_live_` only when you're ready to take real money.
+   | Env var                              | Value from your Stripe (test mode) | Notes                                            |
+   | ------------------------------------ | ---------------------------------- | ------------------------------------------------ |
+   | `STRIPE_SECRET_KEY`                  | `sk_test_...`                      | Server-only. Never exposed to the browser.       |
+   | `STRIPE_PUBLISHABLE_KEY`             | `pk_test_...`                      | Server-readable copy.                            |
+   | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | `pk_test_...`                      | Same value; exposed to the client for Stripe.js. |
+   | `STRIPE_WEBHOOK_SECRET`              | `whsec_...` (see below)            | Verifies webhook authenticity.                   |
+
+   Set them for the environments you demo from (Production and/or Preview), then redeploy.
+3. **Test cards:** with test keys you can pay with `4242 4242 4242 4242`, any future expiry, any CVC/ZIP. Payments show up in **your** Stripe dashboard under Test mode.
 
 ### The webhook secret
 
-1. **Stripe Dashboard → Developers → Webhooks → Add endpoint.**
-2. Endpoint URL: `https://<your-domain>/api/stripe/webhook` (the route you'll add in the wiring step).
-3. Subscribe to at least `checkout.session.completed` (and optionally `payment_intent.payment_failed`).
-4. Copy the endpoint's **Signing secret** (`whsec_...`) into `STRIPE_WEBHOOK_SECRET`.
+1. **Your Stripe Dashboard (Test mode) → Developers → Webhooks → Add endpoint.**
+2. Endpoint URL: `https://<your-domain>/api/stripe/webhook`.
+3. Subscribe to: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, and `checkout.session.expired`.
+4. Copy the endpoint's **Signing secret** (`whsec_...`) into `STRIPE_WEBHOOK_SECRET` and redeploy.
 
-### Wiring still required (not yet built)
+> Until `STRIPE_WEBHOOK_SECRET` is set, the webhook route returns 500 by design (it refuses to trust unverified events). The return page's idempotent fallback still finalizes the order, but add the secret so the webhook path — the real source of truth — works.
 
-When you're ready to actually take payments, the remaining work is:
+### Local webhook testing (optional)
 
-1. **Create a Checkout Session server-side** — replace the direct DB write in `placeOrder` with a call to `stripe.checkout.sessions.create(...)`, recomputing the total from server-side prices (never trust client amounts) and passing an **idempotency key** so a retry can't double-charge.
-2. **Redirect to Stripe Checkout** from `components/checkout/checkout-view.tsx`, then handle `success_url` / `cancel_url`.
-3. **Add the webhook route** at `app/api/stripe/webhook/route.ts` that verifies the signature with `STRIPE_WEBHOOK_SECRET` and writes the `orders` row only on `checkout.session.completed`.
+To exercise the webhook before deploying, use the Stripe CLI against your test account:
 
-This is a focused follow-up task — ask and it can be built against the Stripe-on-Vercel integration.
+```bash
+stripe login
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+# copy the whsec_... it prints into STRIPE_WEBHOOK_SECRET for local dev
+stripe trigger checkout.session.completed
+```
 
 ---
 

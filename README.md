@@ -10,7 +10,7 @@ The app runs today against local, in-repo data. It is architected so that a **St
 
 ```bash
 pnpm install
-cp .env.example .env.local   # optional today; all vars are optional until Strapi is connected
+cp .env.example .env.local   # all vars are optional at boot; set what you need (see docs/environment.md)
 pnpm dev                     # http://localhost:3000
 ```
 
@@ -39,6 +39,7 @@ pnpm dev                     # http://localhost:3000
 | [`docs/environment.md`](docs/environment.md) | Every environment variable, what it controls, and when it's required |
 | [`docs/testing.md`](docs/testing.md) | The QA suite layout and how each layer maps to the architecture |
 | [`docs/conventions.md`](docs/conventions.md) | Coding conventions: server-first, zod boundaries, feature barrels, cache tags |
+| [`docs/showcase-reset-and-stripe.md`](docs/showcase-reset-and-stripe.md) | Resetting demo data to a clean state, and going live with your own Stripe test keys |
 
 ## Tech stack
 

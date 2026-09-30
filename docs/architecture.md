@@ -43,11 +43,16 @@ app/                     App Router routes, layouts, boundaries, API routes
     revalidate/          Strapi publish webhook -> revalidateTag
     preview/             Enter draft mode (inert until STRAPI_PREVIEW_SECRET set)
     exit-preview/        Leave draft mode
+    auth/[...all]/       Better Auth's catch-all handler (lib/auth.ts)
+    stripe/webhook/      Stripe Checkout webhook -> finalizeCheckout (see below)
+  (admin)/admin/         Admin dashboard: analytics, customers, orders, products,
+                         email (campaigns/templates/messages/settings), theme,
+                         settings, profile, docs. Gated by role, see lib/auth.
   error.tsx              Route-level error boundary
   global-error.tsx       Root-layout error boundary (self-contained HTML)
   not-found.tsx          404
   <route>/               about, account, articles, checkout, contact, onboarding,
-                         products, sign-in, sign-up
+                          products, sign-in, sign-up
   sitemap.ts robots.ts opengraph-image.tsx   SEO surfaces
 
 features/                Self-contained domain modules
@@ -58,16 +63,28 @@ features/                Self-contained domain modules
     lib/                 Pure helpers (selectors, filters) — unit tested
     components/          Feature UI (mostly Server Components + skeletons)
     index.ts             Public barrel — the only import surface
+  admin/                 Admin-only hooks and nav (customers/orders/company profile)
+  checkout/              Stripe pricing, line items, and the checkout server action
+  customers/ orders/     Admin-facing analytics/types over the Neon-backed data
+  email/                 Email templates/blocks, provider (Resend), admin actions
+  docs/                  In-app docs content (the /docs and /admin/docs pages)
 
 lib/                     Cross-cutting concerns
   strapi/                client.ts (transport), tags.ts (cache tags), media.ts
   data/                  Local in-repo content (fallback source)
-  auth/ cart-context.tsx contact/ reviews/ seo/ env.ts format.ts nav.ts
+  auth.ts auth/          Better Auth server config + adapters (db/local/strapi),
+                         session cookie/token helpers, role allowlists
+  db/prisma.ts           Prisma client (Neon Postgres) — the `db` provider backend
+  orders/                Order types, checkout finalization, invoices, notifications
+  stripe/                Stripe server + client helpers for embedded Checkout
+  cart-context.tsx contact/ reviews/ settings/ seo/ env.ts format.ts nav.ts
 
-components/              Shared UI (layout, home, contact, primitives, ui/*)
+components/              Shared UI (layout, home, contact, checkout, primitives, ui/*)
 hooks/                   Shared React hooks
 qa/                      Test suite (see docs/testing.md)
 ```
+
+> The `features/*` list above only spells out `products`/`articles`/`timeline` in the data-seam section below because those are the ones currently wired to Strapi. `admin`, `checkout`, `customers`, `orders`, `email`, and `docs` are real, permanent features backed by Neon/Prisma + Better Auth + Stripe + Resend — not CMS-aware, and not part of the migration seam.
 
 ---
 

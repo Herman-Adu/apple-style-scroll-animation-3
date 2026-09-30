@@ -16,7 +16,7 @@ const TABS = [
 export function EmailTabs() {
   const pathname = usePathname()
   return (
-    <div className="mb-6 overflow-x-auto">
+    <div className="scrollbar-none mb-6 overflow-x-auto">
       <nav className="flex min-w-max items-center gap-1 border-b border-border" aria-label="Email sections">
         {TABS.map((tab) => {
           const active = tab.exact ? pathname === tab.href : pathname.startsWith(tab.href)

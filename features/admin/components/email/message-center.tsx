@@ -106,9 +106,9 @@ export function MessageCenter({
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
       {/* Composer */}
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <div className="rounded-2xl border border-border bg-card p-5">
           <div className="mb-4 flex items-center gap-2">
             <div className="flex size-9 items-center justify-center rounded-lg bg-accent-teal/10 text-accent-teal">

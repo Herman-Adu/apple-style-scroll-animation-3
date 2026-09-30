@@ -46,8 +46,8 @@ export function SettingsForm({ branding }: { branding: EmailBranding }) {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
-      <div className="space-y-6">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
+      <div className="min-w-0 space-y-6">
         <div className="rounded-2xl border border-border bg-card p-5">
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-muted-foreground">Brand identity</h3>
           <div className="grid gap-4 sm:grid-cols-2">

@@ -263,9 +263,9 @@ export function TemplateEditor({ template, branding }: { template: EditorTemplat
         </Button>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
+      <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
         {/* Left: settings + blocks */}
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           {/* Meta */}
           <div className="rounded-2xl border border-border bg-card p-5">
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-muted-foreground">Details</h3>

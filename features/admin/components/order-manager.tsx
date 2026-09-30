@@ -369,9 +369,10 @@ export function OrderManager() {
                   </Select>
                 </div>
 
-                {active.status !== "cancelled" ? (
-                  <RefundPanel order={active} onRefund={(amount, reason) => refund(active.id, amount, reason)} />
-                ) : null}
+                {/* Full refunds always resolve to "refunded" (see refund-actions.ts),
+                    so the panel — and its permanent audit trail of every refund
+                    entry — stays visible regardless of status. */}
+                <RefundPanel order={active} onRefund={(amount, reason) => refund(active.id, amount, reason)} />
               </div>
             </>
           ) : null}

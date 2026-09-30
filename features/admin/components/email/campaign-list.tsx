@@ -64,8 +64,8 @@ export function CampaignList({
   const optedIn = subscribers.filter((s) => s.optedIn).length
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
-      <div className="space-y-6">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
+      <div className="min-w-0 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold tracking-tight">Campaigns</h2>

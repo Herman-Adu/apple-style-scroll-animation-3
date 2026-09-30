@@ -95,9 +95,9 @@ export function EmailOverview({ stats, configured }: { stats: OverviewStats; con
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
         {/* Recent activity */}
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="min-w-0 rounded-2xl border border-border bg-card p-5">
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
             Recent activity
           </h3>

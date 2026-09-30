@@ -71,8 +71,8 @@ export function BrandColorsForm() {
   const isGradient = draft.headingStyle === "gradient"
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
-      <div className="space-y-6">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
+      <div className="min-w-0 space-y-6">
         <section className="rounded-2xl border border-border bg-card p-5">
           <h3 className="mb-1 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
             Editing: {draft.name}

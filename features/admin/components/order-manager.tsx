@@ -238,15 +238,15 @@ export function OrderManager() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex flex-wrap gap-1">
+      <div className="flex items-center gap-2">
+        <div className="scrollbar-none flex min-w-0 flex-1 gap-1 overflow-x-auto">
           {STATUS_FILTERS.map((f) => (
             <button
               key={f.value}
               type="button"
               onClick={() => setFilter(f.value)}
               className={cn(
-                "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
                 filter === f.value ? "bg-accent-teal text-background" : "text-muted-foreground hover:bg-accent-teal/10",
               )}
             >

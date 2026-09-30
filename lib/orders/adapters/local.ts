@@ -67,5 +67,38 @@ export function createLocalOrdersAdapter(): OrdersAdapter {
       writeAll(all)
       return all[index]
     },
+
+    // No real payment provider behind this adapter, so there is nothing to
+    // issue a Stripe refund against. Simulated locally: mark the requested
+    // amount refunded so the demo UI still behaves, without pretending money
+    // actually moved.
+    async refund(orderId: string, amount?: number, reason?: string): Promise<Order> {
+      await tick()
+      const all = readAll()
+      const index = all.findIndex((order) => order.id === orderId)
+      if (index === -1) throw new Error("Order not found")
+      const order = all[index]
+      const refundedSoFar = order.refundedAmount ?? 0
+      const requested = amount ?? order.total - refundedSoFar
+      const nextRefundedAmount = Math.min(order.total, refundedSoFar + requested)
+      const isFullRefund = nextRefundedAmount >= order.total - 0.001
+      all[index] = {
+        ...order,
+        refundedAmount: nextRefundedAmount,
+        refunds: [
+          ...(order.refunds ?? []),
+          {
+            id: crypto.randomUUID(),
+            amount: requested,
+            currency: order.currency,
+            reason,
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        status: isFullRefund ? "refunded" : order.status,
+      }
+      writeAll(all)
+      return all[index]
+    },
   }
 }

@@ -10,6 +10,7 @@ import {
   listMyOrdersAction,
   updateOrderStatusAction,
 } from "../db-actions"
+import { refundOrderAction } from "../refund-actions"
 import type { CreateOrderInput, Order, OrderStatus, OrdersAdapter } from "../types"
 
 export function createDbOrdersAdapter(): OrdersAdapter {
@@ -30,6 +31,10 @@ export function createDbOrdersAdapter(): OrdersAdapter {
 
     async updateStatus(orderId: string, status: OrderStatus): Promise<Order> {
       return updateOrderStatusAction(orderId, status)
+    },
+
+    async refund(orderId: string, amount?: number, reason?: string): Promise<Order> {
+      return refundOrderAction(orderId, amount, reason)
     },
   }
 }

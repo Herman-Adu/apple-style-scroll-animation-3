@@ -5,6 +5,7 @@ import { env } from "@/lib/env"
 import {
   finalizeCheckout,
   releaseCheckout,
+  reconcileRefund,
 } from "@/lib/orders/checkout-finalize"
 import { dispatchOrderEmails } from "@/lib/orders/order-notifications"
 
@@ -51,6 +52,14 @@ export async function POST(req: Request): Promise<Response> {
       case "checkout.session.async_payment_failed": {
         const session = event.data.object as Stripe.Checkout.Session
         await releaseCheckout(session)
+        break
+      }
+      // Safety net for refunds issued outside our admin action (e.g. directly
+      // from the Stripe Dashboard) — keeps the order's refund state truthful
+      // no matter where the refund was initiated. Idempotent by refund id.
+      case "charge.refunded": {
+        const charge = event.data.object as Stripe.Charge
+        await reconcileRefund(charge)
         break
       }
     }

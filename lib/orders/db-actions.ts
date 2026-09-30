@@ -32,6 +32,10 @@ type OrderRow = {
   appliedOffers: unknown
   total: number
   currency: string
+  stripeSessionId?: string | null
+  stripePaymentIntentId?: string | null
+  refundedAmount?: number
+  refunds?: unknown
   createdAt: Date
 }
 
@@ -48,6 +52,10 @@ const orderSelect = {
   appliedOffers: true,
   total: true,
   currency: true,
+  stripeSessionId: true,
+  stripePaymentIntentId: true,
+  refundedAmount: true,
+  refunds: true,
   createdAt: true,
 } as const
 
@@ -68,6 +76,10 @@ function toOrder(row: OrderRow): Order {
       : [],
     total: row.total,
     currency: row.currency,
+    stripeSessionId: row.stripeSessionId ?? undefined,
+    stripePaymentIntentId: row.stripePaymentIntentId ?? undefined,
+    refundedAmount: row.refundedAmount ?? 0,
+    refunds: Array.isArray(row.refunds) ? (row.refunds as Order["refunds"]) : [],
   }
 }
 

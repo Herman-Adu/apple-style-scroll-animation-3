@@ -188,6 +188,56 @@ export function businessOrderNotificationEmail(params: { order: Order; customerN
   return { subject: `New order — ${order.number} · ${formatMoney({ amount: order.total, currency: order.currency })}`, html, text }
 }
 
+/**
+ * Refund confirmation (transactional). Not block-based — kept as a focused
+ * branded summary, same rationale as businessOrderNotificationEmail: it
+ * reports a specific money event rather than rendering a customizable layout.
+ */
+export function refundConfirmationEmail(params: {
+  name: string
+  order: Order
+  amount: number
+  isFullRefund: boolean
+  branding?: Partial<EmailBranding>
+  baseUrl?: string
+}): Rendered {
+  const { order, amount, isFullRefund } = params
+  const b = brand(params.branding)
+  const amountLabel = formatMoney({ amount, currency: order.currency })
+  const totalRefunded = formatMoney({ amount: order.refundedAmount ?? amount, currency: order.currency })
+
+  const blocks: EmailBlock[] = [
+    {
+      id: "hero",
+      type: "hero",
+      eyebrow: isFullRefund ? "Order cancelled & refunded" : "Refund processed",
+      heading: `Hi ${params.name}, your refund is on its way`,
+      subheading: isFullRefund
+        ? `Order ${order.number} has been cancelled and *fully refunded*.`
+        : `We've processed a *partial refund* of ${amountLabel} for order ${order.number}.`,
+      imageUrl: "",
+      align: "left",
+    },
+    {
+      id: "callout",
+      type: "callout",
+      title: `${amountLabel} refunded`,
+      body: isFullRefund
+        ? `The full order total has been returned to your original payment method. It can take 5–10 business days to appear on your statement.`
+        : `Total refunded on this order so far: ${totalRefunded} of ${formatMoney({ amount: order.total, currency: order.currency })}. It can take 5–10 business days to appear on your statement.`,
+    },
+  ]
+  const html = renderEmail(blocks, b, { baseUrl: params.baseUrl })
+  const text = `${isFullRefund ? "Order cancelled & refunded" : "Refund processed"} — ${order.number}\n\n${amountLabel} refunded to your original payment method. Allow 5–10 business days to appear on your statement.`
+  return {
+    subject: isFullRefund
+      ? `Order ${order.number} cancelled — ${amountLabel} refunded`
+      : `Refund processed — ${amountLabel} for order ${order.number}`,
+    html,
+    text,
+  }
+}
+
 export function testEmail(params?: { branding?: Partial<EmailBranding>; baseUrl?: string }): Rendered {
   const b = brand(params?.branding)
   const blocks: EmailBlock[] = [

@@ -16,6 +16,18 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import type { Order, OrderStatus } from "@/features/orders"
 import { formatMoney } from "@/lib/format"
@@ -41,8 +53,152 @@ function formatDateTime(iso: string): string {
   }).format(new Date(iso))
 }
 
+/**
+ * Cancel-and-refund + partial-refund controls for a single order, plus its
+ * refund audit trail. Every refund is issued through Stripe (refundOrderAction
+ * via useAdminOrders) — this component never touches money math beyond
+ * clamping the input to what's actually left to refund.
+ */
+function RefundPanel({
+  order,
+  onRefund,
+}: {
+  order: Order
+  onRefund: (amount: number | undefined, reason: string | undefined) => Promise<void>
+}) {
+  const [open, setOpen] = useState(false)
+  const [amountInput, setAmountInput] = useState("")
+  const [reason, setReason] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+
+  const refunded = order.refundedAmount ?? 0
+  const remaining = Math.max(0, Math.round((order.total - refunded) * 100) / 100)
+  const isFullyRefunded = remaining <= 0
+  const history = order.refunds ?? []
+
+  async function submitPartial() {
+    const value = Number(amountInput)
+    if (!Number.isFinite(value) || value <= 0 || value > remaining) {
+      toast.error(`Enter an amount between 0.01 and ${remaining}.`)
+      return
+    }
+    setSubmitting(true)
+    try {
+      await onRefund(value, reason.trim() || undefined)
+      toast.success(`Refunded ${formatMoney({ amount: value, currency: order.currency })}`)
+      setOpen(false)
+      setAmountInput("")
+      setReason("")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Refund failed.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function cancelAndRefund() {
+    setSubmitting(true)
+    try {
+      await onRefund(undefined, "Order cancelled")
+      toast.success(`${order.number} cancelled and fully refunded`)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Refund failed.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-3 border-t border-border pt-4">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Refunds</p>
+        {refunded > 0 ? (
+          <span className="font-mono text-xs tabular-nums text-muted-foreground">
+            {formatMoney({ amount: refunded, currency: order.currency })} refunded
+          </span>
+        ) : null}
+      </div>
+
+      {history.length > 0 ? (
+        <ul className="flex flex-col gap-1.5">
+          {history.map((entry) => (
+            <li key={entry.id} className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{formatDateTime(entry.createdAt)}</span>
+              <span className="font-mono tabular-nums">
+                {formatMoney({ amount: entry.amount, currency: entry.currency })}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {isFullyRefunded ? (
+        <p className="text-xs text-muted-foreground">This order has been fully refunded.</p>
+      ) : (
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            disabled={submitting}
+            onClick={cancelAndRefund}
+            className="flex-1"
+          >
+            Cancel &amp; refund
+          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button type="button" variant="outline" size="sm" disabled={submitting} className="flex-1">
+                Partial refund
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Partial refund — {order.number}</DialogTitle>
+                <DialogDescription>
+                  Up to {formatMoney({ amount: remaining, currency: order.currency })} remaining to refund.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="refund-amount">Amount ({order.currency.toUpperCase()})</Label>
+                  <Input
+                    id="refund-amount"
+                    type="number"
+                    min={0.01}
+                    max={remaining}
+                    step={0.01}
+                    inputMode="decimal"
+                    placeholder={remaining.toFixed(2)}
+                    value={amountInput}
+                    onChange={(e) => setAmountInput(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="refund-reason">Reason (optional)</Label>
+                  <Input
+                    id="refund-reason"
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    placeholder="e.g. Damaged item"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="button" onClick={submitPartial} disabled={submitting}>
+                  Refund {amountInput ? formatMoney({ amount: Number(amountInput) || 0, currency: order.currency }) : ""}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function OrderManager() {
-  const { orders, loading, updateStatus } = useAdminOrders()
+  const { orders, loading, updateStatus, refund } = useAdminOrders()
   const [filter, setFilter] = useState<OrderStatus | "all">("all")
   const [activeId, setActiveId] = useState<string | null>(null)
 
@@ -206,6 +362,10 @@ export function OrderManager() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {active.status !== "cancelled" ? (
+                  <RefundPanel order={active} onRefund={(amount, reason) => refund(active.id, amount, reason)} />
+                ) : null}
               </div>
             </>
           ) : null}

@@ -6,6 +6,7 @@ import {
   businessOrderNotificationEmail,
   personalOfferEmail,
   lowStockAlertEmail,
+  refundConfirmationEmail,
   testEmail,
 } from "./templates"
 import { getBranding, getTemplateBlocksByKey, recordLog } from "./repo"
@@ -112,6 +113,35 @@ export async function sendPersonalOffer(params: {
     subject,
     templateKey: "personal_offer",
     type: "transactional",
+    resendId: result.ok && result.id ? result.id : "",
+    status: result.ok ? (result.skipped ? "skipped" : "sent") : "failed",
+  })
+  return result
+}
+
+export async function sendRefundConfirmation(params: {
+  to: string
+  name: string
+  order: Order
+  amount: number
+  isFullRefund: boolean
+}) {
+  const branding = await getBranding()
+  const { subject, html, text } = refundConfirmationEmail({
+    name: params.name,
+    order: params.order,
+    amount: params.amount,
+    isFullRefund: params.isFullRefund,
+    branding,
+    baseUrl: getBaseUrl(),
+  })
+  const result = await sendEmail({ to: params.to, subject, html, text })
+  await recordLog({
+    to: params.to,
+    subject,
+    templateKey: "refund_confirmation",
+    type: "transactional",
+    relatedId: params.order.number,
     resendId: result.ok && result.id ? result.id : "",
     status: result.ok ? (result.skipped ? "skipped" : "sent") : "failed",
   })

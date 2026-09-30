@@ -37,6 +37,10 @@ const orderSelect = {
   appliedOffers: true,
   total: true,
   currency: true,
+  stripeSessionId: true,
+  stripePaymentIntentId: true,
+  refundedAmount: true,
+  refunds: true,
   createdAt: true,
 } as const
 
@@ -53,6 +57,10 @@ type OrderRow = {
   appliedOffers: unknown
   total: number
   currency: string
+  stripeSessionId?: string | null
+  stripePaymentIntentId?: string | null
+  refundedAmount?: number
+  refunds?: unknown
   createdAt: Date
 }
 
@@ -71,6 +79,10 @@ function toOrder(row: OrderRow): Order {
     appliedOffers: Array.isArray(row.appliedOffers) ? (row.appliedOffers as Order["appliedOffers"]) : [],
     total: row.total,
     currency: row.currency,
+    stripeSessionId: row.stripeSessionId ?? undefined,
+    stripePaymentIntentId: row.stripePaymentIntentId ?? undefined,
+    refundedAmount: row.refundedAmount ?? 0,
+    refunds: Array.isArray(row.refunds) ? (row.refunds as Order["refunds"]) : [],
   }
 }
 
@@ -205,6 +217,8 @@ export async function finalizeCheckout(session: Stripe.Checkout.Session): Promis
         total: pending.total,
         currency: pending.currency,
         stripeSessionId: session.id,
+        stripePaymentIntentId:
+          typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id,
       },
       select: orderSelect,
     })
@@ -242,6 +256,62 @@ export async function releaseCheckout(session: Stripe.Checkout.Session): Promise
   const pendingId = session.metadata?.pendingCheckoutId
   if (!pendingId) return
   await releaseReservationById(pendingId)
+}
+
+/**
+ * Reconcile a Stripe `charge.refunded` event into the matching Order. This is
+ * the safety net for refunds issued directly from the Stripe Dashboard (i.e.
+ * NOT through refundOrderAction): it mirrors the same restock-on-full-refund
+ * rule, keyed off the PaymentIntent id, and is idempotent by refund id so a
+ * refund already recorded by refundOrderAction is never double-applied.
+ * Returns the updated Order, or null if no matching order was found.
+ */
+export async function reconcileRefund(charge: Stripe.Charge): Promise<Order | null> {
+  const paymentIntentId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id
+  if (!paymentIntentId) return null
+
+  const existing = await prisma.order.findFirst({
+    where: { stripePaymentIntentId: paymentIntentId },
+    select: orderSelect,
+  })
+  if (!existing) return null
+
+  const knownIds = new Set(
+    (Array.isArray(existing.refunds) ? (existing.refunds as unknown as { id: string }[]) : []).map((r) => r.id),
+  )
+  const newRefunds = (charge.refunds?.data ?? []).filter((r) => !knownIds.has(r.id))
+  if (newRefunds.length === 0) return toOrder(existing)
+
+  const newEntries = newRefunds.map((r) => ({
+    id: r.id,
+    amount: (r.amount ?? 0) / 100,
+    currency: existing.currency,
+    reason: r.reason ?? undefined,
+    createdAt: new Date((r.created ?? Date.now() / 1000) * 1000).toISOString(),
+  }))
+  const nextRefundedAmount = Math.round(charge.amount_refunded) / 100
+  const isFullRefund = nextRefundedAmount >= existing.total - 0.001
+
+  const updated = await prisma.$transaction(async (tx) => {
+    const priorRefunds = Array.isArray(existing.refunds) ? (existing.refunds as unknown as object[]) : []
+    if (isFullRefund && existing.status !== "refunded") {
+      const lines: ReservedLine[] = (
+        Array.isArray(existing.items) ? (existing.items as unknown as ReservedLine[]) : []
+      ).map((item) => ({ slug: item.slug, quantity: item.quantity }))
+      await restoreStock(tx, lines)
+    }
+    return tx.order.update({
+      where: { id: existing.id },
+      data: {
+        refundedAmount: nextRefundedAmount,
+        refunds: [...priorRefunds, ...newEntries] as unknown as Prisma.InputJsonValue,
+        ...(isFullRefund ? { status: "refunded" as const } : {}),
+      },
+      select: orderSelect,
+    })
+  })
+
+  return toOrder(updated)
 }
 
 /** Release a reservation by pending id — also used if Stripe session creation

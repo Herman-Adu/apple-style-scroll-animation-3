@@ -8,8 +8,8 @@ import "server-only"
 // best-effort and must not affect payment/order state.
 
 import { prisma } from "@/lib/db/prisma"
-import { sendOrderConfirmation, sendOrderNotification } from "@/features/email/actions"
-import type { Order } from "./types"
+import { sendOrderConfirmation, sendOrderNotification, sendRefundConfirmation } from "@/features/email/actions"
+import type { Order, RefundEntry } from "./types"
 
 export async function dispatchOrderEmails(order: Order): Promise<void> {
   let name = order.email
@@ -26,4 +26,17 @@ export async function dispatchOrderEmails(order: Order): Promise<void> {
     sendOrderConfirmation({ to: order.email, name, order }),
     sendOrderNotification({ order, customerName: name }),
   ])
+}
+
+/** Fires the customer refund-confirmation email. Best-effort — never throws,
+ * so a flaky send can never affect the already-committed refund state. */
+export async function dispatchRefundEmail(order: Order, entry: RefundEntry, isFullRefund: boolean): Promise<void> {
+  let name = order.email
+  try {
+    const user = await prisma.user.findUnique({ where: { id: order.userId }, select: { name: true } })
+    if (user?.name) name = user.name
+  } catch {
+    // fall back to the email as the display name
+  }
+  await sendRefundConfirmation({ to: order.email, name, order, amount: entry.amount, isFullRefund })
 }

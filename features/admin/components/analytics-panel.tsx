@@ -1,10 +1,10 @@
 "use client"
 
 import { useMemo } from "react"
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { DollarSign, Receipt, ShoppingBag, TrendingUp } from "lucide-react"
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { DollarSign, Receipt, RotateCcw, ShoppingBag, TrendingUp } from "lucide-react"
 import { useCatalog } from "@/features/catalog"
-import { ordersByStatus, revenueByDay, salesSummary, topProducts } from "@/features/orders"
+import { ordersByStatus, revenueByDay, salesSummary, topProducts, type OrderStatus } from "@/features/orders"
 import { formatMoney } from "@/lib/format"
 import { StatCard } from "./stat-card"
 import { useAdminOrders } from "../hooks/use-admin-orders"
@@ -12,6 +12,20 @@ import { useAdminOrders } from "../hooks/use-admin-orders"
 function shortDate(iso: string): string {
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(iso))
 }
+
+// Mirrors the semantic meaning used by OrderStatusBadge: amber = in progress,
+// emerald = money safely settled, orange = order voided, red = money returned.
+const STATUS_COLOR: Record<OrderStatus, string> = {
+  processing: "var(--color-warning)",
+  fulfilled: "var(--color-success)",
+  cancelled: "var(--color-accent-orange)",
+  refunded: "var(--color-destructive)",
+}
+
+// Best sellers are ranked, not scored, so the gradient reads top-to-bottom
+// like a leaderboard rather than a pass/fail threshold: green leader fading
+// through amber to the last of the pack.
+const RANK_COLOR = ["var(--color-success)", "var(--color-success)", "var(--color-warning)", "var(--color-warning)", "var(--color-accent-orange)", "var(--color-accent-orange)"]
 
 export function AnalyticsPanel() {
   const { products } = useCatalog()
@@ -40,8 +54,23 @@ export function AnalyticsPanel() {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Revenue" value={formatMoney({ amount: sales.revenue, currency })} icon={DollarSign} />
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <StatCard
+          label="Net revenue"
+          value={formatMoney({ amount: sales.revenue, currency })}
+          hint={`${formatMoney({ amount: sales.grossRevenue, currency })} gross`}
+          icon={DollarSign}
+          accent
+        />
+        <StatCard
+          label="Refunds"
+          value={formatMoney({ amount: sales.refunds, currency })}
+          hint={
+            sales.grossRevenue > 0 ? `${((sales.refunds / sales.grossRevenue) * 100).toFixed(1)}% of gross` : undefined
+          }
+          icon={RotateCcw}
+          tone={sales.refunds > 0 ? "warning" : "default"}
+        />
         <StatCard label="Orders" value={sales.orderCount.toLocaleString()} icon={Receipt} />
         <StatCard label="Units sold" value={sales.unitsSold.toLocaleString()} icon={ShoppingBag} />
         <StatCard
@@ -58,8 +87,8 @@ export function AnalyticsPanel() {
             <AreaChart data={revenueSeries} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
               <defs>
                 <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--color-foreground)" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="var(--color-foreground)" stopOpacity={0} />
+                  <stop offset="0%" stopColor="var(--color-accent-teal)" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="var(--color-accent-teal)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
@@ -91,7 +120,7 @@ export function AnalyticsPanel() {
               <Area
                 type="monotone"
                 dataKey="revenue"
-                stroke="var(--color-foreground)"
+                stroke="var(--color-accent-teal)"
                 strokeWidth={2}
                 fill="url(#revFill)"
               />
@@ -117,7 +146,7 @@ export function AnalyticsPanel() {
                   width={90}
                 />
                 <Tooltip
-                  cursor={{ fill: "var(--color-foreground)", opacity: 0.05 }}
+                  cursor={{ fill: "var(--color-accent-teal)", opacity: 0.08 }}
                   contentStyle={{
                     background: "var(--color-popover)",
                     border: "1px solid var(--color-border)",
@@ -127,7 +156,11 @@ export function AnalyticsPanel() {
                   }}
                   formatter={(value: number) => [`${value} units`, "Sold"]}
                 />
-                <Bar dataKey="unitsSold" fill="var(--color-foreground)" radius={[0, 4, 4, 0]} barSize={18} />
+                <Bar dataKey="unitsSold" radius={[0, 4, 4, 0]} barSize={18}>
+                  {best.map((entry, index) => (
+                    <Cell key={entry.name} fill={RANK_COLOR[index % RANK_COLOR.length]} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -138,14 +171,18 @@ export function AnalyticsPanel() {
           <div className="mt-4 flex flex-col gap-3">
             {statuses.map((s) => {
               const pct = orders.length > 0 ? (s.count / orders.length) * 100 : 0
+              const color = STATUS_COLOR[s.status]
               return (
                 <div key={s.status} className="flex flex-col gap-1">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="capitalize text-muted-foreground">{s.status}</span>
+                    <span className="flex items-center gap-1.5 capitalize text-muted-foreground">
+                      <span className="size-2 rounded-full" style={{ backgroundColor: color }} aria-hidden="true" />
+                      {s.status}
+                    </span>
                     <span className="font-mono tabular-nums">{s.count}</span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-foreground/10">
-                    <div className="h-full rounded-full bg-foreground" style={{ width: `${pct}%` }} />
+                  <div className="h-2 overflow-hidden rounded-full bg-foreground/5">
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
                   </div>
                 </div>
               )

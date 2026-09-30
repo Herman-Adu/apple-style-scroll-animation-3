@@ -32,6 +32,15 @@ export interface AppliedOffer {
   amount: number
 }
 
+/** A single Stripe refund recorded against an order. Append-only audit log. */
+export interface RefundEntry {
+  id: string
+  amount: number
+  currency: string
+  reason?: string
+  createdAt: string
+}
+
 export interface Order {
   id: string
   /** Human-friendly reference, e.g. MOMO-2026-0001. Doubles as the invoice number. */
@@ -49,6 +58,14 @@ export interface Order {
   appliedOffers?: AppliedOffer[]
   total: number
   currency: string
+  /** Stripe Checkout Session id this order was finalized from, if paid via Stripe. */
+  stripeSessionId?: string
+  /** PaymentIntent id refunds are issued against. Back-filled on demand if missing. */
+  stripePaymentIntentId?: string
+  /** Running total refunded so far, in the order's major currency unit. */
+  refundedAmount?: number
+  /** Append-only refund audit log. */
+  refunds?: RefundEntry[]
 }
 
 /** Everything needed to record an order. The adapter assigns id/number/date/status. */
@@ -72,4 +89,6 @@ export interface OrdersAdapter {
   create(input: CreateOrderInput): Promise<Order>
   /** Update an order's fulfilment status (admin). */
   updateStatus(orderId: string, status: OrderStatus): Promise<Order>
+  /** Refund an order via Stripe — full (omit amount) or partial (admin). */
+  refund(orderId: string, amount?: number, reason?: string): Promise<Order>
 }

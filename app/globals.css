@@ -30,6 +30,10 @@
   /* Whole-title gradient (heading style "gradient"); defaults to the two tones. */
   --brand-gradient-from: var(--accent-teal);
   --brand-gradient-to: var(--accent-teal-muted);
+  /* Semantic status colors — order lifecycle affordance (traffic-light system). */
+  --success: oklch(0.6 0.16 152);
+  --warning: oklch(0.72 0.16 75);
+  --accent-orange: oklch(0.65 0.16 45);
   /* Cinematic media surfaces — always dark regardless of colour scheme. */
   --media: oklch(0.02 0 0);
   --on-media: oklch(1 0 0);
@@ -75,6 +79,10 @@
   --accent-teal-muted: oklch(0.62 0.07 197);
   --brand-gradient-from: var(--accent-teal);
   --brand-gradient-to: var(--accent-teal-muted);
+  /* Semantic status colors — order lifecycle affordance (traffic-light system). */
+  --success: oklch(0.72 0.17 152);
+  --warning: oklch(0.8 0.17 80);
+  --accent-orange: oklch(0.72 0.17 45);
   --sidebar: oklch(0.05 0 0);
   --sidebar-foreground: oklch(0.95 0 0);
   --sidebar-primary: oklch(0.95 0 0);
@@ -109,6 +117,9 @@
   --color-ring: var(--ring);
   --color-accent-teal: var(--accent-teal);
   --color-accent-teal-muted: var(--accent-teal-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-accent-orange: var(--accent-orange);
   --color-media: var(--media);
   --color-on-media: var(--on-media);
   --color-on-media-muted: var(--on-media-muted);

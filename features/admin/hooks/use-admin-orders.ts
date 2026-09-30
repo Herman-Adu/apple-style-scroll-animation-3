@@ -32,5 +32,15 @@ export function useAdminOrders() {
     [refresh],
   )
 
-  return { orders, loading, updateStatus, refresh }
+  /** Full (omit amount) or partial refund via Stripe. Throws on failure so the
+   * caller can surface the specific error (e.g. "already fully refunded"). */
+  const refund = useCallback(
+    async (orderId: string, amount?: number, reason?: string) => {
+      await ordersAdapter.refund(orderId, amount, reason)
+      await refresh()
+    },
+    [refresh],
+  )
+
+  return { orders, loading, updateStatus, refund, refresh }
 }

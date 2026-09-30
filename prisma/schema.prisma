@@ -114,6 +114,15 @@ model Order {
   // Set when the order was finalized from a Stripe Checkout Session. Unique so
   // re-delivered webhooks can never create a duplicate order (idempotency key).
   stripeSessionId String? @unique @map("stripe_session_id")
+  // PaymentIntent id backing this order's charge — the handle refunds are
+  // issued against. Captured at finalizeCheckout; back-filled on demand for
+  // orders created before this column existed.
+  stripePaymentIntentId String? @map("stripe_payment_intent_id")
+  // Running total refunded so far, in the order's major currency unit (matches
+  // `total`). Caps further refunds at `total - refundedAmount`.
+  refundedAmount Float @default(0) @map("refunded_amount")
+  // Append-only audit log: { id, amount, currency, reason, createdAt }[].
+  refunds       Json     @default("[]")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 

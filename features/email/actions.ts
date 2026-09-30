@@ -14,10 +14,11 @@ import { getBaseUrl } from "@/lib/seo/site"
 
 /**
  * Final in-code fallback recipient for business notifications, used when neither
- * EMAIL_TO nor EMAIL_FROM is set in the environment. Points at the admin domain
- * so test-environment order alerts always land in a real inbox.
+ * EMAIL_TO nor EMAIL_FROM is set in the environment. Points at the live
+ * momo-audio.adudev.co.uk sending domain so test-environment order alerts
+ * always land in a real inbox.
  */
-const DEFAULT_ADMIN_EMAIL = "admin@adudev.co.uk"
+const DEFAULT_ADMIN_EMAIL = "admin@momo-audio.adudev.co.uk"
 
 /**
  * Server actions for transactional email. These are the only email entry points

@@ -43,11 +43,16 @@ app/                     App Router routes, layouts, boundaries, API routes
     revalidate/          Strapi publish webhook -> revalidateTag
     preview/             Enter draft mode (inert until STRAPI_PREVIEW_SECRET set)
     exit-preview/        Leave draft mode
+    auth/[...all]/       Better Auth's catch-all handler (lib/auth.ts)
+    stripe/webhook/      Stripe Checkout webhook -> finalizeCheckout (see below)
+  (admin)/admin/         Admin dashboard: analytics, customers, orders, products,
+                         email (campaigns/templates/messages/settings), theme,
+                         settings, profile, docs. Gated by role, see lib/auth.
   error.tsx              Route-level error boundary
   global-error.tsx       Root-layout error boundary (self-contained HTML)
   not-found.tsx          404
   <route>/               about, account, articles, checkout, contact, onboarding,
-                         products, sign-in, sign-up
+                          products, sign-in, sign-up
   sitemap.ts robots.ts opengraph-image.tsx   SEO surfaces
 
 features/                Self-contained domain modules
@@ -58,16 +63,28 @@ features/                Self-contained domain modules
     lib/                 Pure helpers (selectors, filters) — unit tested
     components/          Feature UI (mostly Server Components + skeletons)
     index.ts             Public barrel — the only import surface
+  admin/                 Admin-only hooks and nav (customers/orders/company profile)
+  checkout/              Stripe pricing, line items, and the checkout server action
+  customers/ orders/     Admin-facing analytics/types over the Neon-backed data
+  email/                 Email templates/blocks, provider (Resend), admin actions
+  docs/                  In-app docs content (the /docs and /admin/docs pages)
 
 lib/                     Cross-cutting concerns
   strapi/                client.ts (transport), tags.ts (cache tags), media.ts
   data/                  Local in-repo content (fallback source)
-  auth/ cart-context.tsx contact/ reviews/ seo/ env.ts format.ts nav.ts
+  auth.ts auth/          Better Auth server config + adapters (db/local/strapi),
+                         session cookie/token helpers, role allowlists
+  db/prisma.ts           Prisma client (Neon Postgres) — the `db` provider backend
+  orders/                Order types, checkout finalization, invoices, notifications
+  stripe/                Stripe server + client helpers for embedded Checkout
+  cart-context.tsx contact/ reviews/ settings/ seo/ env.ts format.ts nav.ts
 
-components/              Shared UI (layout, home, contact, primitives, ui/*)
+components/              Shared UI (layout, home, contact, checkout, primitives, ui/*)
 hooks/                   Shared React hooks
 qa/                      Test suite (see docs/testing.md)
 ```
+
+> The `features/*` list above only spells out `products`/`articles`/`timeline` in the data-seam section below because those are the ones currently wired to Strapi. `admin`, `checkout`, `customers`, `orders`, `email`, and `docs` are real, permanent features backed by Neon/Prisma + Better Auth + Stripe + Resend — not CMS-aware, and not part of the migration seam.
 
 ---
 
@@ -135,6 +152,45 @@ When an editor publishes in Strapi, a webhook hits `POST /api/revalidate`, which
 | `app/products/[slug]/loading.tsx`, `app/articles/[slug]/loading.tsx` | Route-level streaming fallbacks |
 
 List pages stream through in-component `<Suspense>` + skeletons rather than a route-level `loading.tsx`.
+
+---
+
+## Component architecture: feature-slice over atomic
+
+The codebase is **not** a classic atomic-design tree (atoms -> molecules -> organisms -> templates -> pages). It's roughly **feature-sliced**, with a thin, genuinely atomic layer underneath it:
+
+| Layer | Where | What it holds |
+| --- | --- | --- |
+| Atoms (~ the "60%" that *is* atomic) | `components/primitives/`, `components/ui/` | Truly generic, feature-agnostic pieces: `Reveal`, `SearchField`, buttons, inputs, cards — shadcn/ui primitives and small animation wrappers. No domain knowledge. Reused everywhere. |
+| Shared composites | `components/layout/`, `components/home/`, `components/checkout/`, `components/account/`, `components/auth/`, `components/contact/`, `components/docs/`, `components/scroll/`, `components/theme/`, `components/seo/` | Cross-feature UI composed from atoms (nav, page hero, scroll-driven sections). Still not domain-owned data — they render props passed in. |
+| Feature slices (the "100%" organizing principle) | `features/products/`, `features/articles/`, `features/timeline/`, `features/checkout/`, `features/admin/`, `features/customers/`, `features/orders/`, `features/email/`, `features/docs/` | Each slice is vertically complete for its domain: `api/` (data access), `schema/` (zod + types), `lib/` (pure helpers), `components/` (feature-specific UI), and a single `index.ts` barrel. A slice owns everything about its domain end to end. |
+| Routes | `app/**/page.tsx` | Compose feature-slice components + shared composites. Own layout and rendering strategy (see below), not business logic. |
+
+**Why feature-slice, not atomic:** atomic design organizes by visual complexity (how composed a component is), which scales poorly once a domain (e.g. `products`) has its own data layer, schema, and mappers — those don't fit "atom/molecule/organism" at all. Organizing by feature keeps a domain's data access, validation, and UI next to each other and behind one barrel, so `app/products/*` never reaches into another feature's internals. The small atomic layer still exists at the bottom (`primitives/`, `ui/`) because generic, context-free pieces genuinely benefit from being shared and composed rather than duplicated per feature.
+
+**Rule for new UI:** if it's generic and could apply to any feature, it's an atom in `components/primitives` or `components/ui`. If it's specific to a domain (renders a `Product`, an `Order`, a `Timeline` entry), it lives inside that feature's `components/` and is exported through the feature barrel — never promoted to the shared `components/` tree.
+
+---
+
+## Rendering strategies
+
+Next.js 16 with Cache Components (`cacheComponents: true`, see `next.config.mjs`) is the runtime, so the project mixes SSG, SSR, ISR, and RSC streaming per-route rather than picking one global mode. There is no PPR flag set explicitly — Cache Components supersede it as the mechanism for mixing static and dynamic within a route.
+
+| Strategy | How it's expressed here | Used for |
+| --- | --- | --- |
+| **RSC (default)** | Every `app/**/page.tsx` is an async Server Component. No `"use client"` unless a leaf genuinely needs the browser (see [Rendering model](#rendering-model-server-components--client-islands) above). | All routes, by default. |
+| **SSG / static** | A route with no `dynamic`/`revalidate` export and no `cookies()`/`headers()` call is static: rendered at build time, served from cache. | Marketing/content pages with no per-request data: `about`, `privacy`, `terms`, `shipping`, `returns`, `warranty`. |
+| **ISR (time-based revalidation)** | `export const revalidate = <seconds>` on a route, or `next: { revalidate }` on a `fetch`. `app/docs/[slug]/page.tsx` sets `revalidate = 300` with `dynamicParams = true` (statically known slugs prerender, new ones render on-demand and get cached). | `docs/[slug]`. Product/article/timeline pages get the same effect through cache-tagged fetches in the data seam (see [Caching & revalidation](#caching--revalidation)) rather than a page-level `revalidate` export. |
+| **On-demand revalidation** | `revalidateTag()` from the Strapi publish webhook (`app/api/revalidate`), scoped by the tag taxonomy in `lib/strapi/tags.ts`. | Any CMS-backed content the instant an editor publishes, without waiting for the ISR window. |
+| **SSR (force-dynamic)** | `export const dynamic = "force-dynamic"`. Used where the response must never be cached: it depends on the session/role, is a webhook, or reflects just-mutated state. | All `(admin)/admin/**` pages (session + role gated), `app/checkout/return` (reads a just-completed Checkout session), `app/api/stripe/webhook` (must run fresh every call, never cached). |
+| **Client-side rendering** | `"use client"` islands only — never a whole route. | `lib/cart-context.tsx`, `lib/auth/auth-context.tsx`, animation/interaction leaves in `components/primitives`. |
+
+**Picking a strategy for a new route:**
+
+1. Default to nothing (static/SSG) — no `dynamic` or `revalidate` export.
+2. If the content changes on a schedule but tolerates staleness, add `export const revalidate = <seconds>`, or attach a cache tag in the data seam and revalidate it on demand.
+3. If the page depends on the current session, role, or must reflect a mutation from the same request (e.g. post-checkout), use `export const dynamic = "force-dynamic"`. This is the pattern every admin page and the checkout return page already follow.
+4. Never reach for full client-side rendering to solve a data-freshness problem — that's what SSR/ISR/on-demand revalidation are for. Client components are for interactivity, not data fetching.
 
 ---
 

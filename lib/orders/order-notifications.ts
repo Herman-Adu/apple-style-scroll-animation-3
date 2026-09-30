@@ -8,7 +8,12 @@ import "server-only"
 // best-effort and must not affect payment/order state.
 
 import { prisma } from "@/lib/db/prisma"
-import { sendOrderConfirmation, sendOrderNotification, sendRefundConfirmation } from "@/features/email/actions"
+import {
+  sendOrderConfirmation,
+  sendOrderNotification,
+  sendRefundConfirmation,
+  sendShippingConfirmation,
+} from "@/features/email/actions"
 import type { Order, RefundEntry } from "./types"
 
 export async function dispatchOrderEmails(order: Order): Promise<void> {
@@ -39,4 +44,17 @@ export async function dispatchRefundEmail(order: Order, entry: RefundEntry, isFu
     // fall back to the email as the display name
   }
   await sendRefundConfirmation({ to: order.email, name, order, amount: entry.amount, isFullRefund })
+}
+
+/** Fires the customer shipping-confirmation email the first time tracking is
+ * saved on an order. Best-effort — never throws. */
+export async function dispatchShippingEmail(order: Order): Promise<void> {
+  let name = order.email
+  try {
+    const user = await prisma.user.findUnique({ where: { id: order.userId }, select: { name: true } })
+    if (user?.name) name = user.name
+  } catch {
+    // fall back to the email as the display name
+  }
+  await sendShippingConfirmation({ to: order.email, name, order })
 }

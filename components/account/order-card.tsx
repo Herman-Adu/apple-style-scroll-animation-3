@@ -1,9 +1,10 @@
 "use client"
 
 import Image from "next/image"
-import { FileText } from "lucide-react"
+import { FileText, Truck } from "lucide-react"
 import { formatMoney } from "@/lib/format"
 import { printInvoice } from "@/lib/orders/invoice"
+import { carrierLabel } from "@/lib/orders/tracking"
 import type { Order, OrderStatus } from "@/lib/orders/types"
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
@@ -71,6 +72,26 @@ export function OrderCard({ order, billTo }: { order: Order; billTo: { name: str
           </li>
         ))}
       </ul>
+
+      {order.trackingNumber ? (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-foreground/10 pt-4">
+          <div className="flex items-center gap-2 text-sm">
+            <Truck className="h-4 w-4 shrink-0 text-foreground/45" strokeWidth={1.75} />
+            <span className="text-foreground/45">{carrierLabel(order.carrier)}</span>
+            <span className="font-mono text-foreground">{order.trackingNumber}</span>
+          </div>
+          {order.trackingUrl ? (
+            <a
+              href={order.trackingUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground/80 underline underline-offset-2 transition-colors hover:text-foreground"
+            >
+              Track package
+            </a>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-foreground/10 pt-4">
         <div className="text-sm">

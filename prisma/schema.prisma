@@ -127,6 +127,15 @@ model Order {
   refundedAmount Float @default(0) @map("refunded_amount")
   // Append-only audit log: { id, amount, currency, reason, createdAt }[].
   refunds       Json     @default("[]")
+  // Shipment tracking, set by the admin once the order ships. `carrier` is one
+  // of the known keys in lib/orders/tracking.ts (used to build trackingUrl
+  // from trackingNumber) or "other", which requires an admin-supplied URL.
+  // `shippedAt` is stamped once on first save and never overwritten, so it
+  // marks the actual ship date even if tracking details are corrected later.
+  carrier        String?   @map("carrier")
+  trackingNumber String?   @map("tracking_number")
+  trackingUrl    String?   @map("tracking_url")
+  shippedAt      DateTime? @map("shipped_at")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 

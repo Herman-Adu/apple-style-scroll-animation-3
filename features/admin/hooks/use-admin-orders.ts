@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { ordersAdapter } from "@/features/orders"
 import type { Order, OrderStatus } from "@/features/orders"
+import type { Carrier } from "@/lib/orders/tracking"
 
 /**
  * Admin view of the orders backend: every customer's orders plus a status
@@ -42,5 +43,15 @@ export function useAdminOrders() {
     [refresh],
   )
 
-  return { orders, loading, updateStatus, refund, refresh }
+  /** Save shipment tracking. Fires the customer shipping-confirmation email on
+   * first save only (see addTrackingAction); later edits are silent. */
+  const addTracking = useCallback(
+    async (orderId: string, input: { carrier: Carrier; trackingNumber: string; trackingUrl?: string }) => {
+      await ordersAdapter.addTracking(orderId, input)
+      await refresh()
+    },
+    [refresh],
+  )
+
+  return { orders, loading, updateStatus, refund, addTracking, refresh }
 }

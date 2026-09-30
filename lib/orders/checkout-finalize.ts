@@ -43,6 +43,10 @@ const orderSelect = {
   stripePaymentIntentId: true,
   refundedAmount: true,
   refunds: true,
+  carrier: true,
+  trackingNumber: true,
+  trackingUrl: true,
+  shippedAt: true,
   createdAt: true,
 } as const
 
@@ -64,6 +68,10 @@ type OrderRow = {
   stripePaymentIntentId?: string | null
   refundedAmount?: number
   refunds?: unknown
+  carrier?: string | null
+  trackingNumber?: string | null
+  trackingUrl?: string | null
+  shippedAt?: Date | null
   createdAt: Date
 }
 
@@ -87,6 +95,10 @@ function toOrder(row: OrderRow): Order {
     stripePaymentIntentId: row.stripePaymentIntentId ?? undefined,
     refundedAmount: row.refundedAmount ?? 0,
     refunds: Array.isArray(row.refunds) ? (row.refunds as Order["refunds"]) : [],
+    carrier: (row.carrier as Order["carrier"]) ?? undefined,
+    trackingNumber: row.trackingNumber ?? undefined,
+    trackingUrl: row.trackingUrl ?? undefined,
+    shippedAt: row.shippedAt ? row.shippedAt.toISOString() : undefined,
   }
 }
 

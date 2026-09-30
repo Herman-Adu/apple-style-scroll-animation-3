@@ -15,6 +15,8 @@ import { effectiveRole } from "@/lib/auth/config"
 import { getAllProducts } from "@/lib/data/products"
 import { productSchema } from "@/features/products"
 import { recordSale, toMap, type ProductMap } from "@/features/catalog/store"
+import { dispatchShippingEmail } from "./order-notifications"
+import { buildTrackingUrl, type Carrier } from "./tracking"
 import type { CreateOrderInput, Order, OrderStatus } from "./types"
 
 const VALID_STATUSES: OrderStatus[] = ["processing", "fulfilled", "cancelled", "refunded"]
@@ -36,6 +38,10 @@ type OrderRow = {
   stripePaymentIntentId?: string | null
   refundedAmount?: number
   refunds?: unknown
+  carrier?: string | null
+  trackingNumber?: string | null
+  trackingUrl?: string | null
+  shippedAt?: Date | null
   createdAt: Date
 }
 
@@ -56,6 +62,10 @@ const orderSelect = {
   stripePaymentIntentId: true,
   refundedAmount: true,
   refunds: true,
+  carrier: true,
+  trackingNumber: true,
+  trackingUrl: true,
+  shippedAt: true,
   createdAt: true,
 } as const
 
@@ -80,6 +90,10 @@ function toOrder(row: OrderRow): Order {
     stripePaymentIntentId: row.stripePaymentIntentId ?? undefined,
     refundedAmount: row.refundedAmount ?? 0,
     refunds: Array.isArray(row.refunds) ? (row.refunds as Order["refunds"]) : [],
+    carrier: (row.carrier as Order["carrier"]) ?? undefined,
+    trackingNumber: row.trackingNumber ?? undefined,
+    trackingUrl: row.trackingUrl ?? undefined,
+    shippedAt: row.shippedAt ? row.shippedAt.toISOString() : undefined,
   }
 }
 
@@ -231,4 +245,35 @@ export async function updateOrderStatusAction(orderId: string, status: OrderStat
     select: orderSelect,
   })
   return toOrder(row)
+}
+
+/** Save shipment tracking — admin only. Fires the customer shipping-confirmation
+ * email exactly once, the first time tracking is saved on this order; later
+ * edits (e.g. fixing a typo'd tracking number) update silently. */
+export async function addTrackingAction(
+  orderId: string,
+  input: { carrier: Carrier; trackingNumber: string; trackingUrl?: string },
+): Promise<Order> {
+  await requireAdminId()
+  const trackingNumber = input.trackingNumber.trim()
+  if (!trackingNumber) throw new Error("Tracking number is required.")
+  const trackingUrl = input.trackingUrl?.trim() || buildTrackingUrl(input.carrier, trackingNumber)
+
+  const existing = await prisma.order.findUnique({ where: { id: orderId }, select: { shippedAt: true } })
+  if (!existing) throw new Error("Order not found.")
+  const isFirstSave = !existing.shippedAt
+
+  const row = await prisma.order.update({
+    where: { id: orderId },
+    data: {
+      carrier: input.carrier,
+      trackingNumber,
+      trackingUrl: trackingUrl ?? null,
+      ...(isFirstSave ? { shippedAt: new Date() } : {}),
+    },
+    select: orderSelect,
+  })
+  const order = toOrder(row)
+  if (isFirstSave) await dispatchShippingEmail(order)
+  return order
 }

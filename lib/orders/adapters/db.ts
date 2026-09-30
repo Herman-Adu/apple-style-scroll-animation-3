@@ -5,12 +5,14 @@
 // client-facing shim over those actions.
 
 import {
+  addTrackingAction,
   createOrderAction,
   listAllOrdersAction,
   listMyOrdersAction,
   updateOrderStatusAction,
 } from "../db-actions"
 import { refundOrderAction } from "../refund-actions"
+import type { Carrier } from "../tracking"
 import type { CreateOrderInput, Order, OrderStatus, OrdersAdapter } from "../types"
 
 export function createDbOrdersAdapter(): OrdersAdapter {
@@ -35,6 +37,13 @@ export function createDbOrdersAdapter(): OrdersAdapter {
 
     async refund(orderId: string, amount?: number, reason?: string): Promise<Order> {
       return refundOrderAction(orderId, amount, reason)
+    },
+
+    async addTracking(
+      orderId: string,
+      input: { carrier: Carrier; trackingNumber: string; trackingUrl?: string },
+    ): Promise<Order> {
+      return addTrackingAction(orderId, input)
     },
   }
 }

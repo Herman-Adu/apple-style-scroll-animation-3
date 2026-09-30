@@ -5,6 +5,8 @@
 // it. Swapping to a real payment provider means writing one adapter — the UI,
 // hook, and types below do not change.
 
+import type { Carrier } from "./tracking"
+
 export type OrderStatus = "processing" | "fulfilled" | "cancelled" | "refunded"
 
 export interface OrderItem {
@@ -68,6 +70,12 @@ export interface Order {
   refundedAmount?: number
   /** Append-only refund audit log. */
   refunds?: RefundEntry[]
+  /** Shipment tracking, set by the admin once the order ships. */
+  carrier?: Carrier
+  trackingNumber?: string
+  trackingUrl?: string
+  /** Stamped once on first tracking save; never overwritten after. */
+  shippedAt?: string
 }
 
 /** Everything needed to record an order. The adapter assigns id/number/date/status. */
@@ -93,4 +101,6 @@ export interface OrdersAdapter {
   updateStatus(orderId: string, status: OrderStatus): Promise<Order>
   /** Refund an order via Stripe — full (omit amount) or partial (admin). */
   refund(orderId: string, amount?: number, reason?: string): Promise<Order>
+  /** Save shipment tracking and notify the customer on first save (admin). */
+  addTracking(orderId: string, input: { carrier: Carrier; trackingNumber: string; trackingUrl?: string }): Promise<Order>
 }

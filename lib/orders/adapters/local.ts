@@ -3,6 +3,7 @@
 // works in preview with zero backend. Implements the same OrdersAdapter port a
 // real Stripe/server adapter would, so the application layer cannot tell them apart.
 
+import type { Carrier } from "../tracking"
 import type { CreateOrderInput, Order, OrderStatus, OrdersAdapter } from "../types"
 
 const ORDERS_KEY = "momo.orders"
@@ -96,6 +97,29 @@ export function createLocalOrdersAdapter(): OrdersAdapter {
           },
         ],
         status: isFullRefund ? "refunded" : order.status,
+      }
+      writeAll(all)
+      return all[index]
+    },
+
+    // No email backend behind this adapter — just persist the tracking info
+    // and stamp shippedAt on first save, mirroring the Neon adapter's shape
+    // without pretending an email was sent.
+    async addTracking(
+      orderId: string,
+      input: { carrier: Carrier; trackingNumber: string; trackingUrl?: string },
+    ): Promise<Order> {
+      await tick()
+      const all = readAll()
+      const index = all.findIndex((order) => order.id === orderId)
+      if (index === -1) throw new Error("Order not found")
+      const order = all[index]
+      all[index] = {
+        ...order,
+        carrier: input.carrier,
+        trackingNumber: input.trackingNumber,
+        trackingUrl: input.trackingUrl,
+        shippedAt: order.shippedAt ?? new Date().toISOString(),
       }
       writeAll(all)
       return all[index]

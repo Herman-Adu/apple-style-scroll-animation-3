@@ -26,6 +26,13 @@ import type { CustomerRecord, CustomerSegment, CustomerSort } from "@/features/c
 import { useAdminCustomers } from "../hooks/use-admin-customers"
 import { CustomerStatusBadge, RoleBadge, OfferChip } from "./customer-badges"
 import { isOwner } from "@/lib/auth/config"
+import { ColumnsMenu, type ColumnOption } from "./columns-menu"
+
+const CUSTOMER_COLUMNS: ColumnOption[] = [
+  { key: "orders", label: "Orders" },
+  { key: "offers", label: "Offers" },
+  { key: "joined", label: "Joined" },
+]
 
 const SORT_OPTIONS: { value: CustomerSort; label: string }[] = [
   { value: "recent", label: "Newest" },
@@ -52,6 +59,16 @@ export function CustomerManager() {
   const { records, loading, refresh } = useAdminCustomers()
   const [query, setQuery] = useState("")
   const [sort, setSort] = useState<CustomerSort>("recent")
+  const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => new Set(["orders", "offers", "joined"]))
+
+  function toggleCol(key: string) {
+    setHiddenCols((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
 
   const kpis = useMemo(() => customerKpis(records), [records])
 
@@ -127,20 +144,21 @@ export function CustomerManager() {
               ))}
             </SelectContent>
           </Select>
+          <ColumnsMenu columns={CUSTOMER_COLUMNS} hidden={hiddenCols} onToggle={toggleCol} />
         </div>
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <div className="overflow-x-auto">
+        <div className="scrollbar-none overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-widest text-muted-foreground">
                 <th className="px-4 py-3 font-medium">Customer</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Orders</th>
+                {!hiddenCols.has("orders") ? <th className="px-4 py-3 font-medium">Orders</th> : null}
                 <th className="px-4 py-3 font-medium">Lifetime spend</th>
-                <th className="px-4 py-3 font-medium">Offers</th>
-                <th className="px-4 py-3 font-medium">Joined</th>
+                {!hiddenCols.has("offers") ? <th className="px-4 py-3 font-medium">Offers</th> : null}
+                {!hiddenCols.has("joined") ? <th className="px-4 py-3 font-medium">Joined</th> : null}
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -163,7 +181,7 @@ export function CustomerManager() {
                     <tr
                       key={user.id}
                       onClick={() => router.push(`/admin/customers/${user.id}`)}
-                      className="cursor-pointer transition-colors hover:bg-foreground/5"
+                      className="cursor-pointer transition-colors hover:bg-accent-teal/5"
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -180,27 +198,33 @@ export function CustomerManager() {
                       <td className="px-4 py-3">
                         <CustomerStatusBadge status={user.status} />
                       </td>
-                      <td className="px-4 py-3 tabular-nums text-muted-foreground">{stats.orderCount}</td>
+                      {!hiddenCols.has("orders") ? (
+                        <td className="px-4 py-3 tabular-nums text-muted-foreground">{stats.orderCount}</td>
+                      ) : null}
                       <td className="px-4 py-3 font-mono tabular-nums">
                         {formatMoney({ amount: stats.lifetimeSpend, currency: stats.currency })}
                       </td>
-                      <td className="px-4 py-3">
-                        {user.offers && user.offers.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {user.offers.slice(0, 2).map((o) => (
-                              <OfferChip key={o.id} offer={o} />
-                            ))}
-                            {user.offers.length > 2 ? (
-                              <span className="text-xs text-muted-foreground">
-                                +{user.offers.length - 2}
-                              </span>
-                            ) : null}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">{record.joinedLabel}</td>
+                      {!hiddenCols.has("offers") ? (
+                        <td className="px-4 py-3">
+                          {user.offers && user.offers.length > 0 ? (
+                            <div className="flex flex-wrap gap-1">
+                              {user.offers.slice(0, 2).map((o) => (
+                                <OfferChip key={o.id} offer={o} />
+                              ))}
+                              {user.offers.length > 2 ? (
+                                <span className="text-xs text-muted-foreground">
+                                  +{user.offers.length - 2}
+                                </span>
+                              ) : null}
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
+                        </td>
+                      ) : null}
+                      {!hiddenCols.has("joined") ? (
+                        <td className="px-4 py-3 text-muted-foreground">{record.joinedLabel}</td>
+                      ) : null}
                     </tr>
                   )
                 })

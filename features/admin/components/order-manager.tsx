@@ -33,6 +33,12 @@ import type { Order, OrderStatus } from "@/features/orders"
 import { formatMoney } from "@/lib/format"
 import { OrderStatusBadge } from "./status-badges"
 import { useAdminOrders } from "../hooks/use-admin-orders"
+import { ColumnsMenu, type ColumnOption } from "./columns-menu"
+
+const ORDER_COLUMNS: ColumnOption[] = [
+  { key: "customer", label: "Customer" },
+  { key: "date", label: "Date" },
+]
 
 const STATUS_FILTERS: { value: OrderStatus | "all"; label: string }[] = [
   { value: "all", label: "All orders" },
@@ -207,6 +213,16 @@ export function OrderManager() {
   const { orders, loading, updateStatus, refund } = useAdminOrders()
   const [filter, setFilter] = useState<OrderStatus | "all">("all")
   const [activeId, setActiveId] = useState<string | null>(null)
+  const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => new Set(["customer", "date"]))
+
+  function toggleCol(key: string) {
+    setHiddenCols((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
 
   const visible = useMemo(
     () => (filter === "all" ? orders : orders.filter((o) => o.status === filter)),
@@ -222,30 +238,33 @@ export function OrderManager() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-1">
-        {STATUS_FILTERS.map((f) => (
-          <button
-            key={f.value}
-            type="button"
-            onClick={() => setFilter(f.value)}
-            className={cn(
-              "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-              filter === f.value ? "bg-foreground text-background" : "text-muted-foreground hover:bg-foreground/5",
-            )}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap gap-1">
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f.value}
+              type="button"
+              onClick={() => setFilter(f.value)}
+              className={cn(
+                "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                filter === f.value ? "bg-accent-teal text-background" : "text-muted-foreground hover:bg-accent-teal/10",
+              )}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <ColumnsMenu columns={ORDER_COLUMNS} hidden={hiddenCols} onToggle={toggleCol} />
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <div className="overflow-x-auto">
+        <div className="scrollbar-none overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-widest text-muted-foreground">
                 <th className="px-4 py-3 font-medium">Order</th>
-                <th className="px-4 py-3 font-medium">Customer</th>
-                <th className="px-4 py-3 font-medium">Date</th>
+                {!hiddenCols.has("customer") ? <th className="px-4 py-3 font-medium">Customer</th> : null}
+                {!hiddenCols.has("date") ? <th className="px-4 py-3 font-medium">Date</th> : null}
                 <th className="px-4 py-3 font-medium">Total</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 text-right font-medium">Set status</th>
@@ -271,16 +290,20 @@ export function OrderManager() {
                     <tr
                       key={order.id}
                       onClick={() => setActiveId(order.id)}
-                      className="cursor-pointer transition-colors hover:bg-foreground/5"
+                      className="cursor-pointer transition-colors hover:bg-accent-teal/5"
                     >
                       <td className="px-4 py-3">
                         <p className="font-mono text-xs font-medium">{order.number}</p>
                         <p className="mt-0.5 text-xs text-muted-foreground">{units} items</p>
                       </td>
-                      <td className="px-4 py-3">
-                        <p className="max-w-[16ch] truncate text-muted-foreground">{order.email}</p>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">{formatDateTime(order.createdAt)}</td>
+                      {!hiddenCols.has("customer") ? (
+                        <td className="px-4 py-3">
+                          <p className="max-w-[16ch] truncate text-muted-foreground">{order.email}</p>
+                        </td>
+                      ) : null}
+                      {!hiddenCols.has("date") ? (
+                        <td className="px-4 py-3 text-muted-foreground">{formatDateTime(order.createdAt)}</td>
+                      ) : null}
                       <td className="px-4 py-3 font-mono tabular-nums">
                         {formatMoney({ amount: order.total, currency: order.currency })}
                       </td>

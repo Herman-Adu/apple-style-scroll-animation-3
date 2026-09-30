@@ -21,6 +21,9 @@ import { effectiveStock } from "@/features/products"
 import { formatMoney } from "@/lib/format"
 import { StockBadge } from "./status-badges"
 import { ProductFormDialog } from "./product-form-dialog"
+import { ColumnsMenu, type ColumnOption } from "./columns-menu"
+
+const PRODUCT_COLUMNS: ColumnOption[] = [{ key: "category", label: "Category" }]
 
 export function ProductManager() {
   const { products, createProduct, updateProduct, deleteProduct, adjustStock } = useCatalog()
@@ -28,6 +31,16 @@ export function ProductManager() {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Product | undefined>(undefined)
   const [pendingDelete, setPendingDelete] = useState<Product | undefined>(undefined)
+  const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => new Set(["category"]))
+
+  function toggleCol(key: string) {
+    setHiddenCols((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -65,19 +78,22 @@ export function ProductManager() {
             aria-label="Search products"
           />
         </div>
-        <Button onClick={openCreate} className="gap-2">
-          <PlusCircle className="size-4" aria-hidden />
-          New product
-        </Button>
+        <div className="flex items-center gap-2">
+          <ColumnsMenu columns={PRODUCT_COLUMNS} hidden={hiddenCols} onToggle={toggleCol} />
+          <Button onClick={openCreate} className="gap-2">
+            <PlusCircle className="size-4" aria-hidden />
+            New product
+          </Button>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <div className="overflow-x-auto">
+        <div className="scrollbar-none overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-widest text-muted-foreground">
                 <th className="px-4 py-3 font-medium">Product</th>
-                <th className="px-4 py-3 font-medium">Category</th>
+                {!hiddenCols.has("category") ? <th className="px-4 py-3 font-medium">Category</th> : null}
                 <th className="px-4 py-3 font-medium">Price</th>
                 <th className="px-4 py-3 font-medium">Stock</th>
                 <th className="px-4 py-3 font-medium">Status</th>
@@ -93,7 +109,7 @@ export function ProductManager() {
                 </tr>
               ) : (
                 filtered.map((product) => (
-                  <tr key={product.slug} className="transition-colors hover:bg-foreground/5">
+                  <tr key={product.slug} className="transition-colors hover:bg-accent-teal/5">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <span
@@ -107,7 +123,9 @@ export function ProductManager() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{product.category}</td>
+                    {!hiddenCols.has("category") ? (
+                      <td className="px-4 py-3 text-muted-foreground">{product.category}</td>
+                    ) : null}
                     <td className="px-4 py-3 font-mono tabular-nums">{formatMoney(product.price)}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -139,7 +157,7 @@ export function ProductManager() {
                         <button
                           type="button"
                           onClick={() => openEdit(product)}
-                          className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
+                          className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent-teal/10 hover:text-accent-teal"
                           aria-label={`Edit ${product.name}`}
                         >
                           <Pencil className="size-4" aria-hidden />
@@ -147,7 +165,7 @@ export function ProductManager() {
                         <button
                           type="button"
                           onClick={() => setPendingDelete(product)}
-                          className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-500"
+                          className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                           aria-label={`Delete ${product.name}`}
                         >
                           <Trash2 className="size-4" aria-hidden />

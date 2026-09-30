@@ -73,8 +73,8 @@ export function AnalyticsPanel() {
             <AreaChart data={revenueSeries} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
               <defs>
                 <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--color-foreground)" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="var(--color-foreground)" stopOpacity={0} />
+                  <stop offset="0%" stopColor="var(--color-accent-teal)" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="var(--color-accent-teal)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
@@ -106,7 +106,7 @@ export function AnalyticsPanel() {
               <Area
                 type="monotone"
                 dataKey="revenue"
-                stroke="var(--color-foreground)"
+                stroke="var(--color-accent-teal)"
                 strokeWidth={2}
                 fill="url(#revFill)"
               />
@@ -132,7 +132,7 @@ export function AnalyticsPanel() {
                   width={90}
                 />
                 <Tooltip
-                  cursor={{ fill: "var(--color-foreground)", opacity: 0.05 }}
+                  cursor={{ fill: "var(--color-accent-teal)", opacity: 0.08 }}
                   contentStyle={{
                     background: "var(--color-popover)",
                     border: "1px solid var(--color-border)",
@@ -142,7 +142,7 @@ export function AnalyticsPanel() {
                   }}
                   formatter={(value: number) => [`${value} units`, "Sold"]}
                 />
-                <Bar dataKey="unitsSold" fill="var(--color-foreground)" radius={[0, 4, 4, 0]} barSize={18} />
+                <Bar dataKey="unitsSold" fill="var(--color-accent-teal)" radius={[0, 4, 4, 0]} barSize={18} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -159,8 +159,8 @@ export function AnalyticsPanel() {
                     <span className="capitalize text-muted-foreground">{s.status}</span>
                     <span className="font-mono tabular-nums">{s.count}</span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-foreground/10">
-                    <div className="h-full rounded-full bg-foreground" style={{ width: `${pct}%` }} />
+                  <div className="h-2 overflow-hidden rounded-full bg-accent-teal/10">
+                    <div className="h-full rounded-full bg-accent-teal" style={{ width: `${pct}%` }} />
                   </div>
                 </div>
               )

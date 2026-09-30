@@ -42,7 +42,13 @@ const STATUS_FILTERS: { value: OrderStatus | "all"; label: string }[] = [
   { value: "refunded", label: "Refunded" },
 ]
 
-const STATUS_OPTIONS: OrderStatus[] = ["processing", "fulfilled", "cancelled", "refunded"]
+/**
+ * Statuses settable via the plain "Set status" dropdown. Cancelled and
+ * refunded are deliberately excluded — those move money and must go through
+ * the RefundPanel's Stripe-backed actions (refundOrderAction), never a raw
+ * status write. STATUS_FILTERS still lists them for viewing/filtering.
+ */
+const STATUS_OPTIONS: OrderStatus[] = ["processing", "fulfilled"]
 
 function formatDateTime(iso: string): string {
   return new Intl.DateTimeFormat("en-US", {

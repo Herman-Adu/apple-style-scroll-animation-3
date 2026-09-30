@@ -9,12 +9,28 @@ import type { Order } from "@/lib/orders/types"
 import type { Product } from "@/lib/types"
 import { effectiveStock, isLowStock, stockLevel } from "@/features/products/lib/product"
 
-/** Orders that represent realized revenue (exclude cancelled/refunded). */
+/** Orders that represent realized activity (exclude cancelled; fully-refunded orders net to $0 automatically). */
 function revenueOrders(orders: Order[]): Order[] {
   return orders.filter((o) => o.status !== "cancelled" && o.status !== "refunded")
 }
 
+/**
+ * What the order is actually worth today, in the order's major currency unit.
+ * Every order was captured for its full `total` at checkout; partial or full
+ * refunds reduce that down toward (but never below) zero. This is the figure
+ * that should drive revenue reporting and tax reconciliation, since it always
+ * matches what Stripe actually settled and kept.
+ */
+function netAmount(order: Order): number {
+  return Math.max(0, order.total - (order.refundedAmount ?? 0))
+}
+
 export interface SalesSummary {
+  /** Full value of every order at checkout, before any refunds. */
+  grossRevenue: number
+  /** Total refunded across all orders (full + partial), to date. */
+  refunds: number
+  /** grossRevenue - refunds. The figure that matches Stripe's net settlement. */
   revenue: number
   orderCount: number
   unitsSold: number
@@ -24,14 +40,19 @@ export interface SalesSummary {
 
 export function salesSummary(orders: Order[]): SalesSummary {
   const realized = revenueOrders(orders)
-  const revenue = realized.reduce((sum, o) => sum + o.total, 0)
+  const grossRevenue = orders.reduce((sum, o) => sum + o.total, 0)
+  const refunds = orders.reduce((sum, o) => sum + (o.refundedAmount ?? 0), 0)
+  const revenue = grossRevenue - refunds
   const unitsSold = realized.reduce((sum, o) => sum + o.items.reduce((n, i) => n + i.quantity, 0), 0)
   const orderCount = realized.length
+  const realizedNet = realized.reduce((sum, o) => sum + netAmount(o), 0)
   return {
+    grossRevenue,
+    refunds,
     revenue,
     orderCount,
     unitsSold,
-    averageOrderValue: orderCount > 0 ? revenue / orderCount : 0,
+    averageOrderValue: orderCount > 0 ? realizedNet / orderCount : 0,
     currency: orders[0]?.currency ?? "USD",
   }
 }
@@ -43,9 +64,14 @@ export interface RevenuePoint {
   orders: number
 }
 
-/** Daily revenue series for the trailing `days` window, oldest → newest. */
+/**
+ * Daily net-revenue series for the trailing `days` window, oldest → newest.
+ * Each order's contribution is its current net amount (total minus refunds
+ * to date), attributed to its checkout day — so a refund immediately pulls
+ * that day's bar down to reflect what was actually kept, matching Stripe.
+ * `orders` counts active (non-cancelled/non-fully-refunded) orders that day.
+ */
 export function revenueByDay(orders: Order[], days = 30): RevenuePoint[] {
-  const realized = revenueOrders(orders)
   const buckets = new Map<string, { revenue: number; orders: number }>()
 
   const today = new Date()
@@ -56,13 +82,12 @@ export function revenueByDay(orders: Order[], days = 30): RevenuePoint[] {
     buckets.set(d.toISOString().slice(0, 10), { revenue: 0, orders: 0 })
   }
 
-  for (const order of realized) {
+  for (const order of orders) {
     const key = new Date(order.createdAt).toISOString().slice(0, 10)
     const bucket = buckets.get(key)
-    if (bucket) {
-      bucket.revenue += order.total
-      bucket.orders += 1
-    }
+    if (!bucket) continue
+    bucket.revenue += netAmount(order)
+    if (order.status !== "cancelled" && order.status !== "refunded") bucket.orders += 1
   }
 
   return Array.from(buckets.entries()).map(([date, v]) => ({ date, ...v }))

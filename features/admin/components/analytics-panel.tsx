@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { DollarSign, Receipt, ShoppingBag, TrendingUp } from "lucide-react"
+import { DollarSign, Receipt, RotateCcw, ShoppingBag, TrendingUp } from "lucide-react"
 import { useCatalog } from "@/features/catalog"
 import { ordersByStatus, revenueByDay, salesSummary, topProducts } from "@/features/orders"
 import { formatMoney } from "@/lib/format"
@@ -40,8 +40,23 @@ export function AnalyticsPanel() {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Revenue" value={formatMoney({ amount: sales.revenue, currency })} icon={DollarSign} />
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <StatCard
+          label="Net revenue"
+          value={formatMoney({ amount: sales.revenue, currency })}
+          hint={`${formatMoney({ amount: sales.grossRevenue, currency })} gross`}
+          icon={DollarSign}
+          accent
+        />
+        <StatCard
+          label="Refunds"
+          value={formatMoney({ amount: sales.refunds, currency })}
+          hint={
+            sales.grossRevenue > 0 ? `${((sales.refunds / sales.grossRevenue) * 100).toFixed(1)}% of gross` : undefined
+          }
+          icon={RotateCcw}
+          tone={sales.refunds > 0 ? "warning" : "default"}
+        />
         <StatCard label="Orders" value={sales.orderCount.toLocaleString()} icon={Receipt} />
         <StatCard label="Units sold" value={sales.unitsSold.toLocaleString()} icon={ShoppingBag} />
         <StatCard

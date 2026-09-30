@@ -21,6 +21,7 @@ import { env } from "@/lib/env"
 import { stripe } from "@/lib/stripe/server"
 import { getServerSession } from "@/lib/auth/server"
 import { commitStock, releaseReservationById } from "@/lib/orders/checkout-finalize"
+import { resolveDiscountCode } from "@/lib/discount-codes/db-actions"
 import { priceCheckout, type PricedQuote } from "./lib/pricing"
 import { buildStripeLineItems, toMinorUnits } from "./lib/stripe-line-items"
 
@@ -36,9 +37,19 @@ export interface QuoteRequestLine {
 export interface QuoteRequest {
   lines: QuoteRequestLine[]
   offers: OfferTag[]
+  /** Store-wide discount code the customer entered, if any. Validated here. */
+  code?: string
 }
 
-export async function quoteCheckout({ lines, offers }: QuoteRequest): Promise<PricedQuote> {
+/** A priced quote, plus the outcome of resolving an optional discount `code`. */
+export interface CheckoutQuote extends PricedQuote {
+  /** The normalized code that was actually applied, if valid. */
+  discountCode?: string
+  /** Friendly reason `code` could not be applied. Undefined when no code was sent, or it applied cleanly. */
+  codeError?: string
+}
+
+export async function quoteCheckout({ lines, offers, code }: QuoteRequest): Promise<CheckoutQuote> {
   const items: OrderItem[] = []
 
   for (const line of lines) {
@@ -59,7 +70,25 @@ export async function quoteCheckout({ lines, offers }: QuoteRequest): Promise<Pr
     })
   }
 
-  return priceCheckout({ items, offers: offers ?? [] })
+  // A code is turned into a synthetic OfferTag and priced through the exact
+  // same engine personal offers use, so it can never stack with a percent
+  // offer to exceed 100% — see resolveDiscountCode for the full rationale.
+  let allOffers = offers ?? []
+  let discountCode: string | undefined
+  let codeError: string | undefined
+  if (code) {
+    const rawSubtotal = items.reduce((sum, item) => sum + item.unitAmount * item.quantity, 0)
+    const resolved = await resolveDiscountCode(code, rawSubtotal)
+    if (resolved.ok) {
+      allOffers = [...allOffers, resolved.offer]
+      discountCode = resolved.code
+    } else {
+      codeError = resolved.error
+    }
+  }
+
+  const priced = priceCheckout({ items, offers: allOffers })
+  return { ...priced, discountCode, codeError }
 }
 
 /** Absolute origin for building Stripe's return_url. Prefers the real request
@@ -92,8 +121,11 @@ async function resolveOrigin(): Promise<string> {
  */
 export async function startStripeCheckout({
   lines,
+  code,
 }: {
   lines: QuoteRequestLine[]
+  /** Store-wide discount code the customer applied during review, if any. */
+  code?: string
 }): Promise<{ clientSecret: string }> {
   if (!env.STRIPE_SECRET_KEY) throw new Error("Payments are not configured.")
 
@@ -109,8 +141,13 @@ export async function startStripeCheckout({
   })
   const offers = (Array.isArray(userRow?.offers) ? userRow.offers : []) as unknown as OfferTag[]
 
-  const priced = await quoteCheckout({ lines, offers })
+  const priced = await quoteCheckout({ lines, offers, code })
   if (priced.items.length === 0) throw new Error("Your cart is empty.")
+  // The code was valid moments ago at review, but re-validate at the moment we
+  // charge — it may have expired or been exhausted in between. Fail loudly
+  // rather than silently charging full price when the customer expects a
+  // discount.
+  if (code && priced.codeError) throw new Error(priced.codeError)
 
   // Reserve stock + persist the pending checkout atomically. The oversell guard
   // lives in commitStock and rolls the whole thing back on failure.
@@ -131,6 +168,7 @@ export async function startStripeCheckout({
         subtotal: priced.subtotal,
         shipping: priced.shipping,
         discount: priced.discount,
+        discountCode: priced.discountCode ?? null,
         total: priced.total,
         currency: priced.currency,
         status: "reserved",

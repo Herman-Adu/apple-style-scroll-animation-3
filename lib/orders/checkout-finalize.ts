@@ -14,6 +14,7 @@ import { prisma } from "@/lib/db/prisma"
 import { getAllProducts } from "@/lib/data/products"
 import { productSchema } from "@/features/products"
 import { recordSale, toMap, type ProductMap } from "@/features/catalog/store"
+import { incrementDiscountCodeRedemption } from "@/lib/discount-codes/db-actions"
 import type { AppliedOffer, Order, OrderStatus } from "./types"
 
 /** A stock delta: `quantity` units of `slug` were removed (and can be restored). */
@@ -35,6 +36,7 @@ const orderSelect = {
   shipping: true,
   discount: true,
   appliedOffers: true,
+  discountCode: true,
   total: true,
   currency: true,
   stripeSessionId: true,
@@ -55,6 +57,7 @@ type OrderRow = {
   shipping: number
   discount: number
   appliedOffers: unknown
+  discountCode?: string | null
   total: number
   currency: string
   stripeSessionId?: string | null
@@ -77,6 +80,7 @@ function toOrder(row: OrderRow): Order {
     shipping: row.shipping,
     discount: row.discount ?? 0,
     appliedOffers: Array.isArray(row.appliedOffers) ? (row.appliedOffers as Order["appliedOffers"]) : [],
+    discountCode: row.discountCode ?? undefined,
     total: row.total,
     currency: row.currency,
     stripeSessionId: row.stripeSessionId ?? undefined,
@@ -214,6 +218,7 @@ export async function finalizeCheckout(session: Stripe.Checkout.Session): Promis
         shipping: pending.shipping,
         discount: pending.discount,
         appliedOffers: pending.appliedOffers as Prisma.InputJsonValue,
+        discountCode: pending.discountCode ?? null,
         total: pending.total,
         currency: pending.currency,
         stripeSessionId: session.id,
@@ -234,6 +239,9 @@ export async function finalizeCheckout(session: Stripe.Checkout.Session): Promis
     .filter(Boolean)
   if (offerIds.length > 0) {
     void markOffersRedeemedFor(created.userId, offerIds).catch(() => {})
+  }
+  if (created.discountCode) {
+    void incrementDiscountCodeRedemption(created.discountCode).catch(() => {})
   }
 
   return toOrder(created)

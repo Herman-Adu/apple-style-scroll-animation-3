@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, LayoutDashboard, Mail, Package, Palette, Receipt, Users } from "lucide-react"
+import { BarChart3, BookOpen, LayoutDashboard, Mail, Package, Palette, Receipt, Ticket, Users } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 export interface AdminNavChild {
@@ -36,6 +36,7 @@ export const adminNav: AdminNavItem[] = [
   },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: Receipt },
+  { href: "/admin/discounts", label: "Discount codes", icon: Ticket },
   {
     href: "/admin/customers",
     label: "Customers",

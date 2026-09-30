@@ -109,6 +109,10 @@ model Order {
   shipping      Float
   discount      Float    @default(0)
   appliedOffers Json     @default("[]") @map("applied_offers")
+  // Store-wide code (if any) applied to this order, e.g. "SUMMER20". Kept
+  // alongside appliedOffers (which records its monetary effect) so admins can
+  // see and filter by which code was used.
+  discountCode  String?  @map("discount_code")
   total         Float
   currency      String
   // Set when the order was finalized from a Stripe Checkout Session. Unique so
@@ -151,6 +155,9 @@ model PendingCheckout {
   subtotal        Float
   shipping        Float
   discount        Float    @default(0)
+  // Store-wide code (if any) validated for this checkout — carried onto the
+  // Order at finalization and used to increment DiscountCode.redemptionCount.
+  discountCode    String?  @map("discount_code")
   total           Float
   currency        String
   status          String   @default("reserved") // reserved | completed | released
@@ -159,6 +166,33 @@ model PendingCheckout {
 
   @@index([status])
   @@map("pending_checkouts")
+}
+
+/// A store-wide discount code, redeemable by any customer at checkout. Distinct
+/// from OfferTag (admin-assigned, per-customer, lives on User.offers) — a code
+/// is a single shared string the customer types in at checkout. At checkout a
+/// valid code is turned into a synthetic OfferTag and priced through the exact
+/// same engine personal offers use (features/checkout/lib/pricing.ts), so the
+/// "single best percent offer" / shipping-waiver rules apply identically either
+/// way and a code can never stack with a percent offer to exceed 100%.
+model DiscountCode {
+  id              String    @id @default(uuid())
+  code            String    @unique
+  label           String
+  kind            String    @default("percent") // percent | shipping
+  // Percent amount for `percent` codes (0-100). Ignored for `shipping`.
+  value           Float?
+  active          Boolean   @default(true)
+  expiresAt       DateTime? @map("expires_at")
+  // Minimum cart subtotal (major currency units) required to use the code.
+  minSubtotal     Float?    @map("min_subtotal")
+  // Maximum number of orders this code may discount, store-wide. Null = unlimited.
+  maxRedemptions  Int?      @map("max_redemptions")
+  redemptionCount Int       @default(0) @map("redemption_count")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("discount_codes")
 }
 
 /// A product review. Not FK-bound to a user because reviews may be submitted by

@@ -4,14 +4,16 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
-import { ArrowLeft, Lock, ShoppingBag, Tag } from "lucide-react"
+import { ArrowLeft, Loader2, Lock, ShoppingBag, Tag, X } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { useAuth } from "@/lib/auth/auth-context"
 import { priceCheckout } from "@/features/checkout"
 import type { QuoteRequestLine } from "@/features/checkout/actions"
+import { resolveDiscountCode } from "@/lib/discount-codes/db-actions"
 import { EmbeddedPayment } from "@/components/checkout/embedded-payment"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { formatMoney } from "@/lib/format"
+import type { OfferTag } from "@/lib/auth/types"
 import type { OrderItem } from "@/lib/orders/types"
 
 export function CheckoutView() {
@@ -19,6 +21,14 @@ export function CheckoutView() {
   const { user } = useAuth()
   const router = useRouter()
   const [pay, setPay] = useState(false)
+
+  // Store-wide discount code, entered by the customer and validated against
+  // the live cart subtotal. Kept separate from the customer's personal offer
+  // tags so removing a bad code never touches those.
+  const [codeInput, setCodeInput] = useState("")
+  const [appliedCode, setAppliedCode] = useState<{ code: string; offer: OfferTag } | null>(null)
+  const [codeError, setCodeError] = useState<string | null>(null)
+  const [codeChecking, setCodeChecking] = useState(false)
 
   const displayName = user?.profile.displayName || user?.name || "there"
 
@@ -38,12 +48,39 @@ export function CheckoutView() {
       })),
     [lines],
   )
-  const quote = useMemo(
-    () => priceCheckout({ items, offers: user?.offers ?? [] }),
-    [items, user?.offers],
+  const offers = useMemo(
+    () => (appliedCode ? [...(user?.offers ?? []), appliedCode.offer] : user?.offers ?? []),
+    [user?.offers, appliedCode],
   )
+  const quote = useMemo(() => priceCheckout({ items, offers }), [items, offers])
   const savingsOffers = quote.appliedOffers.filter((offer) => offer.amount > 0)
   const labelOffers = quote.appliedOffers.filter((offer) => offer.amount === 0)
+
+  async function handleApplyCode() {
+    const value = codeInput.trim()
+    if (!value) return
+    setCodeChecking(true)
+    setCodeError(null)
+    try {
+      const rawSubtotal = items.reduce((sum, item) => sum + item.unitAmount * item.quantity, 0)
+      const result = await resolveDiscountCode(value, rawSubtotal)
+      if (result.ok) {
+        setAppliedCode({ code: result.code, offer: result.offer })
+        setCodeInput("")
+      } else {
+        setCodeError(result.error)
+      }
+    } catch {
+      setCodeError("Couldn't apply that code. Try again.")
+    } finally {
+      setCodeChecking(false)
+    }
+  }
+
+  function handleRemoveCode() {
+    setAppliedCode(null)
+    setCodeError(null)
+  }
 
   // What the payment step sends to the server. The server re-prices from the
   // authoritative catalog and rebuilds offer discounts, so these are only a
@@ -94,7 +131,7 @@ export function CheckoutView() {
           Paying {formatMoney({ amount: quote.total, currency: quote.currency })} — signed in as {user?.email}.
         </p>
         <div className="mt-8">
-          <EmbeddedPayment lines={paymentLines} />
+          <EmbeddedPayment lines={paymentLines} code={appliedCode?.code} />
         </div>
       </main>
     )
@@ -195,6 +232,54 @@ export function CheckoutView() {
                 {formatMoney({ amount: quote.total, currency: quote.currency })}
               </span>
             </div>
+
+            <div className="mt-4 border-t border-foreground/10 pt-4">
+              {appliedCode ? (
+                <div className="flex items-center justify-between rounded-lg border border-foreground/10 bg-foreground/[0.03] px-3 py-2">
+                  <span className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                    <Tag className="h-3.5 w-3.5" strokeWidth={2} />
+                    {appliedCode.code}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCode}
+                    aria-label="Remove discount code"
+                    className="text-foreground/40 transition-colors hover:text-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" strokeWidth={2} />
+                  </button>
+                </div>
+              ) : (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    handleApplyCode()
+                  }}
+                  className="flex gap-2"
+                >
+                  <input
+                    type="text"
+                    value={codeInput}
+                    onChange={(e) => {
+                      setCodeInput(e.target.value)
+                      if (codeError) setCodeError(null)
+                    }}
+                    placeholder="Discount code"
+                    aria-label="Discount code"
+                    className="min-w-0 flex-1 rounded-lg border border-foreground/15 bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-1 focus:ring-foreground/30"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!codeInput.trim() || codeChecking}
+                    className="shrink-0 rounded-lg border border-foreground/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-foreground transition-colors hover:bg-foreground/5 disabled:opacity-40"
+                  >
+                    {codeChecking ? <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2} /> : "Apply"}
+                  </button>
+                </form>
+              )}
+              {codeError && <p className="mt-2 text-xs text-destructive">{codeError}</p>}
+            </div>
+
             {quote.discount > 0 && (
               <p className="mt-2 text-right text-xs text-foreground/50">
                 You saved {formatMoney({ amount: quote.discount, currency: quote.currency })}

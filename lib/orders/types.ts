@@ -56,6 +56,8 @@ export interface Order {
   discount?: number
   /** Personal offers realized on this order. Missing on legacy orders → []. */
   appliedOffers?: AppliedOffer[]
+  /** Store-wide discount code applied at checkout, if any, e.g. "SUMMER20". */
+  discountCode?: string
   total: number
   currency: string
   /** Stripe Checkout Session id this order was finalized from, if paid via Stripe. */

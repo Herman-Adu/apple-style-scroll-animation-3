@@ -28,13 +28,13 @@ const STRIPE_BOOTSTRAP_IFRAME_COUNT = 2
  * below — all driven by the site's own design tokens, so they follow light/
  * dark mode automatically.
  */
-export function EmbeddedPayment({ lines }: { lines: QuoteRequestLine[] }) {
+export function EmbeddedPayment({ lines, code }: { lines: QuoteRequestLine[]; code?: string }) {
   const [ready, setReady] = useState(false)
 
   const fetchClientSecret = useCallback(async () => {
-    const { clientSecret } = await startStripeCheckout({ lines })
+    const { clientSecret } = await startStripeCheckout({ lines, code })
     return clientSecret
-  }, [lines])
+  }, [lines, code])
 
   // EmbeddedCheckout exposes no "ready" callback, and Stripe appends every
   // one of its iframes straight to <body> rather than inside our own DOM

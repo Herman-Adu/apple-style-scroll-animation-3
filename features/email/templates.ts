@@ -1,5 +1,6 @@
 import { formatMoney } from "@/lib/format"
 import type { Order } from "@/lib/orders/types"
+import { carrierLabel } from "@/lib/orders/tracking"
 import { renderEmail, renderText, type RenderContext } from "./blocks/render"
 import { getSystemTemplate } from "./blocks/system-templates"
 import { DEFAULT_BRANDING, type EmailBlock, type EmailBranding } from "./blocks/types"
@@ -233,6 +234,57 @@ export function refundConfirmationEmail(params: {
     subject: isFullRefund
       ? `Order ${order.number} cancelled — ${amountLabel} refunded`
       : `Refund processed — ${amountLabel} for order ${order.number}`,
+    html,
+    text,
+  }
+}
+
+export function shippingConfirmationEmail(params: {
+  name: string
+  order: Order
+  branding?: Partial<EmailBranding>
+  baseUrl?: string
+}): Rendered {
+  const { order } = params
+  const b = brand(params.branding)
+  const carrier = carrierLabel(order.carrier)
+
+  const blocks: EmailBlock[] = [
+    {
+      id: "hero",
+      type: "hero",
+      eyebrow: "On its way",
+      heading: `Hi ${params.name}, your order has shipped`,
+      subheading: `Order ${order.number} is on its way via *${carrier}*.`,
+      imageUrl: "",
+      align: "left",
+    },
+    {
+      id: "callout",
+      type: "callout",
+      title: order.trackingNumber ? `Tracking number: ${order.trackingNumber}` : "Tracking number coming soon",
+      body: order.trackingUrl
+        ? "Use the button below to follow your package's progress."
+        : "We'll follow up with a tracking link as soon as it's available.",
+    },
+    ...(order.trackingUrl
+      ? ([
+          {
+            id: "track",
+            type: "button",
+            label: "Track your package",
+            href: order.trackingUrl,
+            align: "left",
+          },
+        ] satisfies EmailBlock[])
+      : []),
+  ]
+  const html = renderEmail(blocks, b, { baseUrl: params.baseUrl })
+  const text = `Your order has shipped — ${order.number}\n\nCarrier: ${carrier}${
+    order.trackingNumber ? `\nTracking number: ${order.trackingNumber}` : ""
+  }${order.trackingUrl ? `\nTrack: ${order.trackingUrl}` : ""}`
+  return {
+    subject: `Your order ${order.number} has shipped`,
     html,
     text,
   }

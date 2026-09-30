@@ -31,6 +31,7 @@ import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import type { Order, OrderStatus } from "@/features/orders"
 import { formatMoney } from "@/lib/format"
+import { CARRIERS, carrierLabel, type Carrier } from "@/lib/orders/tracking"
 import { OrderStatusBadge } from "./status-badges"
 import { useAdminOrders } from "../hooks/use-admin-orders"
 import { ColumnsMenu, type ColumnOption } from "./columns-menu"
@@ -209,8 +210,91 @@ function RefundPanel({
   )
 }
 
+/**
+ * Shipment tracking entry for a single order. Saving fires the customer's
+ * shipping-confirmation email the first time only (addTrackingAction is
+ * idempotent about that); re-saving to fix a typo just updates silently.
+ */
+function TrackingPanel({
+  order,
+  onSave,
+}: {
+  order: Order
+  onSave: (input: { carrier: Carrier; trackingNumber: string; trackingUrl?: string }) => Promise<void>
+}) {
+  const [carrier, setCarrier] = useState<Carrier>(order.carrier ?? "ups")
+  const [trackingNumber, setTrackingNumber] = useState(order.trackingNumber ?? "")
+  const [submitting, setSubmitting] = useState(false)
+  const alreadySaved = Boolean(order.trackingNumber)
+
+  async function submit() {
+    const value = trackingNumber.trim()
+    if (!value) {
+      toast.error("Enter a tracking number.")
+      return
+    }
+    setSubmitting(true)
+    try {
+      await onSave({ carrier, trackingNumber: value })
+      toast.success(alreadySaved ? "Tracking updated" : `Shipping email sent for ${order.number}`)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save tracking.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-3 border-t border-border pt-4">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Tracking</p>
+        {order.shippedAt ? (
+          <span className="text-xs text-muted-foreground">Shipped {formatDateTime(order.shippedAt)}</span>
+        ) : null}
+      </div>
+      <div className="flex gap-2">
+        <Select value={carrier} onValueChange={(v) => setCarrier(v as Carrier)}>
+          <SelectTrigger className="w-28 shrink-0" aria-label="Carrier">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {CARRIERS.map((c) => (
+              <SelectItem key={c.value} value={c.value}>
+                {c.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Input
+          value={trackingNumber}
+          onChange={(e) => setTrackingNumber(e.target.value)}
+          placeholder="Tracking number"
+          className="flex-1"
+        />
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        {order.trackingUrl ? (
+          <a
+            href={order.trackingUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-accent-teal underline underline-offset-2"
+          >
+            View on {carrierLabel(order.carrier)}
+          </a>
+        ) : (
+          <span />
+        )}
+        <Button type="button" size="sm" disabled={submitting} onClick={submit}>
+          {alreadySaved ? "Update tracking" : "Save & notify customer"}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export function OrderManager() {
-  const { orders, loading, updateStatus, refund } = useAdminOrders()
+  const { orders, loading, updateStatus, refund, addTracking } = useAdminOrders()
   const [filter, setFilter] = useState<OrderStatus | "all">("all")
   const [activeId, setActiveId] = useState<string | null>(null)
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => new Set(["customer", "date"]))
@@ -391,6 +475,8 @@ export function OrderManager() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <TrackingPanel order={active} onSave={(input) => addTracking(active.id, input)} />
 
                 {/* Full refunds always resolve to "refunded" (see refund-actions.ts),
                     so the panel — and its permanent audit trail of every refund

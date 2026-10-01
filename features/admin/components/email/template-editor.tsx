@@ -8,6 +8,7 @@ import {
   ChevronUp,
   GripVertical,
   Image as ImageIcon,
+  LayoutGrid,
   Loader2,
   Minus,
   MousePointerClick,
@@ -23,6 +24,7 @@ import {
   List as ListIcon,
   MessageSquareQuote,
   ShoppingBag,
+  X,
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -76,6 +78,7 @@ const PALETTE: { type: BlockType; label: string; icon: typeof Type }[] = [
   { type: "list", label: "List", icon: ListIcon },
   { type: "callout", label: "Callout", icon: MessageSquareQuote },
   { type: "orderSummary", label: "Order summary", icon: ShoppingBag },
+  { type: "productPicks", label: "Product picks", icon: LayoutGrid },
   { type: "divider", label: "Divider", icon: SeparatorHorizontal },
   { type: "spacer", label: "Spacer", icon: Minus },
 ]
@@ -99,6 +102,8 @@ function makeBlock(type: BlockType): EmailBlock {
       return { id, type, title: "Good to know", body: "A highlighted note for the reader.", }
     case "orderSummary":
       return { id, type }
+    case "productPicks":
+      return { id, type, title: "You might also like", slugs: [] }
     case "divider":
       return { id, type }
     case "spacer":
@@ -455,6 +460,12 @@ function blockSummary(block: EmailBlock, products: ProductImageMap): string {
       return block.title || block.body.replace(/\*/g, "")
     case "orderSummary":
       return "Dynamic order table"
+    case "productPicks": {
+      const picked = block.slugs.filter((slug) => products[slug])
+      return picked.length
+        ? `${picked.length} product${picked.length === 1 ? "" : "s"}: ${picked.map((slug) => products[slug].name).join(", ")}`
+        : "No products picked yet"
+    }
     case "spacer":
       return block.size
     case "divider":
@@ -643,6 +654,17 @@ function BlockFields({
           This block expands to the customer&apos;s real order items and totals when the email is sent. The preview shows sample data.
         </p>
       )
+    case "productPicks":
+      return (
+        <div className="space-y-3">
+          <FieldInput label="Title" value={block.title} onChange={(v) => onChange({ title: v } as Partial<EmailBlock>)} />
+          <ProductMultiPickField
+            slugs={block.slugs}
+            products={products}
+            onChange={(slugs) => onChange({ slugs } as Partial<EmailBlock>)}
+          />
+        </div>
+      )
     case "divider":
       return <p className="text-sm text-muted-foreground">A thin horizontal rule. No settings.</p>
     default:
@@ -720,6 +742,92 @@ function ProductLinkField({
       ) : (
         <p className="text-xs text-muted-foreground">Pick a product so the image and name always match its catalog listing.</p>
       )}
+    </div>
+  )
+}
+
+/**
+ * Hand-pick several products for a `ProductPicksBlock` (e.g. "You might also
+ * like"). Each entry resolves its image/name/price live from
+ * `RenderContext.products` at render time — only the slug is stored — so the
+ * picks can never drift out of sync with the catalog. See
+ * `ProductPicksBlock` in `features/email/blocks/types.ts`.
+ */
+function ProductMultiPickField({
+  slugs,
+  products,
+  onChange,
+}: {
+  slugs: string[]
+  products: ProductImageMap
+  onChange: (slugs: string[]) => void
+}) {
+  const ADD = "__add__"
+  const available = Object.entries(products).filter(([slug]) => !slugs.includes(slug))
+
+  function add(slug: string) {
+    if (slug === ADD || slugs.includes(slug)) return
+    onChange([...slugs, slug])
+  }
+
+  function remove(slug: string) {
+    onChange(slugs.filter((s) => s !== slug))
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <Label>Products</Label>
+      <div className="space-y-2">
+        {slugs.map((slug) => {
+          const p = products[slug]
+          return (
+            <div key={slug} className="flex items-center gap-2 rounded-lg border border-border bg-muted/30 p-2">
+              {p ? (
+                <>
+                  <img src={p.image || "/placeholder.svg"} alt={p.name} className="size-10 rounded-md object-cover" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{p.name}</p>
+                    <p className="text-xs text-muted-foreground">{formatMoney(p.price)}</p>
+                  </div>
+                </>
+              ) : (
+                <p className="min-w-0 flex-1 text-xs text-muted-foreground">Unknown product ({slug})</p>
+              )}
+              <Button
+                size="icon"
+                variant="ghost"
+                className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
+                onClick={() => remove(slug)}
+                aria-label={`Remove ${p?.name ?? slug}`}
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+          )
+        })}
+      </div>
+      {available.length > 0 ? (
+        <Select value={ADD} onValueChange={add}>
+          <SelectTrigger>
+            <SelectValue placeholder="Add a product" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ADD} disabled>
+              Add a product&hellip;
+            </SelectItem>
+            {available.map(([slug, p]) => (
+              <SelectItem key={slug} value={slug}>
+                {p.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : slugs.length === 0 ? (
+        <p className="text-xs text-muted-foreground">No products available to pick from.</p>
+      ) : null}
+      <p className="text-xs text-muted-foreground">
+        Each product&apos;s image, name, and price are pulled live from the catalog and stay in sync automatically.
+      </p>
     </div>
   )
 }

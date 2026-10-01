@@ -115,6 +115,22 @@ export interface OrderSummaryBlock {
   type: "orderSummary"
 }
 
+/**
+ * A hand-picked set of products shown as a card grid (e.g. "You might also
+ * like"). Unlike `HeroBlock`/`ImageBlock`'s single `productSlug`, this block
+ * takes a list so staff can feature several items at once. Each card's
+ * image, name, and price are resolved live from the product catalog at
+ * render time (`RenderContext.products`) — never copied into the block — so
+ * the picks can never drift out of sync with the catalog. Add as many slugs
+ * as needed; the grid wraps into even columns.
+ */
+export interface ProductPicksBlock {
+  id: string
+  type: "productPicks"
+  title: string
+  slugs: string[]
+}
+
 /** Dynamic: expands to the triggering low-stock product rows at send time. */
 export interface LowStockItemsBlock {
   id: string
@@ -133,6 +149,7 @@ export type EmailBlock =
   | CalloutBlock
   | OrderSummaryBlock
   | LowStockItemsBlock
+  | ProductPicksBlock
 
 export type BlockType = EmailBlock["type"]
 

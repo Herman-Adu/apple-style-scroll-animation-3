@@ -9,12 +9,15 @@ import "server-only"
 
 import type Stripe from "stripe"
 import type { Prisma } from "@prisma/client"
+import { after } from "next/server"
 
 import { prisma } from "@/lib/db/prisma"
 import { getAllProducts } from "@/lib/data/products"
 import { productSchema } from "@/features/products"
 import { recordSale, toMap, type ProductMap } from "@/features/catalog/store"
 import { incrementDiscountCodeRedemption } from "@/lib/discount-codes/db-actions"
+import { sendLowStockAlert } from "@/features/email/actions"
+import { getStoreSettingsAction } from "@/lib/settings/db-actions"
 import type { AppliedOffer, Order, OrderStatus } from "./types"
 
 /** A stock delta: `quantity` units of `slug` were removed (and can be restored). */
@@ -132,11 +135,38 @@ export async function nextOrderNumber(tx: Prisma.TransactionClient): Promise<str
 }
 
 /**
+ * Fire the low-stock admin alert for products that just crossed at or below
+ * their threshold (best-effort, never throws — a notification failure must
+ * never affect checkout). Scheduled via `after()` rather than a bare
+ * fire-and-forget call: in a serverless function, an unawaited promise can be
+ * killed mid-flight the instant the response is sent, which silently drops
+ * the alert before it ever reaches the email provider. `after()` guarantees
+ * this runs to completion once the response has been flushed, without
+ * adding latency to the reservation transaction itself.
+ */
+function notifyLowStock(items: { name: string; slug: string; stock: number; threshold: number }[]): void {
+  if (items.length === 0) return
+  after(async () => {
+    try {
+      const settings = await getStoreSettingsAction()
+      if (!settings.emailAlerts || !settings.supportEmail) return
+      await sendLowStockAlert({ to: settings.supportEmail, items })
+    } catch {
+      // Best-effort only.
+    }
+  })
+}
+
+/**
  * Enforce the oversell / last-unit guard and decrement physical stock for
  * `lines` inside `tx`. Pre-orders and unknown slugs are left untouched (matching
  * the storefront rules). Throws if the guard fails so the surrounding
  * transaction rolls back. Returns the exact deltas actually removed, so an
  * abandoned checkout can restore precisely what it reserved.
+ *
+ * Also detects stock crossing at-or-below its low-stock threshold as a result
+ * of this sale and fires a single batched admin alert for those items — not
+ * on every sale while already low, only on the transition into low stock.
  */
 export async function commitStock(
   tx: Prisma.TransactionClient,
@@ -151,6 +181,7 @@ export async function commitStock(
   if (!sale.ok) throw new Error(sale.error ?? "Some items are no longer available.")
 
   const decremented: ReservedLine[] = []
+  const crossedLowStock: { name: string; slug: string; stock: number; threshold: number }[] = []
   for (const slug of slugs) {
     const prev = before[slug]
     const next = sale.map[slug]
@@ -162,7 +193,13 @@ export async function commitStock(
       update: { data, deleted: false },
     })
     decremented.push({ slug, quantity: prev.stock - next.stock })
+
+    const threshold = next.lowStockThreshold ?? 5
+    if (prev.stock > threshold && next.stock <= threshold) {
+      crossedLowStock.push({ name: next.name, slug, stock: next.stock, threshold })
+    }
   }
+  if (crossedLowStock.length > 0) void notifyLowStock(crossedLowStock)
   return decremented
 }
 

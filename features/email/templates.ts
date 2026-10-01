@@ -29,20 +29,48 @@ function fillSubject(subject: string, vars: Record<string, string>): string {
   return subject.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, k) => vars[k] ?? "")
 }
 
+/** Escape text destined for an HTML attribute (e.g. alt text). */
+function escAttr(s: string): string {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+}
+
+/**
+ * Resolve a product image path to an absolute URL. Mirrors blocks/render.ts's
+ * resolveSrc — emails have no page origin, so a root-relative product image
+ * path never loads in a mail client without a baseUrl prefix.
+ */
+function resolveSrc(src: string, baseUrl?: string): string {
+  const s = String(src ?? "")
+  if (!baseUrl || !s) return s
+  if (/^(https?:)?\/\//i.test(s) || s.startsWith("data:")) return s
+  const base = baseUrl.replace(/\/$/, "")
+  return `${base}${s.startsWith("/") ? s : `/${s}`}`
+}
+
 /** Dynamic order line-item table injected into the orderSummary block slot. */
-function orderSummaryHtml(order: Order): string {
+function orderSummaryHtml(order: Order, baseUrl?: string): string {
   const rows = order.items
-    .map(
-      (item) => `
+    .map((item) => {
+      const thumb = item.image
+        ? `<td width="48" style="padding:12px 8px 12px 0;border-bottom:1px solid ${BORDER};vertical-align:top;">
+             <img src="${resolveSrc(item.image, baseUrl)}" alt="${escAttr(item.name)}" width="48" height="48" style="display:block;width:48px;height:48px;border-radius:8px;border:1px solid ${BORDER};object-fit:cover;" />
+           </td>`
+        : ""
+      return `
       <tr>
+        ${thumb}
         <td style="padding:12px 0;border-bottom:1px solid ${BORDER};color:${INK};font-size:14px;">
           ${item.name}<br /><span style="color:${MUTED};font-size:12px;">${item.color ? `${item.color} · ` : ""}Qty ${item.quantity}</span>
         </td>
-        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};text-align:right;color:${INK};font-size:14px;white-space:nowrap;">
+        <td style="padding:12px 0;border-bottom:1px solid ${BORDER};text-align:right;color:${INK};font-size:14px;white-space:nowrap;vertical-align:top;">
           ${formatMoney({ amount: item.unitAmount * item.quantity, currency: item.currency })}
         </td>
-      </tr>`,
-    )
+      </tr>`
+    })
     .join("")
 
   const discountRow =
@@ -102,7 +130,11 @@ export function orderConfirmationEmail(params: {
     // tab — rather than back to the store.
     order_url: params.orderUrl ?? "/account?tab=orders",
   }
-  const ctx: RenderContext = { vars, dynamic: { orderSummary: orderSummaryHtml(params.order) }, baseUrl: params.baseUrl }
+  const ctx: RenderContext = {
+    vars,
+    dynamic: { orderSummary: orderSummaryHtml(params.order, params.baseUrl) },
+    baseUrl: params.baseUrl,
+  }
   return {
     subject: fillSubject(getSystemTemplate("order_confirmation")!.subject, vars),
     html: renderEmail(blocks, b, ctx),
@@ -181,7 +213,11 @@ export function businessOrderNotificationEmail(params: {
     admin_url: params.adminUrl ?? "/admin",
     total,
   }
-  const ctx: RenderContext = { vars, dynamic: { orderSummary: orderSummaryHtml(order) }, baseUrl: params.baseUrl }
+  const ctx: RenderContext = {
+    vars,
+    dynamic: { orderSummary: orderSummaryHtml(order, params.baseUrl) },
+    baseUrl: params.baseUrl,
+  }
   return {
     subject: fillSubject(getSystemTemplate("order_notification")!.subject, vars),
     html: renderEmail(blocks, b, ctx),

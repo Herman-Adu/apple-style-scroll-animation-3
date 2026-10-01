@@ -30,7 +30,7 @@ export const siteConfig = {
     "Momo Audio builds reference-grade headphones, earbuds, and speakers. Titanium craft, planar precision, and immersive spatial sound.",
   founded: 2016,
   location: "London · Copenhagen · Accra · Tokyo",
-  email: "hello@momoaudio.com",
+  email: "admin@adudev.co.uk",
 }
 
 export const mainNav: NavLink[] = [

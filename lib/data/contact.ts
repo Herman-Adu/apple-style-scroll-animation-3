@@ -33,8 +33,8 @@ export const contactChannels: ContactChannel[] = [
     id: "email",
     icon: "mail",
     label: "Email",
-    value: "hello@momoaudio.com",
-    href: "mailto:hello@momoaudio.com",
+    value: "admin@adudev.co.uk",
+    href: "mailto:admin@adudev.co.uk",
     note: "We reply within one business day.",
   },
   {

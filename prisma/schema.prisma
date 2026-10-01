@@ -377,7 +377,7 @@ model StoreSettings {
   onboarded         Boolean  @default(false)
   // Storefront-facing + operational settings
   storeName         String   @default("MOMO Audio") @map("store_name")
-  supportEmail      String   @default("hello@momoaudio.com") @map("support_email")
+  supportEmail      String   @default("admin@adudev.co.uk") @map("support_email")
   currency          String   @default("GBP")
   lowStockThreshold Int      @default(5) @map("low_stock_threshold")
   emailAlerts       Boolean  @default(true) @map("email_alerts")

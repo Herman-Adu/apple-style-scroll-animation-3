@@ -18,6 +18,14 @@ export interface HeroBlock {
   /** Words wrapped in *asterisks* render in the accent color. */
   subheading: string
   imageUrl: string
+  /**
+   * Optional product to link this image to. When set, the image is resolved
+   * live from the product catalog at render time (`RenderContext.products`)
+   * and `imageUrl` is ignored — so the picture always matches the linked
+   * product's current image and can never drift out of sync with it. Leave
+   * unset to use `imageUrl` / the brand hero image as a plain, unlinked image.
+   */
+  productSlug?: string | null
   align: BlockAlign
 }
 
@@ -49,6 +57,15 @@ export interface ImageBlock {
   src: string
   alt: string
   href: string
+  /**
+   * Optional product to link this image to. When set, the image and alt text
+   * are resolved live from the product catalog at render time
+   * (`RenderContext.products`) and `src`/`alt` are ignored — so the picture
+   * always matches the linked product's current name and image and can never
+   * be mismatched by hand. Leave unset for a plain, unlinked image (e.g. a
+   * lifestyle or banner shot).
+   */
+  productSlug?: string | null
 }
 
 export interface DividerBlock {

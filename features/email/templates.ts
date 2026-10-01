@@ -4,6 +4,7 @@ import { carrierLabel } from "@/lib/orders/tracking"
 import { renderEmail, renderText, type RenderContext } from "./blocks/render"
 import { getSystemTemplate } from "./blocks/system-templates"
 import { DEFAULT_BRANDING, type EmailBlock, type EmailBranding } from "./blocks/types"
+import type { ProductImageMap } from "@/features/products/lib/product"
 
 /**
  * Transactional + branded email templates, now rendered through the block
@@ -129,6 +130,7 @@ export function orderConfirmationEmail(params: {
   shopUrl?: string
   orderUrl?: string
   baseUrl?: string
+  products?: ProductImageMap
 }): Rendered {
   const b = brand(params.branding)
   const blocks = params.blocks ?? getSystemTemplate("order_confirmation")!.blocks
@@ -145,6 +147,7 @@ export function orderConfirmationEmail(params: {
     vars,
     dynamic: { orderSummary: orderSummaryHtml(params.order, params.baseUrl) },
     baseUrl: params.baseUrl,
+    products: params.products,
   }
   return {
     subject: fillSubject(getSystemTemplate("order_confirmation")!.subject, vars),
@@ -173,6 +176,7 @@ export function personalOfferEmail(params: {
   branding?: Partial<EmailBranding>
   blocks?: EmailBlock[]
   baseUrl?: string
+  products?: ProductImageMap
 }): Rendered {
   const b = brand(params.branding)
   const blocks = params.blocks ?? getSystemTemplate("personal_offer")!.blocks
@@ -190,7 +194,7 @@ export function personalOfferEmail(params: {
     offer_label: params.offer.label || "Special offer",
     offer_expiry: expiry,
   }
-  const ctx: RenderContext = { vars, baseUrl: params.baseUrl }
+  const ctx: RenderContext = { vars, baseUrl: params.baseUrl, products: params.products }
   return {
     subject: fillSubject(getSystemTemplate("personal_offer")!.subject, vars),
     html: renderEmail(blocks, b, ctx),
@@ -210,6 +214,7 @@ export function businessOrderNotificationEmail(params: {
   blocks?: EmailBlock[]
   adminUrl?: string
   baseUrl?: string
+  products?: ProductImageMap
 }): Rendered {
   const { order, customerName } = params
   const b = brand(params.branding)
@@ -228,6 +233,7 @@ export function businessOrderNotificationEmail(params: {
     vars,
     dynamic: { orderSummary: orderSummaryHtml(order, params.baseUrl) },
     baseUrl: params.baseUrl,
+    products: params.products,
   }
   return {
     subject: fillSubject(getSystemTemplate("order_notification")!.subject, vars),
@@ -252,6 +258,7 @@ export function refundConfirmationEmail(params: {
   blocks?: EmailBlock[]
   orderUrl?: string
   baseUrl?: string
+  products?: ProductImageMap
 }): Rendered {
   const { order, amount, isFullRefund } = params
   const b = brand(params.branding)
@@ -278,6 +285,7 @@ export function refundConfirmationEmail(params: {
     vars,
     dynamic: { orderSummary: orderSummaryHtml(order, params.baseUrl) },
     baseUrl: params.baseUrl,
+    products: params.products,
   }
   return {
     subject: isFullRefund
@@ -293,6 +301,7 @@ export function shippingConfirmationEmail(params: {
   order: Order
   branding?: Partial<EmailBranding>
   baseUrl?: string
+  products?: ProductImageMap
 }): Rendered {
   const { order } = params
   const b = brand(params.branding)
@@ -332,6 +341,7 @@ export function shippingConfirmationEmail(params: {
   const html = renderEmail(blocks, b, {
     dynamic: { orderSummary: orderSummaryHtml(order, params.baseUrl) },
     baseUrl: params.baseUrl,
+    products: params.products,
   })
   const text = `Your order has shipped — ${order.number}\n\nCarrier: ${carrier}${
     order.trackingNumber ? `\nTracking number: ${order.trackingNumber}` : ""
@@ -343,7 +353,11 @@ export function shippingConfirmationEmail(params: {
   }
 }
 
-export function testEmail(params?: { branding?: Partial<EmailBranding>; baseUrl?: string }): Rendered {
+export function testEmail(params?: {
+  branding?: Partial<EmailBranding>
+  baseUrl?: string
+  products?: ProductImageMap
+}): Rendered {
   const b = brand(params?.branding)
   const blocks: EmailBlock[] = [
     {
@@ -364,7 +378,7 @@ export function testEmail(params?: { branding?: Partial<EmailBranding>; baseUrl?
   ]
   return {
     subject: `${b.brandName} — email configuration test`,
-    html: renderEmail(blocks, b, { baseUrl: params?.baseUrl }),
+    html: renderEmail(blocks, b, { baseUrl: params?.baseUrl, products: params?.products }),
     text: renderText(blocks, b, {}),
   }
 }
@@ -402,6 +416,7 @@ export function lowStockAlertEmail(params: {
   blocks?: EmailBlock[]
   adminUrl?: string
   baseUrl?: string
+  products?: ProductImageMap
 }): Rendered {
   const { items } = params
   const b = brand(params.branding)
@@ -415,6 +430,7 @@ export function lowStockAlertEmail(params: {
     vars,
     dynamic: { lowStockItems: lowStockItemsHtml(items, params.baseUrl) },
     baseUrl: params.baseUrl,
+    products: params.products,
   }
   const text = `Low stock alert\n\n${items.map((i) => `${i.name} (${i.slug}) — ${i.stock} left, threshold ${i.threshold}`).join("\n")}`
   return {

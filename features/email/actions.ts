@@ -14,6 +14,7 @@ import {
 import { getBranding, getTemplateBlocksByKey, recordLog } from "./repo"
 import type { Order } from "@/lib/orders/types"
 import { getBaseUrl } from "@/lib/seo/site"
+import { fetchProductImageMap } from "@/features/products/api"
 
 /**
  * Final in-code fallback recipient for business notifications, used when neither
@@ -36,7 +37,11 @@ const DEFAULT_ADMIN_EMAIL = "admin@momo-audio.adudev.co.uk"
  */
 
 export async function sendOrderConfirmation(params: { to: string; name: string; order: Order }) {
-  const [branding, blocks] = await Promise.all([getBranding(), getTemplateBlocksByKey("order_confirmation")])
+  const [branding, blocks, products] = await Promise.all([
+    getBranding(),
+    getTemplateBlocksByKey("order_confirmation"),
+    fetchProductImageMap(),
+  ])
   const { subject, html, text } = orderConfirmationEmail({
     name: params.name,
     order: params.order,
@@ -45,6 +50,7 @@ export async function sendOrderConfirmation(params: { to: string; name: string; 
     shopUrl: `${getBaseUrl()}/products`,
     orderUrl: `${getBaseUrl()}/account?tab=orders`,
     baseUrl: getBaseUrl(),
+    products,
   })
   const result = await sendEmail({ to: params.to, subject, html, text })
   await recordLog({
@@ -64,13 +70,18 @@ export async function sendLowStockAlert(params: {
   items: LowStockEmailItem[]
 }) {
   if (params.items.length === 0) return { ok: true as const, id: null, skipped: true as const, reason: "no items" }
-  const [branding, blocks] = await Promise.all([getBranding(), getTemplateBlocksByKey("low_stock")])
+  const [branding, blocks, products] = await Promise.all([
+    getBranding(),
+    getTemplateBlocksByKey("low_stock"),
+    fetchProductImageMap(),
+  ])
   const { subject, html, text } = lowStockAlertEmail({
     items: params.items,
     branding,
     blocks: blocks ?? undefined,
     adminUrl: `${getBaseUrl()}/admin`,
     baseUrl: getBaseUrl(),
+    products,
   })
   const result = await sendEmail({ to: params.to, subject, html, text })
   await recordLog({
@@ -87,7 +98,11 @@ export async function sendLowStockAlert(params: {
 export async function sendOrderNotification(params: { order: Order; customerName?: string }) {
   const to = process.env.EMAIL_TO || process.env.EMAIL_FROM || DEFAULT_ADMIN_EMAIL
   if (!to) return { ok: true as const, id: null, skipped: true as const, reason: "no recipient configured" }
-  const [branding, blocks] = await Promise.all([getBranding(), getTemplateBlocksByKey("order_notification")])
+  const [branding, blocks, products] = await Promise.all([
+    getBranding(),
+    getTemplateBlocksByKey("order_notification"),
+    fetchProductImageMap(),
+  ])
   const { subject, html, text } = businessOrderNotificationEmail({
     order: params.order,
     customerName: params.customerName,
@@ -95,6 +110,7 @@ export async function sendOrderNotification(params: { order: Order; customerName
     blocks: blocks ?? undefined,
     adminUrl: `${getBaseUrl()}/admin`,
     baseUrl: getBaseUrl(),
+    products,
   })
   const result = await sendEmail({ to, subject, html, text })
   await recordLog({
@@ -115,7 +131,11 @@ export async function sendPersonalOffer(params: {
   offer: { label: string; kind: string; value?: number; expiresAt?: string; note?: string }
 }) {
   const shopUrl = `${getBaseUrl()}/products`
-  const [branding, blocks] = await Promise.all([getBranding(), getTemplateBlocksByKey("personal_offer")])
+  const [branding, blocks, products] = await Promise.all([
+    getBranding(),
+    getTemplateBlocksByKey("personal_offer"),
+    fetchProductImageMap(),
+  ])
   const { subject, html, text } = personalOfferEmail({
     name: params.name,
     offer: params.offer,
@@ -123,6 +143,7 @@ export async function sendPersonalOffer(params: {
     branding,
     blocks: blocks ?? undefined,
     baseUrl: getBaseUrl(),
+    products,
   })
   const result = await sendEmail({ to: params.to, subject, html, text })
   await recordLog({
@@ -143,7 +164,11 @@ export async function sendRefundConfirmation(params: {
   amount: number
   isFullRefund: boolean
 }) {
-  const [branding, blocks] = await Promise.all([getBranding(), getTemplateBlocksByKey("refund_confirmation")])
+  const [branding, blocks, products] = await Promise.all([
+    getBranding(),
+    getTemplateBlocksByKey("refund_confirmation"),
+    fetchProductImageMap(),
+  ])
   const { subject, html, text } = refundConfirmationEmail({
     name: params.name,
     order: params.order,
@@ -153,6 +178,7 @@ export async function sendRefundConfirmation(params: {
     blocks: blocks ?? undefined,
     orderUrl: `${getBaseUrl()}/account?tab=orders`,
     baseUrl: getBaseUrl(),
+    products,
   })
   const result = await sendEmail({ to: params.to, subject, html, text })
   await recordLog({
@@ -168,12 +194,13 @@ export async function sendRefundConfirmation(params: {
 }
 
 export async function sendShippingConfirmation(params: { to: string; name: string; order: Order }) {
-  const branding = await getBranding()
+  const [branding, products] = await Promise.all([getBranding(), fetchProductImageMap()])
   const { subject, html, text } = shippingConfirmationEmail({
     name: params.name,
     order: params.order,
     branding,
     baseUrl: getBaseUrl(),
+    products,
   })
   const result = await sendEmail({ to: params.to, subject, html, text })
   await recordLog({
@@ -195,8 +222,8 @@ export async function getEmailConfigured(): Promise<boolean> {
 
 /** Admin: send a test email to verify Resend + sending domain are working. */
 export async function sendTestEmail(params: { to: string }) {
-  const branding = await getBranding()
-  const { subject, html, text } = testEmail({ branding, baseUrl: getBaseUrl() })
+  const [branding, products] = await Promise.all([getBranding(), fetchProductImageMap()])
+  const { subject, html, text } = testEmail({ branding, baseUrl: getBaseUrl(), products })
   const result = await sendEmail({ to: params.to, subject, html, text })
   await recordLog({
     to: params.to,

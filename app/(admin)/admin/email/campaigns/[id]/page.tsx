@@ -3,6 +3,7 @@ import { AdminShell } from "@/features/admin"
 import { EmailTabs } from "@/features/admin/components/email/email-tabs"
 import { CampaignEditor } from "@/features/admin/components/email/campaign-editor"
 import { getBranding, getCampaign, listSubscribers, listTemplates } from "@/features/email/repo"
+import { fetchProductImageMap } from "@/features/products/api"
 
 export const dynamic = "force-dynamic"
 
@@ -17,11 +18,12 @@ export default async function AdminEmailCampaignEditorPage({
   const campaignId = Number(id)
   if (!Number.isFinite(campaignId)) notFound()
 
-  const [campaign, templates, subscribers, branding] = await Promise.all([
+  const [campaign, templates, subscribers, branding, products] = await Promise.all([
     getCampaign(campaignId),
     listTemplates(),
     listSubscribers(),
     getBranding(),
+    fetchProductImageMap(),
   ])
   if (!campaign) notFound()
 
@@ -50,6 +52,7 @@ export default async function AdminEmailCampaignEditorPage({
         }))}
         branding={branding}
         optedInCount={subscribers.filter((s) => s.optedIn).length}
+        products={products}
       />
     </AdminShell>
   )

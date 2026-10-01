@@ -11,7 +11,7 @@ import { fetchStrapi, toEntries } from "@/lib/strapi/client"
 import { strapiTags } from "@/lib/strapi/tags"
 import { z } from "zod"
 import { productSchema, type Product } from "../schema"
-import { selectRelatedProducts } from "../lib/product"
+import { selectRelatedProducts, toProductImageMap, type ProductImageMap } from "../lib/product"
 import { mapStrapiProduct } from "../mappers"
 
 /**
@@ -80,4 +80,13 @@ export async function fetchProductSlugs(): Promise<string[]> {
 export async function fetchRelatedProducts(slug: string, limit = 3): Promise<Product[]> {
   const all = await fetchProducts()
   return selectRelatedProducts(all, slug, limit)
+}
+
+/**
+ * Slug -> {name, image} lookup for resolving a `productSlug` block reference
+ * (email builder) against the live catalog. Single call site so every email
+ * send path and the admin preview resolve product-linked images the same way.
+ */
+export async function fetchProductImageMap(): Promise<ProductImageMap> {
+  return toProductImageMap(await fetchProducts())
 }

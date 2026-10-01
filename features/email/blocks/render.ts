@@ -1,5 +1,6 @@
 import type { EmailBlock, EmailBranding, BlockAlign } from "./types"
 import { DEFAULT_BRANDING } from "./types"
+import type { ProductImageMap } from "@/features/products/lib/product"
 
 /**
  * Pure block -> HTML renderer. Framework-free and side-effect-free so it runs
@@ -27,6 +28,21 @@ export interface RenderContext {
    * send time; the admin live preview omits it and relies on the page origin.
    */
   baseUrl?: string
+  /**
+   * Slug -> {name, image} lookup used to resolve a block's `productSlug`
+   * reference to the product's live image/name, so a hero or image block
+   * linked to a product can never show a stale or mismatched picture. Build
+   * with `toProductImageMap` from the current product list.
+   */
+  products?: ProductImageMap
+}
+
+/** Resolve a block's optional `productSlug` against the context's product map. */
+function resolveProductLink(
+  productSlug: string | null | undefined,
+  products: ProductImageMap | undefined,
+): { name: string; image: string } | undefined {
+  return productSlug ? products?.[productSlug] : undefined
 }
 
 /**
@@ -87,7 +103,8 @@ function renderBlock(block: EmailBlock, brand: EmailBranding, ctx: RenderContext
 
   switch (block.type) {
     case "hero": {
-      const img = resolveSrc(block.imageUrl || brand.heroImageUrl, ctx.baseUrl)
+      const linked = resolveProductLink(block.productSlug, ctx.products)
+      const img = resolveSrc(linked?.image || block.imageUrl || brand.heroImageUrl, ctx.baseUrl)
       const align = alignToCss(block.align)
       const underlineAlign =
         align === "center" ? "margin:22px auto 0;" : align === "right" ? "margin:22px 0 0 auto;" : "margin:22px 0 0;"
@@ -150,7 +167,10 @@ function renderBlock(block: EmailBlock, brand: EmailBranding, ctx: RenderContext
     }
 
     case "image": {
-      const tag = `<img src="${esc(resolveSrc(prep(block.src, vars), ctx.baseUrl))}" alt="${esc(block.alt)}" width="100%" style="display:block;width:100%;border:0;border-radius:12px;" />`
+      const linked = resolveProductLink(block.productSlug, ctx.products)
+      const src = linked?.image || prep(block.src, vars)
+      const alt = block.alt || linked?.name || ""
+      const tag = `<img src="${esc(resolveSrc(src, ctx.baseUrl))}" alt="${esc(alt)}" width="100%" style="display:block;width:100%;border:0;border-radius:12px;" />`
       return `
       <tr><td style="padding:16px 28px 0;">
         ${block.href ? `<a href="${esc(prep(block.href, vars))}" style="text-decoration:none;">${tag}</a>` : tag}

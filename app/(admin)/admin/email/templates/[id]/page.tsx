@@ -3,6 +3,7 @@ import { AdminShell } from "@/features/admin"
 import { EmailTabs } from "@/features/admin/components/email/email-tabs"
 import { TemplateEditor } from "@/features/admin/components/email/template-editor"
 import { getBranding, getTemplate } from "@/features/email/repo"
+import { fetchProductImageMap } from "@/features/products/api"
 
 export const dynamic = "force-dynamic"
 
@@ -15,7 +16,11 @@ export default async function AdminEmailTemplateEditorPage({
   const templateId = Number(id)
   if (!Number.isFinite(templateId)) notFound()
 
-  const [template, branding] = await Promise.all([getTemplate(templateId), getBranding()])
+  const [template, branding, products] = await Promise.all([
+    getTemplate(templateId),
+    getBranding(),
+    fetchProductImageMap(),
+  ])
   if (!template) notFound()
 
   return (
@@ -34,6 +39,7 @@ export default async function AdminEmailTemplateEditorPage({
           isSystem: template.isSystem,
         }}
         branding={branding}
+        products={products}
       />
     </AdminShell>
   )

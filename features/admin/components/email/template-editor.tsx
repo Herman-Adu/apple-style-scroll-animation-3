@@ -43,6 +43,7 @@ import {
 import { cn } from "@/lib/utils"
 import type { BlockType, EmailBlock, EmailBranding } from "@/features/email/blocks/types"
 import { TEMPLATE_TOKENS, BLOCK_PRESETS } from "@/features/email/blocks/system-templates"
+import type { ProductImageMap } from "@/features/products/lib/product"
 import {
   resetTemplateAction,
   saveTemplateAction,
@@ -111,7 +112,16 @@ function blockLabel(type: BlockType): string {
 
 const CATEGORIES = ["transactional", "marketing", "system"]
 
-export function TemplateEditor({ template, branding }: { template: EditorTemplate; branding: EmailBranding }) {
+export function TemplateEditor({
+  template,
+  branding,
+  products,
+}: {
+  template: EditorTemplate
+  branding: EmailBranding
+  /** Slug -> live name/image lookup powering the product picker and preview. */
+  products: ProductImageMap
+}) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [testing, setTesting] = useState(false)
@@ -383,7 +393,7 @@ export function TemplateEditor({ template, branding }: { template: EditorTemplat
                         className="min-w-0 flex-1 text-left"
                       >
                         <span className="text-sm font-medium">{blockLabel(block.type)}</span>
-                        <span className="ml-2 truncate text-xs text-muted-foreground">{blockSummary(block)}</span>
+                        <span className="ml-2 truncate text-xs text-muted-foreground">{blockSummary(block, products)}</span>
                       </button>
                       <div className="flex items-center gap-0.5">
                         <Button size="icon" variant="ghost" className="size-7" onClick={() => move(block.id, -1)} disabled={i === 0} aria-label="Move up">
@@ -399,7 +409,7 @@ export function TemplateEditor({ template, branding }: { template: EditorTemplat
                     </div>
                     {selectedId === block.id ? (
                       <div className="border-t border-border px-3 py-3">
-                        <BlockFields block={block} onChange={(patch) => updateBlock(block.id, patch)} />
+                        <BlockFields block={block} products={products} onChange={(patch) => updateBlock(block.id, patch)} />
                       </div>
                     ) : null}
                   </div>
@@ -415,24 +425,26 @@ export function TemplateEditor({ template, branding }: { template: EditorTemplat
             <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Live preview</span>
             <span className="text-xs text-muted-foreground">Sample data</span>
           </div>
-          <BlockPreview blocks={blocks} branding={workingBranding} className="h-[720px]" />
+                <BlockPreview blocks={blocks} branding={workingBranding} products={products} className="h-[720px]" />
         </div>
       </div>
     </div>
   )
 }
 
-function blockSummary(block: EmailBlock): string {
+function blockSummary(block: EmailBlock, products: ProductImageMap): string {
   switch (block.type) {
     case "hero":
-      return block.heading.replace(/\*/g, "")
+      return block.productSlug && products[block.productSlug]
+        ? `${block.heading.replace(/\*/g, "")} · linked to ${products[block.productSlug].name}`
+        : block.heading.replace(/\*/g, "")
     case "heading":
     case "text":
       return block.text.replace(/\*/g, "")
     case "button":
       return block.label
     case "image":
-      return block.src
+      return block.productSlug && products[block.productSlug] ? `Linked to ${products[block.productSlug].name}` : block.src
     case "list":
       return block.title || `${block.items.length} items`
     case "callout":
@@ -479,7 +491,15 @@ function AlignField({ value, onChange }: { value: string; onChange: (v: "left" |
   )
 }
 
-function BlockFields({ block, onChange }: { block: EmailBlock; onChange: (patch: Partial<EmailBlock>) => void }) {
+function BlockFields({
+  block,
+  products,
+  onChange,
+}: {
+  block: EmailBlock
+  products: ProductImageMap
+  onChange: (patch: Partial<EmailBlock>) => void
+}) {
   switch (block.type) {
     case "hero":
       return (
@@ -487,7 +507,18 @@ function BlockFields({ block, onChange }: { block: EmailBlock; onChange: (patch:
           <FieldInput label="Eyebrow" value={block.eyebrow} onChange={(v) => onChange({ eyebrow: v } as Partial<EmailBlock>)} />
           <FieldInput label="Heading" value={block.heading} onChange={(v) => onChange({ heading: v } as Partial<EmailBlock>)} hint="Wrap words in *asterisks* to accent them" />
           <FieldTextarea label="Subheading" value={block.subheading} onChange={(v) => onChange({ subheading: v } as Partial<EmailBlock>)} />
-          <FieldInput label="Image URL" value={block.imageUrl} onChange={(v) => onChange({ imageUrl: v } as Partial<EmailBlock>)} hint="Leave blank to use the brand hero" />
+          <ProductLinkField
+            productSlug={block.productSlug}
+            products={products}
+            onChange={(slug) => onChange({ productSlug: slug } as Partial<EmailBlock>)}
+          />
+          <FieldInput
+            label="Image URL"
+            value={block.imageUrl}
+            onChange={(v) => onChange({ imageUrl: v } as Partial<EmailBlock>)}
+            hint={block.productSlug ? "Linked to a product above — this URL is ignored" : "Leave blank to use the brand hero"}
+            disabled={!!block.productSlug}
+          />
           <AlignField value={block.align} onChange={(v) => onChange({ align: v } as Partial<EmailBlock>)} />
         </div>
       )
@@ -516,8 +547,25 @@ function BlockFields({ block, onChange }: { block: EmailBlock; onChange: (patch:
     case "image":
       return (
         <div className="space-y-3">
-          <FieldInput label="Image URL" value={block.src} onChange={(v) => onChange({ src: v } as Partial<EmailBlock>)} />
-          <FieldInput label="Alt text" value={block.alt} onChange={(v) => onChange({ alt: v } as Partial<EmailBlock>)} />
+          <ProductLinkField
+            productSlug={block.productSlug}
+            products={products}
+            onChange={(slug) => onChange({ productSlug: slug } as Partial<EmailBlock>)}
+          />
+          <FieldInput
+            label="Image URL"
+            value={block.src}
+            onChange={(v) => onChange({ src: v } as Partial<EmailBlock>)}
+            hint={block.productSlug ? "Linked to a product above — this URL is ignored" : undefined}
+            disabled={!!block.productSlug}
+          />
+          <FieldInput
+            label="Alt text"
+            value={block.alt}
+            onChange={(v) => onChange({ alt: v } as Partial<EmailBlock>)}
+            hint={block.productSlug ? "Linked to a product above — this text is ignored" : undefined}
+            disabled={!!block.productSlug}
+          />
           <FieldInput label="Link (optional)" value={block.href} onChange={(v) => onChange({ href: v } as Partial<EmailBlock>)} />
         </div>
       )
@@ -584,12 +632,76 @@ function BlockFields({ block, onChange }: { block: EmailBlock; onChange: (patch:
   }
 }
 
-function FieldInput({ label, value, onChange, hint }: { label: string; value: string; onChange: (v: string) => void; hint?: string }) {
+function FieldInput({
+  label,
+  value,
+  onChange,
+  hint,
+  disabled,
+}: {
+  label: string
+  value: string
+  onChange: (v: string) => void
+  hint?: string
+  disabled?: boolean
+}) {
   return (
     <div className="space-y-1.5">
       <Label>{label}</Label>
-      <Input value={value} onChange={(e) => onChange(e.target.value)} />
+      <Input value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled} />
       {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  )
+}
+
+const UNLINKED = "__unlinked__"
+
+/**
+ * Link a hero/image block to a live product instead of a hand-entered image
+ * URL. Selecting a product resolves its name/image at render time
+ * (`RenderContext.products`), so the picture can never drift out of sync with
+ * — or be mismatched against — the product title. See `HeroBlock.productSlug`
+ * / `ImageBlock.productSlug` in `features/email/blocks/types.ts`.
+ */
+function ProductLinkField({
+  productSlug,
+  products,
+  onChange,
+}: {
+  productSlug: string | null | undefined
+  products: ProductImageMap
+  onChange: (slug: string | null) => void
+}) {
+  const entries = Object.entries(products)
+  const linked = productSlug ? products[productSlug] : undefined
+
+  return (
+    <div className="space-y-1.5">
+      <Label>Link to product</Label>
+      <Select value={productSlug || UNLINKED} onValueChange={(v) => onChange(v === UNLINKED ? null : v)}>
+        <SelectTrigger>
+          <SelectValue placeholder="No product linked" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={UNLINKED}>No product linked</SelectItem>
+          {entries.map(([slug, p]) => (
+            <SelectItem key={slug} value={slug}>
+              {p.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {linked ? (
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/30 p-2">
+          <img src={linked.image || "/placeholder.svg"} alt={linked.name} className="size-10 rounded-md object-cover" />
+          <p className="text-xs text-muted-foreground">
+            Image and name are pulled live from <span className="font-medium text-foreground">{linked.name}</span>. They stay in
+            sync automatically if the product changes.
+          </p>
+        </div>
+      ) : (
+        <p className="text-xs text-muted-foreground">Pick a product so the image and name always match its catalog listing.</p>
+      )}
     </div>
   )
 }

@@ -66,6 +66,19 @@ export function purchasableQuantity(product: Product, alreadyInCart = 0): number
   return Math.max(0, effectiveStock(product) - alreadyInCart)
 }
 
+/** Slug -> live name/image lookup, e.g. for linking an email block to a product. */
+export type ProductImageMap = Record<string, { name: string; image: string }>
+
+/**
+ * Build a `slug -> {name, image}` lookup. The single place that turns a product
+ * list into the shape a `productSlug` reference resolves against, so every
+ * caller (server send paths, the admin builder preview, the product picker)
+ * derives the same data instead of each hand-rolling its own `.find()`.
+ */
+export function toProductImageMap(products: Pick<Product, "slug" | "name" | "image">[]): ProductImageMap {
+  return Object.fromEntries(products.map((p) => [p.slug, { name: p.name, image: p.image }]))
+}
+
 export function selectRelatedProducts(products: Product[], slug: string, limit = 3): Product[] {
   return products.filter((product) => product.slug !== slug).slice(0, limit)
 }

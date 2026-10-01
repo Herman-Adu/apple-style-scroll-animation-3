@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import type { EmailBlock, EmailBranding } from "@/features/email/blocks/types"
+import type { ProductImageMap } from "@/features/products/lib/product"
 import { saveCampaignAction, sendCampaignAction } from "@/features/email/admin-actions"
 import { BlockPreview } from "./block-preview"
 
@@ -48,11 +49,14 @@ export function CampaignEditor({
   templates,
   branding,
   optedInCount,
+  products,
 }: {
   campaign: EditorCampaign
   templates: TemplateOption[]
   branding: EmailBranding
   optedInCount: number
+  /** Slug -> live name/image lookup, so a product-linked template previews its real image. */
+  products: ProductImageMap
 }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
@@ -268,7 +272,7 @@ export function CampaignEditor({
             <span className="text-xs text-muted-foreground">Sample data</span>
           </div>
           {selectedTemplate ? (
-            <BlockPreview blocks={selectedTemplate.blocks} branding={branding} className="h-[640px]" />
+            <BlockPreview blocks={selectedTemplate.blocks} branding={branding} products={products} className="h-[640px]" />
           ) : (
             <div className="flex h-[640px] items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
               Choose a template to preview

@@ -186,6 +186,8 @@ export type LowStockItem = {
   slug: string;
   stock: number;
   threshold: number;
+  /** Product image, carried through so the admin alert email can show a thumbnail. */
+  image?: string;
 };
 
 /**
@@ -261,6 +263,7 @@ export async function commitStock(
         slug,
         stock: next.stock,
         threshold,
+        image: next.image,
       });
     }
   }

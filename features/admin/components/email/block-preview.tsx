@@ -3,7 +3,7 @@
 import { useMemo } from "react"
 import { renderEmail } from "@/features/email/blocks/render"
 import type { EmailBlock, EmailBranding } from "@/features/email/blocks/types"
-import { sampleVars, SAMPLE_ORDER_SUMMARY } from "@/features/email/blocks/sample"
+import { sampleVars, SAMPLE_ORDER_SUMMARY, SAMPLE_LOW_STOCK_ITEMS } from "@/features/email/blocks/sample"
 import { cn } from "@/lib/utils"
 
 /**
@@ -24,7 +24,7 @@ export function BlockPreview({
     () =>
       renderEmail(blocks, branding, {
         vars: sampleVars(branding),
-        dynamic: { orderSummary: SAMPLE_ORDER_SUMMARY },
+        dynamic: { orderSummary: SAMPLE_ORDER_SUMMARY, lowStockItems: SAMPLE_LOW_STOCK_ITEMS },
       }),
     [blocks, branding],
   )

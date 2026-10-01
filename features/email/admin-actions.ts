@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { sendEmail } from "./provider"
 import { renderEmail, renderText } from "./blocks/render"
 import type { EmailBlock, EmailBranding } from "./blocks/types"
+import { sampleVars, SAMPLE_ORDER_SUMMARY, SAMPLE_LOW_STOCK_ITEMS } from "./blocks/sample"
 import { getBaseUrl } from "@/lib/seo/site"
 
 /**
@@ -101,9 +102,13 @@ export async function resetTemplateAction(id: number) {
 export async function sendTemplateTestAction(input: { id: number; to: string }) {
   const [tpl, branding] = await Promise.all([getTemplate(input.id), getBranding()])
   if (!tpl) return { ok: false as const, error: "Template not found" }
-  const vars = sampleVars(branding)
-  const html = renderEmail(tpl.blocks, branding, { vars, baseUrl: getBaseUrl() })
-  const text = renderText(tpl.blocks, branding, { vars })
+  const baseUrl = getBaseUrl()
+  // shop_url/order_url must be absolute for a real sent email (no page origin to
+  // resolve relative links against), unlike the in-app builder preview.
+  const vars = { ...sampleVars(branding), shop_url: `${baseUrl}/products`, order_url: `${baseUrl}/account?tab=orders` }
+  const dynamic = { orderSummary: SAMPLE_ORDER_SUMMARY, lowStockItems: SAMPLE_LOW_STOCK_ITEMS }
+  const html = renderEmail(tpl.blocks, branding, { vars, baseUrl, dynamic })
+  const text = renderText(tpl.blocks, branding, { vars, dynamic })
   const subject = fill(tpl.subject, vars)
   const result = await sendEmail({ to: input.to, subject, html, text, replyTo: branding.supportEmail || undefined })
   await recordLog({
@@ -316,18 +321,6 @@ export async function sendCampaignAction(id: number) {
 
 function fill(s: string, vars: Record<string, string>): string {
   return String(s ?? "").replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, k) => vars[k] ?? "")
-}
-
-function sampleVars(branding: EmailBranding): Record<string, string> {
-  return {
-    customer_name: "Ada Lovelace",
-    brand_name: branding.brandName,
-    order_number: "MOMO-1024",
-    shop_url: `${getBaseUrl()}/products`,
-    offer_headline: "15% off",
-    offer_label: "Welcome offer",
-    offer_expiry: "Valid until 31 December 2026.",
-  }
 }
 
 async function resolveAudience(spec: AudienceSpec): Promise<{ email: string; name: string }[]> {

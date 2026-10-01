@@ -228,6 +228,39 @@ function renderBlock(block: EmailBlock, brand: EmailBranding, ctx: RenderContext
       </td></tr>`
     }
 
+    case "productPicks": {
+      const items = block.slugs
+        .map((slug) => ({ slug, product: resolveProductLink(slug, ctx.products) }))
+        .filter((x): x is { slug: string; product: NonNullable<typeof x.product> } => Boolean(x.product))
+      if (items.length === 0) return ""
+      const widthPct = (100 / items.length).toFixed(2)
+      const cards = items
+        .map(({ slug, product }, i) => {
+          const isFirst = i === 0
+          const isLast = i === items.length - 1
+          const href = resolveSrc(`/products/${slug}`, ctx.baseUrl)
+          const img = resolveSrc(product.image, ctx.baseUrl)
+          return `
+          <td style="width:${widthPct}%;padding:0 ${isLast ? 0 : 6}px 0 ${isFirst ? 0 : 6}px;vertical-align:top;">
+            <a href="${esc(href)}" style="display:block;text-decoration:none;">
+              <img src="${esc(img)}" alt="${esc(product.name)}" width="100%" style="display:block;width:100%;border:0;border-radius:12px;" />
+              <div style="margin:10px 0 0;font-size:13px;font-weight:600;color:${INK};">${esc(product.name)}</div>
+              <div style="margin:2px 0 0;font-size:13px;font-weight:700;color:${MUTED};">${esc(formatMoney(product.price))}</div>
+            </a>
+          </td>`
+        })
+        .join("")
+      return `
+      <tr><td style="padding:20px 28px 0;">
+        ${
+          block.title
+            ? `<p style="margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:${INK};">${esc(prep(block.title, vars))}</p>`
+            : ""
+        }
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>${cards}</tr></table>
+      </td></tr>`
+    }
+
     case "orderSummary":
       return ctx.dynamic?.orderSummary ?? ""
 
@@ -326,6 +359,14 @@ export function renderText(blocks: EmailBlock[], brand: EmailBranding, ctx: Rend
         if (block.title) lines.push(strip(block.title))
         block.items.filter((i) => i.trim()).forEach((i, idx) => lines.push(`${block.ordered ? `${idx + 1}.` : "-"} ${strip(i)}`))
         break
+      case "productPicks": {
+        if (block.title) lines.push(strip(block.title))
+        const items = block.slugs
+          .map((slug) => ctx.products?.[slug])
+          .filter((p): p is NonNullable<typeof p> => Boolean(p))
+        items.forEach((p) => lines.push(`- ${p.name} (${formatMoney(p.price)})`))
+        break
+      }
       default:
         break
     }

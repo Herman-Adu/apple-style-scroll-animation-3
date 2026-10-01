@@ -1,5 +1,5 @@
-import Link from "next/link"
-import { footerNav, siteConfig } from "@/lib/data/site"
+import Link from "next/link";
+import { footerNav, siteConfig } from "@/lib/data/site";
 
 export function SiteFooter() {
   return (
@@ -13,18 +13,22 @@ export function SiteFooter() {
         */}
         <div className="grid grid-cols-2 gap-x-8 gap-y-12 lg:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))] lg:gap-12">
           <div className="col-span-2 lg:col-span-1">
-            <p className="text-sm font-semibold uppercase tracking-[0.35em] text-foreground">{siteConfig.shortName}</p>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-foreground/40 lg:max-w-xs">
+            <p className="text-sm font-semibold uppercase tracking-[0.35em] text-foreground">
+              {siteConfig.shortName}
+            </p>
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-foreground/60 lg:max-w-xs">
               {siteConfig.description}
             </p>
-            <p className="mt-6 text-xs uppercase tracking-[0.2em] text-foreground/30">
+            <p className="mt-6 text-xs uppercase tracking-[0.2em] text-foreground/50">
               {siteConfig.location}
             </p>
           </div>
 
           {footerNav.map((group) => (
             <div key={group.title}>
-              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">{group.title}</p>
+              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+                {group.title}
+              </p>
               <ul className="flex flex-col items-start gap-3">
                 {group.links.map((link) => (
                   <li key={link.label}>
@@ -41,23 +45,32 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-16 flex flex-col gap-4 border-t border-foreground/10 pt-8 text-xs text-foreground/30 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="mt-16 flex flex-col gap-4 border-t border-foreground/10 pt-8 text-xs text-foreground/50 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <span>
             © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </span>
           <div className="flex gap-6">
-            <Link href="/privacy" className="transition-colors hover:text-accent-teal">
+            <Link
+              href="/privacy"
+              className="transition-colors hover:text-accent-teal"
+            >
               Privacy
             </Link>
-            <Link href="/terms" className="transition-colors hover:text-accent-teal">
+            <Link
+              href="/terms"
+              className="transition-colors hover:text-accent-teal"
+            >
               Terms
             </Link>
-            <Link href={`mailto:${siteConfig.email}`} className="transition-colors hover:text-accent-teal">
+            <Link
+              href={`mailto:${siteConfig.email}`}
+              className="transition-colors hover:text-accent-teal"
+            >
               Contact
             </Link>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

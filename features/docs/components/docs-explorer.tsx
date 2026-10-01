@@ -1,19 +1,16 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
 import {
   BadgeCheck,
   BarChart3,
   Boxes,
-  ChevronDown,
   Code2,
   FileText,
   GitBranch,
   HelpCircle,
   Image as ImageIcon,
   Layers,
-  Lock,
   Mail,
   Package,
   Rocket,
@@ -37,9 +34,10 @@ import { DOC_AUDIENCES, docAudienceMeta } from "../schema"
 import { groupDocsByAudienceAndCategory, visibleDocs } from "../lib/doc"
 import { useDocSearch } from "../lib/use-doc-search"
 import { DocCard } from "./doc-card"
-  import { useAuth } from "@/lib/auth/auth-context"
-  import { isOwner } from "@/lib/auth/config"
-  import { cn } from "@/lib/utils"
+import { CategoryDisclosure } from "@/components/category-disclosure"
+import { useAuth } from "@/lib/auth/auth-context"
+import { isOwner } from "@/lib/auth/config"
+import { cn } from "@/lib/utils"
 
 type AudienceTab = "all" | DocAudience
 
@@ -183,8 +181,10 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
                   return (
                     <CategoryDisclosure
                       key={key}
-                      category={cat.category}
+                      label={cat.category}
+                      icon={categoryIcon[cat.category]}
                       count={cat.docs.length}
+                      itemLabel="guide"
                       open={open}
                       onToggle={() => toggleCategory(key)}
                     >
@@ -201,72 +201,6 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
           ))}
         </div>
       )}
-    </div>
-  )
-}
-
-function CategoryDisclosure({
-  category,
-  count,
-  open,
-  onToggle,
-  children,
-}: {
-  category: DocCategory
-  count: number
-  open: boolean
-  onToggle: () => void
-  children: React.ReactNode
-}) {
-  const Icon = categoryIcon[category]
-  return (
-    <div className="rounded-2xl border border-foreground/10 bg-card/30 px-4 py-1 transition-colors hover:border-foreground/20">
-      <h3>
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-expanded={open}
-          className="group flex w-full items-center gap-3 py-4 text-left"
-        >
-          <span
-            className={cn(
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors",
-              open
-                ? "border-accent-teal/40 bg-accent-teal/10 text-accent-teal"
-                : "border-foreground/10 bg-foreground/[0.03] text-foreground/50 group-hover:text-foreground",
-            )}
-          >
-            <Icon className="h-4 w-4" strokeWidth={1.75} />
-          </span>
-          <span className="flex-1">
-            <span className="block text-sm font-medium text-foreground">{category}</span>
-          </span>
-          <span className="font-mono text-[10px] text-foreground/30">
-            {count} {count === 1 ? "guide" : "guides"}
-          </span>
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 shrink-0 text-foreground/40 transition-transform duration-200",
-              open && "rotate-180 text-accent-teal",
-            )}
-            strokeWidth={2}
-          />
-        </button>
-      </h3>
-      <AnimatePresence initial={false}>
-        {open ? (
-          <motion.div
-            key="content"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="overflow-hidden"
-          >
-            <div className="pb-5">{children}</div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </div>
   )
 }

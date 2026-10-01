@@ -24,7 +24,7 @@ export interface StoreSettings extends CompanyProfile {
 export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   ...DEFAULT_COMPANY,
   storeName: "MOMO Audio",
-  supportEmail: "hello@momoaudio.com",
+  supportEmail: "admin@adudev.co.uk",
   currency: "GBP",
   lowStockThreshold: 5,
   emailAlerts: true,

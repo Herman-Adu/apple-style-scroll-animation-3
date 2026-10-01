@@ -86,7 +86,15 @@ export async function sendLowStockAlert(params: {
 export async function sendOrderNotification(params: { order: Order; customerName?: string }) {
   const to = process.env.EMAIL_TO || process.env.EMAIL_FROM || DEFAULT_ADMIN_EMAIL
   if (!to) return { ok: true as const, id: null, skipped: true as const, reason: "no recipient configured" }
-  const { subject, html, text } = businessOrderNotificationEmail({ order: params.order, customerName: params.customerName })
+  const [branding, blocks] = await Promise.all([getBranding(), getTemplateBlocksByKey("order_notification")])
+  const { subject, html, text } = businessOrderNotificationEmail({
+    order: params.order,
+    customerName: params.customerName,
+    branding,
+    blocks: blocks ?? undefined,
+    adminUrl: `${getBaseUrl()}/admin`,
+    baseUrl: getBaseUrl(),
+  })
   const result = await sendEmail({ to, subject, html, text })
   await recordLog({
     to,
@@ -134,13 +142,15 @@ export async function sendRefundConfirmation(params: {
   amount: number
   isFullRefund: boolean
 }) {
-  const branding = await getBranding()
+  const [branding, blocks] = await Promise.all([getBranding(), getTemplateBlocksByKey("refund_confirmation")])
   const { subject, html, text } = refundConfirmationEmail({
     name: params.name,
     order: params.order,
     amount: params.amount,
     isFullRefund: params.isFullRefund,
     branding,
+    blocks: blocks ?? undefined,
+    orderUrl: `${getBaseUrl()}/account?tab=orders`,
     baseUrl: getBaseUrl(),
   })
   const result = await sendEmail({ to: params.to, subject, html, text })

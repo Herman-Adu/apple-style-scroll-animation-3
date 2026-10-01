@@ -156,43 +156,45 @@ export function personalOfferEmail(params: {
 }
 
 /**
- * Business order notification (internal). Kept as a focused branded summary —
- * not block-based, since it targets the team inbox rather than customers.
+ * Business order notification (internal). Block-based like the customer-facing
+ * templates so it is editable/previewable in Admin -> Email -> Templates, even
+ * though it targets the team inbox rather than customers.
  */
-export function businessOrderNotificationEmail(params: { order: Order; customerName?: string }): Rendered {
+export function businessOrderNotificationEmail(params: {
+  order: Order
+  customerName?: string
+  branding?: Partial<EmailBranding>
+  blocks?: EmailBlock[]
+  adminUrl?: string
+  baseUrl?: string
+}): Rendered {
   const { order, customerName } = params
-  const b = brand()
-  const meta = `
-  <tr><td style="padding:20px 28px 0;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-      <tr><td style="padding:4px 0;color:${MUTED};font-size:13px;">Customer</td><td style="padding:4px 0;text-align:right;color:${INK};font-size:13px;">${order.email}</td></tr>
-      <tr><td style="padding:4px 0;color:${MUTED};font-size:13px;">Placed</td><td style="padding:4px 0;text-align:right;color:${INK};font-size:13px;">${new Date(order.createdAt).toLocaleString()}</td></tr>
-    </table>
-  </td></tr>`
-
-  const blocks: EmailBlock[] = [
-    {
-      id: "hero",
-      type: "hero",
-      eyebrow: "New order received",
-      heading: `Order ${order.number}`,
-      subheading: `A new order was just placed${customerName ? ` by *${customerName}*` : ""}.`,
-      imageUrl: "",
-      align: "left",
-    },
-  ]
-  const html = renderEmail(blocks, b, {}).replace(
-    "<tr><td style=\"padding:0 28px 32px;\"></td></tr>",
-    `${meta}${orderSummaryHtml(order)}<tr><td style="padding:20px 28px 0;"><p style="margin:0;color:${MUTED};font-size:13px;line-height:1.6;">Manage this order in the admin dashboard under Orders.</p></td></tr><tr><td style="padding:0 28px 32px;"></td></tr>`,
-  )
-  const text = `New order received — ${order.number}\n\n${customerName ? customerName + " · " : ""}${order.email}\nPlaced: ${new Date(order.createdAt).toLocaleString()}\n\nTotal: ${formatMoney({ amount: order.total, currency: order.currency })}`
-  return { subject: `New order — ${order.number} · ${formatMoney({ amount: order.total, currency: order.currency })}`, html, text }
+  const b = brand(params.branding)
+  const blocks = params.blocks ?? getSystemTemplate("order_notification")!.blocks
+  const total = formatMoney({ amount: order.total, currency: order.currency })
+  const vars: Record<string, string> = {
+    customer_name: customerName || order.email,
+    customer_email: order.email,
+    brand_name: b.brandName,
+    order_number: order.number,
+    placed_at: new Date(order.createdAt).toLocaleString(),
+    admin_url: params.adminUrl ?? "/admin",
+    total,
+  }
+  const ctx: RenderContext = { vars, dynamic: { orderSummary: orderSummaryHtml(order) }, baseUrl: params.baseUrl }
+  return {
+    subject: fillSubject(getSystemTemplate("order_notification")!.subject, vars),
+    html: renderEmail(blocks, b, ctx),
+    text: renderText(blocks, b, ctx),
+  }
 }
 
 /**
- * Refund confirmation (transactional). Not block-based — kept as a focused
- * branded summary, same rationale as businessOrderNotificationEmail: it
- * reports a specific money event rather than rendering a customizable layout.
+ * Refund confirmation (transactional). Block-based so it is editable/previewable
+ * in Admin -> Email -> Templates. The full-vs-partial copy differs materially
+ * between the two cases, so that copy is computed into vars rather than stored
+ * as static block text; admins can still restyle the surrounding layout and
+ * add/remove blocks.
  */
 export function refundConfirmationEmail(params: {
   name: string
@@ -200,42 +202,38 @@ export function refundConfirmationEmail(params: {
   amount: number
   isFullRefund: boolean
   branding?: Partial<EmailBranding>
+  blocks?: EmailBlock[]
+  orderUrl?: string
   baseUrl?: string
 }): Rendered {
   const { order, amount, isFullRefund } = params
   const b = brand(params.branding)
+  const blocks = params.blocks ?? getSystemTemplate("refund_confirmation")!.blocks
   const amountLabel = formatMoney({ amount, currency: order.currency })
   const totalRefunded = formatMoney({ amount: order.refundedAmount ?? amount, currency: order.currency })
+  const orderTotal = formatMoney({ amount: order.total, currency: order.currency })
 
-  const blocks: EmailBlock[] = [
-    {
-      id: "hero",
-      type: "hero",
-      eyebrow: isFullRefund ? "Order cancelled & refunded" : "Refund processed",
-      heading: `Hi ${params.name}, your refund is on its way`,
-      subheading: isFullRefund
-        ? `Order ${order.number} has been cancelled and *fully refunded*.`
-        : `We've processed a *partial refund* of ${amountLabel} for order ${order.number}.`,
-      imageUrl: "",
-      align: "left",
-    },
-    {
-      id: "callout",
-      type: "callout",
-      title: `${amountLabel} refunded`,
-      body: isFullRefund
-        ? `The full order total has been returned to your original payment method. It can take 5–10 business days to appear on your statement.`
-        : `Total refunded on this order so far: ${totalRefunded} of ${formatMoney({ amount: order.total, currency: order.currency })}. It can take 5–10 business days to appear on your statement.`,
-    },
-  ]
-  const html = renderEmail(blocks, b, { baseUrl: params.baseUrl })
-  const text = `${isFullRefund ? "Order cancelled & refunded" : "Refund processed"} — ${order.number}\n\n${amountLabel} refunded to your original payment method. Allow 5–10 business days to appear on your statement.`
+  const vars: Record<string, string> = {
+    customer_name: params.name,
+    brand_name: b.brandName,
+    order_number: order.number,
+    amount: amountLabel,
+    refund_eyebrow: isFullRefund ? "Order cancelled & refunded" : "Refund processed",
+    refund_subheading: isFullRefund
+      ? `Order ${order.number} has been cancelled and *fully refunded*.`
+      : `We've processed a *partial refund* of ${amountLabel} for order ${order.number}.`,
+    refund_note: isFullRefund
+      ? `The full order total has been returned to your original payment method. It can take 5–10 business days to appear on your statement.`
+      : `Total refunded on this order so far: ${totalRefunded} of ${orderTotal}. It can take 5–10 business days to appear on your statement.`,
+    order_url: params.orderUrl ?? "/account?tab=orders",
+  }
+  const ctx: RenderContext = { vars, baseUrl: params.baseUrl }
   return {
     subject: isFullRefund
       ? `Order ${order.number} cancelled — ${amountLabel} refunded`
       : `Refund processed — ${amountLabel} for order ${order.number}`,
-    html,
-    text,
+    html: renderEmail(blocks, b, ctx),
+    text: renderText(blocks, b, ctx),
   }
 }
 

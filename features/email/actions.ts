@@ -63,7 +63,14 @@ export async function sendLowStockAlert(params: {
   items: { name: string; slug: string; stock: number; threshold: number }[]
 }) {
   if (params.items.length === 0) return { ok: true as const, id: null, skipped: true as const, reason: "no items" }
-  const { subject, html, text } = lowStockAlertEmail({ items: params.items })
+  const [branding, blocks] = await Promise.all([getBranding(), getTemplateBlocksByKey("low_stock")])
+  const { subject, html, text } = lowStockAlertEmail({
+    items: params.items,
+    branding,
+    blocks: blocks ?? undefined,
+    adminUrl: `${getBaseUrl()}/admin`,
+    baseUrl: getBaseUrl(),
+  })
   const result = await sendEmail({ to: params.to, subject, html, text })
   await recordLog({
     to: params.to,

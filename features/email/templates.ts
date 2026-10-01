@@ -316,11 +316,8 @@ export function testEmail(params?: { branding?: Partial<EmailBranding>; baseUrl?
   }
 }
 
-export function lowStockAlertEmail(params: {
-  items: { name: string; slug: string; stock: number; threshold: number }[]
-}): Rendered {
-  const { items } = params
-  const b = brand()
+/** Dynamic inventory row table injected into the lowStockItems block slot. */
+function lowStockItemsHtml(items: { name: string; slug: string; stock: number; threshold: number }[]): string {
   const rows = items
     .map(
       (item) => `
@@ -334,23 +331,33 @@ export function lowStockAlertEmail(params: {
       </tr>`,
     )
     .join("")
+  return `<tr><td style="padding:20px 28px 0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${rows}</table></td></tr>`
+}
 
-  const blocks: EmailBlock[] = [
-    {
-      id: "hero",
-      type: "hero",
-      eyebrow: "Inventory",
-      heading: "Low stock alert",
-      subheading: `${items.length} ${items.length === 1 ? "product needs" : "products need"} attention.`,
-      imageUrl: "",
-      align: "left",
-    },
-  ]
-  const table = `<tr><td style="padding:20px 28px 0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${rows}</table></td></tr>`
-  const html = renderEmail(blocks, b, {}).replace(
-    "<tr><td style=\"padding:0 28px 32px;\"></td></tr>",
-    `${table}<tr><td style="padding:20px 28px 0;"><p style="margin:0;color:${MUTED};font-size:13px;line-height:1.6;">Review inventory in the admin dashboard to restock or pause sales.</p></td></tr><tr><td style="padding:0 28px 32px;"></td></tr>`,
-  )
+export function lowStockAlertEmail(params: {
+  items: { name: string; slug: string; stock: number; threshold: number }[]
+  branding?: Partial<EmailBranding>
+  blocks?: EmailBlock[]
+  adminUrl?: string
+  baseUrl?: string
+}): Rendered {
+  const { items } = params
+  const b = brand(params.branding)
+  const blocks = params.blocks ?? getSystemTemplate("low_stock")!.blocks
+  const vars: Record<string, string> = {
+    brand_name: b.brandName,
+    item_count: String(items.length),
+    admin_url: params.adminUrl ?? "/admin",
+  }
+  const ctx: RenderContext = {
+    vars,
+    dynamic: { lowStockItems: lowStockItemsHtml(items) },
+    baseUrl: params.baseUrl,
+  }
   const text = `Low stock alert\n\n${items.map((i) => `${i.name} (${i.slug}) — ${i.stock} left, threshold ${i.threshold}`).join("\n")}`
-  return { subject: `Low stock alert — ${items.length} ${items.length === 1 ? "product" : "products"}`, html, text }
+  return {
+    subject: fillSubject(getSystemTemplate("low_stock")!.subject, vars),
+    html: renderEmail(blocks, b, ctx),
+    text: `${renderText(blocks, b, ctx)}\n\n${text}`,
+  }
 }

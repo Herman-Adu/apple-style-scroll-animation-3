@@ -1,9 +1,10 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ordersAdapter } from "@/features/orders"
 import type { Order, OrderStatus } from "@/features/orders"
 import type { Carrier } from "@/lib/orders/tracking"
+import { useLiveRefresh } from "@/hooks/use-live-refresh"
 
 /**
  * Admin view of the orders backend: every customer's orders plus a status
@@ -13,17 +14,25 @@ import type { Carrier } from "@/lib/orders/tracking"
 export function useAdminOrders() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
+  const hasLoadedOnce = useRef(false)
 
   const refresh = useCallback(async () => {
-    setLoading(true)
+    // Only show the loading state on the very first fetch — background
+    // polls shouldn't flash the table back to its skeleton/empty state.
+    if (!hasLoadedOnce.current) setLoading(true)
     const list = await ordersAdapter.listAll()
     setOrders(list)
     setLoading(false)
+    hasLoadedOnce.current = true
   }, [])
 
   useEffect(() => {
     refresh()
   }, [refresh])
+
+  // Keep polling while the tab is visible, and refresh instantly on refocus,
+  // so a sale/refund/status change made elsewhere shows up without a reload.
+  useLiveRefresh(refresh)
 
   const updateStatus = useCallback(
     async (orderId: string, status: OrderStatus) => {

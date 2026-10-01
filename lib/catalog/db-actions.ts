@@ -12,7 +12,6 @@
 // read time (overlay wins; a `deleted` row tombstones a seed product).
 
 import { headers } from "next/headers"
-import { revalidatePath } from "next/cache"
 import type { Prisma } from "@prisma/client"
 
 import { auth } from "@/lib/auth"
@@ -21,6 +20,7 @@ import { effectiveRole } from "@/lib/auth/config"
 import { getAllProducts } from "@/lib/data/products"
 import { productSchema, type Product } from "@/features/products"
 import { toMap, type ProductMap } from "@/features/catalog/store"
+import { revalidateCatalog } from "./revalidate"
 
 type OverlayRow = { slug: string; data: unknown; deleted: boolean }
 
@@ -53,12 +53,6 @@ function sortProducts(map: ProductMap): Product[] {
     if (a.featured !== b.featured) return a.featured ? -1 : 1
     return a.name.localeCompare(b.name)
   })
-}
-
-function revalidateCatalog(): void {
-  revalidatePath("/")
-  revalidatePath("/products")
-  revalidatePath("/admin")
 }
 
 /** Live catalog = seed + admin overlay, stable-sorted. Public read. */

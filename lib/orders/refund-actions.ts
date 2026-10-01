@@ -15,6 +15,7 @@ import { effectiveRole } from "@/lib/auth/config"
 import { stripe } from "@/lib/stripe/server"
 import { restoreStock, type ReservedLine } from "./checkout-finalize"
 import { dispatchRefundEmail } from "./order-notifications"
+import { revalidateCatalog } from "@/lib/catalog/revalidate"
 import type { Order, OrderStatus, RefundEntry } from "./types"
 
 const VALID_STATUSES: OrderStatus[] = ["processing", "fulfilled", "cancelled", "refunded"]
@@ -182,6 +183,8 @@ export async function refundOrderAction(orderId: string, amount?: number, reason
       select: orderSelect,
     })
   })
+
+  if (isFullRefund) revalidateCatalog()
 
   const order = toOrder(updated)
   void dispatchRefundEmail(order, entry, isFullRefund).catch(() => {})

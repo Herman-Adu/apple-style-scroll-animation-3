@@ -115,6 +115,33 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
     ],
   },
   {
+    key: "low_stock",
+    name: "Low stock alert",
+    category: "transactional",
+    subject: "Low stock alert — {{item_count}} product(s) need attention",
+    previewText: "Inventory is running low on one or more products.",
+    description: "Sent automatically to your support inbox when a product's stock crosses its threshold.",
+    blocks: [
+      {
+        id: bid("hero"),
+        type: "hero",
+        eyebrow: "Inventory",
+        heading: "Low stock alert",
+        subheading: "{{item_count}} product(s) need attention.",
+        imageUrl: "",
+        align: "left",
+      },
+      { id: bid("lowstock"), type: "lowStockItems" },
+      {
+        id: bid("text"),
+        type: "text",
+        text: "Review inventory in the admin dashboard to restock or pause sales.",
+        align: "left",
+      },
+      { id: bid("btn"), type: "button", label: "Manage inventory", href: "{{admin_url}}", align: "left" },
+    ],
+  },
+  {
     key: "welcome",
     name: "Welcome / newsletter",
     category: "marketing",

@@ -9,6 +9,7 @@
 // sessions see the change on their next load.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { useLiveRefresh } from "@/hooks/use-live-refresh"
 import type { Product } from "@/features/products"
 import {
   applyPatch,
@@ -73,6 +74,10 @@ export function CatalogProvider({
   useEffect(() => {
     void refresh()
   }, [refresh])
+
+  // Keep polling while the tab is visible, and refresh instantly on refocus,
+  // so a sale/refund made elsewhere (or in another tab) shows up here too.
+  useLiveRefresh(refresh)
 
   const createProduct = useCallback(
     (input: NewProductInput) => {

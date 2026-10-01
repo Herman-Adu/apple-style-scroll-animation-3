@@ -84,6 +84,12 @@ export interface OrderSummaryBlock {
   type: "orderSummary"
 }
 
+/** Dynamic: expands to the triggering low-stock product rows at send time. */
+export interface LowStockItemsBlock {
+  id: string
+  type: "lowStockItems"
+}
+
 export type EmailBlock =
   | HeroBlock
   | HeadingBlock
@@ -95,6 +101,7 @@ export type EmailBlock =
   | ListBlock
   | CalloutBlock
   | OrderSummaryBlock
+  | LowStockItemsBlock
 
 export type BlockType = EmailBlock["type"]
 

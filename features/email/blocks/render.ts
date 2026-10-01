@@ -197,6 +197,9 @@ function renderBlock(block: EmailBlock, brand: EmailBranding, ctx: RenderContext
     case "orderSummary":
       return ctx.dynamic?.orderSummary ?? ""
 
+    case "lowStockItems":
+      return ctx.dynamic?.lowStockItems ?? ""
+
     default:
       return ""
   }

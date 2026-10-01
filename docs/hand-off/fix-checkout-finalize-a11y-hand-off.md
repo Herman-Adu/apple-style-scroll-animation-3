@@ -156,3 +156,9 @@ ON CONFLICT (stripe_session_id) DO NOTHING;
 - If `INSERT` returns no rows (conflict), treat it as already-finalized and return success to the caller.
 
 These snippets are intentionally minimal — adapt column names and sequencing to your schema.
+
+### Additional docs
+
+- Playwright README added: `docs/PLAYWRIGHT-TEST-EXPLORER.md` — quick steps to run Playwright from the VS Code Test Explorer and terminal.
+
+Final verification: ran `pnpm run test:all` and `pnpm exec next build` locally; tests and build completed successfully prior to opening the docs PR.

@@ -14,7 +14,11 @@ for (const route of staticRoutes) {
   test(`GET ${route} renders without console errors`, async ({ page }) => {
     const errors: string[] = []
     page.on("console", (msg) => {
-      if (msg.type() === "error") errors.push(msg.text())
+      if (msg.type() !== "error") return
+      const text = msg.text()
+      // Ignore missing Vercel Web Analytics script in local/dev environments
+      if (text.includes("/_vercel/insights")) return
+      errors.push(text)
     })
 
     const response = await page.goto(route, { waitUntil: "networkidle" })

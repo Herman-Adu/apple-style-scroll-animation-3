@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { MapPin, ExternalLink } from "lucide-react"
-import { contactLocations } from "@/lib/data/contact"
+import { useState } from "react";
+import { MapPin, ExternalLink } from "lucide-react";
+import { contactLocations } from "@/lib/data/contact";
 
 function embedUrl(lat: number, lng: number) {
-  const d = 0.01
-  const bbox = [lng - d, lat - d, lng + d, lat + d].join(",")
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`
+  const d = 0.01;
+  const bbox = [lng - d, lat - d, lng + d, lat + d].join(",");
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
 }
 
 function directionsUrl(lat: number, lng: number) {
-  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=16/${lat}/${lng}`
+  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=16/${lat}/${lng}`;
 }
 
 export function StoreMap() {
-  const [active, setActive] = useState(0)
-  const location = contactLocations[active]
+  const [active, setActive] = useState(0);
+  const location = contactLocations[active];
 
   return (
     <div className="overflow-hidden rounded-2xl border border-foreground/10 bg-foreground/[0.02]">
@@ -28,7 +28,9 @@ export function StoreMap() {
             onClick={() => setActive(i)}
             aria-pressed={i === active}
             className={`flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
-              i === active ? "bg-foreground/10 text-foreground" : "text-foreground/50 hover:text-foreground/80"
+              i === active
+                ? "bg-foreground/10 text-foreground"
+                : "text-foreground/50 hover:text-foreground/80"
             }`}
           >
             {loc.city}
@@ -53,9 +55,13 @@ export function StoreMap() {
             <MapPin className="h-4.5 w-4.5" strokeWidth={1.5} />
           </span>
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-foreground">{location.city}</span>
-            <span className="text-xs text-foreground/45">{location.role}</span>
-            <span className="mt-1 text-xs leading-relaxed text-foreground/55">{location.address}</span>
+            <span className="text-sm font-medium text-foreground">
+              {location.city}
+            </span>
+            <span className="text-xs text-foreground/60">{location.role}</span>
+            <span className="mt-1 text-xs leading-relaxed text-foreground/55">
+              {location.address}
+            </span>
           </div>
         </div>
         <a
@@ -69,5 +75,5 @@ export function StoreMap() {
         </a>
       </div>
     </div>
-  )
+  );
 }

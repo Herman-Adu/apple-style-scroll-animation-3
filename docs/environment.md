@@ -6,6 +6,8 @@ Every variable is currently `.optional()` because the app runs against local dat
 
 Empty strings are treated as unset (`emptyStringAsUndefined: true`), so a blank value won't pass a URL check.
 
+**Prisma datasource note:** Prisma in this project reads its datasource URL from `POSTGRES_PRISMA_URL` (not `DATABASE_URL`). Set `POSTGRES_PRISMA_URL` for Prisma-related operations (migrations, generate, and the Prisma client). `DATABASE_URL` is kept for other consumers; when unsure, set both to the same connection string.
+
 ---
 
 ## Server-only
@@ -21,7 +23,8 @@ These are never exposed to the client bundle.
 | `STRAPI_PREVIEW_SECRET` | For editor preview | Shared secret in Strapi preview URLs. `/api/preview` enables draft mode only when the URL's `secret` matches. If unset, `/api/preview` returns `404`. |
 | `STRIPE_SECRET_KEY` | For checkout | Server-side Stripe key used to create embedded Checkout Sessions (`features/checkout/actions.ts`, `lib/stripe/server.ts`). Until set, checkout can't create a payment. |
 | `STRIPE_WEBHOOK_SECRET` | For checkout | Verifies `POST /api/stripe/webhook` events before trusting them. Until set, the webhook route rejects events by design (fails closed, not open). |
-| `DATABASE_URL` | Yes (once on `db` auth/orders provider) | Pooled Neon Postgres connection string used by Prisma (`lib/db/prisma.ts`) for Better Auth identity, orders, settings, reviews, email. |
+| `POSTGRES_PRISMA_URL` | Yes (for Prisma) | Pooled Neon Postgres connection string used by Prisma as the datasource URL. Required for `prisma generate`, migrations, and runtime Prisma clients that expect the Prisma-specific env var. |
+| `DATABASE_URL` | Yes (once on `db` auth/orders provider) | Pooled Neon Postgres connection string used by other DB consumers (connection pooling libraries, legacy code). Historically docs referenced `DATABASE_URL` for Prisma — update your local env to set `POSTGRES_PRISMA_URL` instead. |
 | `DATABASE_URL_UNPOOLED` | No | Direct (non-pooled) Neon connection string, for migrations/long-lived connections. |
 | `BETTER_AUTH_SECRET` | Yes (once on `db` auth) | Signs and encrypts Better Auth sessions/cookies. See the `better-auth` skill before changing auth config. |
 | `BETTER_AUTH_API_KEY` | No | Enables the `dash()` plugin so dash.better-auth.com can verify ownership of this auth server. Omit to skip that plugin entirely. |

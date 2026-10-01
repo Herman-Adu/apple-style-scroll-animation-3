@@ -9,6 +9,7 @@ import {
   refundConfirmationEmail,
   shippingConfirmationEmail,
   testEmail,
+  type LowStockEmailItem,
 } from "./templates"
 import { getBranding, getTemplateBlocksByKey, recordLog } from "./repo"
 import type { Order } from "@/lib/orders/types"
@@ -60,7 +61,7 @@ export async function sendOrderConfirmation(params: { to: string; name: string; 
 
 export async function sendLowStockAlert(params: {
   to: string
-  items: { name: string; slug: string; stock: number; threshold: number }[]
+  items: LowStockEmailItem[]
 }) {
   if (params.items.length === 0) return { ok: true as const, id: null, skipped: true as const, reason: "no items" }
   const [branding, blocks] = await Promise.all([getBranding(), getTemplateBlocksByKey("low_stock")])

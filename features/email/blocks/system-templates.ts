@@ -171,6 +171,7 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         title: "{{amount}} refunded",
         body: "{{refund_note}}",
       },
+      { id: bid("order"), type: "orderSummary" },
       { id: bid("btn"), type: "button", label: "View your order", href: "{{order_url}}", align: "left" },
     ],
   },

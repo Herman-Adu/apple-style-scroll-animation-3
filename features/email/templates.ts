@@ -51,15 +51,26 @@ function resolveSrc(src: string, baseUrl?: string): string {
   return `${base}${s.startsWith("/") ? s : `/${s}`}`
 }
 
+/**
+ * Shared product-thumbnail table cell — the single source of truth for how a
+ * product image renders inside any email line-item row. Used by both
+ * `orderSummaryHtml` (order confirmation / notification / refund / shipping)
+ * and `lowStockItemsHtml` (inventory alert) so every template that lists
+ * products by name shows the same thumbnail treatment instead of each
+ * re-implementing its own markup.
+ */
+function productThumbCell(image: string | undefined, alt: string, baseUrl?: string): string {
+  if (!image) return ""
+  return `<td width="48" style="padding:12px 8px 12px 0;border-bottom:1px solid ${BORDER};vertical-align:top;">
+             <img src="${resolveSrc(image, baseUrl)}" alt="${escAttr(alt)}" width="48" height="48" style="display:block;width:48px;height:48px;border-radius:8px;border:1px solid ${BORDER};object-fit:cover;" />
+           </td>`
+}
+
 /** Dynamic order line-item table injected into the orderSummary block slot. */
-function orderSummaryHtml(order: Order, baseUrl?: string): string {
+export function orderSummaryHtml(order: Order, baseUrl?: string): string {
   const rows = order.items
     .map((item) => {
-      const thumb = item.image
-        ? `<td width="48" style="padding:12px 8px 12px 0;border-bottom:1px solid ${BORDER};vertical-align:top;">
-             <img src="${resolveSrc(item.image, baseUrl)}" alt="${escAttr(item.name)}" width="48" height="48" style="display:block;width:48px;height:48px;border-radius:8px;border:1px solid ${BORDER};object-fit:cover;" />
-           </td>`
-        : ""
+      const thumb = productThumbCell(item.image, item.name, baseUrl)
       return `
       <tr>
         ${thumb}
@@ -263,7 +274,11 @@ export function refundConfirmationEmail(params: {
       : `Total refunded on this order so far: ${totalRefunded} of ${orderTotal}. It can take 5–10 business days to appear on your statement.`,
     order_url: params.orderUrl ?? "/account?tab=orders",
   }
-  const ctx: RenderContext = { vars, baseUrl: params.baseUrl }
+  const ctx: RenderContext = {
+    vars,
+    dynamic: { orderSummary: orderSummaryHtml(order, params.baseUrl) },
+    baseUrl: params.baseUrl,
+  }
   return {
     subject: isFullRefund
       ? `Order ${order.number} cancelled — ${amountLabel} refunded`
@@ -293,6 +308,7 @@ export function shippingConfirmationEmail(params: {
       imageUrl: "",
       align: "left",
     },
+    { id: "order", type: "orderSummary" },
     {
       id: "callout",
       type: "callout",
@@ -313,7 +329,10 @@ export function shippingConfirmationEmail(params: {
         ] satisfies EmailBlock[])
       : []),
   ]
-  const html = renderEmail(blocks, b, { baseUrl: params.baseUrl })
+  const html = renderEmail(blocks, b, {
+    dynamic: { orderSummary: orderSummaryHtml(order, params.baseUrl) },
+    baseUrl: params.baseUrl,
+  })
   const text = `Your order has shipped — ${order.number}\n\nCarrier: ${carrier}${
     order.trackingNumber ? `\nTracking number: ${order.trackingNumber}` : ""
   }${order.trackingUrl ? `\nTrack: ${order.trackingUrl}` : ""}`
@@ -350,26 +369,35 @@ export function testEmail(params?: { branding?: Partial<EmailBranding>; baseUrl?
   }
 }
 
-/** Dynamic inventory row table injected into the lowStockItems block slot. */
-function lowStockItemsHtml(items: { name: string; slug: string; stock: number; threshold: number }[]): string {
+export type LowStockEmailItem = { name: string; slug: string; stock: number; threshold: number; image?: string }
+
+/**
+ * Dynamic inventory row table injected into the lowStockItems block slot.
+ * Reuses `productThumbCell` — the same thumbnail markup as `orderSummaryHtml`
+ * — so product rows look identical across every template, whether the
+ * customer or the store is the recipient.
+ */
+export function lowStockItemsHtml(items: LowStockEmailItem[], baseUrl?: string): string {
   const rows = items
-    .map(
-      (item) => `
+    .map((item) => {
+      const thumb = productThumbCell(item.image, item.name, baseUrl)
+      return `
       <tr>
+        ${thumb}
         <td style="padding:12px 0;border-bottom:1px solid ${BORDER};color:${INK};font-size:14px;">
           ${item.name}<br /><span style="color:${MUTED};font-size:12px;">${item.slug}</span>
         </td>
         <td style="padding:12px 0;border-bottom:1px solid ${BORDER};text-align:right;font-size:14px;white-space:nowrap;">
           <span style="color:${item.stock === 0 ? "#dc2626" : "#d97706"};font-weight:600;">${item.stock} left</span><br /><span style="color:${MUTED};font-size:12px;">threshold ${item.threshold}</span>
         </td>
-      </tr>`,
-    )
+      </tr>`
+    })
     .join("")
   return `<tr><td style="padding:20px 28px 0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${rows}</table></td></tr>`
 }
 
 export function lowStockAlertEmail(params: {
-  items: { name: string; slug: string; stock: number; threshold: number }[]
+  items: LowStockEmailItem[]
   branding?: Partial<EmailBranding>
   blocks?: EmailBlock[]
   adminUrl?: string
@@ -385,7 +413,7 @@ export function lowStockAlertEmail(params: {
   }
   const ctx: RenderContext = {
     vars,
-    dynamic: { lowStockItems: lowStockItemsHtml(items) },
+    dynamic: { lowStockItems: lowStockItemsHtml(items, params.baseUrl) },
     baseUrl: params.baseUrl,
   }
   const text = `Low stock alert\n\n${items.map((i) => `${i.name} (${i.slug}) — ${i.stock} left, threshold ${i.threshold}`).join("\n")}`

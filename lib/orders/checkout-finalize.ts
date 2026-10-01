@@ -181,16 +181,44 @@ export async function nextOrderNumber(
  * this runs to completion once the response has been flushed, without
  * adding latency to the reservation transaction itself.
  */
-function notifyLowStock(
-  items: { name: string; slug: string; stock: number; threshold: number }[],
-): void {
+export type LowStockItem = {
+  name: string;
+  slug: string;
+  stock: number;
+  threshold: number;
+};
+
+/**
+ * Fire a single batched admin alert for items that just crossed into low
+ * stock. Exported so callers can invoke it only AFTER the reservation
+ * transaction that detected the crossing has actually committed — calling it
+ * from inside the transaction would register the alert even if the
+ * transaction later rolled back.
+ *
+ * Wrapped in `after()`, not a bare fire-and-forget call: in a serverless
+ * function, an unawaited promise can be killed mid-flight the instant the
+ * response is sent, which silently drops the alert before it ever reaches
+ * the email provider. `after()` guarantees this runs to completion once the
+ * response has been flushed, without adding latency to the caller.
+ */
+export function notifyLowStock(items: LowStockItem[]): void {
   if (items.length === 0) return;
+  console.log("[v0] notifyLowStock: registering after() for", items.length, "item(s)");
   after(async () => {
     try {
       const settings = await getStoreSettingsAction();
-      if (!settings.emailAlerts || !settings.supportEmail) return;
-      await sendLowStockAlert({ to: settings.supportEmail, items });
-    } catch {
+      console.log("[v0] notifyLowStock: settings", {
+        emailAlerts: settings.emailAlerts,
+        supportEmail: settings.supportEmail,
+      });
+      if (!settings.emailAlerts || !settings.supportEmail) {
+        console.log("[v0] notifyLowStock: skipped — alerts disabled or no support email");
+        return;
+      }
+      const result = await sendLowStockAlert({ to: settings.supportEmail, items });
+      console.log("[v0] notifyLowStock: sendLowStockAlert result", result);
+    } catch (err) {
+      console.log("[v0] notifyLowStock: threw", err);
       // Best-effort only.
     }
   });
@@ -200,20 +228,20 @@ function notifyLowStock(
  * Enforce the oversell / last-unit guard and decrement physical stock for
  * `lines` inside `tx`. Pre-orders and unknown slugs are left untouched (matching
  * the storefront rules). Throws if the guard fails so the surrounding
- * transaction rolls back. Returns the exact deltas actually removed, so an
- * abandoned checkout can restore precisely what it reserved.
- *
- * Also detects stock crossing at-or-below its low-stock threshold as a result
- * of this sale and fires a single batched admin alert for those items — not
- * on every sale while already low, only on the transition into low stock.
+ * transaction rolls back. Returns the exact deltas actually removed (so an
+ * abandoned checkout can restore precisely what it reserved) alongside any
+ * items that crossed at-or-below their low-stock threshold as a result of
+ * this sale — not on every sale while already low, only on the transition
+ * into low stock. Callers must invoke `notifyLowStock` with the returned
+ * `crossedLowStock` themselves, once their enclosing transaction commits.
  */
 export async function commitStock(
   tx: Prisma.TransactionClient,
   lines: ReservedLine[],
-): Promise<ReservedLine[]> {
+): Promise<{ reserved: ReservedLine[]; crossedLowStock: LowStockItem[] }> {
   const clean = lines.filter((l) => l.quantity > 0);
   const slugs = [...new Set(clean.map((l) => l.slug))];
-  if (slugs.length === 0) return [];
+  if (slugs.length === 0) return { reserved: [], crossedLowStock: [] };
 
   const before = await effectiveProductsFor(slugs, tx);
   const sale = recordSale(before, clean);
@@ -221,12 +249,7 @@ export async function commitStock(
     throw new Error(sale.error ?? "Some items are no longer available.");
 
   const decremented: ReservedLine[] = [];
-  const crossedLowStock: {
-    name: string;
-    slug: string;
-    stock: number;
-    threshold: number;
-  }[] = [];
+  const crossedLowStock: LowStockItem[] = [];
   for (const slug of slugs) {
     const prev = before[slug];
     const next = sale.map[slug];
@@ -240,6 +263,7 @@ export async function commitStock(
     decremented.push({ slug, quantity: prev.stock - next.stock });
 
     const threshold = next.lowStockThreshold ?? 5;
+    console.log("[v0] commitStock:", slug, "prev.stock=", prev.stock, "next.stock=", next.stock, "threshold=", threshold);
     if (prev.stock > threshold && next.stock <= threshold) {
       crossedLowStock.push({
         name: next.name,
@@ -249,8 +273,7 @@ export async function commitStock(
       });
     }
   }
-  if (crossedLowStock.length > 0) void notifyLowStock(crossedLowStock);
-  return decremented;
+  return { reserved: decremented, crossedLowStock };
 }
 
 /**

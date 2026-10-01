@@ -20,7 +20,7 @@ import { prisma } from "@/lib/db/prisma"
 import { env } from "@/lib/env"
 import { stripe } from "@/lib/stripe/server"
 import { getServerSession } from "@/lib/auth/server"
-import { commitStock, releaseReservationById } from "@/lib/orders/checkout-finalize"
+import { commitStock, notifyLowStock, releaseReservationById } from "@/lib/orders/checkout-finalize"
 import { resolveDiscountCode } from "@/lib/discount-codes/db-actions"
 import { revalidateCatalog } from "@/lib/catalog/revalidate"
 import { priceCheckout, type PricedQuote } from "./lib/pricing"
@@ -153,11 +153,13 @@ export async function startStripeCheckout({
   // Reserve stock + persist the pending checkout atomically. The oversell guard
   // lives in commitStock and rolls the whole thing back on failure.
   const pendingId = crypto.randomUUID()
+  let crossedLowStock: Awaited<ReturnType<typeof commitStock>>["crossedLowStock"] = []
   await prisma.$transaction(async (tx) => {
-    const reserved = await commitStock(
+    const { reserved, crossedLowStock: crossed } = await commitStock(
       tx,
       priced.items.map((item) => ({ slug: item.slug, quantity: item.quantity })),
     )
+    crossedLowStock = crossed
     await tx.pendingCheckout.create({
       data: {
         id: pendingId,
@@ -176,6 +178,10 @@ export async function startStripeCheckout({
       },
     })
   })
+  // Only notify once the reservation transaction has actually committed —
+  // notifying from inside the transaction would fire even if it later rolled
+  // back (e.g. the pendingCheckout write failing after stock was decremented).
+  notifyLowStock(crossedLowStock)
   revalidateCatalog()
 
   try {

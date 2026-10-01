@@ -26,6 +26,13 @@ export interface HeroBlock {
    * unset to use `imageUrl` / the brand hero image as a plain, unlinked image.
    */
   productSlug?: string | null
+  /**
+   * When linked to a product, also show its current price beneath the
+   * subheading. Resolved live alongside the image/name (never copied into the
+   * block) so the amount can't go stale if the price changes later. Ignored
+   * when `productSlug` is unset.
+   */
+  showPrice?: boolean
   align: BlockAlign
 }
 
@@ -66,6 +73,13 @@ export interface ImageBlock {
    * lifestyle or banner shot).
    */
   productSlug?: string | null
+  /**
+   * When linked to a product, also show its current price as a caption under
+   * the image. Resolved live alongside the image/name (never copied into the
+   * block) so the amount can't go stale if the price changes later. Ignored
+   * when `productSlug` is unset.
+   */
+  showPrice?: boolean
 }
 
 export interface DividerBlock {

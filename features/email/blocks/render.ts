@@ -1,6 +1,7 @@
 import type { EmailBlock, EmailBranding, BlockAlign } from "./types"
 import { DEFAULT_BRANDING } from "./types"
 import type { ProductImageMap } from "@/features/products/lib/product"
+import { formatMoney } from "@/lib/format"
 
 /**
  * Pure block -> HTML renderer. Framework-free and side-effect-free so it runs
@@ -41,7 +42,7 @@ export interface RenderContext {
 function resolveProductLink(
   productSlug: string | null | undefined,
   products: ProductImageMap | undefined,
-): { name: string; image: string } | undefined {
+): ProductImageMap[string] | undefined {
   return productSlug ? products?.[productSlug] : undefined
 }
 
@@ -130,6 +131,11 @@ function renderBlock(block: EmailBlock, brand: EmailBranding, ctx: RenderContext
                 ? `<div style="margin:16px 0 0;font-size:15px;line-height:1.65;color:${HERO_MUTED};">${accentize(prep(block.subheading, vars), accent)}</div>`
                 : ""
             }
+            ${
+              block.showPrice && linked
+                ? `<div style="margin:14px 0 0;font-size:22px;font-weight:700;color:#ffffff;">${esc(formatMoney(linked.price))}</div>`
+                : ""
+            }
             <div style="width:60px;height:3px;background:${accent};border-radius:2px;${underlineAlign}"></div>
           </div>
         </td>
@@ -171,9 +177,17 @@ function renderBlock(block: EmailBlock, brand: EmailBranding, ctx: RenderContext
       const src = linked?.image || prep(block.src, vars)
       const alt = block.alt || linked?.name || ""
       const tag = `<img src="${esc(resolveSrc(src, ctx.baseUrl))}" alt="${esc(alt)}" width="100%" style="display:block;width:100%;border:0;border-radius:12px;" />`
+      const priceCaption =
+        block.showPrice && linked
+          ? `<div style="margin:10px 0 0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;">
+               <span style="font-size:14px;font-weight:600;color:${INK};">${esc(linked.name)}</span>
+               <span style="font-size:14px;font-weight:700;color:${INK};">${esc(formatMoney(linked.price))}</span>
+             </div>`
+          : ""
       return `
       <tr><td style="padding:16px 28px 0;">
         ${block.href ? `<a href="${esc(prep(block.href, vars))}" style="text-decoration:none;">${tag}</a>` : tag}
+        ${priceCaption}
       </td></tr>`
     }
 

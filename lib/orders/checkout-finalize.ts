@@ -203,22 +203,14 @@ export type LowStockItem = {
  */
 export function notifyLowStock(items: LowStockItem[]): void {
   if (items.length === 0) return;
-  console.log("[v0] notifyLowStock: registering after() for", items.length, "item(s)");
   after(async () => {
     try {
       const settings = await getStoreSettingsAction();
-      console.log("[v0] notifyLowStock: settings", {
-        emailAlerts: settings.emailAlerts,
-        supportEmail: settings.supportEmail,
-      });
       if (!settings.emailAlerts || !settings.supportEmail) {
-        console.log("[v0] notifyLowStock: skipped — alerts disabled or no support email");
         return;
       }
-      const result = await sendLowStockAlert({ to: settings.supportEmail, items });
-      console.log("[v0] notifyLowStock: sendLowStockAlert result", result);
-    } catch (err) {
-      console.log("[v0] notifyLowStock: threw", err);
+      await sendLowStockAlert({ to: settings.supportEmail, items });
+    } catch {
       // Best-effort only.
     }
   });
@@ -263,7 +255,6 @@ export async function commitStock(
     decremented.push({ slug, quantity: prev.stock - next.stock });
 
     const threshold = next.lowStockThreshold ?? 5;
-    console.log("[v0] commitStock:", slug, "prev.stock=", prev.stock, "next.stock=", next.stock, "threshold=", threshold);
     if (prev.stock > threshold && next.stock <= threshold) {
       crossedLowStock.push({
         name: next.name,

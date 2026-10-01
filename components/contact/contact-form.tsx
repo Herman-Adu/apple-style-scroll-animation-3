@@ -55,10 +55,44 @@ function isEmail(value: string) {
 export function ContactForm() {
   const { user, status } = useAuth();
   const [step, setStep] = useState(0);
-  const [typeId, setTypeId] = useState<string | null>(null);
+  // Derive initial topic and values from the URL search params so we don't
+  // synchronously set state inside effects when the component mounts.
+  const [typeId, setTypeId] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const topic = params.get("topic");
+      return topic && enquiryTypes.some((t) => t.id === topic) ? topic : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [values, setValues] = useState<Record<string, string | number>>(() => {
+    if (typeof window === "undefined")
+      return {} as Record<string, string | number>;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const topic = params.get("topic");
+      const product = params.get("product");
+      if (topic && product && enquiryTypes.some((t) => t.id === topic)) {
+        const hasProductField = enquiryTypes
+          .find((t) => t.id === topic)
+          ?.fields.some((f) => f.name === "product");
+        if (hasProductField)
+          return { product } as Record<string, string | number>;
+      }
+      return {} as Record<string, string | number>;
+    } catch {
+      return {} as Record<string, string | number>;
+    }
+  });
+
+  // Name/email are shown using fallbacks from `user` when the local state
+  // is empty; avoid setting state from within an effect to prevent cascading
+  // renders. Inputs remain controlled once the user types.
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [values, setValues] = useState<Record<string, string | number>>({});
   // Honeypot: hidden from real users; only bots fill it.
   const [website, setWebsite] = useState("");
   const [touched, setTouched] = useState(false);
@@ -66,29 +100,10 @@ export function ContactForm() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);
 
-  // Prefill contact details from the signed-in user once auth resolves.
-  useEffect(() => {
-    if (!user) return;
-    setName((prev) => prev || user.profile.displayName || user.name);
-    setEmail((prev) => prev || user.email);
-  }, [user]);
-
-  // Deep-link prefill: /contact?topic=review&product=Momo%20X preselects the
-  // topic and product so "Write a review" on a product page lands ready to go.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const topic = params.get("topic");
-    const product = params.get("product");
-    if (topic && enquiryTypes.some((t) => t.id === topic)) {
-      setTypeId(topic);
-      if (product) {
-        const hasProductField = enquiryTypes
-          .find((t) => t.id === topic)
-          ?.fields.some((f) => f.name === "product");
-        if (hasProductField) setValues({ product });
-      }
-    }
-  }, []);
+  // NOTE: avoid setting state synchronously inside effects to prevent
+  // cascading renders. We derive initial `typeId` and `values` from the
+  // URL at construction time above, and render `name`/`email` with fallbacks
+  // from `user` when the local state is empty.
 
   const selectedType: EnquiryType | undefined = useMemo(
     () => enquiryTypes.find((t) => t.id === typeId),
@@ -400,7 +415,7 @@ export function ContactForm() {
                 </label>
                 <input
                   id="contact-name"
-                  value={name}
+                  value={name || user?.profile.displayName || user?.name || ""}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
                   className={inputClass}
@@ -419,7 +434,7 @@ export function ContactForm() {
                 <input
                   id="contact-email"
                   type="email"
-                  value={email}
+                  value={email || user?.email || ""}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   className={inputClass}

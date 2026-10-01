@@ -74,6 +74,7 @@ If you want, I can also open a tidy PR that only contains docs (or move this fil
 Questions or edits: tell me where you'd like additional detail (APIs, sequence diagrams, or `psql` queries used). I can expand this doc accordingly.
 
 ## Sequence Diagram
+
 ```mermaid
 sequenceDiagram
    participant S as Stripe
@@ -98,11 +99,13 @@ sequenceDiagram
 Replace `<<allocator_key>>` with a fixed integer chosen for the allocator (stable across processes).
 
 ## Tests (added and how to run)
+
 - Integration: `qa/integration/checkout-finalize/finalize-checkout.test.ts` — validates:
-   - pending checkout claim semantics (only one claim succeeds),
-   - idempotent handling when the same Stripe session is processed twice,
-   - order-number monotonicity under concurrent creates.
+  - pending checkout claim semantics (only one claim succeeds),
+  - idempotent handling when the same Stripe session is processed twice,
+  - order-number monotonicity under concurrent creates.
 - Run tests locally:
+
 ```bash
 pnpm install
 pnpm test # Vitest (unit + integration)
@@ -111,7 +114,8 @@ pnpm run test:e2e # Playwright (smoke + e2e)
 
 ## DB SQL snippets
 
-1) Transactional finalization pattern (Postgres)
+1. Transactional finalization pattern (Postgres)
+
 ```sql
 BEGIN;
 -- acquire transaction-scoped advisory lock
@@ -135,7 +139,8 @@ RETURNING id;
 COMMIT;
 ```
 
-2) Idempotent insert by unique constraint on `stripe_session_id`
+2. Idempotent insert by unique constraint on `stripe_session_id`
+
 ```sql
 -- ensure unique constraint exists
 ALTER TABLE orders ADD CONSTRAINT orders_stripe_session_id_unique UNIQUE (stripe_session_id);
@@ -146,7 +151,8 @@ VALUES (123, 'sess_abc', 12900)
 ON CONFLICT (stripe_session_id) DO NOTHING;
 ```
 
-3) Handling duplicate attempts in application code
+3. Handling duplicate attempts in application code
+
 - If `INSERT` returns no rows (conflict), treat it as already-finalized and return success to the caller.
 
 These snippets are intentionally minimal — adapt column names and sequencing to your schema.

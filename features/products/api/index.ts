@@ -83,9 +83,10 @@ export async function fetchRelatedProducts(slug: string, limit = 3): Promise<Pro
 }
 
 /**
- * Slug -> {name, image} lookup for resolving a `productSlug` block reference
- * (email builder) against the live catalog. Single call site so every email
- * send path and the admin preview resolve product-linked images the same way.
+ * Slug -> {name, image, price} lookup for resolving a `productSlug` block
+ * reference (email builder) against the live catalog. Single call site so
+ * every email send path and the admin preview resolve product-linked
+ * images/names/prices the same way.
  */
 export async function fetchProductImageMap(): Promise<ProductImageMap> {
   return toProductImageMap(await fetchProducts())

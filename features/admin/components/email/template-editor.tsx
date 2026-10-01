@@ -41,9 +41,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
+import { formatMoney } from "@/lib/format"
 import type { BlockType, EmailBlock, EmailBranding } from "@/features/email/blocks/types"
 import { TEMPLATE_TOKENS, BLOCK_PRESETS } from "@/features/email/blocks/system-templates"
 import type { ProductImageMap } from "@/features/products/lib/product"
+import type { Money } from "@/features/products/schema"
 import {
   resetTemplateAction,
   saveTemplateAction,
@@ -436,7 +438,7 @@ function blockSummary(block: EmailBlock, products: ProductImageMap): string {
   switch (block.type) {
     case "hero":
       return block.productSlug && products[block.productSlug]
-        ? `${block.heading.replace(/\*/g, "")} · linked to ${products[block.productSlug].name}`
+        ? `${block.heading.replace(/\*/g, "")} · linked to ${products[block.productSlug].name}${block.showPrice ? " + price" : ""}`
         : block.heading.replace(/\*/g, "")
     case "heading":
     case "text":
@@ -444,7 +446,9 @@ function blockSummary(block: EmailBlock, products: ProductImageMap): string {
     case "button":
       return block.label
     case "image":
-      return block.productSlug && products[block.productSlug] ? `Linked to ${products[block.productSlug].name}` : block.src
+      return block.productSlug && products[block.productSlug]
+        ? `Linked to ${products[block.productSlug].name}${block.showPrice ? " + price" : ""}`
+        : block.src
     case "list":
       return block.title || `${block.items.length} items`
     case "callout":
@@ -519,6 +523,13 @@ function BlockFields({
             hint={block.productSlug ? "Linked to a product above — this URL is ignored" : "Leave blank to use the brand hero"}
             disabled={!!block.productSlug}
           />
+          {block.productSlug ? (
+            <ShowPriceField
+              checked={!!block.showPrice}
+              price={products[block.productSlug]?.price}
+              onChange={(checked) => onChange({ showPrice: checked } as Partial<EmailBlock>)}
+            />
+          ) : null}
           <AlignField value={block.align} onChange={(v) => onChange({ align: v } as Partial<EmailBlock>)} />
         </div>
       )
@@ -566,6 +577,13 @@ function BlockFields({
             hint={block.productSlug ? "Linked to a product above — this text is ignored" : undefined}
             disabled={!!block.productSlug}
           />
+          {block.productSlug ? (
+            <ShowPriceField
+              checked={!!block.showPrice}
+              price={products[block.productSlug]?.price}
+              onChange={(checked) => onChange({ showPrice: checked } as Partial<EmailBlock>)}
+            />
+          ) : null}
           <FieldInput label="Link (optional)" value={block.href} onChange={(v) => onChange({ href: v } as Partial<EmailBlock>)} />
         </div>
       )
@@ -703,6 +721,34 @@ function ProductLinkField({
         <p className="text-xs text-muted-foreground">Pick a product so the image and name always match its catalog listing.</p>
       )}
     </div>
+  )
+}
+
+/**
+ * Toggles showing a linked product's price alongside its image/name. The
+ * amount itself is never typed in or stored — it's resolved live from
+ * `ProductImageMap` (same source as the image/name) so it can't go stale if
+ * the price changes after this template was built.
+ */
+function ShowPriceField({
+  checked,
+  price,
+  onChange,
+}: {
+  checked: boolean
+  price: Money | undefined
+  onChange: (checked: boolean) => void
+}) {
+  return (
+    <label className="flex items-center gap-2 text-sm text-muted-foreground">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="size-4 rounded border-border accent-[var(--accent-teal,#2dd4bf)]"
+      />
+      Show price{price ? ` (currently ${formatMoney(price)}, updates automatically)` : ""}
+    </label>
   )
 }
 

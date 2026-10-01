@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 // Server Actions backing the `db` orders adapter. Identity is always derived
 // from the Better Auth session on the server — the client never chooses whose
@@ -6,44 +6,50 @@
 // actions (listAll / updateStatus) additionally require an admin session. This
 // is the authorization boundary; hiding UI is not access control.
 
-import { headers } from "next/headers"
-import type { Prisma } from "@prisma/client"
+import { headers } from "next/headers";
+import type { Prisma } from "@prisma/client";
 
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/db/prisma"
-import { effectiveRole } from "@/lib/auth/config"
-import { getAllProducts } from "@/lib/data/products"
-import { productSchema } from "@/features/products"
-import { recordSale, toMap, type ProductMap } from "@/features/catalog/store"
-import { dispatchShippingEmail } from "./order-notifications"
-import { buildTrackingUrl, type Carrier } from "./tracking"
-import type { CreateOrderInput, Order, OrderStatus } from "./types"
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db/prisma";
+import { nextOrderNumber } from "@/lib/orders/checkout-finalize";
+import { effectiveRole } from "@/lib/auth/config";
+import { getAllProducts } from "@/lib/data/products";
+import { productSchema } from "@/features/products";
+import { recordSale, toMap, type ProductMap } from "@/features/catalog/store";
+import { dispatchShippingEmail } from "./order-notifications";
+import { buildTrackingUrl, type Carrier } from "./tracking";
+import type { CreateOrderInput, Order, OrderStatus } from "./types";
 
-const VALID_STATUSES: OrderStatus[] = ["processing", "fulfilled", "cancelled", "refunded"]
+const VALID_STATUSES: OrderStatus[] = [
+  "processing",
+  "fulfilled",
+  "cancelled",
+  "refunded",
+];
 
 type OrderRow = {
-  id: string
-  number: string
-  userId: string
-  email: string
-  status: string
-  items: unknown
-  subtotal: number
-  shipping: number
-  discount: number
-  appliedOffers: unknown
-  total: number
-  currency: string
-  stripeSessionId?: string | null
-  stripePaymentIntentId?: string | null
-  refundedAmount?: number
-  refunds?: unknown
-  carrier?: string | null
-  trackingNumber?: string | null
-  trackingUrl?: string | null
-  shippedAt?: Date | null
-  createdAt: Date
-}
+  id: string;
+  number: string;
+  userId: string;
+  email: string;
+  status: string;
+  items: unknown;
+  subtotal: number;
+  shipping: number;
+  discount: number;
+  appliedOffers: unknown;
+  total: number;
+  currency: string;
+  stripeSessionId?: string | null;
+  stripePaymentIntentId?: string | null;
+  refundedAmount?: number;
+  refunds?: unknown;
+  carrier?: string | null;
+  trackingNumber?: string | null;
+  trackingUrl?: string | null;
+  shippedAt?: Date | null;
+  createdAt: Date;
+};
 
 const orderSelect = {
   id: true,
@@ -67,7 +73,7 @@ const orderSelect = {
   trackingUrl: true,
   shippedAt: true,
   createdAt: true,
-} as const
+} as const;
 
 function toOrder(row: OrderRow): Order {
   return {
@@ -76,7 +82,9 @@ function toOrder(row: OrderRow): Order {
     userId: row.userId,
     email: row.email,
     createdAt: row.createdAt.toISOString(),
-    status: (VALID_STATUSES.includes(row.status as OrderStatus) ? row.status : "processing") as OrderStatus,
+    status: (VALID_STATUSES.includes(row.status as OrderStatus)
+      ? row.status
+      : "processing") as OrderStatus,
     items: Array.isArray(row.items) ? (row.items as Order["items"]) : [],
     subtotal: row.subtotal,
     shipping: row.shipping,
@@ -89,68 +97,67 @@ function toOrder(row: OrderRow): Order {
     stripeSessionId: row.stripeSessionId ?? undefined,
     stripePaymentIntentId: row.stripePaymentIntentId ?? undefined,
     refundedAmount: row.refundedAmount ?? 0,
-    refunds: Array.isArray(row.refunds) ? (row.refunds as Order["refunds"]) : [],
+    refunds: Array.isArray(row.refunds)
+      ? (row.refunds as Order["refunds"])
+      : [],
     carrier: (row.carrier as Order["carrier"]) ?? undefined,
     trackingNumber: row.trackingNumber ?? undefined,
     trackingUrl: row.trackingUrl ?? undefined,
     shippedAt: row.shippedAt ? row.shippedAt.toISOString() : undefined,
-  }
+  };
 }
 
 // --- session guards --------------------------------------------------------
 
 async function sessionUser(): Promise<{ id: string; email: string } | null> {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user?.id) return null
-  return { id: session.user.id, email: session.user.email ?? "" }
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user?.id) return null;
+  return { id: session.user.id, email: session.user.email ?? "" };
 }
 
 async function requireUser(): Promise<{ id: string; email: string }> {
-  const user = await sessionUser()
-  if (!user) throw new Error("Not signed in.")
-  return user
+  const user = await sessionUser();
+  if (!user) throw new Error("Not signed in.");
+  return user;
 }
 
 async function requireAdminId(): Promise<string> {
-  const user = await requireUser()
+  const user = await requireUser();
   const me = await prisma.user.findUnique({
     where: { id: user.id },
     select: { email: true, role: true, roleOverride: true },
-  })
-  if (!me || effectiveRole(me) !== "admin") throw new Error("Admins only.")
-  return user.id
+  });
+  if (!me || effectiveRole(me) !== "admin") throw new Error("Admins only.");
+  return user.id;
 }
 
-/** Next human-friendly reference for the current year, e.g. MOMO-2026-0001. */
-async function nextNumber(): Promise<string> {
-  const year = new Date().getFullYear()
-  const count = await prisma.order.count({ where: { number: { startsWith: `MOMO-${year}-` } } })
-  return `MOMO-${year}-${String(count + 1).padStart(4, "0")}`
-}
+// Order numbers are allocated via `nextOrderNumber(tx)` which takes a
+// transaction-scoped advisory lock to serialize concurrent allocators.
+// See `lib/orders/checkout-finalize.ts` for the implementation.
 
 // --- actions ---------------------------------------------------------------
 
 /** The signed-in customer's own orders. The passed id is ignored in favor of
  * the session user, so one account can never read another's history. */
 export async function listMyOrdersAction(): Promise<Order[]> {
-  const user = await sessionUser()
-  if (!user) return []
+  const user = await sessionUser();
+  if (!user) return [];
   const rows = await prisma.order.findMany({
     where: { userId: user.id },
     select: orderSelect,
     orderBy: { createdAt: "desc" },
-  })
-  return rows.map(toOrder)
+  });
+  return rows.map(toOrder);
 }
 
 /** Every customer's orders — admin dashboard only. */
 export async function listAllOrdersAction(): Promise<Order[]> {
-  await requireAdminId()
+  await requireAdminId();
   const rows = await prisma.order.findMany({
     select: orderSelect,
     orderBy: { createdAt: "desc" },
-  })
-  return rows.map(toOrder)
+  });
+  return rows.map(toOrder);
 }
 
 /** Effective (seed + overlay) product map for a specific set of slugs. Used to
@@ -162,17 +169,19 @@ async function effectiveProductsFor(
   const rows = await tx.productOverlay.findMany({
     where: { slug: { in: slugs } },
     select: { slug: true, data: true, deleted: true },
-  })
-  const map: ProductMap = toMap(getAllProducts().filter((p) => slugs.includes(p.slug)))
+  });
+  const map: ProductMap = toMap(
+    getAllProducts().filter((p) => slugs.includes(p.slug)),
+  );
   for (const row of rows) {
     if (row.deleted) {
-      delete map[row.slug]
-      continue
+      delete map[row.slug];
+      continue;
     }
-    const parsed = productSchema.safeParse(row.data)
-    if (parsed.success) map[row.slug] = parsed.data
+    const parsed = productSchema.safeParse(row.data);
+    if (parsed.success) map[row.slug] = parsed.data;
   }
-  return map
+  return map;
 }
 
 /** Record an order for the signed-in customer. Identity (userId/email) is taken
@@ -180,38 +189,39 @@ async function effectiveProductsFor(
  * oversell / last-unit rule enforced against the authoritative Neon catalog in
  * the SAME transaction as the order insert, so a sale and its stock change are
  * atomic — a failed guard rolls back the whole thing and nothing is charged. */
-export async function createOrderAction(input: CreateOrderInput): Promise<Order> {
-  const user = await requireUser()
+export async function createOrderAction(
+  input: CreateOrderInput,
+): Promise<Order> {
+  const user = await requireUser();
   const lines = input.items
     .filter((item) => item.quantity > 0)
-    .map((item) => ({ slug: item.slug, quantity: item.quantity }))
+    .map((item) => ({ slug: item.slug, quantity: item.quantity }));
 
   const row = await prisma.$transaction(async (tx) => {
-    const slugs = [...new Set(lines.map((l) => l.slug))]
-    const before = await effectiveProductsFor(slugs, tx)
+    const slugs = [...new Set(lines.map((l) => l.slug))];
+    const before = await effectiveProductsFor(slugs, tx);
 
     // Pure oversell / last-unit guard, shared with the storefront so the rules
     // are identical everywhere.
-    const sale = recordSale(before, lines)
-    if (!sale.ok) throw new Error(sale.error ?? "Some items are no longer available.")
+    const sale = recordSale(before, lines);
+    if (!sale.ok)
+      throw new Error(sale.error ?? "Some items are no longer available.");
 
     // Persist only the products whose physical stock actually changed
     // (pre-orders and unknown slugs are left untouched by recordSale).
     for (const slug of slugs) {
-      const prev = before[slug]
-      const next = sale.map[slug]
-      if (!prev || !next || prev.stock === next.stock) continue
-      const data = next as unknown as Prisma.InputJsonValue
+      const prev = before[slug];
+      const next = sale.map[slug];
+      if (!prev || !next || prev.stock === next.stock) continue;
+      const data = next as unknown as Prisma.InputJsonValue;
       await tx.productOverlay.upsert({
         where: { slug },
         create: { slug, data, deleted: false },
         update: { data, deleted: false },
-      })
+      });
     }
 
-    const year = new Date().getFullYear()
-    const count = await tx.order.count({ where: { number: { startsWith: `MOMO-${year}-` } } })
-    const number = `MOMO-${year}-${String(count + 1).padStart(4, "0")}`
+    const number = await nextOrderNumber(tx);
 
     return tx.order.create({
       data: {
@@ -224,27 +234,31 @@ export async function createOrderAction(input: CreateOrderInput): Promise<Order>
         subtotal: input.subtotal,
         shipping: input.shipping,
         discount: input.discount ?? 0,
-        appliedOffers: (input.appliedOffers ?? []) as unknown as Prisma.InputJsonValue,
+        appliedOffers: (input.appliedOffers ??
+          []) as unknown as Prisma.InputJsonValue,
         total: input.total,
         currency: input.currency,
       },
       select: orderSelect,
-    })
-  })
+    });
+  });
 
-  return toOrder(row)
+  return toOrder(row);
 }
 
 /** Update fulfilment status — admin only. */
-export async function updateOrderStatusAction(orderId: string, status: OrderStatus): Promise<Order> {
-  await requireAdminId()
-  if (!VALID_STATUSES.includes(status)) throw new Error("Invalid status.")
+export async function updateOrderStatusAction(
+  orderId: string,
+  status: OrderStatus,
+): Promise<Order> {
+  await requireAdminId();
+  if (!VALID_STATUSES.includes(status)) throw new Error("Invalid status.");
   const row = await prisma.order.update({
     where: { id: orderId },
     data: { status },
     select: orderSelect,
-  })
-  return toOrder(row)
+  });
+  return toOrder(row);
 }
 
 /** Save shipment tracking — admin only. Fires the customer shipping-confirmation
@@ -254,14 +268,19 @@ export async function addTrackingAction(
   orderId: string,
   input: { carrier: Carrier; trackingNumber: string; trackingUrl?: string },
 ): Promise<Order> {
-  await requireAdminId()
-  const trackingNumber = input.trackingNumber.trim()
-  if (!trackingNumber) throw new Error("Tracking number is required.")
-  const trackingUrl = input.trackingUrl?.trim() || buildTrackingUrl(input.carrier, trackingNumber)
+  await requireAdminId();
+  const trackingNumber = input.trackingNumber.trim();
+  if (!trackingNumber) throw new Error("Tracking number is required.");
+  const trackingUrl =
+    input.trackingUrl?.trim() ||
+    buildTrackingUrl(input.carrier, trackingNumber);
 
-  const existing = await prisma.order.findUnique({ where: { id: orderId }, select: { shippedAt: true } })
-  if (!existing) throw new Error("Order not found.")
-  const isFirstSave = !existing.shippedAt
+  const existing = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { shippedAt: true },
+  });
+  if (!existing) throw new Error("Order not found.");
+  const isFirstSave = !existing.shippedAt;
 
   const row = await prisma.order.update({
     where: { id: orderId },
@@ -272,8 +291,8 @@ export async function addTrackingAction(
       ...(isFirstSave ? { shippedAt: new Date() } : {}),
     },
     select: orderSelect,
-  })
-  const order = toOrder(row)
-  if (isFirstSave) await dispatchShippingEmail(order)
-  return order
+  });
+  const order = toOrder(row);
+  if (isFirstSave) await dispatchShippingEmail(order);
+  return order;
 }

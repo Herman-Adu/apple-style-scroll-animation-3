@@ -16,23 +16,30 @@ const cspReportOnly = [
   "img-src 'self' data: https: blob:",
   "style-src 'self' 'unsafe-inline'",
   // Next.js emits inline hydration scripts in dev/prod; a nonce is the real fix.
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  // js.stripe.com serves Stripe.js for embedded Checkout.
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
   "font-src 'self' data:",
-  // Same-origin APIs, Supabase auth/data, and Vercel analytics beacons.
-  "connect-src 'self' https://*.supabase.co https://*.vercel-insights.com https://vitals.vercel-insights.com",
+  // Same-origin APIs, Supabase auth/data, Vercel analytics beacons, Stripe API.
+  "connect-src 'self' https://*.supabase.co https://*.vercel-insights.com https://vitals.vercel-insights.com https://api.stripe.com",
+  // Embedded frames: Stripe Checkout/3-D Secure, and the OpenStreetMap store map
+  // on /contact. Without this, default-src 'self' would block them.
+  "frame-src https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://www.openstreetmap.org",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",
-].join("; ")
+].join("; ");
 
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Strict-Transport-Security", value: "max-age=63072000" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=()",
+  },
   { key: "Content-Security-Policy-Report-Only", value: cspReportOnly },
-]
+];
 
 const nextConfig = {
   typescript: {
@@ -42,8 +49,8 @@ const nextConfig = {
     unoptimized: true,
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }]
+    return [{ source: "/:path*", headers: securityHeaders }];
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;

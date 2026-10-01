@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useState } from "react"
-import Link from "next/link"
-import { AnimatePresence, motion } from "framer-motion"
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,15 +14,15 @@ import {
   MessageSquare,
   Newspaper,
   Star as StarIcon,
-} from "lucide-react"
-import { enquiryTypes } from "@/lib/data/contact"
-import { products } from "@/lib/data/products"
-import { submitEnquiryAction } from "@/app/contact/actions"
-import type { EnquiryField, EnquiryType } from "@/lib/contact/types"
-import { reviewsProvider } from "@/lib/reviews/provider"
-import { useAuth } from "@/lib/auth/auth-context"
-import { StarRating } from "./star-rating"
-import { cn } from "@/lib/utils"
+} from "lucide-react";
+import { enquiryTypes } from "@/lib/data/contact";
+import { products } from "@/lib/data/products";
+import { submitEnquiryAction } from "@/app/contact/actions";
+import type { EnquiryField, EnquiryType } from "@/lib/contact/types";
+import { reviewsProvider } from "@/lib/reviews/provider";
+import { useAuth } from "@/lib/auth/auth-context";
+import { StarRating } from "./star-rating";
+import { cn } from "@/lib/utils";
 
 const iconMap = {
   message: MessageSquare,
@@ -30,122 +30,138 @@ const iconMap = {
   star: StarIcon,
   building: Building2,
   newspaper: Newspaper,
-} as const
+} as const;
 
-const steps = ["Topic", "Your details", "Details", "Review"]
+const steps = ["Topic", "Your details", "Details", "Review"];
 
 const inputClass =
-  "w-full rounded-xl border border-foreground/10 bg-foreground/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 outline-none transition-colors focus:border-foreground/30"
-const labelClass = "mb-2 block text-xs uppercase tracking-[0.15em] text-foreground/50"
+  "w-full rounded-xl border border-foreground/10 bg-foreground/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 outline-none transition-colors focus:border-foreground/30";
+const labelClass =
+  "mb-2 block text-xs uppercase tracking-[0.15em] text-foreground/50";
 
 function resolveOptions(field: EnquiryField): string[] {
-  if (field.optionsSource === "products") return products.map((p) => p.name)
-  return field.options ?? []
+  if (field.optionsSource === "products") return products.map((p) => p.name);
+  return field.options ?? [];
 }
 
 function slugForProductName(name: string): string | undefined {
-  return products.find((p) => p.name === name)?.slug
+  return products.find((p) => p.name === name)?.slug;
 }
 
 function isEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 export function ContactForm() {
-  const { user, status } = useAuth()
-  const [step, setStep] = useState(0)
-  const [typeId, setTypeId] = useState<string | null>(null)
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [values, setValues] = useState<Record<string, string | number>>({})
-  // Honeypot: hidden from real users; only bots fill it.
-  const [website, setWebsite] = useState("")
-  const [touched, setTouched] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [result, setResult] = useState<string | null>(null)
+  const { user, status } = useAuth();
+  const [step, setStep] = useState(0);
+  // Derive initial topic and values from the URL search params so we don't
+  // synchronously set state inside effects when the component mounts.
+  const [typeId, setTypeId] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const topic = params.get("topic");
+      return topic && enquiryTypes.some((t) => t.id === topic) ? topic : null;
+    } catch {
+      return null;
+    }
+  });
 
-  // Prefill contact details from the signed-in user once auth resolves.
-  useEffect(() => {
-    if (!user) return
-    setName((prev) => prev || user.profile.displayName || user.name)
-    setEmail((prev) => prev || user.email)
-  }, [user])
-
-  // Deep-link prefill: /contact?topic=review&product=Momo%20X preselects the
-  // topic and product so "Write a review" on a product page lands ready to go.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const topic = params.get("topic")
-    const product = params.get("product")
-    if (topic && enquiryTypes.some((t) => t.id === topic)) {
-      setTypeId(topic)
-      if (product) {
+  const [values, setValues] = useState<Record<string, string | number>>(() => {
+    if (typeof window === "undefined")
+      return {} as Record<string, string | number>;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const topic = params.get("topic");
+      const product = params.get("product");
+      if (topic && product && enquiryTypes.some((t) => t.id === topic)) {
         const hasProductField = enquiryTypes
           .find((t) => t.id === topic)
-          ?.fields.some((f) => f.name === "product")
-        if (hasProductField) setValues({ product })
+          ?.fields.some((f) => f.name === "product");
+        if (hasProductField)
+          return { product } as Record<string, string | number>;
       }
+      return {} as Record<string, string | number>;
+    } catch {
+      return {} as Record<string, string | number>;
     }
-  }, [])
+  });
+
+  // Name/email are shown using fallbacks from `user` when the local state
+  // is empty; avoid setting state from within an effect to prevent cascading
+  // renders. Inputs remain controlled once the user types.
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  // Honeypot: hidden from real users; only bots fill it.
+  const [website, setWebsite] = useState("");
+  const [touched, setTouched] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<string | null>(null);
+
+  // NOTE: avoid setting state synchronously inside effects to prevent
+  // cascading renders. We derive initial `typeId` and `values` from the
+  // URL at construction time above, and render `name`/`email` with fallbacks
+  // from `user` when the local state is empty.
 
   const selectedType: EnquiryType | undefined = useMemo(
     () => enquiryTypes.find((t) => t.id === typeId),
     [typeId],
-  )
+  );
 
   // A topic is "locked" when it requires an account and the viewer is not
   // authenticated. While auth is still resolving we treat it as locked too, so
   // the flow never briefly exposes a gated form before the session loads.
-  const requiresAccount = selectedType?.access === "account"
-  const locked = requiresAccount && status !== "authenticated"
-  const showGate = requiresAccount && status === "unauthenticated"
+  const requiresAccount = selectedType?.access === "account";
+  const locked = requiresAccount && status !== "authenticated";
+  const showGate = requiresAccount && status === "unauthenticated";
   const signInHref = typeId
     ? `/sign-in?redirect=${encodeURIComponent(`/contact?topic=${typeId}`)}`
-    : "/sign-in"
+    : "/sign-in";
 
   function setField(nameKey: string, value: string | number) {
-    setValues((prev) => ({ ...prev, [nameKey]: value }))
+    setValues((prev) => ({ ...prev, [nameKey]: value }));
   }
 
   function stepValid(index: number): boolean {
-    if (index === 0) return !!typeId
-    if (index === 1) return name.trim().length > 1 && isEmail(email)
+    if (index === 0) return !!typeId;
+    if (index === 1) return name.trim().length > 1 && isEmail(email);
     if (index === 2) {
-      if (!selectedType) return false
+      if (!selectedType) return false;
       return selectedType.fields.every((f) => {
-        if (!f.required) return true
-        const v = values[f.name]
-        if (f.type === "rating") return typeof v === "number" && v > 0
-        return typeof v === "string" && v.trim().length > 0
-      })
+        if (!f.required) return true;
+        const v = values[f.name];
+        if (f.type === "rating") return typeof v === "number" && v > 0;
+        return typeof v === "string" && v.trim().length > 0;
+      });
     }
-    return true
+    return true;
   }
 
   function goNext() {
     // Never advance past topic selection into a gated topic while signed out.
     if (step === 0 && locked) {
-      setTouched(true)
-      return
+      setTouched(true);
+      return;
     }
     if (!stepValid(step)) {
-      setTouched(true)
-      return
+      setTouched(true);
+      return;
     }
-    setTouched(false)
-    setStep((s) => Math.min(s + 1, steps.length - 1))
+    setTouched(false);
+    setStep((s) => Math.min(s + 1, steps.length - 1));
   }
 
   function goBack() {
-    setTouched(false)
-    setStep((s) => Math.max(s - 1, 0))
+    setTouched(false);
+    setStep((s) => Math.max(s - 1, 0));
   }
 
   async function handleSubmit() {
-    if (!selectedType) return
-    setSubmitting(true)
-    setError(null)
+    if (!selectedType) return;
+    setSubmitting(true);
+    setError(null);
     try {
       const res = await submitEnquiryAction({
         type: selectedType.id,
@@ -153,16 +169,16 @@ export function ContactForm() {
         email: email.trim(),
         fields: values,
         website,
-      })
+      });
 
       if (!res.ok) {
-        setError(res.error ?? "Something went wrong. Please try again.")
-        return
+        setError(res.error ?? "Something went wrong. Please try again.");
+        return;
       }
 
       // A review enquiry also becomes a public product review.
       if (selectedType.id === "review") {
-        const productSlug = slugForProductName(String(values.product ?? ""))
+        const productSlug = slugForProductName(String(values.product ?? ""));
         if (productSlug) {
           await reviewsProvider.add({
             productSlug,
@@ -171,25 +187,29 @@ export function ContactForm() {
             rating: Number(values.rating) || 0,
             headline: String(values.headline ?? ""),
             body: String(values.review ?? ""),
-          })
+          });
         }
       }
 
-      setResult(res.reference ?? "—")
+      setResult(res.reference ?? "—");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
   function reset() {
-    setResult(null)
-    setStep(0)
-    setTypeId(null)
-    setValues({})
-    setTouched(false)
-    setError(null)
+    setResult(null);
+    setStep(0);
+    setTypeId(null);
+    setValues({});
+    setTouched(false);
+    setError(null);
   }
 
   if (result) {
@@ -198,10 +218,13 @@ export function ContactForm() {
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-400/15 text-emerald-300">
           <Check className="h-7 w-7" strokeWidth={1.5} />
         </div>
-        <h3 className="mt-5 text-xl font-semibold text-foreground">Message sent</h3>
+        <h3 className="mt-5 text-xl font-semibold text-foreground">
+          Message sent
+        </h3>
         <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-foreground/50">
-          Thanks{name ? `, ${name.split(" ")[0]}` : ""}. We&apos;ve received your{" "}
-          {selectedType?.label.toLowerCase()} and will reply to {email} shortly.
+          Thanks{name ? `, ${name.split(" ")[0]}` : ""}. We&apos;ve received
+          your {selectedType?.label.toLowerCase()} and will reply to {email}{" "}
+          shortly.
         </p>
         <p className="mt-4 inline-block rounded-full border border-foreground/10 bg-foreground/[0.03] px-4 py-2 text-xs uppercase tracking-[0.15em] text-foreground/60">
           Ref&nbsp;{result}
@@ -216,7 +239,7 @@ export function ContactForm() {
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -234,7 +257,7 @@ export function ContactForm() {
             <span
               className={cn(
                 "text-[10px] uppercase tracking-[0.15em] transition-colors",
-                i === step ? "text-accent-teal" : "text-foreground/40",
+                i === step ? "text-accent-teal" : "text-foreground/60",
               )}
             >
               {label}
@@ -277,18 +300,20 @@ export function ContactForm() {
           {/* Step 0 — choose a topic */}
           {step === 0 && (
             <div className="flex flex-col gap-3">
-              <h3 className="text-lg font-semibold text-foreground">What can we help with?</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                What can we help with?
+              </h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 {enquiryTypes.map((type) => {
-                  const Icon = iconMap[type.icon]
-                  const selected = type.id === typeId
+                  const Icon = iconMap[type.icon];
+                  const selected = type.id === typeId;
                   return (
                     <button
                       key={type.id}
                       type="button"
                       onClick={() => {
-                        setTypeId(type.id)
-                        setValues({})
+                        setTypeId(type.id);
+                        setValues({});
                       }}
                       className={cn(
                         "group/topic flex items-start gap-3 rounded-xl border p-4 text-left transition-colors",
@@ -312,21 +337,25 @@ export function ContactForm() {
                         <span
                           className={cn(
                             "text-sm font-medium transition-colors",
-                            selected ? "text-accent-teal" : "text-foreground group-hover/topic:text-accent-teal",
+                            selected
+                              ? "text-accent-teal"
+                              : "text-foreground group-hover/topic:text-accent-teal",
                           )}
                         >
                           {type.label}
                         </span>
-                        <span className="mt-0.5 text-xs leading-relaxed text-foreground/45">
+                        <span className="mt-0.5 text-xs leading-relaxed text-foreground/60">
                           {type.description}
                         </span>
                       </span>
                     </button>
-                  )
+                  );
                 })}
               </div>
               {touched && !typeId && (
-                <p className="text-xs text-red-400">Please choose a topic to continue.</p>
+                <p className="text-xs text-red-400">
+                  Please choose a topic to continue.
+                </p>
               )}
 
               {/* Auth gate — shown when a signed-out visitor picks an
@@ -338,7 +367,9 @@ export function ContactForm() {
                       <Lock className="h-5 w-5" strokeWidth={1.5} />
                     </span>
                     <div className="flex flex-col gap-1">
-                      <h4 className="text-sm font-semibold text-foreground">{selectedType.gate.title}</h4>
+                      <h4 className="text-sm font-semibold text-foreground">
+                        {selectedType.gate.title}
+                      </h4>
                       <p className="text-xs leading-relaxed text-foreground/55">
                         {selectedType.gate.description}
                       </p>
@@ -369,10 +400,13 @@ export function ContactForm() {
           {/* Step 1 — your details */}
           {step === 1 && (
             <div className="flex flex-col gap-5">
-              <h3 className="text-lg font-semibold text-foreground">Your details</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                Your details
+              </h3>
               {user && (
-                <p className="-mt-2 text-xs text-foreground/45">
-                  Prefilled from your account — edit if you&apos;d like a reply elsewhere.
+                <p className="-mt-2 text-xs text-foreground/60">
+                  Prefilled from your account — edit if you&apos;d like a reply
+                  elsewhere.
                 </p>
               )}
               <div>
@@ -381,14 +415,16 @@ export function ContactForm() {
                 </label>
                 <input
                   id="contact-name"
-                  value={name}
+                  value={name || user?.profile.displayName || user?.name || ""}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
                   className={inputClass}
                   autoComplete="name"
                 />
                 {touched && name.trim().length <= 1 && (
-                  <p className="mt-1.5 text-xs text-red-400">Please enter your name.</p>
+                  <p className="mt-1.5 text-xs text-red-400">
+                    Please enter your name.
+                  </p>
                 )}
               </div>
               <div>
@@ -398,14 +434,16 @@ export function ContactForm() {
                 <input
                   id="contact-email"
                   type="email"
-                  value={email}
+                  value={email || user?.email || ""}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   className={inputClass}
                   autoComplete="email"
                 />
                 {touched && !isEmail(email) && (
-                  <p className="mt-1.5 text-xs text-red-400">Please enter a valid email.</p>
+                  <p className="mt-1.5 text-xs text-red-400">
+                    Please enter a valid email.
+                  </p>
                 )}
               </div>
             </div>
@@ -414,21 +452,35 @@ export function ContactForm() {
           {/* Step 2 — dynamic details */}
           {step === 2 && selectedType && (
             <div className="flex flex-col gap-5">
-              <h3 className="text-lg font-semibold text-foreground">{selectedType.label}</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                {selectedType.label}
+              </h3>
               <div className="grid gap-5 sm:grid-cols-2">
                 {selectedType.fields.map((field) => {
-                  const value = values[field.name]
+                  const value = values[field.name];
                   const missing =
                     touched &&
                     field.required &&
                     (field.type === "rating"
                       ? !(typeof value === "number" && value > 0)
-                      : !(typeof value === "string" && value.trim().length > 0))
+                      : !(
+                          typeof value === "string" && value.trim().length > 0
+                        ));
                   return (
-                    <div key={field.name} className={cn(field.full && "sm:col-span-2")}>
-                      <label htmlFor={`field-${field.name}`} className={labelClass}>
+                    <div
+                      key={field.name}
+                      className={cn(field.full && "sm:col-span-2")}
+                    >
+                      <label
+                        htmlFor={`field-${field.name}`}
+                        className={labelClass}
+                      >
                         {field.label}
-                        {!field.required && <span className="ml-1 text-foreground/25">(optional)</span>}
+                        {!field.required && (
+                          <span className="ml-1 text-foreground/25">
+                            (optional)
+                          </span>
+                        )}
                       </label>
 
                       {field.type === "textarea" ? (
@@ -451,7 +503,11 @@ export function ContactForm() {
                             Select…
                           </option>
                           {resolveOptions(field).map((opt) => (
-                            <option key={opt} value={opt} className="bg-[#0a0a0a]">
+                            <option
+                              key={opt}
+                              value={opt}
+                              className="bg-[#0a0a0a]"
+                            >
                               {opt}
                             </option>
                           ))}
@@ -472,9 +528,13 @@ export function ContactForm() {
                         />
                       )}
 
-                      {missing && <p className="mt-1.5 text-xs text-red-400">This field is required.</p>}
+                      {missing && (
+                        <p className="mt-1.5 text-xs text-red-400">
+                          This field is required.
+                        </p>
+                      )}
                     </div>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -483,31 +543,46 @@ export function ContactForm() {
           {/* Step 3 — review */}
           {step === 3 && selectedType && (
             <div className="flex flex-col gap-5">
-              <h3 className="text-lg font-semibold text-foreground">Review &amp; send</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                Review &amp; send
+              </h3>
               <dl className="divide-y divide-foreground/5 rounded-xl border border-foreground/10 bg-foreground/[0.02]">
                 <div className="flex items-center justify-between gap-4 px-4 py-3">
-                  <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">Topic</dt>
-                  <dd className="text-sm text-foreground">{selectedType.label}</dd>
+                  <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">
+                    Topic
+                  </dt>
+                  <dd className="text-sm text-foreground">
+                    {selectedType.label}
+                  </dd>
                 </div>
                 <div className="flex items-center justify-between gap-4 px-4 py-3">
-                  <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">Name</dt>
+                  <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">
+                    Name
+                  </dt>
                   <dd className="text-sm text-foreground">{name}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-4 px-4 py-3">
-                  <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">Email</dt>
+                  <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">
+                    Email
+                  </dt>
                   <dd className="text-sm text-foreground">{email}</dd>
                 </div>
                 {selectedType.fields.map((field) => {
-                  const value = values[field.name]
-                  if (value === undefined || value === "" ) return null
+                  const value = values[field.name];
+                  if (value === undefined || value === "") return null;
                   return (
-                    <div key={field.name} className="flex items-start justify-between gap-4 px-4 py-3">
-                      <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">{field.label}</dt>
+                    <div
+                      key={field.name}
+                      className="flex items-start justify-between gap-4 px-4 py-3"
+                    >
+                      <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">
+                        {field.label}
+                      </dt>
                       <dd className="max-w-[60%] text-right text-sm text-foreground">
                         {field.type === "rating" ? `${value}/5` : String(value)}
                       </dd>
                     </div>
-                  )
+                  );
                 })}
               </dl>
               {error && <p className="text-sm text-red-400">{error}</p>}
@@ -574,5 +649,5 @@ export function ContactForm() {
         )}
       </div>
     </div>
-  )
+  );
 }

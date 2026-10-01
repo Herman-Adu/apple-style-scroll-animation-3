@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:local": "next dev -p 3001",
+    "stripe:listen": "stripe listen --events checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.expired,checkout.session.async_payment_failed,charge.refunded --forward-to localhost:3001/api/stripe/webhook",
     "build": "prisma generate && next build",
     "postinstall": "prisma generate",
     "start": "next start",

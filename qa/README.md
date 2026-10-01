@@ -14,6 +14,7 @@ qa/
   integration/       # several modules together, mocked fetch (Vitest)
     features/        #   api layer: Strapi path + local-data fallback
     revalidate-route/#   webhook secret gate + tag busting
+    checkout-finalize/#  order finalization: atomic claim, duplicate/race safety, order numbers
   smoke/             # every route 200s + renders, no console errors (Playwright)
   seo/               # sitemap / robots / rss / canonical / OG / JSON-LD (Playwright)
   axe/               # WCAG 2 A/AA scans per route (Playwright + axe-core)

@@ -1,6 +1,6 @@
-import path from "node:path"
-import { fileURLToPath } from "node:url"
-import { defineConfig, devices } from "@playwright/test"
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { defineConfig, devices } from "@playwright/test";
 
 /**
  * Playwright owns the browser-backed layers against a real running app:
@@ -12,9 +12,11 @@ import { defineConfig, devices } from "@playwright/test"
  * suite runs the same locally and in CI. Point tests at a deployed URL instead
  * by setting QA_BASE_URL.
  */
-const projectRoot = fileURLToPath(new URL("../..", import.meta.url))
-const PORT = Number(process.env.PORT ?? 3000)
-const baseURL = process.env.QA_BASE_URL ?? `http://localhost:${PORT}`
+const projectRoot = fileURLToPath(new URL("../..", import.meta.url));
+
+// Use a fixed default port (3000) unless overridden by environment.
+const PORT = Number(process.env.PORT ?? 3000);
+const baseURL = process.env.QA_BASE_URL ?? `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: path.join(projectRoot, "qa"),
@@ -32,10 +34,11 @@ export default defineConfig({
   webServer: process.env.QA_BASE_URL
     ? undefined
     : {
-        command: "pnpm dev",
+        command: "pnpm run dev:local",
         cwd: projectRoot,
         port: PORT,
         reuseExistingServer: true,
         timeout: 120_000,
+        env: { PORT: String(PORT) },
       },
-})
+});

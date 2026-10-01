@@ -108,7 +108,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
                 <div className="mt-16 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-8">
                   <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">Tags</span>
                   {doc.tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-foreground/[0.05] px-3 py-1 text-xs text-foreground/50">
+                    <span key={tag} className="rounded-full bg-foreground/5 px-3 py-1 text-xs text-foreground/50">
                       {tag}
                     </span>
                   ))}

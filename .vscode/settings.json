@@ -1,4 +1,17 @@
 {
+  // Use the workspace Playwright config under qa/config so the extension
+  // and Test Explorer run the same test matrix configured in this repo.
+  "playwright.configFile": "qa/config/playwright.config.mts",
+
+  // Command Test Explorer / Playwright should use to start the dev server
+  // when `webServer` isn't supplied by environment (matches local CLI).
+  "playwright.serverCommand": "pnpm run dev:local",
+  "playwright.serverUrl": "http://localhost:3001",
+  "playwright.serverReuse": true,
+
+  // Keep VS Code test UX helpful when running tests from the editor.
+  "testing.showInlineMessages": true,
+
   "prisma.pinToPrisma6": true,
   "prisma.hidePrisma6Prompts": true,
   "WillLuke.nextjs.hasPrompted": true

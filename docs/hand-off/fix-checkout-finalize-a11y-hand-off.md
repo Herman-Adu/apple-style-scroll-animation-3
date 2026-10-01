@@ -72,3 +72,81 @@ If you want, I can also open a tidy PR that only contains docs (or move this fil
 ---
 
 Questions or edits: tell me where you'd like additional detail (APIs, sequence diagrams, or `psql` queries used). I can expand this doc accordingly.
+
+## Sequence Diagram
+```mermaid
+sequenceDiagram
+   participant S as Stripe
+   participant W as Webhook Handler
+   participant A as App Server (finalizeCheckout)
+   participant DB as Postgres
+   participant O as Orders table
+   participant N as Notifications / Stock
+
+   S->>W: POST /webhook (checkout.session.completed)
+   W->>A: call finalizeCheckout(sessionId)
+   A->>DB: BEGIN TX
+   A->>DB: SELECT pg_advisory_xact_lock(<<allocator_key>>)
+   A->>DB: UPDATE pending_checkouts SET claimed=true WHERE id=... (claim)
+   A->>DB: SELECT COALESCE(MAX(number),0)+1 AS next_number FROM orders
+   A->>O: INSERT INTO orders(number, stripe_session_id, ...) VALUES(next_number, sessionId, ...) RETURNING id
+   A->>DB: COMMIT
+   A->>N: notifyLowStockIfNeeded(orderId)
+   A->>W: respond 200 OK
+```
+
+Replace `<<allocator_key>>` with a fixed integer chosen for the allocator (stable across processes).
+
+## Tests (added and how to run)
+- Integration: `qa/integration/checkout-finalize/finalize-checkout.test.ts` — validates:
+   - pending checkout claim semantics (only one claim succeeds),
+   - idempotent handling when the same Stripe session is processed twice,
+   - order-number monotonicity under concurrent creates.
+- Run tests locally:
+```bash
+pnpm install
+pnpm test # Vitest (unit + integration)
+pnpm run test:e2e # Playwright (smoke + e2e)
+```
+
+## DB SQL snippets
+
+1) Transactional finalization pattern (Postgres)
+```sql
+BEGIN;
+-- acquire transaction-scoped advisory lock
+SELECT pg_advisory_xact_lock(123456789);
+
+-- claim pending checkout(s) atomically
+UPDATE pending_checkouts
+SET claimed = true
+WHERE id = $1 AND claimed = false
+RETURNING id;
+
+-- compute next order number (safe under the advisory lock)
+SELECT COALESCE(MAX(number), 0) + 1 AS next_number FROM orders FOR SHARE;
+
+-- insert order (fail-safe against duplicate stripe session)
+INSERT INTO orders (number, stripe_session_id, total, created_at)
+VALUES ($next_number, $session_id, $total, now())
+ON CONFLICT (stripe_session_id) DO NOTHING
+RETURNING id;
+
+COMMIT;
+```
+
+2) Idempotent insert by unique constraint on `stripe_session_id`
+```sql
+-- ensure unique constraint exists
+ALTER TABLE orders ADD CONSTRAINT orders_stripe_session_id_unique UNIQUE (stripe_session_id);
+
+-- insertion that is safe to retry
+INSERT INTO orders (number, stripe_session_id, total)
+VALUES (123, 'sess_abc', 12900)
+ON CONFLICT (stripe_session_id) DO NOTHING;
+```
+
+3) Handling duplicate attempts in application code
+- If `INSERT` returns no rows (conflict), treat it as already-finalized and return success to the caller.
+
+These snippets are intentionally minimal — adapt column names and sequencing to your schema.

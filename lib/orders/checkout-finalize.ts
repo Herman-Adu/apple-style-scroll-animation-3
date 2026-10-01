@@ -18,6 +18,7 @@ import { recordSale, toMap, type ProductMap } from "@/features/catalog/store"
 import { incrementDiscountCodeRedemption } from "@/lib/discount-codes/db-actions"
 import { sendLowStockAlert } from "@/features/email/actions"
 import { getStoreSettingsAction } from "@/lib/settings/db-actions"
+import { revalidateCatalog } from "@/lib/catalog/revalidate"
 import type { AppliedOffer, Order, OrderStatus } from "./types"
 
 /** A stock delta: `quantity` units of `slug` were removed (and can be restored). */
@@ -349,9 +350,10 @@ export async function reconcileRefund(charge: Stripe.Charge): Promise<Order | nu
   const nextRefundedAmount = Math.round(charge.amount_refunded) / 100
   const isFullRefund = nextRefundedAmount >= existing.total - 0.001
 
+  const restocked = isFullRefund && existing.status !== "refunded"
   const updated = await prisma.$transaction(async (tx) => {
     const priorRefunds = Array.isArray(existing.refunds) ? (existing.refunds as unknown as object[]) : []
-    if (isFullRefund && existing.status !== "refunded") {
+    if (restocked) {
       const lines: ReservedLine[] = (
         Array.isArray(existing.items) ? (existing.items as unknown as ReservedLine[]) : []
       ).map((item) => ({ slug: item.slug, quantity: item.quantity }))
@@ -368,18 +370,21 @@ export async function reconcileRefund(charge: Stripe.Charge): Promise<Order | nu
     })
   })
 
+  if (restocked) revalidateCatalog()
   return toOrder(updated)
 }
 
 /** Release a reservation by pending id — also used if Stripe session creation
  * fails after we've already reserved stock. Idempotent (no-op unless reserved). */
 export async function releaseReservationById(pendingId: string): Promise<void> {
-  await prisma.$transaction(async (tx) => {
+  const released = await prisma.$transaction(async (tx) => {
     const pending = await tx.pendingCheckout.findUnique({ where: { id: pendingId } })
-    if (!pending || pending.status !== "reserved") return
+    if (!pending || pending.status !== "reserved") return false
     await restoreStock(tx, toReserved(pending.reservedStock))
     await tx.pendingCheckout.update({ where: { id: pendingId }, data: { status: "released" } })
+    return true
   })
+  if (released) revalidateCatalog()
 }
 
 /** Stamp redeemed offers on a user by explicit id (the webhook has no session).

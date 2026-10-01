@@ -22,6 +22,7 @@ import { stripe } from "@/lib/stripe/server"
 import { getServerSession } from "@/lib/auth/server"
 import { commitStock, releaseReservationById } from "@/lib/orders/checkout-finalize"
 import { resolveDiscountCode } from "@/lib/discount-codes/db-actions"
+import { revalidateCatalog } from "@/lib/catalog/revalidate"
 import { priceCheckout, type PricedQuote } from "./lib/pricing"
 import { buildStripeLineItems, toMinorUnits } from "./lib/stripe-line-items"
 
@@ -175,6 +176,7 @@ export async function startStripeCheckout({
       },
     })
   })
+  revalidateCatalog()
 
   try {
     const origin = await resolveOrigin()

@@ -3,6 +3,23 @@
 import { useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import {
   ArrowLeft,
   ChevronDown,
   ChevronUp,
@@ -53,7 +70,7 @@ import {
   saveTemplateAction,
   sendTemplateTestAction,
 } from "@/features/email/admin-actions"
-import { BlockPreview } from "./block-preview"
+import { EmailPreviewPane } from "./block-preview"
 
 export type EditorTemplate = {
   id: number
@@ -182,6 +199,24 @@ export function TemplateEditor({
         const next = [...prev]
         ;[next[i], next[j]] = [next[j], next[i]]
         return next
+      }),
+    )
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    mutate(() =>
+      setBlocks((prev) => {
+        const from = prev.findIndex((b) => b.id === active.id)
+        const to = prev.findIndex((b) => b.id === over.id)
+        if (from < 0 || to < 0) return prev
+        return arrayMove(prev, from, to)
       }),
     )
   }
@@ -378,63 +413,113 @@ export function TemplateEditor({
           {/* Block list */}
           <div className="rounded-2xl border border-border bg-card p-5">
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-widest text-muted-foreground">Sections</h3>
-            <div className="space-y-2">
-              {blocks.length === 0 ? (
-                <p className="rounded-lg border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
-                  No sections yet. Add one from the palette above.
-                </p>
-              ) : (
-                blocks.map((block, i) => (
-                  <div
-                    key={block.id}
-                    className={cn(
-                      "rounded-xl border transition-colors",
-                      selectedId === block.id ? "border-accent-teal/50 bg-accent-teal/[0.04]" : "border-border",
-                    )}
-                  >
-                    <div className="flex items-center gap-2 px-3 py-2.5">
-                      <GripVertical className="size-4 shrink-0 text-muted-foreground/50" aria-hidden />
-                      <button
-                        type="button"
-                        onClick={() => setSelectedId(selectedId === block.id ? null : block.id)}
-                        className="min-w-0 flex-1 text-left"
-                      >
-                        <span className="text-sm font-medium">{blockLabel(block.type)}</span>
-                        <span className="ml-2 truncate text-xs text-muted-foreground">{blockSummary(block, products)}</span>
-                      </button>
-                      <div className="flex items-center gap-0.5">
-                        <Button size="icon" variant="ghost" className="size-7" onClick={() => move(block.id, -1)} disabled={i === 0} aria-label="Move up">
-                          <ChevronUp className="size-4" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="size-7" onClick={() => move(block.id, 1)} disabled={i === blocks.length - 1} aria-label="Move down">
-                          <ChevronDown className="size-4" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="size-7 text-muted-foreground hover:text-destructive" onClick={() => removeBlock(block.id)} aria-label="Remove section">
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    {selectedId === block.id ? (
-                      <div className="border-t border-border px-3 py-3">
-                        <BlockFields block={block} products={products} onChange={(patch) => updateBlock(block.id, patch)} />
-                      </div>
-                    ) : null}
+            {blocks.length === 0 ? (
+              <p className="rounded-lg border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
+                No sections yet. Add one from the palette above.
+              </p>
+            ) : (
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
+                  <div className="space-y-2">
+                    {blocks.map((block, i) => (
+                      <SortableBlockRow
+                        key={block.id}
+                        block={block}
+                        index={i}
+                        count={blocks.length}
+                        selected={selectedId === block.id}
+                        products={products}
+                        onSelect={() => setSelectedId(selectedId === block.id ? null : block.id)}
+                        onMove={(dir) => move(block.id, dir)}
+                        onRemove={() => removeBlock(block.id)}
+                        onChange={(patch) => updateBlock(block.id, patch)}
+                      />
+                    ))}
                   </div>
-                ))
-              )}
-            </div>
+                </SortableContext>
+              </DndContext>
+            )}
           </div>
         </div>
 
         {/* Right: sticky live preview */}
         <div className="lg:sticky lg:top-20 lg:self-start">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Live preview</span>
-            <span className="text-xs text-muted-foreground">Sample data</span>
-          </div>
-                <BlockPreview blocks={blocks} branding={workingBranding} products={products} className="h-[720px]" />
+          <EmailPreviewPane blocks={blocks} branding={workingBranding} products={products} className="h-[720px]" />
         </div>
       </div>
+    </div>
+  )
+}
+
+/**
+ * One draggable row in the Sections list. Dragging reorders via dnd-kit's
+ * `useSortable`; the up/down buttons remain as a keyboard/pointer-free
+ * fallback for the same `move()` handler.
+ */
+function SortableBlockRow({
+  block,
+  index,
+  count,
+  selected,
+  products,
+  onSelect,
+  onMove,
+  onRemove,
+  onChange,
+}: {
+  block: EmailBlock
+  index: number
+  count: number
+  selected: boolean
+  products: ProductImageMap
+  onSelect: () => void
+  onMove: (dir: -1 | 1) => void
+  onRemove: () => void
+  onChange: (patch: Partial<EmailBlock>) => void
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id })
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(
+        "rounded-xl border bg-card transition-colors",
+        selected ? "border-accent-teal/50 bg-accent-teal/[0.04]" : "border-border",
+        isDragging ? "relative z-10 shadow-lg" : "",
+      )}
+    >
+      <div className="flex items-center gap-2 px-3 py-2.5">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className="shrink-0 cursor-grab touch-none text-muted-foreground/50 hover:text-foreground active:cursor-grabbing"
+          aria-label={`Drag to reorder ${blockLabel(block.type)}`}
+        >
+          <GripVertical className="size-4" />
+        </button>
+        <button type="button" onClick={onSelect} className="min-w-0 flex-1 text-left">
+          <span className="text-sm font-medium">{blockLabel(block.type)}</span>
+          <span className="ml-2 truncate text-xs text-muted-foreground">{blockSummary(block, products)}</span>
+        </button>
+        <div className="flex items-center gap-0.5">
+          <Button size="icon" variant="ghost" className="size-7" onClick={() => onMove(-1)} disabled={index === 0} aria-label="Move up">
+            <ChevronUp className="size-4" />
+          </Button>
+          <Button size="icon" variant="ghost" className="size-7" onClick={() => onMove(1)} disabled={index === count - 1} aria-label="Move down">
+            <ChevronDown className="size-4" />
+          </Button>
+          <Button size="icon" variant="ghost" className="size-7 text-muted-foreground hover:text-destructive" onClick={onRemove} aria-label="Remove section">
+            <Trash2 className="size-4" />
+          </Button>
+        </div>
+      </div>
+      {selected ? (
+        <div className="border-t border-border px-3 py-3">
+          <BlockFields block={block} products={products} onChange={onChange} />
+        </div>
+      ) : null}
     </div>
   )
 }

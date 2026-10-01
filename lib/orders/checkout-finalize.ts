@@ -9,6 +9,7 @@ import "server-only"
 
 import type Stripe from "stripe"
 import type { Prisma } from "@prisma/client"
+import { after } from "next/server"
 
 import { prisma } from "@/lib/db/prisma"
 import { getAllProducts } from "@/lib/data/products"
@@ -136,20 +137,24 @@ export async function nextOrderNumber(tx: Prisma.TransactionClient): Promise<str
 /**
  * Fire the low-stock admin alert for products that just crossed at or below
  * their threshold (best-effort, never throws — a notification failure must
- * never affect checkout). Intentionally not awaited by the caller so it never
- * adds latency to the reservation transaction.
+ * never affect checkout). Scheduled via `after()` rather than a bare
+ * fire-and-forget call: in a serverless function, an unawaited promise can be
+ * killed mid-flight the instant the response is sent, which silently drops
+ * the alert before it ever reaches the email provider. `after()` guarantees
+ * this runs to completion once the response has been flushed, without
+ * adding latency to the reservation transaction itself.
  */
-async function notifyLowStock(
-  items: { name: string; slug: string; stock: number; threshold: number }[],
-): Promise<void> {
+function notifyLowStock(items: { name: string; slug: string; stock: number; threshold: number }[]): void {
   if (items.length === 0) return
-  try {
-    const settings = await getStoreSettingsAction()
-    if (!settings.emailAlerts || !settings.supportEmail) return
-    await sendLowStockAlert({ to: settings.supportEmail, items })
-  } catch {
-    // Best-effort only.
-  }
+  after(async () => {
+    try {
+      const settings = await getStoreSettingsAction()
+      if (!settings.emailAlerts || !settings.supportEmail) return
+      await sendLowStockAlert({ to: settings.supportEmail, items })
+    } catch {
+      // Best-effort only.
+    }
+  })
 }
 
 /**

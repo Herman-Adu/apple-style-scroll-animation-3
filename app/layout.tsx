@@ -1,27 +1,27 @@
-import type React from "react"
-import type { Metadata } from "next"
+import type React from "react";
+import type { Metadata } from "next";
 
-import { Analytics } from "@vercel/analytics/next"
-import "./globals.css"
-import { Inter } from "next/font/google"
-import { CartProvider } from "@/lib/cart-context"
-import { CatalogProvider } from "@/features/catalog"
-import { AuthProvider } from "@/lib/auth/auth-context"
+import { Analytics } from "@vercel/analytics/next";
+import "./globals.css";
+import { Inter } from "next/font/google";
+import { CartProvider } from "@/lib/cart-context";
+import { CatalogProvider } from "@/features/catalog";
+import { AuthProvider } from "@/lib/auth/auth-context";
 // `fetchAppSession` used to seed the session at the root layout, but that
 // forces every page to be server-rendered. We fetch session client-side in
 // `AuthProvider` so public pages can be statically prerendered or ISR.
-import { ThemeProvider } from "@/components/theme-provider"
-import { SiteChrome } from "@/components/layout/site-chrome"
-import { BrandThemeStyle } from "@/components/theme/brand-theme-style"
-import { getStoreSettingsAction } from "@/lib/settings/db-actions"
-import { getActiveTheme, getHeadingAccent } from "@/lib/settings/theme"
-import { getCatalogProducts } from "@/lib/catalog/db-actions"
-import { siteConfig } from "@/lib/data/site"
-import { getBaseUrl } from "@/lib/seo/site"
-import { JsonLd } from "@/components/seo/json-ld"
-import { organizationLd, websiteLd } from "@/lib/seo/structured-data"
+import { ThemeProvider } from "@/components/theme-provider";
+import { SiteChrome } from "@/components/layout/site-chrome";
+import { BrandThemeStyle } from "@/components/theme/brand-theme-style";
+import { getStoreSettingsAction } from "@/lib/settings/db-actions";
+import { getActiveTheme, getHeadingAccent } from "@/lib/settings/theme";
+import { getCatalogProducts } from "@/lib/catalog/db-actions";
+import { siteConfig } from "@/lib/data/site";
+import { getBaseUrl } from "@/lib/seo/site";
+import { JsonLd } from "@/components/seo/json-ld";
+import { organizationLd, websiteLd } from "@/lib/seo/structured-data";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
@@ -32,11 +32,21 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   applicationName: siteConfig.name,
   generator: "v0.app",
-  keywords: ["headphones", "earbuds", "speakers", "reference audio", "planar", "spatial sound", siteConfig.name],
+  keywords: [
+    "headphones",
+    "earbuds",
+    "speakers",
+    "reference audio",
+    "planar",
+    "spatial sound",
+    siteConfig.name,
+  ],
   alternates: {
     canonical: "/",
     types: {
-      "application/rss+xml": [{ title: `${siteConfig.name} — Journal`, url: "/articles/rss.xml" }],
+      "application/rss+xml": [
+        { title: `${siteConfig.name} — Journal`, url: "/articles/rss.xml" },
+      ],
     },
   },
   openGraph: {
@@ -55,7 +65,12 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   icons: {
     icon: [
@@ -74,16 +89,19 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-icon.png",
   },
-}
+};
 
 export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-  const [catalog, settings] = await Promise.all([getCatalogProducts(), getStoreSettingsAction()])
-  const activeTheme = getActiveTheme(settings.theme)
-  const headingAccent = getHeadingAccent(activeTheme)
+  const [catalog, settings] = await Promise.all([
+    getCatalogProducts(),
+    getStoreSettingsAction(),
+  ]);
+  const activeTheme = getActiveTheme(settings.theme);
+  const headingAccent = getHeadingAccent(activeTheme);
 
   return (
     <html
@@ -98,7 +116,12 @@ export default async function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <BrandThemeStyle theme={activeTheme} />
         <JsonLd data={[organizationLd(), websiteLd()]} />
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
           <AuthProvider>
             <CatalogProvider initialProducts={catalog}>
               <CartProvider catalog={catalog}>
@@ -110,5 +133,5 @@ export default async function RootLayout({
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

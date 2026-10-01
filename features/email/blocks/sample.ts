@@ -17,17 +17,28 @@ export function sampleVars(branding: EmailBranding): Record<string, string> {
   }
 }
 
-/** Sample order-summary table so the dynamic block renders in previews. */
+/**
+ * Sample order-summary table so the dynamic block renders in previews.
+ * Mirrors the thumbnail markup templates.ts's orderSummaryHtml produces at
+ * send time, using real product images, so the builder preview never drifts
+ * out of sync with what customers actually receive.
+ */
 export const SAMPLE_ORDER_SUMMARY = `
 <tr><td style="padding:20px 28px 0;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
     <tr>
+      <td width="48" style="padding:12px 8px 12px 0;border-bottom:1px solid #e5e7eb;vertical-align:top;">
+        <img src="/products/momo-beat.png" alt="MOMO Reference One" width="48" height="48" style="display:block;width:48px;height:48px;border-radius:8px;border:1px solid #e5e7eb;object-fit:cover;" />
+      </td>
       <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;color:#0a0a0a;font-size:14px;">MOMO Reference One<br /><span style="color:#6b7280;font-size:12px;">Midnight · Qty 1</span></td>
-      <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;text-align:right;color:#0a0a0a;font-size:14px;white-space:nowrap;">£349.00</td>
+      <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;text-align:right;color:#0a0a0a;font-size:14px;white-space:nowrap;vertical-align:top;">£349.00</td>
     </tr>
     <tr>
+      <td width="48" style="padding:12px 8px 12px 0;border-bottom:1px solid #e5e7eb;vertical-align:top;">
+        <img src="/products/momo-air.png" alt="MOMO Buds Pro" width="48" height="48" style="display:block;width:48px;height:48px;border-radius:8px;border:1px solid #e5e7eb;object-fit:cover;" />
+      </td>
       <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;color:#0a0a0a;font-size:14px;">MOMO Buds Pro<br /><span style="color:#6b7280;font-size:12px;">Graphite · Qty 1</span></td>
-      <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;text-align:right;color:#0a0a0a;font-size:14px;white-space:nowrap;">£199.00</td>
+      <td style="padding:12px 0;border-bottom:1px solid #e5e7eb;text-align:right;color:#0a0a0a;font-size:14px;white-space:nowrap;vertical-align:top;">£199.00</td>
     </tr>
     <tr><td style="padding:14px 0 0;color:#6b7280;font-size:13px;">Subtotal</td><td style="padding:14px 0 0;text-align:right;color:#6b7280;font-size:13px;white-space:nowrap;">£548.00</td></tr>
     <tr><td style="padding:8px 0;color:#6b7280;font-size:13px;">Shipping</td><td style="padding:8px 0;text-align:right;color:#6b7280;font-size:13px;white-space:nowrap;">Free</td></tr>

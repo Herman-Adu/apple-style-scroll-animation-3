@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { fakeCache } from "@/qa/fakes"
 
 /**
  * The publish webhook is a security boundary as much as a cache tool: it must
@@ -6,8 +7,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
  * mapped to the published model. `revalidateTag` is mocked — we assert which
  * tags it is called with, not Next's cache internals.
  */
-const revalidateTag = vi.fn()
-vi.mock("next/cache", () => ({ revalidateTag: (tag: string) => revalidateTag(tag) }))
+const cache = fakeCache()
+const revalidateTag = cache.revalidateTag
+cache.install()
 
 const postRequest = (body: unknown, headers: Record<string, string> = {}) =>
   new Request("http://localhost:3000/api/revalidate", {
@@ -55,8 +57,8 @@ describe("POST /api/revalidate", () => {
     expect(res.status).toBe(200)
     expect(json.revalidated).toBe(true)
     expect(json.tags).toEqual(expect.arrayContaining(["products", "product:momo-x"]))
-    expect(revalidateTag).toHaveBeenCalledWith("products")
-    expect(revalidateTag).toHaveBeenCalledWith("product:momo-x")
+    expect(revalidateTag).toHaveBeenCalledWith("products", "max")
+    expect(revalidateTag).toHaveBeenCalledWith("product:momo-x", "max")
   })
 
   it("200s but no-ops for an unmapped model", async () => {

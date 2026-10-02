@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { EmailBlock } from "@/features/email/blocks/types"
+import { fakeAuth, fakeCache, fakeDb, fakeEmail } from "@/qa/fakes"
 
 /**
  * The server actions are the authoritative lock check: even if the proxy or
@@ -10,7 +11,6 @@ import type { EmailBlock } from "@/features/email/blocks/types"
 type Row = Record<string, unknown> & { id: number; version: number; blocks: EmailBlock[] }
 
 let templates: Map<number, Row>
-let session: { email: string; role: "admin" | "customer" } | null
 const LOCKERS = ["designer@adudev.co.uk"]
 
 const tpl = {
@@ -31,17 +31,12 @@ const ver = {
   deleteMany: vi.fn(async () => ({ count: 0 })),
 }
 
-vi.mock("@/lib/db/prisma", () => ({ prisma: { emailTemplate: tpl, emailTemplateVersion: ver } }))
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
+const auth = fakeAuth({ lockers: LOCKERS })
+fakeDb({ emailTemplate: tpl, emailTemplateVersion: ver }).install()
+fakeCache().install()
+fakeEmail().install()
+auth.install()
 vi.mock("@/lib/settings/db-actions", () => ({ getStoreSettingsAction: vi.fn() }))
-vi.mock("@/features/email/provider", () => ({ sendEmail: vi.fn() }))
-vi.mock("@/lib/auth/server", async () => {
-  const { assertAdmin, canLockBlocks } = await import("@/lib/auth/permissions")
-  return {
-    requireAdmin: vi.fn(async () => assertAdmin(session)),
-    getServerCanLockBlocks: vi.fn(async () => canLockBlocks(session, LOCKERS)),
-  }
-})
 
 const header: EmailBlock = { id: "header", type: "heading", text: "Brand", align: "center", locked: true }
 const body: EmailBlock = { id: "body", type: "text", text: "Hello", align: "left" }
@@ -74,14 +69,14 @@ async function actions() {
 
 describe("server actions require an admin", () => {
   it("rejects a signed-out caller", async () => {
-    session = null
+    auth.session = null
     const { saveTemplateAction } = await actions()
     await expect(saveTemplateAction(1, { subject: "x" })).rejects.toThrow()
     expect(tpl.update).not.toHaveBeenCalled()
   })
 
   it("rejects a customer", async () => {
-    session = { email: "shopper@x.com", role: "customer" }
+    auth.session = { email: "shopper@x.com", role: "customer" }
     const { saveTemplateAction } = await actions()
     await expect(saveTemplateAction(1, { subject: "x" })).rejects.toThrow()
     expect(tpl.update).not.toHaveBeenCalled()
@@ -90,7 +85,7 @@ describe("server actions require an admin", () => {
 
 describe("admin who can't lock", () => {
   beforeEach(() => {
-    session = { email: "content@adudev.co.uk", role: "admin" }
+    auth.session = { email: "content@adudev.co.uk", role: "admin" }
   })
 
   it("can edit unlocked blocks and other fields", async () => {
@@ -128,7 +123,7 @@ describe("admin who can't lock", () => {
 
 describe("admins who can lock", () => {
   it("the owner can unlock and edit", async () => {
-    session = { email: "herman@adudev.co.uk", role: "admin" }
+    auth.session = { email: "herman@adudev.co.uk", role: "admin" }
     const { saveTemplateAction } = await actions()
     const res = await saveTemplateAction(1, { blocks: [{ ...header, locked: false, text: "New brand" } as EmailBlock, body] })
     expect(res.ok).toBe(true)
@@ -136,7 +131,7 @@ describe("admins who can lock", () => {
   })
 
   it("a listed admin can lock a new block", async () => {
-    session = { email: "designer@adudev.co.uk", role: "admin" }
+    auth.session = { email: "designer@adudev.co.uk", role: "admin" }
     const { saveTemplateAction } = await actions()
     const res = await saveTemplateAction(1, { blocks: [header, { ...body, locked: true } as EmailBlock] })
     expect(res.ok).toBe(true)

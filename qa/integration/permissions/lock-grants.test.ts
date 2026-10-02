@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { fakeAuth, fakeCache, fakeDb } from "@/qa/fakes"
 
 /**
  * The owner grants and revokes lock rights from the admin UI. These actions are
@@ -11,7 +12,6 @@ const OWNER = "herman@adudev.co.uk"
 type Locker = { id: number; email: string; grantedBy: string; createdAt: Date }
 type Audit = { id: number; action: string; permission: string; subjectEmail: string; actorEmail: string; createdAt: Date }
 
-let session: { email: string; role: "admin" | "customer" } | null
 let lockers: Locker[]
 let audit: Audit[]
 const users = [
@@ -21,7 +21,7 @@ const users = [
   { email: "shopper@x.com", role: "customer", roleOverride: null },
 ]
 
-const prisma = {
+const db = fakeDb({
   user: { findMany: vi.fn(async () => users) },
   blockLocker: {
     findMany: vi.fn(async () => lockers),
@@ -43,15 +43,13 @@ const prisma = {
       return row
     }),
   },
-  $transaction: vi.fn(async (ops: Promise<unknown>[]) => Promise.all(ops)),
-}
-
-vi.mock("@/lib/db/prisma", () => ({ prisma }))
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
-vi.mock("@/lib/auth/server", async () => {
-  const { assertAdmin } = await import("@/lib/auth/permissions")
-  return { requireAdmin: vi.fn(async () => assertAdmin(session)) }
 })
+const prisma = db.prisma
+const auth = fakeAuth()
+
+db.install()
+fakeCache().install()
+auth.install()
 
 const actions = () => import("@/features/admin/permissions/actions")
 
@@ -59,7 +57,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   lockers = []
   audit = []
-  session = { email: OWNER, role: "admin" }
+  auth.session = { email: OWNER, role: "admin" }
 })
 
 describe("only the owner can manage lock rights", () => {
@@ -68,7 +66,7 @@ describe("only the owner can manage lock rights", () => {
     ["a customer", { email: "shopper@x.com", role: "customer" as const }],
     ["another admin", { email: "designer@adudev.co.uk", role: "admin" as const }],
   ])("refuses %s", async (_label, who) => {
-    session = who
+    auth.session = who
     const { grantLockRightsAction, revokeLockRightsAction, getLockPermissionsAction } = await actions()
     await expect(grantLockRightsAction("designer@adudev.co.uk")).rejects.toThrow()
     await expect(revokeLockRightsAction("designer@adudev.co.uk")).rejects.toThrow()

@@ -3,6 +3,7 @@ import "server-only"
 import { prisma } from "@/lib/db/prisma"
 import { DEFAULT_BRANDING, type EmailBlock, type EmailBranding } from "./blocks/types"
 import { SYSTEM_TEMPLATES, SYSTEM_PRESETS } from "./blocks/system-templates"
+import { pickOriginalVersion, versionIdsToPrune, type TemplateContent, type VersionReason } from "./versions"
 import { getStoreSettingsAction } from "@/lib/settings/db-actions"
 import { getActiveTheme, resolveTokens } from "@/lib/settings/theme"
 
@@ -174,6 +175,7 @@ export async function createTemplate(input: {
       isSystem: false,
     },
   })
+  await snapshotTemplate(r, "create")
   return toTemplateRow(r)
 }
 
@@ -188,10 +190,13 @@ export async function updateTemplate(
     blocks: EmailBlock[]
   }>,
 ): Promise<void> {
+  const current = await prisma.emailTemplate.findUnique({ where: { id } })
+  if (current) await ensureBaseline(current)
   const data: Record<string, unknown> = { ...patch }
   if (patch.blocks) data.blocks = patch.blocks as unknown as object
   data.version = { increment: 1 }
-  await prisma.emailTemplate.update({ where: { id }, data: data as never })
+  const updated = await prisma.emailTemplate.update({ where: { id }, data: data as never })
+  await snapshotTemplate(updated, "save")
 }
 
 export async function deleteTemplate(id: number): Promise<void> {
@@ -206,6 +211,7 @@ export async function resetSystemTemplate(id: number): Promise<TemplateRow | nul
   if (!r || !r.isSystem) return null
   const def = SYSTEM_TEMPLATES.find((t) => t.key === r.key)
   if (!def) return null
+  await ensureBaseline(r)
   const updated = await prisma.emailTemplate.update({
     where: { id },
     data: {
@@ -218,7 +224,123 @@ export async function resetSystemTemplate(id: number): Promise<TemplateRow | nul
       version: { increment: 1 },
     },
   })
+  await snapshotTemplate(updated, "reset")
   return toTemplateRow(updated)
+}
+
+// ---------- Template versions ----------
+
+type SnapshotSource = {
+  id: number
+  version: number
+  name: string
+  category: string
+  subject: string
+  previewText: string
+  description: string
+  blocks: unknown
+}
+
+export type TemplateVersionRow = {
+  id: number
+  version: number
+  reason: string
+  createdAt: Date
+} & TemplateContent
+
+/** Record the template's current content under its current version number (idempotent). */
+async function snapshotTemplate(r: SnapshotSource, reason: VersionReason): Promise<void> {
+  const content = {
+    name: r.name,
+    category: r.category,
+    subject: r.subject,
+    previewText: r.previewText,
+    description: r.description,
+    blocks: (r.blocks ?? []) as object,
+  }
+  await prisma.emailTemplateVersion.upsert({
+    where: { templateId_version: { templateId: r.id, version: r.version } },
+    create: { templateId: r.id, version: r.version, reason, ...content },
+    update: {},
+  })
+  const all = await prisma.emailTemplateVersion.findMany({
+    where: { templateId: r.id },
+    select: { id: true, version: true },
+  })
+  const stale = versionIdsToPrune(all)
+  if (stale.length) await prisma.emailTemplateVersion.deleteMany({ where: { id: { in: stale } } })
+}
+
+/** Templates saved before history existed have no snapshots; capture their
+ *  pre-change state first so it can still be restored. */
+async function ensureBaseline(r: SnapshotSource): Promise<void> {
+  const count = await prisma.emailTemplateVersion.count({ where: { templateId: r.id } })
+  if (count === 0) await snapshotTemplate(r, "baseline")
+}
+
+function toVersionRow(v: {
+  id: number
+  version: number
+  reason: string
+  createdAt: Date
+  name: string
+  category: string
+  subject: string
+  previewText: string
+  description: string
+  blocks: unknown
+}): TemplateVersionRow {
+  return { ...v, blocks: (v.blocks as EmailBlock[]) ?? [] }
+}
+
+/** Newest first. Lazily creates a baseline so every template shows at least one entry. */
+export async function listTemplateVersions(templateId: number): Promise<TemplateVersionRow[]> {
+  const r = await prisma.emailTemplate.findUnique({ where: { id: templateId } })
+  if (!r) return []
+  await ensureBaseline(r)
+  const rows = await prisma.emailTemplateVersion.findMany({
+    where: { templateId },
+    orderBy: { version: "desc" },
+  })
+  return rows.map(toVersionRow)
+}
+
+async function applyContent(id: number, content: TemplateContent, reason: VersionReason): Promise<TemplateRow> {
+  const updated = await prisma.emailTemplate.update({
+    where: { id },
+    data: {
+      name: content.name,
+      category: content.category,
+      subject: content.subject,
+      previewText: content.previewText,
+      description: content.description,
+      blocks: content.blocks as unknown as object,
+      version: { increment: 1 },
+    },
+  })
+  await snapshotTemplate(updated, reason)
+  return toTemplateRow(updated)
+}
+
+/** Make an older snapshot the current content. Saved as a new version, so it can be undone too. */
+export async function restoreTemplateVersion(templateId: number, versionId: number): Promise<TemplateRow | null> {
+  const r = await prisma.emailTemplate.findUnique({ where: { id: templateId } })
+  if (!r) return null
+  const v = await prisma.emailTemplateVersion.findUnique({ where: { id: versionId } })
+  if (!v || v.templateId !== templateId) return null
+  await ensureBaseline(r)
+  return applyContent(templateId, toVersionRow(v), "restore")
+}
+
+/** Custom templates reset to their earliest snapshot (as first created or copied). */
+export async function resetCustomTemplate(id: number): Promise<TemplateRow | null> {
+  const r = await prisma.emailTemplate.findUnique({ where: { id } })
+  if (!r || r.isSystem) return null
+  await ensureBaseline(r)
+  const versions = await prisma.emailTemplateVersion.findMany({ where: { templateId: id } })
+  const original = pickOriginalVersion(versions)
+  if (!original) return null
+  return applyContent(id, toVersionRow(original), "reset")
 }
 
 // ---------- Presets ----------

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { renderBlocks, renderEmail, renderText } from "@/features/email/blocks/render"
 import { DEFAULT_BRANDING, type EmailBlock } from "@/features/email/blocks/types"
 import { SYSTEM_TEMPLATES } from "@/features/email/blocks/system-templates"
@@ -69,5 +69,19 @@ describe("system templates", () => {
     expect(new Set(keys).size).toBe(keys.length)
     const ids = SYSTEM_TEMPLATES.flatMap((t) => t.blocks.map((b) => b.id))
     expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it("derive block ids from template key, position and type", () => {
+    for (const t of SYSTEM_TEMPLATES) {
+      expect(t.blocks.map((b) => b.id)).toEqual(t.blocks.map((b, i) => `${t.key}-${i}-${b.type}`))
+    }
+  })
+
+  it("produce identical ids when the module is loaded again", async () => {
+    vi.resetModules()
+    const fresh = await import("@/features/email/blocks/system-templates")
+    expect(fresh.SYSTEM_TEMPLATES.map((t) => t.blocks.map((b) => b.id))).toEqual(
+      SYSTEM_TEMPLATES.map((t) => t.blocks.map((b) => b.id)),
+    )
   })
 })

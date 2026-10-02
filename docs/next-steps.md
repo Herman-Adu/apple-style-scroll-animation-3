@@ -47,6 +47,8 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | W1b (#97) | Feature-slices rule (100% slices, atomic only for `components/ui`), loader contrast fix, vendored grill-me / grill-with-docs (MIT) |
 | W2 (#98, #100) | Strict checks: 0 lint errors, no ignored TS build errors, arch-audit ratchet, CI (`checks` + `app`) live and required on `main` |
 | W3 (#99) | Architecture health baseline `docs/architecture-health.md` + R1–R7 refactor roadmap (docs only) |
+| R1 (#101) | Shared test fakes `qa/fakes/` (db, cache, auth, email, http); integration tests migrated, guard test blocks direct `vi.mock` of those services |
+| R2 | Deterministic email template block ids, pure `tallySendResults`, `uniqueSlug` without counters, duplicate `use-toast`/`use-mobile` removed; incrementers 8 → 3 |
 
 ## Idea notes
 

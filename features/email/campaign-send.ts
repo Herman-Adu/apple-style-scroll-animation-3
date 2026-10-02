@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { getBaseUrl } from "@/lib/seo/site"
 import { renderEmail, renderText } from "./blocks/render"
 import { sendEmail } from "./provider"
+import { type SendOutcome, tallySendResults } from "./send-tally"
 import {
   type AudienceSpec,
   getBranding,
@@ -51,11 +52,7 @@ export async function sendCampaign(id: number) {
 
   await updateCampaign(id, { status: "sending" })
   const shopUrl = `${getBaseUrl()}/products`
-  let sent = 0
-  let failed = 0
-  let skipped = 0
-
-  for (const r of recipients) {
+  const sendTo = async (r: (typeof recipients)[number]): Promise<SendOutcome> => {
     const vars: Record<string, string> = {
       customer_name: r.name || "there",
       brand_name: branding.brandName,
@@ -65,9 +62,6 @@ export async function sendCampaign(id: number) {
     const html = renderEmail(tpl.blocks, branding, { vars, baseUrl: getBaseUrl() })
     const text = renderText(tpl.blocks, branding, { vars })
     const result = await sendEmail({ to: r.email, subject, html, text, replyTo: branding.supportEmail || undefined })
-    if (!result.ok) failed++
-    else if ("skipped" in result && result.skipped) skipped++
-    else sent++
     await recordLog({
       to: r.email,
       subject,
@@ -77,7 +71,15 @@ export async function sendCampaign(id: number) {
       resendId: result.ok && result.id ? result.id : "",
       status: result.ok ? (result.skipped ? "skipped" : "sent") : "failed",
     })
+    return result
   }
+
+  // Sequential on purpose: keeps small sends well inside Resend's rate limit.
+  const outcomes = await recipients.reduce<Promise<SendOutcome[]>>(
+    async (done, r) => [...(await done), await sendTo(r)],
+    Promise.resolve([]),
+  )
+  const { sent, failed, skipped } = tallySendResults(outcomes)
 
   await updateCampaign(id, {
     status: "sent",

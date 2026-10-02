@@ -71,10 +71,10 @@ export function slugify(name: string): string {
 
 /** Ensure a unique slug within the current map by suffixing -2, -3, … */
 export function uniqueSlug(base: string, map: ProductMap): string {
-  let slug = base || "product"
-  let n = 2
-  while (map[slug]) slug = `${base}-${n++}`
-  return slug
+  const first = base || "product"
+  if (!map[first]) return first
+  const suffix = (n: number): string => (map[`${base}-${n}`] ? suffix(n + 1) : `${base}-${n}`)
+  return suffix(2)
 }
 
 // --- Pure map operations ----------------------------------------------------

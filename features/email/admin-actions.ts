@@ -92,10 +92,21 @@ export async function deleteTemplateAction(id: number) {
 }
 
 export async function resetTemplateAction(id: number) {
-  await resetSystemTemplate(id)
+  const row = await resetSystemTemplate(id)
+  if (!row) return { ok: false as const, error: "Only system templates can be reset to a default" }
   revalidatePath(`${EMAIL_BASE}/templates`)
   revalidatePath(`${EMAIL_BASE}/templates/${id}`)
-  return { ok: true as const }
+  return {
+    ok: true as const,
+    template: {
+      name: row.name,
+      category: row.category,
+      subject: row.subject,
+      previewText: row.previewText,
+      description: row.description,
+      blocks: row.blocks,
+    },
+  }
 }
 
 /** Send a template to a single address as a real test of the built email. */

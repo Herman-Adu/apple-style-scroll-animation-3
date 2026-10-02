@@ -323,10 +323,19 @@ export function TemplateEditor({
   function reset() {
     startTransition(async () => {
       const res = await resetTemplateAction(template.id)
-      if (res.ok) {
-        toast.success("Reset to default")
-        router.refresh()
-      } else toast.error("Could not reset template")
+      if (!res.ok) {
+        toast.error(res.error ?? "Could not reset template")
+        return
+      }
+      // Local editor state is seeded from props once, so apply the default
+      // directly. It goes through history so an accidental reset can be undone.
+      setHistory((h) => [...h.slice(-(HISTORY_LIMIT - 1)), snapshot()])
+      setFuture([])
+      restore(res.template)
+      setSelectedId(res.template.blocks[0]?.id ?? null)
+      setDirty(false)
+      toast.success("Template reset to default", { description: "Press Undo to bring your changes back." })
+      router.refresh()
     })
   }
 

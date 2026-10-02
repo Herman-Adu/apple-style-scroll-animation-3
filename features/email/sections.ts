@@ -9,7 +9,8 @@ import type { BlockType, EmailBlock } from "./blocks/types"
 export const SECTION_NAME_MAX = 60
 export const SECTION_MAX_BLOCKS = 20
 
-export type SectionBlock = Omit<EmailBlock, "id">
+/** Distributes over the union so each block type keeps its own fields. */
+export type SectionBlock = EmailBlock extends infer B ? (B extends EmailBlock ? Omit<B, "id"> : never) : never
 
 const KNOWN_TYPES: ReadonlySet<BlockType> = new Set<BlockType>([
   "hero",

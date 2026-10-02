@@ -36,6 +36,41 @@ export function canLockBlocks(viewer: Viewer, lockers: string[] = blockLockerEma
   return lockers.includes(viewer.email.trim().toLowerCase())
 }
 
+const normalizeEmail = (email: string) => email.trim().toLowerCase()
+
+/** Effective locker list: database grants (managed in the admin UI) plus the env seed. */
+export function mergeLockers(dbEmails: string[], envEmails: string[]): string[] {
+  return [...new Set([...dbEmails, ...envEmails].map(normalizeEmail).filter(Boolean))]
+}
+
+/** Only the owner may grant or revoke lock rights. */
+export function canManagePermissions(viewer: Viewer): boolean {
+  return Boolean(viewer?.email) && viewer?.role === "admin" && isOwner(viewer.email)
+}
+
+export type GrantAction = "grant" | "revoke"
+export type GrantValidation = { ok: true; email: string } | { ok: false; error: string }
+
+/** Whether a grant or revoke is valid against the current admins and lockers. */
+export function validateGrant(input: {
+  action: GrantAction
+  subjectEmail: string
+  admins: string[]
+  lockers: string[]
+}): GrantValidation {
+  const email = normalizeEmail(input.subjectEmail)
+  if (!email) return { ok: false, error: "An email is required." }
+  if (isOwner(email)) return { ok: false, error: "The owner always has lock rights and can't be revoked." }
+  const isLocker = input.lockers.map(normalizeEmail).includes(email)
+  if (input.action === "grant") {
+    if (!input.admins.map(normalizeEmail).includes(email)) return { ok: false, error: "Only admins can be given lock rights." }
+    if (isLocker) return { ok: false, error: "That admin already has lock rights." }
+  } else if (!isLocker) {
+    return { ok: false, error: "That admin doesn't have lock rights." }
+  }
+  return { ok: true, email }
+}
+
 export function assertAdmin<T extends NonNullable<Viewer>>(viewer: T | null | undefined): T {
   if (!viewer || viewer.role !== "admin") throw new AuthorizationError()
   return viewer

@@ -267,6 +267,30 @@ model EmailTemplate {
   @@map("email_templates")
 }
 
+/// An admin granted the right to lock and unlock email blocks, managed by the
+/// owner in Admin → Settings → Permissions. The owner is implicit and never stored.
+model BlockLocker {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  grantedBy String   @map("granted_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("block_lockers")
+}
+
+/// Append-only record of every grant and revoke of a permission.
+model PermissionAudit {
+  id           Int      @id @default(autoincrement())
+  action       String // grant | revoke
+  permission   String   @default("email.lock")
+  subjectEmail String   @map("subject_email")
+  actorEmail   String   @map("actor_email")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("permission_audit")
+}
+
 /// Immutable snapshot of a template taken on every save, reset and restore.
 /// Powers version history and gives custom templates an "original" to reset to.
 model EmailTemplateVersion {

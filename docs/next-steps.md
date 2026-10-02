@@ -45,6 +45,8 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | S5 | Production deploy, Stripe live-keys checklist, final gap analysis |
 | W1 (#96) | Rules in the repo: `AGENTS.md` router + 11 skills in `.agents/skills/`, guard test `qa/unit/meta/skills.test.ts` |
 | W1b (#97) | Feature-slices rule (100% slices, atomic only for `components/ui`), loader contrast fix, vendored grill-me / grill-with-docs (MIT) |
+| W2 (#98) | Strict checks: `pnpm check`, arch ratchet (`qa/baselines/arch.json`), 0 lint errors, no ignored TS errors, CI file staged at `docs/ci/ci.yml`; squash-only + `main-protection` ruleset |
+| W3 (#99) | `docs/architecture-health.md`: scorecard, top smells, `useEffect` triage (55), test-fakes kit design, R1–R7 roadmap |
 
 ## Idea notes
 

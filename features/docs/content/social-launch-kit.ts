@@ -1,0 +1,86 @@
+import type { Doc } from "../schema"
+
+export const socialLaunchKit: Doc = {
+  slug: "social-launch-kit",
+  title: "Social Launch Kit: Email Builder & Permissions",
+  category: "Positioning",
+  audience: "owner",
+  access: "owner",
+  summary:
+    "Ready-to-post copy for LinkedIn, a Facebook business page, Telegram and X covering the email builder, seasonal campaigns, defence-in-depth permissions and the documentation programme. Each post is paired with an image already in the repo and a link that previews well when shared.",
+  readingMinutes: 8,
+  order: 3,
+  updatedAt: "2026-10-02",
+  tags: ["social", "linkedin", "facebook", "telegram", "launch", "recruitment", "marketing"],
+  body: [
+    {
+      type: "callout",
+      variant: "info",
+      title: "Before you post",
+      text: "Replace [live URL] with the deployed site. Every /docs page now generates its own link preview image, so pasting a docs link into LinkedIn, Facebook or Telegram shows a branded card with the page title. Post the case study link rather than the homepage when the audience is a hiring manager or CTO.",
+    },
+    { type: "heading", text: "Image and link pairings" },
+    {
+      type: "table",
+      headers: ["Post theme", "Attach", "Link to"],
+      rows: [
+        ["Seasonal campaigns", "public/docs/showcase/email-black-friday.png and email-christmas.png", "[live URL]/docs/email-seasonal-campaigns"],
+        ["Email builder overview", "public/docs/showcase/email-newsletter.png", "[live URL]/docs/case-study-email-platform"],
+        ["Security and permissions", "Screenshot of the defence-in-depth diagram on the security page", "[live URL]/docs/security-and-compliance-posture"],
+        ["Engineering process", "Screenshot of the test growth table on the engineering quality page", "[live URL]/docs/engineering-quality"],
+        ["Changelog roundup", "The docs link preview card itself", "[live URL]/docs/whats-new"],
+      ],
+    },
+    { type: "heading", text: "LinkedIn (professional, recruiters and CTOs)" },
+    {
+      type: "paragraph",
+      text: "Post 1: I built a block-based email builder into a Next.js commerce platform, the kind of tool teams usually rent from Klaviyo or Mailchimp. Staff build emails from blocks, pull real products and prices from the catalog, and start from Black Friday, Bank Holiday or Christmas starters. Every save is versioned (last 50 kept, the original always kept), brand headers can be saved once and reused, and brand-critical blocks can be locked. Each feature shipped as a small PR with the tests written first. Case study: [live URL]/docs/case-study-email-platform",
+    },
+    {
+      type: "paragraph",
+      text: "Post 2: One permission check is a single point of failure. When I added block locking, I checked who can lock in three independent places: the request proxy, every server action, and the UI. Building it also exposed a real gap, email server actions that trusted the page to have checked the user, so every action now verifies the caller itself. The rules live in small pure functions with their own tests. Write-up with diagrams: [live URL]/docs/security-and-compliance-posture",
+    },
+    {
+      type: "paragraph",
+      text: "Post 3 (process): Over 18 PRs I shipped an email builder, a permissions model and a documentation library for five audiences: customers, content managers, developers, CTOs and the owner. Every sprint followed the same loop: failing test, smallest change to pass, type-check, squash-merge, docs updated in the same week. The full changelog is public: [live URL]/docs/whats-new",
+    },
+    { type: "heading", text: "Facebook business page (clients and store owners)" },
+    {
+      type: "paragraph",
+      text: "Seasonal sales without the scramble. Our store platform now includes ready-made Black Friday, Bank Holiday and Christmas email starters. Pick one, swap in your offer, and the real products and prices come straight from your catalog. Your logo and footer stay locked so nothing gets changed by accident, and every edit can be undone. See the finished emails: [live URL]/docs/email-seasonal-campaigns",
+    },
+    {
+      type: "paragraph",
+      text: "Own your store and your email in one place. No separate email subscription, no copying products between tools, and every customer email (order confirmations, refunds, campaigns) lives alongside your orders. Interested in something like this for your business? Send us a message.",
+    },
+    { type: "heading", text: "Telegram (developer and founder channels)" },
+    {
+      type: "paragraph",
+      text: "Short drop: Next.js 16 + Prisma/Neon + Better Auth commerce build, now with a block email builder (versioning, saved sections, seasonal starters, locked blocks) and defence-in-depth permissions (proxy + server actions + UI). Decision records and diagrams are all public: [live URL]/docs/architecture-decision-records",
+    },
+    { type: "heading", text: "X (short form)" },
+    {
+      type: "list",
+      items: [
+        "Shipped: Black Friday, Bank Holiday and Christmas email starters that pull live products from the catalog. [live URL]/docs/email-seasonal-campaigns",
+        "Permissions checked in 3 places: proxy, server actions, UI. Rules are pure functions with tests. [live URL]/docs/security-and-compliance-posture",
+        "Email hero images: 7.6 MB down to 1.25 MB with no visible quality loss. Small wins add up.",
+      ],
+    },
+    { type: "heading", text: "Posting order" },
+    {
+      type: "steps",
+      items: [
+        { title: "Week 1", text: "LinkedIn Post 1 (case study) and the Facebook seasonal post. These lead with outcomes." },
+        { title: "Week 2", text: "LinkedIn Post 2 (security) and the Telegram drop. These lead with engineering depth." },
+        { title: "Week 3", text: "LinkedIn Post 3 (process and changelog) and the X thread. Reply to comments with links to specific docs pages." },
+      ],
+    },
+    {
+      type: "callout",
+      variant: "warning",
+      title: "Keep claims accurate",
+      text: "Scheduled sends are built but not switched on, and the full browser test waits on a test admin account. Say 'built and tested' for scheduling, not 'live'. Accurate claims hold up when a CTO opens the repo.",
+    },
+  ],
+}

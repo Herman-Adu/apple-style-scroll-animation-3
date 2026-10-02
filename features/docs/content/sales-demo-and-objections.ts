@@ -10,7 +10,7 @@ export const salesDemoAndObjections: Doc = {
     "A repeatable way to sell the build in a live conversation: discovery questions to open with, a ten-minute guided demo flow with what to say at each screen, straight answers to the objections you will actually hear (why not Shopify, why not Klaviyo, who maintains it), and a clean close.",
   readingMinutes: 10,
   order: 6,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-02",
   tags: ["sales", "demo", "objections", "positioning", "pitch", "closing"],
   body: [
     {
@@ -66,6 +66,10 @@ export const salesDemoAndObjections: Doc = {
         {
           title: "Template block editor (2 min)",
           text: "Open a template and add or reorder a section. 'Non-technical staff change emails by editing blocks — no code, no developer ticket. This is the part cheaper tools cannot replicate.'",
+        },
+        {
+          title: "Seasonal starter and brand protection (2 min)",
+          text: "Click New template and pick the Black Friday starter. Show the locked brand header, insert a saved section, then open Version history. 'Seasonal campaigns start polished, your branding can't be changed by accident, and every save can be rolled back.'",
         },
         {
           title: "Campaign composer with live preview (2 min)",

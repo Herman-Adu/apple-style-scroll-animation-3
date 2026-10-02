@@ -42,7 +42,8 @@ export const platformGlossary: Doc = {
       rows: [
         ["Owner", "The super admin account. Can see owner-only docs and always has lock permission."],
         ["Admin", "A staff account with access to the admin area."],
-        ["Lock permission", "The right to lock and unlock blocks. Granted to the owner plus an allow-list of admin emails."],
+        ["Lock permission", "The right to lock and unlock blocks. The owner always has it and grants it to other admins in Admin → Settings → Permissions."],
+        ["Audit log", "The record of every lock-permission grant and revoke: who changed it, for whom, and when."],
         ["Proxy", "The first check on every request. Sends signed-out visitors away from admin pages before any page code runs."],
         ["Server action", "A function that runs on the server when the admin UI saves something. Every email action checks the caller is an admin."],
         ["Defence in depth", "Checking permissions in several independent places (proxy, server, UI) so one mistake does not expose anything."],

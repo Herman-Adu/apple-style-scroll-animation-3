@@ -87,7 +87,7 @@ export const architectureDecisionRecords: Doc = {
     { type: "heading", text: "ADR-008 — Lockers by environment variable" },
     {
       type: "paragraph",
-      text: "Context: only a few people need to lock blocks. Decision: owners can always lock, plus anyone listed in the server-only EMAIL_BLOCK_LOCKERS variable. Trade-off: changing who can lock needs an environment change and a redeploy. Revisit when there are more than a handful of admins: the roadmap includes a screen for managing lock permissions, stored in the database.",
+      text: "Context: only a few people need to lock blocks. Decision: owners can always lock, plus anyone listed in the server-only EMAIL_BLOCK_LOCKERS variable. Trade-off: changing who can lock needs an environment change and a redeploy. Status: superseded by ADR-011. The variable remains as a fallback seed.",
     },
     { type: "heading", text: "ADR-009 — Separate path for scheduled sends" },
     {
@@ -98,6 +98,11 @@ export const architectureDecisionRecords: Doc = {
     {
       type: "paragraph",
       text: "Context: tests that need a database or browser are slow and flaky. Decision: rules live in pure modules with unit tests written first. Server actions are integration-tested against an in-memory Prisma mock, and Playwright covers smoke, SEO and accessibility. Trade-off: the mock can drift from Postgres behaviour. In return, the full unit and integration run takes seconds.",
+    },
+    { type: "heading", text: "ADR-011 — Lock permissions stored in the database" },
+    {
+      type: "paragraph",
+      text: "Context: ADR-008 meant every change to who can lock needed a redeploy, with no record of who changed what. Decision: lock rights live in a database table, granted and revoked by the owner in Admin → Settings → Permissions, and every change writes an audit row. The owner always has the right, and EMAIL_BLOCK_LOCKERS still works as a read-only fallback seed. The rules stay pure (canGrantPermission, resolveLockRights) and the lookup is cached per request with React cache(). Trade-off: one extra query per admin request. In return, changes take effect immediately and are fully auditable.",
     },
   ],
 }

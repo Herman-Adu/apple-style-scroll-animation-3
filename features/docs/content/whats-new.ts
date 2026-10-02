@@ -7,7 +7,7 @@ export const whatsNew: Doc = {
   audience: "cto",
   access: "public",
   summary:
-    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the documentation catch-up (PR #86). Each entry says what changed and why it matters.",
+    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92). Each entry says what changed and why it matters.",
   readingMinutes: 5,
   order: 1,
   updatedAt: "2026-10-02",
@@ -44,6 +44,8 @@ export const whatsNew: Doc = {
         ["#83", "Lock permission for the owner and named admins", "Only trusted admins can lock or unlock blocks, checked in three independent places: proxy, server actions and UI."],
         ["#83", "Admin check on every email server action", "Closed a gap where email actions trusted the page to have checked the user. Each action now verifies the caller itself."],
         ["#83", "Request proxy for admin routes", "Signed-out visitors are redirected before any admin page code runs."],
+        ["#91", "Lock permissions stored in the database, with an audit log", "Who can lock changes instantly without a redeploy, and every grant or revoke is recorded."],
+        ["#92", "Permissions page in Admin → Settings", "The owner grants or revokes lock rights with one switch per admin; other admins see a read-only view."],
       ],
     },
     { type: "heading", text: "Documentation" },

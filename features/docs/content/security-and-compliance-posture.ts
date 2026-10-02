@@ -86,7 +86,7 @@ export const securityAndCompliancePosture: Doc = {
       type: "callout",
       variant: "info",
       title: "Configuration, not code changes",
-      text: "Admins come from an email allowlist or a role set on the user record. Named lockers come from the server-only EMAIL_BLOCK_LOCKERS variable, so the list never reaches the browser. The owner (herman@adudev.co.uk by default) can always lock.",
+      text: "Admins come from an email allowlist or a role set on the user record. Lock rights are granted and revoked only by the owner (herman@adudev.co.uk by default), are stored in the database, and every change writes an audit row. The server-only EMAIL_BLOCK_LOCKERS variable remains as a fallback seed. The owner can always lock, and the list never reaches the browser.",
     },
     {
       type: "heading",

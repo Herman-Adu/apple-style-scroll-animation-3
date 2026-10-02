@@ -17,11 +17,12 @@ import { managingYourTheme } from "./managing-your-theme"
 import { companyProfileAndSetup } from "./company-profile-and-setup"
 import { emailSystemOverview } from "./email-system-overview"
 import { emailTemplatesGuide } from "./email-templates-guide"
+import { emailSeasonalCampaigns } from "./email-seasonal-campaigns"
+import { platformGlossary } from "./platform-glossary"
 import { emailCampaignWalkthrough } from "./email-campaign-walkthrough"
 import { emailCustomerMessages } from "./email-customer-messages"
 import { systemArchitecture } from "./system-architecture"
 import { dataLayerAndDatabase } from "./data-layer-and-database"
-import { emailPlatformArchitecture } from "./email-platform-architecture"
 import { theThemeSystem } from "./the-theme-system"
 import { serverFirstPlaybook } from "./server-first-playbook"
 import { strapiMigrationRunbook } from "./strapi-migration-runbook"
@@ -42,9 +43,6 @@ import { showcaseAndPortfolio } from "./showcase-and-portfolio"
 import { socialAndRecruitmentMarketing } from "./social-and-recruitment-marketing"
 import { salesDemoAndObjections } from "./sales-demo-and-objections"
 import { productRoadmap } from "./product-roadmap"
-import { engineeringQuality } from "./engineering-quality"
-import { architectureDecisionRecords } from "./architecture-decision-records"
-import { contributingAndWorkflow } from "./contributing-and-workflow"
 
 /**
  * The local docs corpus. This is the single source that the api/ seam reads
@@ -72,13 +70,12 @@ export const docs: Doc[] = [
   companyProfileAndSetup,
   emailSystemOverview,
   emailTemplatesGuide,
+  emailSeasonalCampaigns,
+  platformGlossary,
   emailCampaignWalkthrough,
   emailCustomerMessages,
   // Developer (public)
   systemArchitecture,
-  emailPlatformArchitecture,
-  architectureDecisionRecords,
-  contributingAndWorkflow,
   dataLayerAndDatabase,
   theThemeSystem,
   serverFirstPlaybook,
@@ -94,7 +91,6 @@ export const docs: Doc[] = [
   whyThisStack,
   scaleAndReliability,
   securityAndCompliancePosture,
-  engineeringQuality,
   // Owner (owner-only)
   positioningAndSelling,
   pricingAndPackaging,

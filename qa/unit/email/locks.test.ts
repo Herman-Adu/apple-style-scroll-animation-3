@@ -5,6 +5,7 @@ import {
   insertBlocks,
   insertionIndex,
   isLocked,
+  lockViolations,
   removeIfUnlocked,
   reorder,
   setLocked,
@@ -102,5 +103,40 @@ describe("insertion point", () => {
 
   it("appends when every block is locked rather than going above the header", () => {
     expect(insertionIndex([header(), footer()])).toBe(2)
+  })
+})
+
+describe("lockViolations (server check for admins who can't lock)", () => {
+  const before = [header(), body("a"), footer()]
+
+  it("allows changes to unlocked blocks and inserting above the footer", () => {
+    const after = [header(), { ...body("a"), text: "changed" }, body("new"), footer()]
+    expect(lockViolations(before, after)).toEqual([])
+  })
+
+  it("ignores JSON key order on locked blocks (Postgres jsonb reorders keys)", () => {
+    const reordered = { locked: true, align: "center", text: "Brand", type: "heading", id: "header" } as EmailBlock
+    expect(lockViolations(before, [reordered, body("a"), footer()])).toEqual([])
+  })
+
+  it("flags an edited locked block", () => {
+    const after = [{ ...header(), text: "Hacked" } as EmailBlock, body("a"), footer()]
+    expect(lockViolations(before, after)).toEqual([{ id: "header", reason: "edited" }])
+  })
+
+  it("flags a removed locked block", () => {
+    expect(lockViolations(before, [header(), body("a")])).toEqual([{ id: "footer", reason: "removed" }])
+  })
+
+  it("flags unlocking", () => {
+    expect(lockViolations(before, [header(false), body("a"), footer()])).toEqual([{ id: "header", reason: "unlocked" }])
+  })
+
+  it("flags locking an existing or a new block", () => {
+    const after = [header(), { ...body("a"), locked: true } as EmailBlock, footer(), { ...body("z"), locked: true } as EmailBlock]
+    expect(lockViolations(before, after)).toEqual([
+      { id: "a", reason: "locked" },
+      { id: "z", reason: "locked" },
+    ])
   })
 })

@@ -54,6 +54,10 @@ vi.mock("@/lib/db/prisma", () => ({ prisma: { emailTemplate: tpl, emailTemplateV
 vi.mock("next/cache", () => ({ revalidatePath: (p: string) => revalidatePath(p) }))
 vi.mock("@/lib/settings/db-actions", () => ({ getStoreSettingsAction: vi.fn() }))
 vi.mock("@/features/email/provider", () => ({ sendEmail: vi.fn() }))
+vi.mock("@/lib/auth/server", () => ({
+  requireAdmin: vi.fn(async () => ({ email: "herman@adudev.co.uk", role: "admin" })),
+  getServerCanLockBlocks: vi.fn(async () => true),
+}))
 
 const def = SYSTEM_TEMPLATES[0]
 

@@ -42,7 +42,8 @@ Inlined at build time and visible in the browser. Do not put secrets here.
 | `NEXT_PUBLIC_SITE_URL` | Recommended in prod | Canonical public origin for metadata, sitemap, robots, OG images, RSS. Falls back to the Vercel production URL, then `localhost` (see `lib/seo/site.ts`). |
 | `NEXT_PUBLIC_AUTH_PROVIDER` | No | Selects the auth adapter: `db` (default, Better Auth + Neon) / `local` (localStorage reference) / `strapi` (legacy REST). See `lib/auth/config.ts`. |
 | `NEXT_PUBLIC_ADMIN_EMAILS` | No | Comma-separated admin allowlist consulted on account creation. Has a built-in default; override to add your own admin addresses. |
-| `NEXT_PUBLIC_OWNER_EMAILS` | No | Comma-separated super-admin allowlist — the only accounts that can read private sales-enablement docs. Every owner email should also be an admin. |
+| `NEXT_PUBLIC_OWNER_EMAILS` | No | Comma-separated super-admin allowlist — the only accounts that can read private sales-enablement docs. Owners can always lock and unlock email blocks. Every owner email should also be an admin. |
+| `EMAIL_BLOCK_LOCKERS` | No | Server-only, comma-separated admin emails (besides owners) allowed to lock and unlock email template blocks. Empty means only owners can. Never exposed to the browser. |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | For checkout | Stripe publishable key (`pk_test_…`/`pk_live_…`) — Stripe.js needs it in the browser to mount embedded Checkout. Safe to expose. |
 | `NEXT_PUBLIC_API_URL` | No | Optional external API base. |
 | `NEXT_PUBLIC_CONTACT_ENDPOINT` | No | Optional external contact submission endpoint. |

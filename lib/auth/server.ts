@@ -2,6 +2,7 @@ import "server-only"
 import { cookies, headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import { authConfig, effectiveRole, isOwner } from "./config"
+import { assertAdmin, canLockBlocks } from "./permissions"
 import { SESSION_COOKIE } from "./session-cookie"
 import { verifySession, type SessionPayload } from "./session-token"
 import type { UserRole } from "./types"
@@ -15,8 +16,17 @@ import type { UserRole } from "./types"
  * missing, tampered with, or expired.
  */
 export async function getServerSession(): Promise<SessionPayload | null> {
+  return readSession(await headers(), (await cookies()).get(SESSION_COOKIE)?.value)
+}
+
+/** The same session check, for the proxy, which has the request rather than next/headers. */
+export async function getRequestSession(request: Request & { cookies: { get(name: string): { value: string } | undefined } }) {
+  return readSession(request.headers, request.cookies.get(SESSION_COOKIE)?.value)
+}
+
+async function readSession(requestHeaders: Headers, legacyToken: string | undefined): Promise<SessionPayload | null> {
   if (authConfig.provider === "db") {
-    const session = await auth.api.getSession({ headers: await headers() })
+    const session = await auth.api.getSession({ headers: requestHeaders })
     const user = session?.user as
       | { id: string; email: string; name: string; role?: string; status?: string; roleOverride?: string }
       | undefined
@@ -34,10 +44,8 @@ export async function getServerSession(): Promise<SessionPayload | null> {
     }
   }
 
-  const store = await cookies()
-  const token = store.get(SESSION_COOKIE)?.value
-  if (!token) return null
-  return verifySession(token)
+  if (!legacyToken) return null
+  return verifySession(legacyToken)
 }
 
 /**
@@ -48,6 +56,16 @@ export async function getServerSession(): Promise<SessionPayload | null> {
 export async function getServerRole(): Promise<UserRole | null> {
   const session = await getServerSession()
   return session?.role ?? null
+}
+
+/** The verified admin session, or throws AuthorizationError. Call first in every admin server action. */
+export async function requireAdmin(): Promise<SessionPayload> {
+  return assertAdmin(await getServerSession())
+}
+
+/** Whether the current viewer may lock/unlock email blocks (owner or EMAIL_BLOCK_LOCKERS). */
+export async function getServerCanLockBlocks(): Promise<boolean> {
+  return canLockBlocks(await getServerSession())
 }
 
 /**

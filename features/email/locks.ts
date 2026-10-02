@@ -59,6 +59,43 @@ export function insertionIndex(blocks: EmailBlock[]): number {
   return i === 0 ? blocks.length : i
 }
 
+export type LockViolation = { id: string; reason: "edited" | "removed" | "unlocked" | "locked" }
+
+/** Key-order-insensitive serialisation; Postgres jsonb doesn't preserve key order. */
+function canonical(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, v]) => v !== undefined)
+      .sort(([a], [b]) => a.localeCompare(b))
+    return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${canonical(v)}`).join(",")}}`
+  }
+  return JSON.stringify(value)
+}
+
+/**
+ * Changes an admin without lock permission isn't allowed to make: touching,
+ * removing or unlocking a locked block, or locking any block. Position isn't
+ * checked because inserting content above a locked footer legitimately shifts it.
+ */
+export function lockViolations(prev: EmailBlock[], next: EmailBlock[]): LockViolation[] {
+  const nextById = new Map(next.map((b) => [b.id, b]))
+  const prevById = new Map(prev.map((b) => [b.id, b]))
+  const violations: LockViolation[] = []
+
+  for (const before of prev) {
+    if (!isLocked(before)) continue
+    const after = nextById.get(before.id)
+    if (!after) violations.push({ id: before.id, reason: "removed" })
+    else if (!isLocked(after)) violations.push({ id: before.id, reason: "unlocked" })
+    else if (canonical(after) !== canonical(before)) violations.push({ id: before.id, reason: "edited" })
+  }
+  for (const after of next) {
+    if (isLocked(after) && !isLocked(prevById.get(after.id))) violations.push({ id: after.id, reason: "locked" })
+  }
+  return violations
+}
+
 export function insertBlocks(blocks: EmailBlock[], added: EmailBlock[]): EmailBlock[] {
   const at = insertionIndex(blocks)
   return [...blocks.slice(0, at), ...added, ...blocks.slice(at)]

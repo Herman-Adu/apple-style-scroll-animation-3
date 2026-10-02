@@ -161,7 +161,46 @@ Templates are stored as JSON block arrays in Postgres (Prisma) and rendered to H
 
 **Tables:** `email_templates` (current state + `version`), `email_template_versions` (immutable snapshot on every create / save / reset / restore, `reason` column, cascade-deleted with the template), `email_sections` (saved sections, blocks without ids). Block JSON is not schema-validated on the server, so new optional block fields (like `locked`) round-trip without a migration.
 
-**Editor** (`features/admin/components/email/template-editor.tsx`): local undo/redo stack, Discard, Duplicate, an unsaved-changes guard on navigation, the placeholder picker, the saved-sections panel, the per-row lock toggle (locked rows render their fields inside a disabled `<fieldset>`), and `version-history.tsx` for preview/restore. `new-template-dialog.tsx` is the starter gallery. Locks are an accident guard, not an authorization boundary — any admin can toggle them.
+**Editor** (`features/admin/components/email/template-editor.tsx`): local undo/redo stack, Discard, Duplicate, an unsaved-changes guard on navigation, the placeholder picker, the saved-sections panel, the per-row lock toggle (locked rows render their fields inside a disabled `<fieldset>`), and `version-history.tsx` for preview/restore. `new-template-dialog.tsx` is the starter gallery.
+
+### Authorization: defence in depth
+
+Email admin access and block locking are enforced at three independent layers. Every layer calls the same **pure rules** in `lib/auth/permissions.ts` (`adminGateDecision`, `assertAdmin`, `canLockBlocks`, unit-tested once), so a bug or bypass in one layer is caught by the next.
+
+| Layer | Where | What it enforces |
+| --- | --- | --- |
+| 1. Route gate | `proxy.ts` (matcher `/admin/:path*`) | Signed-out visitors are redirected to `/sign-in?redirect=…`, non-admins to `/`. Non-GET requests (server-action POSTs) get `401`/`403` JSON instead of a redirect. |
+| 2. Server actions (authoritative) | `features/email/admin-actions.ts` | Every exported action starts with `await requireAdmin()`. `saveTemplate`, `resetTemplate` and `restoreVersion` also call `lockViolations(before, after)` and refuse the change unless `getServerCanLockBlocks()` is true. |
+| 3. UI | `template-editor.tsx` via `canLock` prop from the server page | Non-lockers see a **Locked** badge instead of the toggle; `toggleLock` is a no-op. This is presentation only — never trusted. |
+
+**Who can lock:** owners (`NEXT_PUBLIC_OWNER_EMAILS`, default `herman@adudev.co.uk`) plus any admin listed in the server-only `EMAIL_BLOCK_LOCKERS` (comma-separated). The locker list is never shipped to the browser.
+
+**Scheduled sends:** the cron route has no session, so the campaign-send logic lives in `features/email/campaign-send.ts` (`sendCampaign`). The cron route calls it directly; the admin action is a thin `requireAdmin()` wrapper around it.
+
+```mermaid
+sequenceDiagram
+    actor A as Admin (non-locker)
+    participant P as proxy.ts
+    participant E as Editor (UI)
+    participant S as saveTemplate action
+    participant R as permissions.ts
+    participant DB as Postgres
+
+    A->>P: GET /admin/email/templates/12
+    P->>R: adminGateDecision(session)
+    R-->>P: allow
+    P-->>E: page + canLock=false
+    Note over E: lock toggle hidden, Locked badge shown
+    A->>S: POST save (crafted payload unlocks footer)
+    S->>R: assertAdmin(session)
+    S->>R: canLockBlocks(session)
+    R-->>S: false
+    S->>DB: load current blocks
+    S->>R: lockViolations(before, after)
+    R-->>S: [footer unlocked]
+    S-->>A: { ok: false, error }
+    Note over DB: nothing written, no version snapshot
+```
 
 ---
 

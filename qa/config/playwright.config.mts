@@ -14,17 +14,23 @@ import { defineConfig, devices } from "@playwright/test";
  */
 const projectRoot = fileURLToPath(new URL("../..", import.meta.url));
 
-// Use a fixed default port (3000) unless overridden by environment.
-const PORT = Number(process.env.PORT ?? 3000);
+// CI serves the production build on 3001 to match BETTER_AUTH_URL and
+// NEXT_PUBLIC_SITE_URL in the workflow; locally we reuse the dev server on 3000.
+// The port Playwright waits on MUST be the port the command listens on.
+const isCI = !!process.env.CI;
+const PORT = Number(process.env.PORT ?? (isCI ? 3001 : 3000));
 const baseURL = process.env.QA_BASE_URL ?? `http://localhost:${PORT}`;
+const serverCommand = isCI
+  ? `pnpm exec next start -p ${PORT}`
+  : `pnpm exec next dev -p ${PORT}`;
 
 export default defineConfig({
   testDir: path.join(projectRoot, "qa"),
   testMatch: ["smoke/**/*.spec.ts", "seo/**/*.spec.ts", "axe/**/*.spec.ts"],
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? "line" : "list",
+  forbidOnly: isCI,
+  retries: isCI ? 1 : 0,
+  reporter: isCI ? "line" : "list",
   timeout: 30_000,
   use: {
     baseURL,
@@ -34,7 +40,7 @@ export default defineConfig({
   webServer: process.env.QA_BASE_URL
     ? undefined
     : {
-        command: "pnpm run dev:local",
+        command: serverCommand,
         cwd: projectRoot,
         port: PORT,
         reuseExistingServer: true,

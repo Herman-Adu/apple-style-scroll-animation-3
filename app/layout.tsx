@@ -107,7 +107,8 @@ export default async function RootLayout({
             </CatalogProvider>
           </AuthProvider>
         </ThemeProvider>
-        <Analytics />
+        {/* /_vercel/insights only exists on Vercel; elsewhere (CI `next start`) the script 404s. */}
+        {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>
   )

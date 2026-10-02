@@ -48,6 +48,7 @@ import {
   X,
 } from "lucide-react"
 import { toast } from "sonner"
+import { VersionHistory } from "./version-history"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -72,6 +73,7 @@ import type { Money } from "@/features/products/schema"
 import {
   createTemplateAction,
   resetTemplateAction,
+  restoreTemplateVersionAction,
   saveTemplateAction,
   sendTemplateTestAction,
 } from "@/features/email/admin-actions"
@@ -89,6 +91,7 @@ export type EditorTemplate = {
   description: string
   blocks: EmailBlock[]
   isSystem: boolean
+  version: number
 }
 
 const uid = () => `b-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
@@ -343,6 +346,26 @@ export function TemplateEditor({
     })
   }
 
+  /** Local editor state is seeded from props once, so server-side content
+   *  changes (reset, restore) are applied directly. They go through undo
+   *  history so an accidental click can be reversed. */
+  function applyServerTemplate(t: Snapshot) {
+    setHistory((h) => [...h.slice(-(HISTORY_LIMIT - 1)), snapshot()])
+    setFuture([])
+    restore(t)
+    setSaved({
+      name: t.name,
+      category: t.category,
+      subject: t.subject,
+      previewText: t.previewText,
+      description: t.description,
+      blocks: t.blocks,
+    })
+    setSelectedId(t.blocks[0]?.id ?? null)
+    setDirty(false)
+    router.refresh()
+  }
+
   function reset() {
     startTransition(async () => {
       const res = await resetTemplateAction(template.id)
@@ -350,24 +373,22 @@ export function TemplateEditor({
         toast.error(res.error ?? "Could not reset template")
         return
       }
-      // Local editor state is seeded from props once, so apply the default
-      // directly. It goes through history so an accidental reset can be undone.
-      setHistory((h) => [...h.slice(-(HISTORY_LIMIT - 1)), snapshot()])
-      setFuture([])
-      restore(res.template)
-      setSaved({
-        name: res.template.name,
-        category: res.template.category,
-        subject: res.template.subject,
-        previewText: res.template.previewText,
-        description: res.template.description,
-        blocks: res.template.blocks,
+      applyServerTemplate(res.template)
+      toast.success(template.isSystem ? "Template reset to default" : "Template reset to original", {
+        description: "Press Undo, or open History, to bring your changes back.",
       })
-      setSelectedId(res.template.blocks[0]?.id ?? null)
-      setDirty(false)
-      toast.success("Template reset to default", { description: "Press Undo to bring your changes back." })
-      router.refresh()
     })
+  }
+
+  async function restoreVersion(versionId: number): Promise<boolean> {
+    const res = await restoreTemplateVersionAction(template.id, versionId)
+    if (!res.ok) {
+      toast.error(res.error ?? "Could not restore version")
+      return false
+    }
+    applyServerTemplate(res.template)
+    toast.success("Version restored", { description: "Saved as a new version." })
+    return true
   }
 
   /** Return to the last saved state without touching the database. Goes
@@ -485,12 +506,27 @@ export function TemplateEditor({
           {duplicating ? <Loader2 className="size-4 animate-spin" /> : <Copy className="size-4" />}
           Duplicate
         </Button>
-        {template.isSystem ? (
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={reset} disabled={pending}>
-            <RotateCcw className="size-4" />
-            Reset
-          </Button>
-        ) : null}
+        <VersionHistory
+          templateId={template.id}
+          currentVersion={template.version}
+          dirty={dirty}
+          onRestore={restoreVersion}
+        />
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={reset}
+          disabled={pending}
+          title={
+            template.isSystem
+              ? "Restore the built-in default for this template"
+              : "Restore this template as it was first created or copied"
+          }
+        >
+          <RotateCcw className="size-4" />
+          {template.isSystem ? "Reset to default" : "Reset to original"}
+        </Button>
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm" className="gap-1.5">

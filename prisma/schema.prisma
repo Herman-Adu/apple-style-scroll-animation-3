@@ -262,8 +262,31 @@ model EmailTemplate {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   campaigns Campaign[]
+  versions  EmailTemplateVersion[]
 
   @@map("email_templates")
+}
+
+/// Immutable snapshot of a template taken on every save, reset and restore.
+/// Powers version history and gives custom templates an "original" to reset to.
+model EmailTemplateVersion {
+  id          Int      @id @default(autoincrement())
+  templateId  Int      @map("template_id")
+  version     Int
+  name        String
+  category    String
+  subject     String   @default("")
+  previewText String   @default("") @map("preview_text")
+  description String   @default("")
+  blocks      Json     @default("[]")
+  reason      String   @default("save") // create | save | reset | restore | baseline
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  template EmailTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, version])
+  @@index([templateId, createdAt])
+  @@map("email_template_versions")
 }
 
 /// Reusable snippet for replying to customers (delivery instructions, next

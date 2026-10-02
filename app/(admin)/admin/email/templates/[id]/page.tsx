@@ -37,6 +37,7 @@ export default async function AdminEmailTemplateEditorPage({
           description: template.description,
           blocks: template.blocks,
           isSystem: template.isSystem,
+          version: template.version,
         }}
         branding={branding}
         products={products}

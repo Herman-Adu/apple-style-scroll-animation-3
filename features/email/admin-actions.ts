@@ -27,6 +27,10 @@ import {
   recordLog,
   recordMessage,
   resetSystemTemplate,
+  resetCustomTemplate,
+  listTemplateVersions,
+  restoreTemplateVersion,
+  type TemplateRow,
   setSubscriberOptIn,
   updateCampaign,
   updateEmailSettings,
@@ -91,11 +95,7 @@ export async function deleteTemplateAction(id: number) {
   return { ok: true as const }
 }
 
-export async function resetTemplateAction(id: number) {
-  const row = await resetSystemTemplate(id)
-  if (!row) return { ok: false as const, error: "Only system templates can be reset to a default" }
-  revalidatePath(`${EMAIL_BASE}/templates`)
-  revalidatePath(`${EMAIL_BASE}/templates/${id}`)
+function templateResult(row: TemplateRow) {
   return {
     ok: true as const,
     template: {
@@ -107,6 +107,30 @@ export async function resetTemplateAction(id: number) {
       blocks: row.blocks,
     },
   }
+}
+
+/** System templates reset to their built-in default; custom ones to their original version. */
+export async function resetTemplateAction(id: number) {
+  const tpl = await getTemplate(id)
+  if (!tpl) return { ok: false as const, error: "Template not found" }
+  const row = tpl.isSystem ? await resetSystemTemplate(id) : await resetCustomTemplate(id)
+  if (!row) return { ok: false as const, error: "Could not find a version to reset to" }
+  revalidatePath(`${EMAIL_BASE}/templates`)
+  revalidatePath(`${EMAIL_BASE}/templates/${id}`)
+  return templateResult(row)
+}
+
+export async function listTemplateVersionsAction(templateId: number) {
+  const versions = await listTemplateVersions(templateId)
+  return versions.map((v) => ({ ...v, createdAt: v.createdAt.toISOString() }))
+}
+
+export async function restoreTemplateVersionAction(templateId: number, versionId: number) {
+  const row = await restoreTemplateVersion(templateId, versionId)
+  if (!row) return { ok: false as const, error: "That version no longer exists" }
+  revalidatePath(`${EMAIL_BASE}/templates`)
+  revalidatePath(`${EMAIL_BASE}/templates/${templateId}`)
+  return templateResult(row)
 }
 
 /** Send a template to a single address as a real test of the built email. */

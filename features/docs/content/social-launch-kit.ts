@@ -32,6 +32,46 @@ export const socialLaunchKit: Doc = {
         "Screen recording of the storefront: the home page scroll animation plays, a product is opened from the shop, added to the cart, and the cart drawer shows the item and subtotal.",
       caption: "Storefront journey clip for social posts.",
     },
+    { type: "heading", text: "Carousel and square images" },
+    {
+      type: "paragraph",
+      text: "A 7-slide LinkedIn carousel (1080×1350) and three 1080×1080 squares, rendered from the site's own tokens and the email screenshots. Each slide also ships as a PNG for channels without document posts. Re-export after copy or design changes with pnpm showcase:assets.",
+    },
+    {
+      type: "image",
+      src: "/showcase/social/carousel-cover.png",
+      alt: "Carousel cover slide: 'Email built into the store, not bolted on.' above the Christmas campaign email.",
+      caption: "Carousel cover slide.",
+      width: 1080,
+      height: 1350,
+    },
+    {
+      type: "table",
+      title: "Download kit per channel",
+      headers: ["Channel", "Upload", "Why"],
+      rows: [
+        [
+          "LinkedIn",
+          "/showcase/social/linkedin-carousel.pdf as a document post",
+          "Document posts swipe like a carousel and get the most dwell time.",
+        ],
+        [
+          "Facebook",
+          "/showcase/social/square-starters.png, /showcase/social/square-locks.png",
+          "Squares crop cleanly in the feed and on mobile.",
+        ],
+        [
+          "Telegram",
+          "/showcase/social/carousel-cover.png, /showcase/social/carousel-products.png, /showcase/social/carousel-starters.png, /showcase/social/carousel-locks.png, /showcase/social/carousel-history.png, /showcase/social/carousel-layers.png, /showcase/social/carousel-cta.png as one album",
+          "Albums show the slides in order, like the LinkedIn carousel.",
+        ],
+        [
+          "X",
+          "/showcase/social/square-layers.png",
+          "One image per post. Use the video clip for the thread opener.",
+        ],
+      ],
+    },
     { type: "heading", text: "Image and link pairings" },
     {
       type: "table",

@@ -20,7 +20,8 @@
     "test:seo": "playwright test --config qa/config/playwright.config.mts seo",
     "test:axe": "playwright test --config qa/config/playwright.config.mts axe",
     "test:all": "pnpm test && pnpm test:e2e",
-    "showcase:video": "node scripts/showcase-video.mjs"
+    "showcase:video": "node scripts/showcase-video.mjs",
+    "showcase:assets": "playwright test --config qa/config/playwright.social.config.mts"
   },
   "dependencies": {
     "@better-auth/infra": "^0.4.11",

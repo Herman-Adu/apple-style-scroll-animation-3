@@ -19,7 +19,10 @@ import {
 import { CategoryDisclosure } from "@/components/category-disclosure"
 import type { EmailBlock } from "@/features/email/blocks/types"
 import { createTemplateAction, deleteTemplateAction } from "@/features/email/admin-actions"
-import { SYSTEM_TEMPLATES } from "@/features/email/blocks/system-templates"
+import { buildFromExisting, buildFromStarter, type NewTemplateInput } from "@/features/email/starters"
+import { NewTemplateDialog } from "./new-template-dialog"
+
+const newBlockId = () => crypto.randomUUID().slice(0, 8)
 
 export type TemplateListItem = {
   id: number
@@ -69,6 +72,7 @@ export function TemplateList({ templates }: { templates: TemplateListItem[] }) {
   const [pending, startTransition] = useTransition()
   const [creatingKind, setCreatingKind] = useState<string | null>(null)
   const [toDelete, setToDelete] = useState<TemplateListItem | null>(null)
+  const [galleryOpen, setGalleryOpen] = useState(false)
   // Collapsed category keys. Sections start expanded — the library is small
   // enough today that hiding groups by default would cost more clicks than it
   // saves, but it stays collapsible as more templates land per category.
@@ -94,39 +98,28 @@ export function TemplateList({ templates }: { templates: TemplateListItem[] }) {
     groups.push({ meta: { key: "other", ...FALLBACK_CATEGORY_META }, items: otherItems })
   }
 
-  function createBlank() {
-    setCreatingKind("blank")
+  function create(kind: string, input: NewTemplateInput | null, failure: string) {
+    if (!input) return
+    setCreatingKind(kind)
     startTransition(async () => {
-      const welcome = SYSTEM_TEMPLATES.find((t) => t.key === "welcome")!
-      const res = await createTemplateAction({
-        name: "Untitled template",
-        category: "marketing",
-        subject: "",
-        previewText: "",
-        description: "",
-        blocks: welcome.blocks,
-      })
+      const res = await createTemplateAction(input)
       setCreatingKind(null)
       if (res.ok) router.push(`/admin/email/templates/${res.id}`)
-      else toast.error("Could not create template")
+      else toast.error(failure)
     })
   }
 
+  function createFromStarter(starterId: string) {
+    create(`starter-${starterId}`, buildFromStarter(starterId, newBlockId), "Could not create template")
+  }
+
+  function copyExisting(id: number) {
+    const tpl = templates.find((t) => t.id === id)
+    if (tpl) create(`copy-${id}`, buildFromExisting(tpl, newBlockId), "Could not copy template")
+  }
+
   function duplicate(tpl: TemplateListItem) {
-    setCreatingKind(`dup-${tpl.id}`)
-    startTransition(async () => {
-      const res = await createTemplateAction({
-        name: `${tpl.name} (copy)`,
-        category: tpl.category === "system" ? "marketing" : tpl.category,
-        subject: tpl.subject,
-        previewText: "",
-        description: tpl.description,
-        blocks: tpl.blocks,
-      })
-      setCreatingKind(null)
-      if (res.ok) router.push(`/admin/email/templates/${res.id}`)
-      else toast.error("Could not duplicate template")
-    })
+    create(`dup-${tpl.id}`, buildFromExisting(tpl, newBlockId), "Could not duplicate template")
   }
 
   function confirmDelete() {
@@ -151,8 +144,8 @@ export function TemplateList({ templates }: { templates: TemplateListItem[] }) {
             Branded, block-based emails. Edit system templates or create your own for campaigns.
           </p>
         </div>
-        <Button onClick={createBlank} disabled={pending} className="gap-2">
-          {creatingKind === "blank" ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+        <Button onClick={() => setGalleryOpen(true)} disabled={pending} className="gap-2">
+          <Plus className="size-4" />
           New template
         </Button>
       </div>
@@ -228,6 +221,15 @@ export function TemplateList({ templates }: { templates: TemplateListItem[] }) {
           )
         })}
       </div>
+
+      <NewTemplateDialog
+        open={galleryOpen}
+        onOpenChange={setGalleryOpen}
+        existing={templates.map((t) => ({ id: t.id, name: t.name, isSystem: t.isSystem }))}
+        pendingKey={creatingKind?.startsWith("dup-") ? null : creatingKind}
+        onPickStarter={createFromStarter}
+        onPickExisting={copyExisting}
+      />
 
       <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
         <AlertDialogContent>

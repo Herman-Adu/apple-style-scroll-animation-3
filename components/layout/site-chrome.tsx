@@ -16,8 +16,9 @@ import { OfferBanner } from "./offer-banner"
 export function SiteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const isAdmin = pathname?.startsWith("/admin") ?? false
+  const isShowcaseRender = pathname?.startsWith("/showcase-render") ?? false
 
-  if (isAdmin) return <>{children}</>
+  if (isAdmin || isShowcaseRender) return <>{children}</>
 
   return (
     <>

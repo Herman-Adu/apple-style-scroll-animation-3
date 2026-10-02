@@ -6,8 +6,8 @@ import { stripe } from "@/lib/stripe/server"
 import {
   finalizeCheckout,
   getOrderByStripeSession,
-} from "@/lib/orders/checkout-finalize"
-import { dispatchOrderEmails } from "@/lib/orders/order-notifications"
+} from "@/features/orders/server"
+import { dispatchOrderEmails } from "@/features/orders/server"
 import { formatMoney } from "@/lib/format"
 import { ClearCart } from "@/components/checkout/clear-cart"
 

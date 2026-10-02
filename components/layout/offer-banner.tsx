@@ -4,7 +4,7 @@ import { useMemo, useState } from "react"
 import Link from "next/link"
 import { ArrowRight, Sparkles, X } from "lucide-react"
 import { useAuth } from "@/lib/auth/auth-context"
-import { offerHeadline, offerUrgency, pickActiveOffer } from "@/lib/offers/active-offer"
+import { offerHeadline, offerUrgency, pickActiveOffer } from "@/features/checkout"
 
 /**
  * Slim promotional bar for a signed-in customer with a live personal offer.

@@ -48,7 +48,8 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | W2 (#98, #100) | Strict checks: 0 lint errors, no ignored TS build errors, arch-audit ratchet, CI (`checks` + `app`) live and required on `main` |
 | W3 (#99) | Architecture health baseline `docs/architecture-health.md` + R1–R7 refactor roadmap (docs only) |
 | R1 (#101) | Shared test fakes `qa/fakes/` (db, cache, auth, email, http); integration tests migrated, guard test blocks direct `vi.mock` of those services |
-| R2 | Deterministic email template block ids, pure `tallySendResults`, `uniqueSlug` without counters, duplicate `use-toast`/`use-mobile` removed; incrementers 8 → 3 |
+| R2 (#102) | Deterministic email template block ids, pure `tallySendResults`, `uniqueSlug` without counters, duplicate `use-toast`/`use-mobile` removed; incrementers 8 → 3 |
+| R3 | Slice boundaries: deep imports 116 → 0, lib→features inversions 16 → 0, ESLint blocks reaching inside a slice (entries: index, `/actions`, `/server`), `checkout-finalize` split into step files, guard test keeps Stripe out of client entries |
 
 ## Idea notes
 

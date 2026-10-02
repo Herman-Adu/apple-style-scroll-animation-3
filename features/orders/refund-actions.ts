@@ -15,7 +15,7 @@ import { effectiveRole } from "@/lib/auth/config"
 import { stripe } from "@/lib/stripe/server"
 import { restoreStock, type ReservedLine } from "./checkout-finalize"
 import { dispatchRefundEmail } from "./order-notifications"
-import { revalidateCatalog } from "@/lib/catalog/revalidate"
+import { revalidateCatalog } from "@/features/catalog/server"
 import type { Order, OrderStatus, RefundEntry } from "./types"
 
 const VALID_STATUSES: OrderStatus[] = ["processing", "fulfilled", "cancelled", "refunded"]

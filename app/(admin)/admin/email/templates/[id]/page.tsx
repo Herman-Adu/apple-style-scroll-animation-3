@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation"
 import { AdminShell } from "@/features/admin"
-import { EmailTabs } from "@/features/admin/components/email/email-tabs"
-import { TemplateEditor } from "@/features/admin/components/email/template-editor"
-import { getBranding, getTemplate } from "@/features/email/repo"
+import { EmailTabs } from "@/features/admin"
+import { TemplateEditor } from "@/features/admin"
+import { getBranding, getTemplate } from "@/features/email/server"
 import { getServerCanLockBlocks } from "@/lib/auth/server"
-import { fetchProductImageMap } from "@/features/products/api"
+import { fetchProductImageMap } from "@/features/products/server"
 
 export const dynamic = "force-dynamic"
 

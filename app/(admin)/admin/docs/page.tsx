@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ExternalLink } from "lucide-react"
 import { AdminShell } from "@/features/admin"
 import { DocsExplorer, toDocSummary, canViewDoc } from "@/features/docs"
-import { fetchDocs } from "@/features/docs/api"
+import { fetchDocs } from "@/features/docs/server"
 import { getServerRole, getServerIsOwner } from "@/lib/auth/server"
 
 /**

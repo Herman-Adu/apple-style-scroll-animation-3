@@ -1,35 +1,14 @@
 /**
- * Cross-cutting types shared across features, plus a compatibility shim that
- * re-exports the domain types now owned by each feature's Zod schema.
- *
- * Domain types (Product, Article, and their sub-types) are inferred from the
- * schemas in each feature's schema module so there is a single source of
- * truth. This file keeps the historical `@/lib/types` import path working and hosts the
- * genuinely shared, cross-feature types (cart, navigation, page hero).
+ * Cross-cutting types with no domain owner (money, navigation, page hero).
+ * Domain types (Product, Article, CartLine) live in their feature slice;
+ * lib/ never imports a slice.
  */
-export type {
-  Money,
-  StoryBeat,
-  FrameHero,
-  ParallaxHero,
-  ExplodedLayer,
-  ExplodedHero,
-  ProductHero,
-  ProductSpec,
-  ProductFeature,
-  Product,
-} from "@/features/products/schema"
-
-export type { Author, Article, ArticleBlock } from "@/features/articles/schema"
-
 import type { LucideIcon } from "lucide-react"
-import type { Product } from "@/features/products/schema"
 
-/** A line item in the cart: a product plus its selected options. */
-export interface CartLine {
-  product: Product
-  color: string
-  quantity: number
+/** Structurally identical to the products slice's `moneySchema`. */
+export interface Money {
+  amount: number
+  currency: string
 }
 
 /** A sub-section link inside a nav dropdown (anchor or filtered route). */

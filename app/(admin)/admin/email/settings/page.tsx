@@ -1,7 +1,7 @@
 import { AdminShell } from "@/features/admin"
-import { EmailTabs } from "@/features/admin/components/email/email-tabs"
-import { SettingsForm } from "@/features/admin/components/email/settings-form"
-import { getBranding } from "@/features/email/repo"
+import { EmailTabs } from "@/features/admin"
+import { SettingsForm } from "@/features/admin"
+import { getBranding } from "@/features/email/server"
 
 export const dynamic = "force-dynamic"
 

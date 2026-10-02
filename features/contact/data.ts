@@ -1,4 +1,4 @@
-import type { EnquiryType } from "@/lib/contact/types"
+import type { EnquiryType } from "./types"
 
 export interface DayHours {
   day: string

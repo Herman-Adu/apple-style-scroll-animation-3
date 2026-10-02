@@ -6,8 +6,8 @@ import {
   finalizeCheckout,
   releaseCheckout,
   reconcileRefund,
-} from "@/lib/orders/checkout-finalize"
-import { dispatchOrderEmails } from "@/lib/orders/order-notifications"
+} from "@/features/orders/server"
+import { dispatchOrderEmails } from "@/features/orders/server"
 
 // Stripe needs the raw, unparsed body to verify the signature, and the Node
 // crypto used by constructEvent — so pin the Node runtime and read req.text().

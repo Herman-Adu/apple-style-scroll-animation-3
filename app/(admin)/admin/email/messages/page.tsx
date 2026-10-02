@@ -1,7 +1,7 @@
 import { AdminShell } from "@/features/admin"
-import { EmailTabs } from "@/features/admin/components/email/email-tabs"
-import { MessageCenter } from "@/features/admin/components/email/message-center"
-import { listMessages, listPresets } from "@/features/email/repo"
+import { EmailTabs } from "@/features/admin"
+import { MessageCenter } from "@/features/admin"
+import { listMessages, listPresets } from "@/features/email/server"
 
 export const dynamic = "force-dynamic"
 

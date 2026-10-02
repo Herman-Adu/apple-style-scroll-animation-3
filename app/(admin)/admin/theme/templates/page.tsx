@@ -1,6 +1,6 @@
 import { AdminShell } from "@/features/admin"
-import { ThemeTabs } from "@/features/admin/components/theme/theme-tabs"
-import { ThemeTemplatesManager } from "@/features/admin/components/theme/theme-templates-manager"
+import { ThemeTabs } from "@/features/admin"
+import { ThemeTemplatesManager } from "@/features/admin"
 
 export const dynamic = "force-dynamic"
 

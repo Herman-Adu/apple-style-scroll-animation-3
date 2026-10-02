@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import { ShieldCheck } from "lucide-react"
 import { AdminShell } from "@/features/admin"
-import { getLockPermissionsAction } from "@/features/admin/permissions/actions"
-import { LockPermissionsPanel, PanelHeader } from "@/features/admin/permissions/components/lock-permissions-panel"
+import { getLockPermissionsAction } from "@/features/admin"
+import { LockPermissionsPanel, PanelHeader } from "@/features/admin"
 import { canManagePermissions } from "@/lib/auth/permissions"
 import { getServerCanLockBlocks, getServerSession } from "@/lib/auth/server"
 

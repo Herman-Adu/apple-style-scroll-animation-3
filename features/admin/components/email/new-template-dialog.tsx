@@ -18,8 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { STARTER_GROUPS, STARTERS } from "@/features/email/starters";
-import type { BlockType } from "@/features/email/blocks/types";
+import { STARTER_GROUPS, STARTERS } from "@/features/email";
+import type { BlockType } from "@/features/email";
 
 const BLOCK_LABEL: Partial<Record<BlockType, string>> = {
   hero: "Hero",

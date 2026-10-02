@@ -1,6 +1,6 @@
 "use client"
 
-import type { Product } from "@/lib/types"
+import type { Product } from "@/features/products"
 import { FrameScrollHero } from "@/components/scroll/frame-scroll-hero"
 import { ParallaxStoryHero } from "@/components/scroll/parallax-story-hero"
 import { ExplodedStoryHero } from "@/components/scroll/exploded-story-hero"

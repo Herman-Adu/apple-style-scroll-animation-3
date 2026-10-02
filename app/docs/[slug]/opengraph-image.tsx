@@ -1,5 +1,5 @@
 import { renderOgImage, OG_SIZE } from "@/lib/seo/og"
-import { docs } from "@/features/docs/content"
+import { docs } from "@/features/docs"
 
 export const size = OG_SIZE
 export const contentType = "image/png"

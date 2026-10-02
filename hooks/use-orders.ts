@@ -1,8 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { ordersAdapter } from "@/lib/orders"
-import type { CreateOrderInput, Order } from "@/lib/orders/types"
+import { ordersAdapter } from "@/features/orders/actions"
+import type { CreateOrderInput, Order } from "@/features/orders"
 
 /**
  * Client access to the orders backend. Reads the signed-in user's orders and

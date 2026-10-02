@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Mail, MapPin, Phone } from "lucide-react"
-import { contactChannels } from "@/lib/data/contact"
+import { contactChannels } from "@/features/contact"
 
 const iconMap = {
   mail: Mail,

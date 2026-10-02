@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MapPin, ExternalLink } from "lucide-react";
-import { contactLocations } from "@/lib/data/contact";
+import { contactLocations } from "@/features/contact";
 
 function embedUrl(lat: number, lng: number) {
   const d = 0.01;

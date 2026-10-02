@@ -1,5 +1,5 @@
 import { renderOgImage, OG_SIZE } from "@/lib/seo/og"
-import { fetchArticle } from "@/features/articles/api"
+import { fetchArticle } from "@/features/articles/server"
 
 export const size = OG_SIZE
 export const contentType = "image/png"

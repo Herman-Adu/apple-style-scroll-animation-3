@@ -5,7 +5,7 @@ import {
   getProductBySlug,
   getFeaturedProducts,
   getProductSlugs,
-} from "@/lib/data/products"
+} from "@/features/products/data"
 import { env } from "@/lib/env"
 import { fetchStrapi, toEntries } from "@/lib/strapi/client"
 import { strapiTags } from "@/lib/strapi/tags"

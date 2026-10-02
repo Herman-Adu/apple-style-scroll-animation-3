@@ -11,11 +11,11 @@ import type { Prisma } from "@prisma/client";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db/prisma";
-import { nextOrderNumber } from "@/lib/orders/checkout-finalize";
+import { nextOrderNumber } from "@/features/orders/checkout-finalize";
 import { effectiveRole } from "@/lib/auth/config";
-import { getAllProducts } from "@/lib/data/products";
+import { getAllProducts } from "@/features/products";
 import { productSchema } from "@/features/products";
-import { recordSale, toMap, type ProductMap } from "@/features/catalog/store";
+import { recordSale, toMap, type ProductMap } from "@/features/catalog";
 import { dispatchShippingEmail } from "./order-notifications";
 import { buildTrackingUrl, type Carrier } from "./tracking";
 import type { CreateOrderInput, Order, OrderStatus } from "./types";

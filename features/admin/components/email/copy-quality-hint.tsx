@@ -2,7 +2,7 @@
 
 import { AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { charCountTone, findSpamFlags, type CopyFlag } from "@/features/email/copy-quality"
+import { charCountTone, findSpamFlags, type CopyFlag } from "@/features/email"
 
 /**
  * Character counter + optional spam-trigger-word hint for the subject line

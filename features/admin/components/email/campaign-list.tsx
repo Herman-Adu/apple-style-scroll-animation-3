@@ -25,7 +25,7 @@ import {
   deleteCampaignAction,
   removeSubscriberAction,
   toggleSubscriberAction,
-} from "@/features/email/admin-actions"
+} from "@/features/email"
 
 export type CampaignItem = {
   id: number

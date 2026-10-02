@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { PageHero } from "@/components/layout/page-hero"
 import { pageHeroes } from "@/lib/data/heroes"
 import { DocsExplorer, toDocSummary, canViewDoc } from "@/features/docs"
-import { fetchDocs } from "@/features/docs/api"
+import { fetchDocs } from "@/features/docs/server"
 import { getServerRole, getServerIsOwner } from "@/lib/auth/server"
 
 export const metadata: Metadata = {

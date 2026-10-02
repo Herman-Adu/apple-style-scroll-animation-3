@@ -6,13 +6,13 @@ import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import { ArrowRight, Minus, Plus, ShoppingBag, Sparkles, Tag, User, X } from "lucide-react"
-import { useCart } from "@/lib/cart-context"
+import { useCart } from "@/features/checkout"
 import { useAuth } from "@/lib/auth/auth-context"
 import { priceCheckout } from "@/features/checkout"
-import { offerHeadline, pickActiveOffer } from "@/lib/offers/active-offer"
+import { offerHeadline, pickActiveOffer } from "@/features/checkout"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { formatMoney } from "@/lib/format"
-import type { OrderItem } from "@/lib/orders/types"
+import type { OrderItem } from "@/features/orders"
 
 export function CartDrawer() {
   const { isOpen, openCart, closeCart, lines, subtotal, currency, itemCount, updateQuantity, removeItem } =

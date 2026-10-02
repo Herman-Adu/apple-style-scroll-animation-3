@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import type { Product } from "@/lib/types";
+import type { Product } from "@/features/products/schema";
 import { formatMoney } from "@/lib/format";
 import { Reveal } from "@/components/primitives";
 import { ProductStockBadge } from "./product-stock-badge";

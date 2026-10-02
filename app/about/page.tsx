@@ -6,7 +6,7 @@ import { pageHeroes } from "@/lib/data/heroes";
 import { PageHero } from "@/components/layout/page-hero";
 import { SectionHeading } from "@/components/primitives/section-heading";
 import { AboutTimeline } from "@/features/timeline";
-import { fetchMilestones } from "@/features/timeline/api";
+import { fetchMilestones } from "@/features/timeline/server";
 
 export const metadata: Metadata = {
   title: "About",

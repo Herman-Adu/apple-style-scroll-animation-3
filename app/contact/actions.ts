@@ -1,12 +1,12 @@
 "use server"
 
 import { headers } from "next/headers"
-import { enquiryTypes } from "@/lib/data/contact"
-import { enquiryInputSchema } from "@/lib/contact/schema"
-import { checkRateLimit } from "@/lib/contact/rate-limit"
-import { submitEnquiry } from "@/lib/contact/submit"
+import { enquiryTypes } from "@/features/contact"
+import { enquiryInputSchema } from "@/features/contact"
+import { checkRateLimit } from "@/features/contact/server"
+import { submitEnquiry } from "@/features/contact/server"
 import { getServerSession } from "@/lib/auth/server"
-import type { ContactActionResult } from "@/lib/contact/types"
+import type { ContactActionResult } from "@/features/contact"
 
 /**
  * Server action for contact enquiries. This is the trust boundary: it

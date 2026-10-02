@@ -20,14 +20,14 @@ import {
   createSavedSectionAction,
   deleteSavedSectionAction,
   listSavedSectionsAction,
-} from "@/features/email/admin-actions"
+} from "@/features/email"
 import {
   SECTION_MAX_BLOCKS,
   SECTION_NAME_MAX,
   pickSectionBlocks,
   type SectionBlock,
-} from "@/features/email/sections"
-import type { BlockType, EmailBlock } from "@/features/email/blocks/types"
+} from "@/features/email"
+import type { BlockType, EmailBlock } from "@/features/email"
 
 const SECTIONS_KEY = "email-saved-sections"
 

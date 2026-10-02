@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { CAROUSEL_ID, carouselSlides, getSocialAsset, socialAssets } from "@/features/showcase/social/assets"
-import { SocialSlide } from "@/features/showcase/social/components/social-slide"
+import { CAROUSEL_ID, carouselSlides, getSocialAsset, socialAssets } from "@/features/showcase"
+import { SocialSlide } from "@/features/showcase"
 
 export const metadata: Metadata = {
   title: "Showcase render",

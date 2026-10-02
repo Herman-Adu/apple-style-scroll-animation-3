@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation"
 import { AdminShell } from "@/features/admin"
-import { EmailTabs } from "@/features/admin/components/email/email-tabs"
-import { CampaignEditor } from "@/features/admin/components/email/campaign-editor"
-import { getBranding, getCampaign, listSubscribers, listTemplates } from "@/features/email/repo"
-import { fetchProductImageMap } from "@/features/products/api"
+import { EmailTabs } from "@/features/admin"
+import { CampaignEditor } from "@/features/admin"
+import { getBranding, getCampaign, listSubscribers, listTemplates } from "@/features/email/server"
+import { fetchProductImageMap } from "@/features/products/server"
 
 export const dynamic = "force-dynamic"
 

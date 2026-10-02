@@ -5,7 +5,7 @@ import {
   buildStripeLineItems,
   toMinorUnits,
 } from "@/features/checkout/lib/stripe-line-items"
-import type { OrderItem } from "@/lib/orders/types"
+import type { OrderItem } from "@/features/orders/types"
 
 /**
  * Money-boundary safety net. Our catalog stores prices in major units; Stripe

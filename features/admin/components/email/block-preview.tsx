@@ -2,10 +2,10 @@
 
 import { useMemo, useState, type ReactNode } from "react"
 import { Monitor, Smartphone } from "lucide-react"
-import { renderEmail } from "@/features/email/blocks/render"
-import type { EmailBlock, EmailBranding } from "@/features/email/blocks/types"
-import { sampleVars, SAMPLE_ORDER_SUMMARY, SAMPLE_LOW_STOCK_ITEMS } from "@/features/email/blocks/sample"
-import type { ProductImageMap } from "@/features/products/lib/product"
+import { renderEmail } from "@/features/email"
+import type { EmailBlock, EmailBranding } from "@/features/email"
+import { sampleVars, SAMPLE_ORDER_SUMMARY, SAMPLE_LOW_STOCK_ITEMS } from "@/features/email"
+import type { ProductImageMap } from "@/features/products"
 import { cn } from "@/lib/utils"
 
 /**

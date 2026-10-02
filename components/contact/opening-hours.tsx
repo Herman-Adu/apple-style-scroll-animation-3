@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
-import { openingHours } from "@/lib/data/contact";
+import { openingHours } from "@/features/contact";
 import { cn } from "@/lib/utils";
 
 function toMinutes(time: string) {

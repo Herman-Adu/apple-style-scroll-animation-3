@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import type { Article } from "@/lib/types"
+import type { Article } from "@/features/articles/schema"
 import { formatDate } from "@/lib/format"
 import { Reveal } from "@/components/primitives"
 

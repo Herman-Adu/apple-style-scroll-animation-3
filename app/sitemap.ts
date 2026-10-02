@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 import { absoluteUrl } from "@/lib/seo/site"
-import { fetchProductSlugs } from "@/features/products/api"
-import { fetchArticles } from "@/features/articles/api"
+import { fetchProductSlugs } from "@/features/products/server"
+import { fetchArticles } from "@/features/articles/server"
 
 /**
  * Sitemap is generated from the same feature `api` layer that renders the

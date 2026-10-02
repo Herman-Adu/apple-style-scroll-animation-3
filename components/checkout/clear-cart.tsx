@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 
-import { useCart } from "@/lib/cart-context"
+import { useCart } from "@/features/checkout"
 
 /** Empties the cart after a confirmed order lands on the return page.
  * Gated on `hydrated` so the provider's rehydrate-from-localStorage effect

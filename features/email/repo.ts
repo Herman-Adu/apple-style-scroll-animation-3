@@ -337,6 +337,7 @@ export async function updateCampaign(
     status: string
     stats: CampaignStats
     sentAt: Date | null
+    scheduledAt: Date | null
   }>,
 ) {
   const data: Record<string, unknown> = { ...patch }
@@ -346,6 +347,14 @@ export async function updateCampaign(
 }
 export async function deleteCampaign(id: number) {
   await prisma.campaign.delete({ where: { id } })
+}
+
+/** Campaigns a cron sweep should send now: scheduled and past their time. */
+export async function listDueCampaigns(now: Date = new Date()) {
+  return prisma.campaign.findMany({
+    where: { status: "scheduled", scheduledAt: { lte: now } },
+    orderBy: { scheduledAt: "asc" },
+  })
 }
 
 // ---------- Logs / stats ----------

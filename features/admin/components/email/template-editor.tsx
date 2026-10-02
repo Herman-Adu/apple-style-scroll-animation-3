@@ -49,6 +49,8 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { VersionHistory } from "./version-history"
+import { SavedSections } from "./saved-sections"
+import { instantiateSection, type SectionBlock } from "@/features/email/sections"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -277,6 +279,14 @@ export function TemplateEditor({
     const added = preset.blocks.map((b) => ({ ...b, id: uid() }) as EmailBlock)
     mutate(() => setBlocks((prev) => [...prev, ...added]))
     setSelectedId(added[0]?.id ?? null)
+  }
+
+  function insertSavedSection(sectionBlocks: SectionBlock[], sectionName: string) {
+    const added = instantiateSection(sectionBlocks, uid)
+    if (added.length === 0) return
+    mutate(() => setBlocks((prev) => [...prev, ...added]))
+    setSelectedId(added[0].id)
+    toast.success(`Inserted \u201c${sectionName}\u201d`, { description: "Added to the end of the template." })
   }
 
   function removeBlock(id: string) {
@@ -665,6 +675,8 @@ export function TemplateEditor({
                 </button>
               ))}
             </div>
+
+            <SavedSections blocks={blocks} labelFor={blockLabel} onInsert={insertSavedSection} />
           </div>
 
           {/* Block list */}

@@ -289,6 +289,18 @@ model EmailTemplateVersion {
   @@map("email_template_versions")
 }
 
+/// Reusable group of email blocks ("saved section") that can be inserted into
+/// any template. Blocks are stored without ids; each insert assigns fresh ones.
+model EmailSection {
+  id        Int      @id @default(autoincrement())
+  name      String
+  blocks    Json     @default("[]")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("email_sections")
+}
+
 /// Reusable snippet for replying to customers (delivery instructions, next
 /// steps, etc.).
 model MessagePreset {

@@ -6,6 +6,7 @@ import { renderEmail, renderText } from "./blocks/render"
 import type { EmailBlock, EmailBranding } from "./blocks/types"
 import { sampleVars, SAMPLE_ORDER_SUMMARY, SAMPLE_LOW_STOCK_ITEMS } from "./blocks/sample"
 import { getBaseUrl } from "@/lib/seo/site"
+import { validateSectionInput, type SectionBlock } from "./sections"
 
 /**
  * Final in-code fallback reply-to for customer messages, used when neither the
@@ -30,6 +31,10 @@ import {
   resetCustomTemplate,
   listTemplateVersions,
   restoreTemplateVersion,
+  listSavedSections,
+  createSavedSection,
+  renameSavedSection,
+  deleteSavedSection,
   type TemplateRow,
   setSubscriberOptIn,
   updateCampaign,
@@ -123,6 +128,32 @@ export async function resetTemplateAction(id: number) {
 export async function listTemplateVersionsAction(templateId: number) {
   const versions = await listTemplateVersions(templateId)
   return versions.map((v) => ({ ...v, createdAt: v.createdAt.toISOString() }))
+}
+
+// ---------- Saved sections ----------
+
+export async function listSavedSectionsAction() {
+  const rows = await listSavedSections()
+  return rows.map((r) => ({ ...r, updatedAt: r.updatedAt.toISOString() }))
+}
+
+export async function createSavedSectionAction(input: { name: string; blocks: SectionBlock[] }) {
+  const check = validateSectionInput(input)
+  if (!check.ok) return check
+  const row = await createSavedSection({ name: check.name, blocks: input.blocks })
+  return { ok: true as const, id: row.id }
+}
+
+export async function renameSavedSectionAction(id: number, name: string) {
+  const check = validateSectionInput({ name, blocks: [{ type: "divider" } as SectionBlock] })
+  if (!check.ok) return check
+  await renameSavedSection(id, check.name)
+  return { ok: true as const }
+}
+
+export async function deleteSavedSectionAction(id: number) {
+  await deleteSavedSection(id)
+  return { ok: true as const }
 }
 
 export async function restoreTemplateVersionAction(templateId: number, versionId: number) {

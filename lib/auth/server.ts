@@ -1,8 +1,10 @@
 import "server-only"
+import { cache } from "react"
 import { cookies, headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import { authConfig, effectiveRole, isOwner } from "./config"
-import { assertAdmin, canLockBlocks } from "./permissions"
+import { assertAdmin, blockLockerEmails, canLockBlocks, mergeLockers } from "./permissions"
+import { listGrantedLockerEmails } from "./lock-rights-repo"
 import { SESSION_COOKIE } from "./session-cookie"
 import { verifySession, type SessionPayload } from "./session-token"
 import type { UserRole } from "./types"
@@ -64,9 +66,12 @@ export async function requireAdmin(): Promise<SessionPayload> {
 }
 
 /** Whether the current viewer may lock/unlock email blocks (owner or EMAIL_BLOCK_LOCKERS). */
-export async function getServerCanLockBlocks(): Promise<boolean> {
-  return canLockBlocks(await getServerSession())
-}
+export const getServerCanLockBlocks = cache(async (): Promise<boolean> => {
+  const session = await getServerSession()
+  if (!session || session.role !== "admin") return false
+  if (isOwner(session.email)) return true
+  return canLockBlocks(session, mergeLockers(await listGrantedLockerEmails(), blockLockerEmails()))
+})
 
 /**
  * Whether the current server-side viewer is the platform owner (super-admin).

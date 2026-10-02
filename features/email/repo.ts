@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/prisma"
 import { DEFAULT_BRANDING, type EmailBlock, type EmailBranding } from "./blocks/types"
 import { SYSTEM_TEMPLATES, SYSTEM_PRESETS } from "./blocks/system-templates"
 import { pickOriginalVersion, versionIdsToPrune, type TemplateContent, type VersionReason } from "./versions"
+import type { SectionBlock } from "./sections"
 import { getStoreSettingsAction } from "@/lib/settings/db-actions"
 import { getActiveTheme, resolveTokens } from "@/lib/settings/theme"
 
@@ -341,6 +342,30 @@ export async function resetCustomTemplate(id: number): Promise<TemplateRow | nul
   const original = pickOriginalVersion(versions)
   if (!original) return null
   return applyContent(id, toVersionRow(original), "reset")
+}
+
+// ---------- Saved sections ----------
+
+export type SavedSectionRow = { id: number; name: string; blocks: SectionBlock[]; updatedAt: Date }
+
+export async function listSavedSections(): Promise<SavedSectionRow[]> {
+  const rows = await prisma.emailSection.findMany({ orderBy: { updatedAt: "desc" } })
+  return rows.map((r) => ({ id: r.id, name: r.name, blocks: r.blocks as unknown as SectionBlock[], updatedAt: r.updatedAt }))
+}
+
+export async function createSavedSection(input: { name: string; blocks: SectionBlock[] }): Promise<SavedSectionRow> {
+  const r = await prisma.emailSection.create({
+    data: { name: input.name, blocks: input.blocks as unknown as object },
+  })
+  return { id: r.id, name: r.name, blocks: r.blocks as unknown as SectionBlock[], updatedAt: r.updatedAt }
+}
+
+export async function renameSavedSection(id: number, name: string): Promise<void> {
+  await prisma.emailSection.update({ where: { id }, data: { name } })
+}
+
+export async function deleteSavedSection(id: number): Promise<void> {
+  await prisma.emailSection.deleteMany({ where: { id } })
 }
 
 // ---------- Presets ----------

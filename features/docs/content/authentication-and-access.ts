@@ -10,7 +10,7 @@ export const authenticationAndAccess: Doc = {
     "How sign-in, sessions, roles, server-side guards, and doc gating fit together. Authentication is server-enforced with Better Auth on Neon — sessions are real, roles are verified on the server, and gated owner-tier bodies never reach a non-owner browser.",
   readingMinutes: 12,
   order: 1,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-02",
   tags: ["auth", "authorization", "security", "better auth", "sessions", "roles", "route guard", "gating"],
   body: [
     {
@@ -35,6 +35,8 @@ export const authenticationAndAccess: Doc = {
         ["Role derivation", "lib/auth/config.ts", "effectiveRole() resolves admin from an email allowlist or a persisted roleOverride."],
         ["Owner tier", "lib/auth/config.ts", "isOwner() marks the single platform owner (super-admin) — unlocks owner-only docs that even other admins can't read, and drives the Owner badge."],
         ["Client hook", "the auth client", "Exposes session/status and sign-in/out to client islands."],
+        ["Proxy", "proxy.ts", "First gate for /admin: redirects page visits, refuses action POSTs with 401/403."],
+        ["Permission rules", "lib/auth/permissions.ts", "Pure, unit-tested rules (adminGateDecision, assertAdmin, canLockBlocks) shared by every layer."],
         ["Route guard", "account layout", "Redirects unauthenticated visitors to sign-in."],
         ["Admin guard", "admin route-group layout", "Additionally requires the admin role, server-verified."],
         ["Server actions", "features/*/*-actions.ts", "Re-check the role server-side before any privileged write."],
@@ -105,7 +107,14 @@ export const authenticationAndAccess: Doc = {
         ["Account area", "Redirect to sign-in", "Full", "Full", "Full"],
         ["Admin dashboard", "Redirect", "Redirect to storefront", "Full", "Full"],
         ["Catalog / settings / email writes", "Blocked", "Blocked", "Allowed (re-checked in action)", "Allowed"],
+        ["Lock or unlock email blocks", "Blocked", "Blocked", "Only if listed in EMAIL_BLOCK_LOCKERS", "Always"],
       ],
+    },
+    {
+      type: "callout",
+      variant: "info",
+      title: "Three enforcement layers",
+      text: "proxy.ts refuses signed-out and non-admin requests to /admin before page code runs (redirect for page visits, 401/403 for form POSTs). Every admin server action then calls requireAdmin() itself. Lock rules are checked a third time inside save, reset and restore with canLockBlocks and lockViolations. All three read their rules from lib/auth/permissions.ts, which is unit-tested on its own.",
     },
     {
       type: "heading",

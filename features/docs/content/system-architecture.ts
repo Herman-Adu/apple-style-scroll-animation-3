@@ -10,7 +10,7 @@ export const systemArchitecture: Doc = {
     "The whole system on one page: the Next.js App Router front, the port/adapter data seam, Neon Postgres via Prisma, and the third-party edges (Resend, Stripe, and the planned Strapi CMS). Start here, then follow the links into auth and the data layer.",
   readingMinutes: 11,
   order: 1,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-02",
   tags: ["architecture", "next.js", "rsc", "prisma", "neon", "ports and adapters"],
   body: [
     {
@@ -34,6 +34,7 @@ export const systemArchitecture: Doc = {
         "    ISL[Client islands: cart, admin forms, charts]",
         "  end",
         "  subgraph Edge[Next.js App Router]",
+        "    PX[proxy.ts: admin gate]",
         "    RSC[Server Components]",
         "    SA[Server Actions]",
         "    RH[Route handlers]",
@@ -48,8 +49,10 @@ export const systemArchitecture: Doc = {
         "    STRIPE[Stripe payments]",
         "    STRAPI[Strapi CMS - planned]",
         "  end",
-        "  UI --> RSC",
-        "  ISL --> SA",
+        "  UI --> PX",
+        "  ISL --> PX",
+        "  PX --> RSC",
+        "  PX --> SA",
         "  ISL --> RH",
         "  RSC --> PORT",
         "  SA --> PORT",
@@ -154,7 +157,8 @@ export const systemArchitecture: Doc = {
     {
       type: "list",
       items: [
-        "Authentication & Authorization — how sessions, roles, and server-side guards enforce access.",
+        "Authentication & Authorization — how sessions, roles, the proxy and server-side guards enforce access.",
+        "Email Platform Architecture — the email tables, the save path with lock checks, template lifecycle and campaign sending.",
         "Data Layer & Database — the Neon schema, the port/adapter seam in detail, and the transactional write path.",
         "The Strapi Migration Runbook — the step-by-step for moving content behind the seam.",
       ],

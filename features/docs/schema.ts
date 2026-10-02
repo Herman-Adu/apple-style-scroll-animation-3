@@ -189,6 +189,20 @@ export type DocBlock =
       width?: number
       height?: number
     }
+  | {
+      /**
+       * A short muted demo clip recorded by `pnpm showcase:video`. `description`
+       * is the text alternative for people who can't watch it, so it
+       * should describe what the clip shows, step by step.
+       */
+      type: "video"
+      src: string
+      poster: string
+      description: string
+      caption?: string
+      width?: number
+      height?: number
+    }
   | { type: "divider" }
 
 export type Doc = {

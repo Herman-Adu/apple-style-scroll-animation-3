@@ -163,6 +163,30 @@ function Block({ block }: { block: DocBlock }) {
         </figure>
       )
 
+    case "video":
+      return (
+        <figure className="my-10">
+          <div className="overflow-hidden rounded-2xl border border-foreground/10 bg-card/60">
+            <video
+              src={block.src}
+              poster={block.poster}
+              width={block.width ?? 1280}
+              height={block.height ?? 720}
+              controls
+              muted
+              playsInline
+              preload="none"
+              aria-label={block.description}
+              className="h-auto w-full"
+            />
+          </div>
+          <figcaption className="mt-3 text-center text-sm leading-relaxed text-foreground/40">
+            {block.caption && <span className="block">{block.caption}</span>}
+            <span className="sr-only">{block.description}</span>
+          </figcaption>
+        </figure>
+      )
+
     case "divider":
       return <hr className="my-12 border-foreground/10" />
 

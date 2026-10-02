@@ -294,7 +294,23 @@ export function renderEmail(blocks: EmailBlock[], brand: EmailBranding, ctx: Ren
     `<span style="font-size:${size}px;font-weight:800;letter-spacing:0.4em;text-transform:uppercase;color:${color};padding-left:0.4em;">${esc(b.brandName)}</span>`
 
   return `<!doctype html>
-<html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      This template is deliberately light-only (paper-white card, black ink)
+      regardless of the recipient's OS/app theme. Without these, dark-mode
+      mail clients (Apple Mail, Outlook, some Gmail builds) auto-invert or
+      auto-darken our hardcoded colors, which can wash out the brand palette
+      or make dark-ink text unreadable on an auto-darkened card. Declaring
+      "light" explicitly opts the email out of that transform so it always
+      renders with the exact colors below, in any client/theme.
+    -->
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <title>${esc(b.brandName)}</title>
+  </head>
   <body style="margin:0;padding:0;background:${CANVAS};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
     <div style="max-width:600px;margin:0 auto;padding:28px 12px 40px;">
       <!-- Brand header (automatic) -->

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState, useTransition } from "react"
+import { useEffect, useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import {
   DndContext,
@@ -23,7 +23,10 @@ import {
   ArrowLeft,
   ChevronDown,
   ChevronUp,
+  Copy,
   GripVertical,
+  Redo2,
+  Undo2,
   Image as ImageIcon,
   LayoutGrid,
   Loader2,
@@ -70,6 +73,8 @@ import {
   saveTemplateAction,
   sendTemplateTestAction,
 } from "@/features/email/admin-actions"
+import { SUBJECT_SOFT_LIMIT, PREVIEW_SOFT_LIMIT } from "@/features/email/copy-quality"
+import { CopyQualityHint } from "./copy-quality-hint"
 import { EmailPreviewPane } from "./block-preview"
 
 export type EditorTemplate = {
@@ -162,10 +167,72 @@ export function TemplateEditor({
 
   const selected = blocks.find((b) => b.id === selectedId) ?? null
 
+  /** Snapshot of everything a content manager can change, used by undo/redo. */
+  type Snapshot = {
+    name: string
+    category: string
+    subject: string
+    previewText: string
+    description: string
+    blocks: EmailBlock[]
+  }
+  const [history, setHistory] = useState<Snapshot[]>([])
+  const [future, setFuture] = useState<Snapshot[]>([])
+  const HISTORY_LIMIT = 50
+
+  function snapshot(): Snapshot {
+    return { name, category, subject, previewText, description, blocks }
+  }
+
+  function restore(s: Snapshot) {
+    setName(s.name)
+    setCategory(s.category)
+    setSubject(s.subject)
+    setPreviewText(s.previewText)
+    setDescription(s.description)
+    setBlocks(s.blocks)
+  }
+
   const mutate = (fn: () => void) => {
+    setHistory((h) => [...h.slice(-(HISTORY_LIMIT - 1)), snapshot()])
+    setFuture([])
     fn()
     setDirty(true)
   }
+
+  function undo() {
+    if (history.length === 0) return
+    const prev = history[history.length - 1]
+    setFuture((f) => [snapshot(), ...f])
+    setHistory((h) => h.slice(0, -1))
+    restore(prev)
+    setDirty(true)
+  }
+
+  function redo() {
+    if (future.length === 0) return
+    const next = future[0]
+    setHistory((h) => [...h, snapshot()])
+    setFuture((f) => f.slice(1))
+    restore(next)
+    setDirty(true)
+  }
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      const mod = e.metaKey || e.ctrlKey
+      if (!mod || e.key.toLowerCase() !== "z") return
+      const target = e.target as HTMLElement | null
+      const isEditable = target?.tagName === "INPUT" || target?.tagName === "TEXTAREA"
+      // Allow native undo inside text fields; only hijack Cmd/Ctrl+Z for the block list elsewhere.
+      if (isEditable) return
+      e.preventDefault()
+      if (e.shiftKey) redo()
+      else undo()
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [history, future, name, category, subject, previewText, description, blocks])
 
   function updateBlock(id: string, patch: Partial<EmailBlock>) {
     mutate(() => setBlocks((prev) => prev.map((b) => (b.id === id ? ({ ...b, ...patch } as EmailBlock) : b))))
@@ -188,6 +255,27 @@ export function TemplateEditor({
   function removeBlock(id: string) {
     mutate(() => setBlocks((prev) => prev.filter((b) => b.id !== id)))
     if (selectedId === id) setSelectedId(null)
+  }
+
+  /** Insert a copy of one section directly after itself, so a content manager
+   *  can build e.g. a second callout off an existing one without re-entering
+   *  every field by hand. */
+  function duplicateBlock(id: string) {
+    const copy = ((prev: EmailBlock[]) => {
+      const source = prev.find((b) => b.id === id)
+      return source ? ({ ...source, id: uid() } as EmailBlock) : null
+    })(blocks)
+    if (!copy) return
+    mutate(() =>
+      setBlocks((prev) => {
+        const i = prev.findIndex((b) => b.id === id)
+        if (i < 0) return prev
+        const next = [...prev]
+        next.splice(i + 1, 0, copy)
+        return next
+      }),
+    )
+    setSelectedId(copy.id)
   }
 
   function move(id: string, dir: -1 | 1) {
@@ -349,6 +437,7 @@ export function TemplateEditor({
                   onChange={(e) => mutate(() => setSubject(e.target.value))}
                   placeholder="e.g. Order confirmed — {{order_number}}"
                 />
+                <CopyQualityHint value={subject} limit={SUBJECT_SOFT_LIMIT} checkSpam />
               </div>
               <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="tpl-preview">Preview text</Label>
@@ -358,6 +447,7 @@ export function TemplateEditor({
                   onChange={(e) => mutate(() => setPreviewText(e.target.value))}
                   placeholder="Short summary shown in the inbox preview"
                 />
+                <CopyQualityHint value={previewText} limit={PREVIEW_SOFT_LIMIT} />
               </div>
               <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="tpl-desc">Internal description</Label>
@@ -412,7 +502,33 @@ export function TemplateEditor({
 
           {/* Block list */}
           <div className="rounded-2xl border border-border bg-card p-5">
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-widest text-muted-foreground">Sections</h3>
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Sections</h3>
+              <div className="flex items-center gap-1">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="size-7"
+                  onClick={undo}
+                  disabled={history.length === 0}
+                  aria-label="Undo"
+                  title="Undo (Cmd/Ctrl+Z)"
+                >
+                  <Undo2 className="size-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="size-7"
+                  onClick={redo}
+                  disabled={future.length === 0}
+                  aria-label="Redo"
+                  title="Redo (Cmd/Ctrl+Shift+Z)"
+                >
+                  <Redo2 className="size-4" />
+                </Button>
+              </div>
+            </div>
             {blocks.length === 0 ? (
               <p className="rounded-lg border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
                 No sections yet. Add one from the palette above.
@@ -431,6 +547,7 @@ export function TemplateEditor({
                         products={products}
                         onSelect={() => setSelectedId(selectedId === block.id ? null : block.id)}
                         onMove={(dir) => move(block.id, dir)}
+                        onDuplicate={() => duplicateBlock(block.id)}
                         onRemove={() => removeBlock(block.id)}
                         onChange={(patch) => updateBlock(block.id, patch)}
                       />
@@ -464,6 +581,7 @@ function SortableBlockRow({
   products,
   onSelect,
   onMove,
+  onDuplicate,
   onRemove,
   onChange,
 }: {
@@ -474,6 +592,7 @@ function SortableBlockRow({
   products: ProductImageMap
   onSelect: () => void
   onMove: (dir: -1 | 1) => void
+  onDuplicate: () => void
   onRemove: () => void
   onChange: (patch: Partial<EmailBlock>) => void
 }) {
@@ -509,6 +628,9 @@ function SortableBlockRow({
           </Button>
           <Button size="icon" variant="ghost" className="size-7" onClick={() => onMove(1)} disabled={index === count - 1} aria-label="Move down">
             <ChevronDown className="size-4" />
+          </Button>
+          <Button size="icon" variant="ghost" className="size-7" onClick={onDuplicate} aria-label={`Duplicate ${blockLabel(block.type)}`}>
+            <Copy className="size-4" />
           </Button>
           <Button size="icon" variant="ghost" className="size-7 text-muted-foreground hover:text-destructive" onClick={onRemove} aria-label="Remove section">
             <Trash2 className="size-4" />

@@ -28,6 +28,8 @@ import { cn } from "@/lib/utils"
 import type { EmailBlock, EmailBranding } from "@/features/email/blocks/types"
 import type { ProductImageMap } from "@/features/products/lib/product"
 import { saveCampaignAction, sendCampaignAction } from "@/features/email/admin-actions"
+import { SUBJECT_SOFT_LIMIT, PREVIEW_SOFT_LIMIT } from "@/features/email/copy-quality"
+import { CopyQualityHint } from "./copy-quality-hint"
 import { EmailPreviewPane } from "./block-preview"
 
 type AudienceType = "all_subscribers" | "manual"
@@ -207,6 +209,7 @@ export function CampaignEditor({
                   onChange={(e) => mark(() => setSubject(e.target.value))}
                   placeholder={selectedTemplate ? `Defaults to: ${selectedTemplate.subject}` : "Subject"}
                 />
+                {!sent ? <CopyQualityHint value={subject} limit={SUBJECT_SOFT_LIMIT} checkSpam /> : null}
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="c-preview">Preview text</Label>
@@ -216,6 +219,7 @@ export function CampaignEditor({
                   disabled={sent}
                   onChange={(e) => mark(() => setPreviewText(e.target.value))}
                 />
+                {!sent ? <CopyQualityHint value={previewText} limit={PREVIEW_SOFT_LIMIT} /> : null}
               </div>
             </div>
           </div>

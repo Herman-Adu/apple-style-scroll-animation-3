@@ -16,13 +16,14 @@ export const contributingAndWorkflow: Doc = {
     {
       type: "steps",
       items: [
-        { title: "Branch from main", text: "Use a short descriptive branch, for example v0/sprint-4c-locks or v0/docs-d2. Never commit directly to main." },
+        { title: "Branch from the real main", text: "Refresh origin/main with an explicit refspec (git fetch origin +refs/heads/main:refs/remotes/origin/main), check its SHA matches GitHub, then branch from it, for example v0/s1-permissions. Never commit directly to main." },
         { title: "Write the failing test", text: "Put pure rules in a small module (for example features/email/locks.ts) and write its unit tests first. Run them and confirm they fail for the right reason." },
         { title: "Implement the rule", text: "Make the tests pass without touching the UI." },
         { title: "Wire it in", text: "Call the rule from server actions, enforce permissions there, then reflect it in the UI. Add an integration test for the server action." },
         { title: "Run the checks", text: "pnpm exec tsc --noEmit, pnpm test:unit and pnpm test:integration must all pass. For UI changes, run the smoke tests or check the page in a browser." },
         { title: "Update the docs", text: "Update the developer docs in docs/*.md and the in-app guide for the affected audience. Bump updatedAt." },
-        { title: "Open a pull request", text: "One feature per PR, described in plain language. Squash-merge and delete the branch." },
+        { title: "Check the diff scope", text: "git diff --stat origin/main must list only this change's files. Anything else means the branch started from a stale tree and would revert merged work." },
+        { title: "Open a pull request", text: "One feature per PR, described in plain language. Squash-merge, confirm main moved to the merge commit, and add a row to the sprint ledger in docs/next-steps.md before starting the next sprint." },
       ],
     },
     { type: "heading", text: "Which suite covers what" },

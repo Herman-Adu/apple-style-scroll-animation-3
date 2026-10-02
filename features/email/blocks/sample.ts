@@ -1,6 +1,7 @@
 import type { EmailBranding } from "./types"
 import type { Order } from "@/lib/orders/types"
 import { orderSummaryHtml, lowStockItemsHtml, type LowStockEmailItem } from "../templates"
+import { placeholderSamples } from "../placeholders"
 
 /**
  * Pure, client-safe sample data for live previews in the admin builder. Mirrors
@@ -8,15 +9,7 @@ import { orderSummaryHtml, lowStockItemsHtml, type LowStockEmailItem } from "../
  * — real sends fill tokens from the order/customer/campaign context.
  */
 export function sampleVars(branding: EmailBranding): Record<string, string> {
-  return {
-    customer_name: "Ada Lovelace",
-    brand_name: branding.brandName || "MOMO",
-    order_number: "MOMO-1024",
-    shop_url: "/products",
-    offer_headline: "15% off",
-    offer_label: "Welcome offer",
-    offer_expiry: "Valid until 31 December 2026.",
-  }
+  return placeholderSamples({ brand_name: branding.brandName || "MOMO" })
 }
 
 /** Sample order, shaped like a real `Order`, used to drive every dynamic preview block below. */

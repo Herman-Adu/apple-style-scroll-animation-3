@@ -1,4 +1,5 @@
 import type { EmailBlock } from "./types"
+import { PLACEHOLDERS, placeholderToken } from "../placeholders"
 
 /**
  * Default block layouts for the built-in (system) templates. These are the
@@ -355,16 +356,7 @@ export function getSystemTemplate(key: string): SystemTemplateDef | undefined {
 }
 
 /** Tokens surfaced in the builder UI as insertable chips. */
-export const TEMPLATE_TOKENS: { token: string; label: string }[] = [
-  { token: "{{customer_name}}", label: "Customer name" },
-  { token: "{{brand_name}}", label: "Brand name" },
-  { token: "{{order_number}}", label: "Order number" },
-  { token: "{{shop_url}}", label: "Shop URL" },
-  { token: "{{order_url}}", label: "Order URL" },
-  { token: "{{offer_headline}}", label: "Offer headline" },
-  { token: "{{offer_label}}", label: "Offer label" },
-  { token: "{{offer_expiry}}", label: "Offer expiry line" },
-  { token: "{{customer_email}}", label: "Customer email" },
-  { token: "{{admin_url}}", label: "Admin URL" },
-  { token: "{{amount}}", label: "Refund amount" },
-]
+export const TEMPLATE_TOKENS: { token: string; label: string }[] = PLACEHOLDERS.map((p) => ({
+  token: placeholderToken(p.key),
+  label: p.label,
+}))

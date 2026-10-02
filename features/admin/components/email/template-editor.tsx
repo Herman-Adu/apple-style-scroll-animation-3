@@ -67,7 +67,9 @@ import {
 import { cn } from "@/lib/utils"
 import { formatMoney } from "@/lib/format"
 import type { BlockType, EmailBlock, EmailBranding } from "@/features/email/blocks/types"
-import { TEMPLATE_TOKENS, BLOCK_PRESETS } from "@/features/email/blocks/system-templates"
+import { BLOCK_PRESETS } from "@/features/email/blocks/system-templates"
+import { PLACEHOLDERS, placeholderToken } from "@/features/email/placeholders"
+import { PlaceholderField } from "./placeholder-picker"
 import type { ProductImageMap } from "@/features/products/lib/product"
 import type { Money } from "@/features/products/schema"
 import {
@@ -592,25 +594,27 @@ export function TemplateEditor({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="tpl-subject">Subject line</Label>
-                <Input
+              <div className="sm:col-span-2">
+                <PlaceholderField
                   id="tpl-subject"
+                  label="Subject line"
                   value={subject}
-                  onChange={(e) => mutate(() => setSubject(e.target.value))}
+                  onChange={(v) => mutate(() => setSubject(v))}
                   placeholder="e.g. Order confirmed — {{order_number}}"
-                />
-                <CopyQualityHint value={subject} limit={SUBJECT_SOFT_LIMIT} checkSpam />
+                >
+                  <CopyQualityHint value={subject} limit={SUBJECT_SOFT_LIMIT} checkSpam />
+                </PlaceholderField>
               </div>
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="tpl-preview">Preview text</Label>
-                <Input
+              <div className="sm:col-span-2">
+                <PlaceholderField
                   id="tpl-preview"
+                  label="Preview text"
                   value={previewText}
-                  onChange={(e) => mutate(() => setPreviewText(e.target.value))}
+                  onChange={(v) => mutate(() => setPreviewText(v))}
                   placeholder="Short summary shown in the inbox preview"
-                />
-                <CopyQualityHint value={previewText} limit={PREVIEW_SOFT_LIMIT} />
+                >
+                  <CopyQualityHint value={previewText} limit={PREVIEW_SOFT_LIMIT} />
+                </PlaceholderField>
               </div>
               <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="tpl-desc">Internal description</Label>
@@ -1056,11 +1060,9 @@ function FieldInput({
   disabled?: boolean
 }) {
   return (
-    <div className="space-y-1.5">
-      <Label>{label}</Label>
-      <Input value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled} />
+    <PlaceholderField label={label} value={value} onChange={onChange} disabled={disabled}>
       {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
-    </div>
+    </PlaceholderField>
   )
 }
 
@@ -1232,33 +1234,36 @@ function ShowPriceField({
 
 function FieldTextarea({ label, value, onChange, hint }: { label: string; value: string; onChange: (v: string) => void; hint?: string }) {
   return (
-    <div className="space-y-1.5">
-      <Label>{label}</Label>
-      <Textarea value={value} onChange={(e) => onChange(e.target.value)} rows={3} />
+    <PlaceholderField label={label} value={value} onChange={onChange} multiline>
       {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
-    </div>
+    </PlaceholderField>
   )
 }
 
 function TokenChips() {
   return (
     <div className="mt-4 border-t border-border pt-4">
-      <p className="mb-2 text-xs font-medium uppercase tracking-widest text-muted-foreground">Tokens you can use</p>
+      <p className="mb-2 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+        Placeholders — use the Placeholder button on any field, or click to copy
+      </p>
       <div className="flex flex-wrap gap-1.5">
-        {TEMPLATE_TOKENS.map((t) => (
-          <button
-            key={t.token}
-            type="button"
-            onClick={() => {
-              void navigator.clipboard?.writeText(t.token)
-              toast.success(`Copied ${t.token}`)
-            }}
-            title={`Copy ${t.token}`}
-            className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[11px] text-muted-foreground transition-colors hover:border-accent-teal/40 hover:text-accent-teal"
-          >
-            {t.token}
-          </button>
-        ))}
+        {PLACEHOLDERS.map((p) => {
+          const token = placeholderToken(p.key)
+          return (
+            <button
+              key={p.key}
+              type="button"
+              onClick={() => {
+                void navigator.clipboard?.writeText(token)
+                toast.success(`Copied ${token}`)
+              }}
+              title={`${p.label} — e.g. ${p.sample}`}
+              className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[11px] text-muted-foreground transition-colors hover:border-accent-teal/40 hover:text-accent-teal"
+            >
+              {token}
+            </button>
+          )
+        })}
       </div>
     </div>
   )

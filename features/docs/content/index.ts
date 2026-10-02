@@ -19,6 +19,7 @@ import { emailSystemOverview } from "./email-system-overview"
 import { emailTemplatesGuide } from "./email-templates-guide"
 import { emailSeasonalCampaigns } from "./email-seasonal-campaigns"
 import { platformGlossary } from "./platform-glossary"
+import { whatsNew } from "./whats-new"
 import { emailCampaignWalkthrough } from "./email-campaign-walkthrough"
 import { emailCustomerMessages } from "./email-customer-messages"
 import { systemArchitecture } from "./system-architecture"
@@ -76,6 +77,7 @@ export const docs: Doc[] = [
   emailTemplatesGuide,
   emailSeasonalCampaigns,
   platformGlossary,
+  whatsNew,
   emailCampaignWalkthrough,
   emailCustomerMessages,
   // Developer (public)

@@ -48,6 +48,8 @@ import { engineeringQuality } from "./engineering-quality"
 import { architectureDecisionRecords } from "./architecture-decision-records"
 import { contributingAndWorkflow } from "./contributing-and-workflow"
 import { whatsNew } from "./whats-new"
+import { socialLaunchKit } from "./social-launch-kit"
+import { caseStudyEmailPlatform } from "./case-study-email-platform"
 
 /**
  * The local docs corpus. This is the single source that the api/ seam reads
@@ -78,6 +80,8 @@ export const docs: Doc[] = [
   emailSeasonalCampaigns,
   platformGlossary,
   whatsNew,
+  caseStudyEmailPlatform,
+  socialLaunchKit,
   emailCampaignWalkthrough,
   emailCustomerMessages,
   // Developer (public)

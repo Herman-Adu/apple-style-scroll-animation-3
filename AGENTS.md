@@ -10,7 +10,9 @@ Read this file, then open **only** the skill that matches the task. Skills link 
 | Task | Skill |
 |---|---|
 | Start, resume, ship or merge a sprint; "where are we" | `.agents/skills/sprint-workflow/` |
-| Turn a spec or brain-dump into sprints | `.agents/skills/spec-to-plan/` |
+| "Grill me": interview until every decision is settled | `.agents/skills/grill-me/` (uses `.agents/skills/grilling/`) |
+| "Grill me with docs": interview + glossary + ADRs (default before planning) | `.agents/skills/grill-with-docs/` (adds `.agents/skills/domain-modeling/`) |
+| Turn a settled spec or brain-dump into sprints | `.agents/skills/spec-to-plan/` |
 | Write tests, pick a test layer, red/green | `.agents/skills/test-first/` |
 | Components, data fetching, caching, forms, `useEffect` | `.agents/skills/react-next-patterns/` |
 | Types, naming, mutation, duplication | `.agents/skills/typescript-clean-code/` |

@@ -18,8 +18,8 @@ Add it to `pnpm.onlyBuiltDependencies` in `package.json`, then `pnpm rebuild <pk
 ## Video poster is a blank frame
 The page was still loading at grab time. `scripts/showcase-video.mjs` grabs at 8s; a jpg of a few KB means blank.
 
-## Axe fails on `/` once, then passes
-The first run after a cold dev server can catch the hero mid-animation. Rerun once. If it fails twice, it's real: read the violation in the Playwright output (W1).
+## Axe colour-contrast failure on `/` that "comes and goes"
+  Not flaky: it only shows while the hero loader is on screen, so it depends on how fast frames load. W1b traced it to the loader's `Loading N%` text (`text-on-media/30`, 2.47:1); fixed at `/70`. If it recurs, log the failing nodes (`v.nodes[].target`, `html`) from the axe spec instead of rerunning, and treat anything visible during loading as in scope.
 
 ## Vitest can't resolve `@/...`
 `vitest` ran without `--config qa/config/vitest.config.mts`. Use the `pnpm test:*` scripts.

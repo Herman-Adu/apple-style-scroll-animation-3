@@ -43,6 +43,8 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | S3 | Demo video tooling: Playwright `recordVideo` clips → `.mp4` via `ffmpeg-static` |
 | S4 | Social launch assets: LinkedIn carousel PDF + 1080×1080 squares |
 | S5 | Production deploy, Stripe live-keys checklist, final gap analysis |
+| W1 (#96) | Rules in the repo: `AGENTS.md` router + 11 skills in `.agents/skills/`, guard test `qa/unit/meta/skills.test.ts` |
+| W1b (#97) | Feature-slices rule (100% slices, atomic only for `components/ui`), loader contrast fix, vendored grill-me / grill-with-docs (MIT) |
 
 ## Idea notes
 

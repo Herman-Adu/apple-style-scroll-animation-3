@@ -107,7 +107,8 @@ export const authenticationAndAccess: Doc = {
         ["Account area", "Redirect to sign-in", "Full", "Full", "Full"],
         ["Admin dashboard", "Redirect", "Redirect to storefront", "Full", "Full"],
         ["Catalog / settings / email writes", "Blocked", "Blocked", "Allowed (re-checked in action)", "Allowed"],
-        ["Lock or unlock email blocks", "Blocked", "Blocked", "Only if listed in EMAIL_BLOCK_LOCKERS", "Always"],
+        ["Lock or unlock email blocks", "Blocked", "Blocked", "Only if granted by the owner in Settings", "Always"],
+        ["Grant or revoke lock rights", "Blocked", "Blocked", "Blocked (read-only view)", "Always"],
       ],
     },
     {

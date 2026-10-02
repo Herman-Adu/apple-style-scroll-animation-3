@@ -173,7 +173,7 @@ Email admin access and block locking are enforced at three independent layers. E
 | 2. Server actions (authoritative) | `features/email/admin-actions.ts` | Every exported action starts with `await requireAdmin()`. `saveTemplate`, `resetTemplate` and `restoreVersion` also call `lockViolations(before, after)` and refuse the change unless `getServerCanLockBlocks()` is true. |
 | 3. UI | `template-editor.tsx` via `canLock` prop from the server page | Non-lockers see a **Locked** badge instead of the toggle; `toggleLock` is a no-op. This is presentation only — never trusted. |
 
-**Who can lock:** owners (`NEXT_PUBLIC_OWNER_EMAILS`, default `herman@adudev.co.uk`) plus any admin listed in the server-only `EMAIL_BLOCK_LOCKERS` (comma-separated). The locker list is never shipped to the browser.
+**Who can lock:** owners (`NEXT_PUBLIC_OWNER_EMAILS`, default `herman@adudev.co.uk`) plus any admin the owner grants rights to in **Admin → Settings → Permissions** (`/admin/settings/permissions`). Grants are stored in the `EmailLockRight` table and every grant or revoke writes a `PermissionAudit` row (`lib/auth/lock-rights-repo.ts`, `features/admin/permissions/actions.ts`). The server-only `EMAIL_BLOCK_LOCKERS` variable is still honoured as a read-only fallback seed. The lookup is cached per request with React `cache()` and is never shipped to the browser. See ADR-011.
 
 **Scheduled sends:** the cron route has no session, so the campaign-send logic lives in `features/email/campaign-send.ts` (`sendCampaign`). The cron route calls it directly; the admin action is a thin `requireAdmin()` wrapper around it.
 

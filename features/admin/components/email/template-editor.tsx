@@ -13,7 +13,6 @@ import {
 } from "@dnd-kit/core"
 import {
   SortableContext,
-  arrayMove,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
@@ -26,6 +25,8 @@ import {
   Copy,
   Eraser,
   GripVertical,
+  Lock,
+  LockOpen,
   Redo2,
   Undo2,
   Image as ImageIcon,
@@ -51,6 +52,16 @@ import { toast } from "sonner"
 import { VersionHistory } from "./version-history"
 import { SavedSections } from "./saved-sections"
 import { instantiateSection, type SectionBlock } from "@/features/email/sections"
+import {
+  canReorder,
+  insertBlocks,
+  insertionIndex,
+  isLocked,
+  removeIfUnlocked,
+  reorder,
+  setLocked,
+  updateIfUnlocked,
+} from "@/features/email/locks"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -264,33 +275,50 @@ export function TemplateEditor({
   }, [history, future, name, category, subject, previewText, description, blocks])
 
   function updateBlock(id: string, patch: Partial<EmailBlock>) {
-    mutate(() => setBlocks((prev) => prev.map((b) => (b.id === id ? ({ ...b, ...patch } as EmailBlock) : b))))
+    mutate(() => setBlocks((prev) => updateIfUnlocked(prev, id, patch)))
   }
 
+  function toggleLock(id: string) {
+    const block = blocks.find((b) => b.id === id)
+    if (!block) return
+    const locked = !isLocked(block)
+    mutate(() => setBlocks((prev) => setLocked(prev, id, locked)))
+    toast.success(locked ? `${blockLabel(block.type)} locked` : `${blockLabel(block.type)} unlocked`, {
+      description: locked ? "It can't be edited, moved or removed until unlocked." : undefined,
+    })
+  }
+
+  /** New content goes above any locked blocks at the end, so a locked footer stays last. */
+  function addBlocks(added: EmailBlock[]) {
+    if (added.length === 0) return
+    mutate(() => setBlocks((prev) => insertBlocks(prev, added)))
+    setSelectedId(added[0].id)
+  }
+
+  const insertsAboveLocked = insertionIndex(blocks) < blocks.length
+
   function addBlock(type: BlockType) {
-    const block = makeBlock(type)
-    mutate(() => setBlocks((prev) => [...prev, block]))
-    setSelectedId(block.id)
+    addBlocks([makeBlock(type)])
   }
 
   function addPreset(key: string) {
     const preset = BLOCK_PRESETS.find((p) => p.key === key)
     if (!preset) return
-    const added = preset.blocks.map((b) => ({ ...b, id: uid() }) as EmailBlock)
-    mutate(() => setBlocks((prev) => [...prev, ...added]))
-    setSelectedId(added[0]?.id ?? null)
+    addBlocks(preset.blocks.map((b) => ({ ...b, id: uid() }) as EmailBlock))
   }
 
   function insertSavedSection(sectionBlocks: SectionBlock[], sectionName: string) {
-    const added = instantiateSection(sectionBlocks, uid)
+    const added = instantiateSection(sectionBlocks, uid).map((b) => ({ ...b, locked: false }) as EmailBlock)
     if (added.length === 0) return
-    mutate(() => setBlocks((prev) => [...prev, ...added]))
-    setSelectedId(added[0].id)
-    toast.success(`Inserted \u201c${sectionName}\u201d`, { description: "Added to the end of the template." })
+    addBlocks(added)
+    toast.success(`Inserted \u201c${sectionName}\u201d`, {
+      description: insertsAboveLocked ? "Added above the locked blocks at the end." : "Added to the end of the template.",
+    })
   }
 
   function removeBlock(id: string) {
-    mutate(() => setBlocks((prev) => prev.filter((b) => b.id !== id)))
+    if (isLocked(blocks.find((b) => b.id === id))) return
+    mutate(() => setBlocks((prev) => removeIfUnlocked(prev, id)))
     if (selectedId === id) setSelectedId(null)
   }
 
@@ -300,7 +328,7 @@ export function TemplateEditor({
   function duplicateBlock(id: string) {
     const copy = ((prev: EmailBlock[]) => {
       const source = prev.find((b) => b.id === id)
-      return source ? ({ ...source, id: uid() } as EmailBlock) : null
+      return source && !isLocked(source) ? ({ ...source, id: uid() } as EmailBlock) : null
     })(blocks)
     if (!copy) return
     mutate(() =>
@@ -315,17 +343,18 @@ export function TemplateEditor({
     setSelectedId(copy.id)
   }
 
+  function moveBlock(from: number, to: number) {
+    if (from < 0 || to < 0) return
+    if (!canReorder(blocks, from, to)) {
+      toast.info("Locked blocks stay in place", { description: "Unlock it first to move it or move past it." })
+      return
+    }
+    mutate(() => setBlocks((prev) => reorder(prev, from, to)))
+  }
+
   function move(id: string, dir: -1 | 1) {
-    mutate(() =>
-      setBlocks((prev) => {
-        const i = prev.findIndex((b) => b.id === id)
-        const j = i + dir
-        if (i < 0 || j < 0 || j >= prev.length) return prev
-        const next = [...prev]
-        ;[next[i], next[j]] = [next[j], next[i]]
-        return next
-      }),
-    )
+    const i = blocks.findIndex((b) => b.id === id)
+    moveBlock(i, i + dir)
   }
 
   const sensors = useSensors(
@@ -336,13 +365,9 @@ export function TemplateEditor({
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (!over || active.id === over.id) return
-    mutate(() =>
-      setBlocks((prev) => {
-        const from = prev.findIndex((b) => b.id === active.id)
-        const to = prev.findIndex((b) => b.id === over.id)
-        if (from < 0 || to < 0) return prev
-        return arrayMove(prev, from, to)
-      }),
+    moveBlock(
+      blocks.findIndex((b) => b.id === active.id),
+      blocks.findIndex((b) => b.id === over.id),
     )
   }
 
@@ -720,11 +745,12 @@ export function TemplateEditor({
                       <SortableBlockRow
                         key={block.id}
                         block={block}
-                        index={i}
-                        count={blocks.length}
+                        canMoveUp={canReorder(blocks, i, i - 1)}
+                        canMoveDown={canReorder(blocks, i, i + 1)}
                         selected={selectedId === block.id}
                         products={products}
                         onSelect={() => setSelectedId(selectedId === block.id ? null : block.id)}
+                        onToggleLock={() => toggleLock(block.id)}
                         onMove={(dir) => move(block.id, dir)}
                         onDuplicate={() => duplicateBlock(block.id)}
                         onRemove={() => removeBlock(block.id)}
@@ -754,28 +780,35 @@ export function TemplateEditor({
  */
 function SortableBlockRow({
   block,
-  index,
-  count,
+  canMoveUp,
+  canMoveDown,
   selected,
   products,
   onSelect,
+  onToggleLock,
   onMove,
   onDuplicate,
   onRemove,
   onChange,
 }: {
   block: EmailBlock
-  index: number
-  count: number
+  canMoveUp: boolean
+  canMoveDown: boolean
   selected: boolean
   products: ProductImageMap
   onSelect: () => void
+  onToggleLock: () => void
   onMove: (dir: -1 | 1) => void
   onDuplicate: () => void
   onRemove: () => void
   onChange: (patch: Partial<EmailBlock>) => void
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id })
+  const locked = isLocked(block)
+  const label = blockLabel(block.type)
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: block.id,
+    disabled: locked,
+  })
 
   return (
     <div
@@ -784,41 +817,81 @@ function SortableBlockRow({
       className={cn(
         "rounded-xl border bg-card transition-colors",
         selected ? "border-accent-teal/50 bg-accent-teal/[0.04]" : "border-border",
+        locked && !selected ? "border-dashed bg-muted/40" : "",
         isDragging ? "relative z-10 shadow-lg" : "",
       )}
     >
       <div className="flex items-center gap-2 px-3 py-2.5">
-        <button
-          type="button"
-          {...attributes}
-          {...listeners}
-          className="shrink-0 cursor-grab touch-none text-muted-foreground/50 hover:text-foreground active:cursor-grabbing"
-          aria-label={`Drag to reorder ${blockLabel(block.type)}`}
-        >
-          <GripVertical className="size-4" />
-        </button>
-        <button type="button" onClick={onSelect} className="min-w-0 flex-1 text-left">
-          <span className="text-sm font-medium">{blockLabel(block.type)}</span>
-          <span className="ml-2 truncate text-xs text-muted-foreground">{blockSummary(block, products)}</span>
+        {locked ? (
+          <span className="shrink-0 text-amber-600 dark:text-amber-400" title="Locked: can't be moved">
+            <Lock className="size-4" aria-hidden="true" />
+            <span className="sr-only">Locked</span>
+          </span>
+        ) : (
+          <button
+            type="button"
+            {...attributes}
+            {...listeners}
+            className="shrink-0 cursor-grab touch-none text-muted-foreground/50 hover:text-foreground active:cursor-grabbing"
+            aria-label={`Drag to reorder ${label}`}
+          >
+            <GripVertical className="size-4" />
+          </button>
+        )}
+        <button type="button" onClick={onSelect} className="flex min-w-0 flex-1 items-center gap-2 text-left">
+          <span className="shrink-0 text-sm font-medium">{label}</span>
+          {locked ? (
+            <Badge variant="outline" className="shrink-0 border-amber-500/30 bg-amber-500/10 px-1.5 py-0 text-[11px] text-amber-600 dark:text-amber-400">
+              Locked
+            </Badge>
+          ) : null}
+          <span className="truncate text-xs text-muted-foreground">{blockSummary(block, products)}</span>
         </button>
         <div className="flex items-center gap-0.5">
-          <Button size="icon" variant="ghost" className="size-7" onClick={() => onMove(-1)} disabled={index === 0} aria-label="Move up">
+          <Button
+            size="icon"
+            variant="ghost"
+            className={cn("size-7", locked ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground")}
+            onClick={onToggleLock}
+            aria-pressed={locked}
+            aria-label={locked ? `Unlock ${label}` : `Lock ${label}`}
+            title={locked ? "Unlock to edit, move or remove" : "Lock to protect from changes"}
+          >
+            {locked ? <Lock className="size-4" /> : <LockOpen className="size-4" />}
+          </Button>
+          <Button size="icon" variant="ghost" className="size-7" onClick={() => onMove(-1)} disabled={!canMoveUp} aria-label="Move up">
             <ChevronUp className="size-4" />
           </Button>
-          <Button size="icon" variant="ghost" className="size-7" onClick={() => onMove(1)} disabled={index === count - 1} aria-label="Move down">
+          <Button size="icon" variant="ghost" className="size-7" onClick={() => onMove(1)} disabled={!canMoveDown} aria-label="Move down">
             <ChevronDown className="size-4" />
           </Button>
-          <Button size="icon" variant="ghost" className="size-7" onClick={onDuplicate} aria-label={`Duplicate ${blockLabel(block.type)}`}>
+          <Button size="icon" variant="ghost" className="size-7" onClick={onDuplicate} disabled={locked} aria-label={`Duplicate ${label}`}>
             <Copy className="size-4" />
           </Button>
-          <Button size="icon" variant="ghost" className="size-7 text-muted-foreground hover:text-destructive" onClick={onRemove} aria-label="Remove section">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="size-7 text-muted-foreground hover:text-destructive"
+            onClick={onRemove}
+            disabled={locked}
+            aria-label="Remove section"
+          >
             <Trash2 className="size-4" />
           </Button>
         </div>
       </div>
       {selected ? (
-        <div className="border-t border-border px-3 py-3">
-          <BlockFields block={block} products={products} onChange={onChange} />
+        <div className="flex flex-col gap-3 border-t border-border px-3 py-3">
+          {locked ? (
+            <p className="flex items-center gap-2 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+              <Lock className="size-3.5 shrink-0" aria-hidden="true" />
+              This block is locked. Unlock it to make changes.
+            </p>
+          ) : null}
+          <fieldset disabled={locked} className="min-w-0 disabled:opacity-60">
+            <legend className="sr-only">{`${label} settings`}</legend>
+            <BlockFields block={block} products={products} onChange={onChange} />
+          </fieldset>
         </div>
       ) : null}
     </div>

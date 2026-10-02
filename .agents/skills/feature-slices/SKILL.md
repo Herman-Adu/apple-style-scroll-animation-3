@@ -1,11 +1,14 @@
 ---
 name: feature-slices
-description: Where code lives in this repo - feature-sliced layout under features/<slice>, public index.ts entry points, the app to features to lib dependency direction, and atomic UI in components/ui. Use when creating a file, moving code, importing across features, deciding between lib/ and features/, splitting a large file, or reviewing imports.
+description: Where code lives in this repo - 100% feature-sliced domain code under features/<slice> with public index.ts entry points, the app to features to lib dependency direction, and a partial (~60%) atomic design for shared UI - atoms and molecules only, no organisms or templates folders. Use when creating a file or component, moving code, importing across features, deciding between lib/, components/ and features/, splitting a large file, or reviewing imports.
 ---
 
 # Feature slices
 
-Aim for ~60% of domain code inside slices. The rest is shared UI (`components/ui`), cross-cutting infrastructure (`lib/`) and thin routes (`app/`).
+Two rules, deliberately different strengths:
+
+- **Feature slices: 100%.** Every piece of domain code (anything that knows about orders, products, email, customers...) lives in `features/<slice>`. No exceptions.
+- **Atomic design: ~60%.** We use the bottom two levels only: atoms and molecules. We do **not** create `organisms/`, `templates/` or `pages/` folders, because they grow into huge grab-bag folders that are cut by size, not by feature, and nobody can find anything. Organisms belong to the feature that uses them.
 
 ## Layout
 
@@ -39,11 +42,23 @@ app/  →  features/<slice>/index.ts  →  lib/  →  components/ui
 
 Only cross-cutting infrastructure: `lib/auth`, the db client, `lib/seo`, `lib/strapi`, utils, env. Domain logic (orders, catalog, offers) belongs in a slice.
 
-## Atomic UI
+## Where a component goes
 
-- `components/ui/`: shadcn primitives (atoms). Don't put business logic here.
-- Slice `components/`: molecules and organisms built from the primitives.
+| It is... | Put it in | Examples |
+|---|---|---|
+| Atom: shadcn primitive, no business logic | `components/ui/` | button, dialog, input |
+| Molecule: brand design-system piece, no domain knowledge | `components/primitives/` (export from its `index.ts`) | eyebrow, section-heading, glass-panel |
+| App shell shared by every page | `components/layout/`, `scroll/`, `theme/`, `seo/` | site-header, json-ld |
+| Anything that knows a domain concept (organism) | `features/<slice>/components/` | order-card, sign-in-form, contact-form |
+
+Test: if the component imports a domain type or a slice, or its name contains a domain word, it belongs in a slice.
+
 - Reuse a primitive before writing a new one. Restyle with variants, not copies.
+- Never create `components/organisms`, `components/templates` or a new domain folder under `components/`.
+
+## Known drift
+
+These `components/` folders hold domain code from before the rule: `account`, `auth`, `checkout`, `contact`, `home`, `docs`. Don't add to them. When a sprint touches one, move the touched files into the owning slice (`customers`, `admin`/auth, `checkout`, `docs`...) as part of that sprint. Larger moves get their own R-sprint from `architecture-review`.
 
 ## Moving code
 

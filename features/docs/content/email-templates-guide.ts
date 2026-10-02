@@ -7,11 +7,11 @@ export const emailTemplatesGuide: Doc = {
   audience: "content",
   access: "public",
   summary:
-    "Templates are the branded, block-based emails your campaigns and customer messages are built from. This guide explains the four system templates, the difference between transactional and marketing, and how to duplicate one to make your own.",
-  readingMinutes: 6,
+    "Templates are the branded, block-based emails your campaigns and customer messages are built from. This guide covers the system templates, the starter gallery, the editor (undo, placeholders, saved sections, locked blocks) and how version history keeps every change recoverable.",
+  readingMinutes: 9,
   order: 2,
-  updatedAt: "2026-09-28",
-  tags: ["email", "templates", "blocks", "branding", "theme"],
+  updatedAt: "2026-10-02",
+  tags: ["email", "templates", "blocks", "branding", "theme", "starters", "versions", "sections", "locks"],
   body: [
     {
       type: "paragraph",
@@ -23,14 +23,14 @@ export const emailTemplatesGuide: Doc = {
     },
     {
       type: "paragraph",
-      text: "Email → Templates shows every template as a card. The tag in the corner tells you whether it is a Marketing or Transactional template, and the footer shows who created it and when. \"System\" templates ship with MOMO; you can edit them or duplicate them into your own.",
+      text: "Email → Templates shows every template as a card. The tag in the corner tells you whether it is a Marketing, Transactional or System (internal) template. \"System\" templates ship with MOMO and are wired to real events; you can edit them, duplicate them, and always reset them to the original.",
     },
     {
       type: "image",
       src: "/docs/email/templates.png",
-      alt: "The Email Templates screen showing four template cards: Welcome / newsletter (Marketing), Shipping update (Transactional), Personal offer (Marketing), and Order confirmation (Transactional), each with a description and a duplicate button.",
+      alt: "The Email Templates screen showing template cards, each with a category tag, a description and a duplicate button.",
       caption:
-        "Figure 1 — Email → Templates. Four system templates ship out of the box. The corner tag marks each as Marketing or Transactional; the copy icon duplicates a template so you can customise it without touching the original.",
+        "Figure 1 — Email → Templates. The corner tag marks each card as Marketing, Transactional or System; the copy icon duplicates a template so you can customise it without touching the original.",
       width: 1275,
       height: 918,
     },
@@ -44,13 +44,13 @@ export const emailTemplatesGuide: Doc = {
     },
     {
       type: "table",
-      title: "The two template kinds",
-      headers: ["", "Transactional", "Marketing"],
+      title: "The template kinds",
+      headers: ["", "Transactional", "Marketing", "System (internal)"],
       rows: [
-        ["Trigger", "An event — order, shipment, signup", "You choose to send it"],
-        ["Audience", "The specific customer involved", "Opted-in subscribers only"],
-        ["Examples", "Order confirmation, Shipping update", "Welcome / newsletter, Personal offer"],
-        ["Opt-out needed?", "No — it is service, not promotion", "Yes — always includes unsubscribe"],
+        ["Trigger", "An event — order, shipment, refund", "You choose to send it", "An event in your shop"],
+        ["Audience", "The specific customer involved", "Opted-in subscribers only", "Your own support inbox"],
+        ["Examples", "Order confirmation, Refund confirmation", "Welcome / newsletter, Personal offer", "New order notification"],
+        ["Opt-out needed?", "No — it is service, not promotion", "Yes — always includes unsubscribe", "No — it never reaches customers"],
       ],
     },
     {
@@ -61,47 +61,107 @@ export const emailTemplatesGuide: Doc = {
     },
     {
       type: "heading",
-      text: "The four system templates",
+      text: "The system templates",
     },
     {
       type: "list",
       items: [
-        "Welcome / newsletter (Marketing) — the starting point for newsletters and campaign broadcasts.",
-        "Personal offer (Marketing) — a branded email sent when you grant a customer a specific offer.",
         "Order confirmation (Transactional) — sent automatically when a customer completes checkout.",
         "Shipping update (Transactional) — lets a customer know their order is on the way; sent from Messages.",
+        "Refund confirmation (Transactional) — sent when a full or partial refund is processed.",
+        "Low stock alert (Transactional) — sent to your support inbox when a product's stock crosses its threshold, listing the affected items.",
+        "New order notification (System) — sent to your support inbox whenever a customer completes checkout.",
+        "Personal offer (Marketing) — a branded email sent when you grant a customer a specific offer.",
+        "Welcome / newsletter (Marketing) — the starting point for newsletters and campaign broadcasts.",
       ],
     },
     {
       type: "heading",
-      text: "Making your own template",
+      text: "Starting a new template: the starter gallery",
     },
     {
-      type: "steps",
-      items: [
-        {
-          title: "Duplicate a system template",
-          text: "Find the closest match and click the copy icon on its card. This creates an editable copy and leaves the original untouched — always start from a duplicate rather than editing a system template directly.",
-        },
-        {
-          title: "Open it and edit the blocks",
-          text: "A template is a stack of blocks — a hero image, headings, paragraphs, buttons. Edit the text and images in place; the accent colour and footer are inherited from your active theme, so you do not set them here.",
-        },
-        {
-          title: "Preview with sample data",
-          text: "The preview pane renders the template with realistic placeholder data so you can see how a real send will look before you commit.",
-        },
-        {
-          title: "Save, then use it in a campaign",
-          text: "Once saved, your template appears in the template picker when you compose a campaign. Head to the campaign walkthrough next.",
-        },
+      type: "paragraph",
+      text: "New template opens a gallery instead of an empty page. Pick a starter and you get a fully laid-out, on-brand email with a hero image, copy and a call to action that you then edit. Starters are grouped so the right one is quick to find.",
+    },
+    {
+      type: "table",
+      title: "Starters",
+      headers: ["Group", "Starter", "Good for"],
+      rows: [
+        ["Essentials", "Blank", "A branded shell when you want to build from scratch"],
+        ["Essentials", "Newsletter", "Monthly round-ups and stories"],
+        ["Essentials", "Product launch", "Announcing a new product"],
+        ["Essentials", "Sale", "General promotions"],
+        ["Essentials", "Announcement", "Store news, opening hours, policy changes"],
+        ["Seasonal campaigns", "Black Friday", "Black Friday / Cyber Weekend offers"],
+        ["Seasonal campaigns", "Bank Holiday sale", "Long-weekend promotions"],
+        ["Seasonal campaigns", "Christmas", "Gift guides and last order dates"],
       ],
     },
     {
       type: "callout",
       variant: "tip",
-      title: "Or start from New template",
-      text: "The New template button in the top right gives you a blank branded shell if none of the system templates are close enough. It still inherits your brand, so you are never designing from a truly empty page.",
+      title: "Or start from one of your own",
+      text: "The gallery can also copy any existing template, so a campaign that worked last year can become this year's starting point in one click. Duplicating from a card's copy icon does the same thing.",
+    },
+    {
+      type: "heading",
+      text: "Editing a template",
+    },
+    {
+      type: "steps",
+      items: [
+        {
+          title: "Add and arrange blocks",
+          text: "A template is a stack of blocks — hero, heading, text, button, image, list, callout, divider, spacer, plus the data blocks (order summary, product picks, low-stock items). Add them from the palette, drag to reorder, and select one to edit its fields.",
+        },
+        {
+          title: "Insert placeholders",
+          text: "Use the placeholder picker to drop in tokens like {{customer_name}}, {{order_number}} or {{shop_url}}. They are filled with real values when the email sends. If you type a token MOMO does not recognise, the editor flags it and suggests the closest match.",
+        },
+        {
+          title: "Watch the copy hints",
+          text: "Subject and preview text show a live character count, and the subject is checked for words that commonly trigger spam filters. They are hints, not blockers.",
+        },
+        {
+          title: "Preview, then save",
+          text: "The preview pane renders the template with realistic sample data and refreshes as you type; Product picks pull live products from the catalogue. Undo and redo (Ctrl/Cmd+Z, Shift+Ctrl/Cmd+Z) cover every change until you save. Discard throws away unsaved edits, and if you try to leave with unsaved changes the editor asks first.",
+        },
+      ],
+    },
+    {
+      type: "heading",
+      text: "Saved sections",
+    },
+    {
+      type: "paragraph",
+      text: "If you build the same group of blocks again and again — a brand header, a social footer, a returns reminder — tick those blocks and choose Save as section. The section appears under Saved sections in every template. Insert adds a fresh, independent copy: editing it later does not change the saved section, and deleting a saved section never touches templates that already use it.",
+    },
+    {
+      type: "heading",
+      text: "Locked blocks",
+    },
+    {
+      type: "paragraph",
+      text: "Click the lock icon on a block to protect it. A locked block cannot be edited, moved or deleted, and nothing can be dragged past it. New blocks and inserted sections land above any locked blocks at the bottom of the template, so a locked footer always stays last.",
+    },
+    {
+      type: "callout",
+      variant: "note",
+      title: "A lock is a guard rail, not a permission",
+      text: "Any admin can unlock a block by clicking the icon again. Locks prevent accidental changes to the brand header and footer; they are not a way to restrict what a colleague is allowed to do.",
+    },
+    {
+      type: "heading",
+      text: "Version history and Reset to original",
+    },
+    {
+      type: "paragraph",
+      text: "Every save takes a snapshot. Open History to see past versions with when and why they were taken, preview any of them, and restore one — restoring is itself saved as a new version, so nothing is ever lost. MOMO keeps the original plus the 50 most recent versions of each template.",
+    },
+    {
+      type: "paragraph",
+      text: "Reset to original puts a template back to how it started: system templates return to the shipped design, and your own templates return to their first saved version. Reset is recorded in history too, so you can undo it by restoring the previous version.",
     },
     {
       type: "heading",

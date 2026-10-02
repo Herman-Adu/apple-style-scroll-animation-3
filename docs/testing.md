@@ -9,9 +9,12 @@ qa/
     mappers/      Strapi raw shape -> domain shape (contract tests)
     seo/          site-url resolution, structured data
     strapi-client/ fetchStrapi transport (timeout, retry, unwrap, errors)
+    email/        render, placeholders, copy-quality, versions, sections, starters, locks
   integration/    Modules wired together with fetch mocked
     features/     product api seam (local vs Strapi branch)
     revalidate-route/ webhook -> tag invalidation
+    checkout-finalize/ checkout finalisation (order + emails)
+    email/        reset-template against the version history
   smoke/          Playwright: every route renders (200 + key content)
   seo/            Playwright: metadata, OG, sitemap, robots, RSS surfaces
   axe/            Playwright + axe-core: accessibility
@@ -37,6 +40,8 @@ pnpm test:all          # unit/integration + e2e
 - **Unit / strapi-client** covers the hardened transport: timeouts, retry/backoff on 5xx and network errors, fail-fast on 4xx, and `{ data }` unwrapping.
 - **Integration / features** exercises the seam itself — that the local branch and the Strapi branch (with `fetch` mocked) both return identical validated types.
 - **Integration / revalidate-route** verifies the webhook maps models to the right cache tags and rejects bad/missing secrets.
+- **Unit / email** pins every pure editor rule in `features/email/*` — version pruning, saved-section picking and validation, starter shape (unique ids, valid groups, hero images exist), and locked-block behaviour (no edits/moves/deletes, insertion above trailing locks). Write these first when adding an editor feature; the UI only calls these functions.
+- **Integration / email** and **integration / checkout-finalize** run against the database and verify reset-to-original and the post-checkout email/order flow.
 - **Smoke / SEO / axe** are Playwright suites that run against the dev server for real-browser guarantees.
 
 ## Notes

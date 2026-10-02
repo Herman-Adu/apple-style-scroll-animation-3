@@ -10,8 +10,14 @@
 
 export type BlockAlign = "left" | "center" | "right"
 
-export interface HeroBlock {
+/** Fields every block shares. */
+export interface BlockBase {
   id: string
+  /** Locked blocks can't be edited, moved or removed until unlocked (see `locks.ts`). */
+  locked?: boolean
+}
+
+export interface HeroBlock extends BlockBase {
   type: "hero"
   eyebrow: string
   heading: string
@@ -36,30 +42,26 @@ export interface HeroBlock {
   align: BlockAlign
 }
 
-export interface HeadingBlock {
-  id: string
+export interface HeadingBlock extends BlockBase {
   type: "heading"
   text: string
   align: BlockAlign
 }
 
-export interface TextBlock {
-  id: string
+export interface TextBlock extends BlockBase {
   type: "text"
   text: string
   align: BlockAlign
 }
 
-export interface ButtonBlock {
-  id: string
+export interface ButtonBlock extends BlockBase {
   type: "button"
   label: string
   href: string
   align: BlockAlign
 }
 
-export interface ImageBlock {
-  id: string
+export interface ImageBlock extends BlockBase {
   type: "image"
   src: string
   alt: string
@@ -82,19 +84,16 @@ export interface ImageBlock {
   showPrice?: boolean
 }
 
-export interface DividerBlock {
-  id: string
+export interface DividerBlock extends BlockBase {
   type: "divider"
 }
 
-export interface SpacerBlock {
-  id: string
+export interface SpacerBlock extends BlockBase {
   type: "spacer"
   size: "sm" | "md" | "lg"
 }
 
-export interface ListBlock {
-  id: string
+export interface ListBlock extends BlockBase {
   type: "list"
   title: string
   /** One step per line. */
@@ -102,16 +101,14 @@ export interface ListBlock {
   ordered: boolean
 }
 
-export interface CalloutBlock {
-  id: string
+export interface CalloutBlock extends BlockBase {
   type: "callout"
   title: string
   body: string
 }
 
 /** Dynamic: expands to the current order's line items + totals at send time. */
-export interface OrderSummaryBlock {
-  id: string
+export interface OrderSummaryBlock extends BlockBase {
   type: "orderSummary"
 }
 
@@ -124,16 +121,14 @@ export interface OrderSummaryBlock {
  * the picks can never drift out of sync with the catalog. Add as many slugs
  * as needed; the grid wraps into even columns.
  */
-export interface ProductPicksBlock {
-  id: string
+export interface ProductPicksBlock extends BlockBase {
   type: "productPicks"
   title: string
   slugs: string[]
 }
 
 /** Dynamic: expands to the triggering low-stock product rows at send time. */
-export interface LowStockItemsBlock {
-  id: string
+export interface LowStockItemsBlock extends BlockBase {
   type: "lowStockItems"
 }
 

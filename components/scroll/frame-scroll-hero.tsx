@@ -179,7 +179,7 @@ export function FrameScrollHero({ hero, product }: { hero: FrameHero; product: P
               />
             </div>
           </div>
-          <p className="font-mono text-xs tracking-widest text-on-media/30">Loading {loadingProgress}%</p>
+          <p className="font-mono text-xs tracking-widest text-on-media/70">Loading {loadingProgress}%</p>
           {loadingProgress === 100 && successCount === 0 && (
             <p className="mt-4 text-xs text-red-400">No images loaded. Check image paths.</p>
           )}

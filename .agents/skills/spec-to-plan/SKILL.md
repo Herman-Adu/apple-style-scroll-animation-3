@@ -7,6 +7,10 @@ description: Turn a spec, feature request or brain-dump into a sequenced sprint 
 
 Produce a plan the user can approve line by line. Don't write code here; `sprint-workflow` runs it after approval.
 
+## 0. Settle the design first
+
+If the request still has open decisions (a brain-dump, a new feature, "what do you think"), run `grill-with-docs` first (`.agents/skills/grilling/` + `.agents/skills/domain-modeling/`). Plan only from answers the user has confirmed; reuse the glossary terms in sprint titles.
+
 ## 1. Gather (cheaply)
 
 - Read the ledger (`docs/next-steps.md`) and the current plan in `v0_plans/`, so new sprints continue the numbering and don't redo shipped work.

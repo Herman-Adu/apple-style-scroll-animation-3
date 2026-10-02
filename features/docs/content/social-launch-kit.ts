@@ -19,6 +19,19 @@ export const socialLaunchKit: Doc = {
       title: "Before you post",
       text: "Replace [live URL] with the deployed site. Every /docs page now generates its own link preview image, so pasting a docs link into LinkedIn, Facebook or Telegram shows a branded card with the page title. Post the case study link rather than the homepage when the audience is a hiring manager or CTO.",
     },
+    { type: "heading", text: "Demo clip" },
+    {
+      type: "paragraph",
+      text: "A 30-second muted MP4 (1280×720, H.264) that LinkedIn, Facebook, X and Telegram all play inline. Download it from /showcase/video/storefront.mp4 and upload it natively rather than linking, because native video gets far more reach. Re-record it after UI changes with pnpm showcase:video.",
+    },
+    {
+      type: "video",
+      src: "/showcase/video/storefront.mp4",
+      poster: "/showcase/video/storefront.jpg",
+      description:
+        "Screen recording of the storefront: the home page scroll animation plays, a product is opened from the shop, added to the cart, and the cart drawer shows the item and subtotal.",
+      caption: "Storefront journey clip for social posts.",
+    },
     { type: "heading", text: "Image and link pairings" },
     {
       type: "table",

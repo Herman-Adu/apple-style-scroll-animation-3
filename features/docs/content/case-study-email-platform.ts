@@ -39,6 +39,14 @@ export const caseStudyEmailPlatform: Doc = {
       width: 680,
       height: 1148,
     },
+    {
+      type: "video",
+      src: "/showcase/video/storefront.mp4",
+      poster: "/showcase/video/storefront.jpg",
+      description:
+        "Screen recording of the storefront: the home page scroll animation plays, a product is opened from the shop, added to the cart, and the cart drawer shows the item and subtotal.",
+      caption: "The storefront journey, recorded automatically by Playwright with pnpm showcase:video.",
+    },
     { type: "heading", text: "How it was delivered" },
     {
       type: "list",

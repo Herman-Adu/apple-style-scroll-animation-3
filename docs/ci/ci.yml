@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Placeholder values only: CI talks to a throwaway Postgres container and never
+# to Neon, Stripe, Resend or production. Real secrets live in Vercel.
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+  POSTGRES_PRISMA_URL: postgresql://ci:ci@localhost:5432/ci
+  POSTGRES_URL_NON_POOLING: postgresql://ci:ci@localhost:5432/ci
+  DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+  DATABASE_URL_UNPOOLED: postgresql://ci:ci@localhost:5432/ci
+  BETTER_AUTH_SECRET: ci-only-secret-never-used-outside-ci-0000
+  BETTER_AUTH_URL: http://localhost:3001
+  NEXT_PUBLIC_SITE_URL: http://localhost:3001
+  STRIPE_SECRET_KEY: sk_test_ci_placeholder
+  STRIPE_WEBHOOK_SECRET: whsec_ci_placeholder
+  STRIPE_PUBLISHABLE_KEY: pk_test_ci_placeholder
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_ci_placeholder
+  RESEND_API_KEY: re_ci_placeholder
+  EMAIL_FROM: ci@example.com
+  EMAIL_TO: ci@example.com
+
+jobs:
+  checks:
+    name: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm arch
+      - run: pnpm test:unit
+
+  app:
+    name: app
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec prisma db push --skip-generate
+      - run: pnpm test:integration
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:smoke
+      - run: pnpm test:axe
+      - run: pnpm test:seo
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            qa/.playwright-report
+            test-results
+          if-no-files-found: ignore

@@ -116,18 +116,18 @@ export function PlaceholderField({
 }) {
   const autoId = useId()
   const fieldId = id ?? autoId
-  const input = usePlaceholderInsert<HTMLInputElement>(value, onChange)
-  const area = usePlaceholderInsert<HTMLTextAreaElement>(value, onChange)
+  const { ref: inputRef, insert: insertIntoInput } = usePlaceholderInsert<HTMLInputElement>(value, onChange)
+  const { ref: areaRef, insert: insertIntoArea } = usePlaceholderInsert<HTMLTextAreaElement>(value, onChange)
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-2">
         <Label htmlFor={fieldId}>{label}</Label>
-        {disabled ? null : <PlaceholderPicker onInsert={multiline ? area.insert : input.insert} label={`Insert placeholder into ${label}`} />}
+        {disabled ? null : <PlaceholderPicker onInsert={multiline ? insertIntoArea : insertIntoInput} label={`Insert placeholder into ${label}`} />}
       </div>
       {multiline ? (
-        <Textarea id={fieldId} ref={area.ref} value={value} onChange={(e) => onChange(e.target.value)} rows={3} placeholder={placeholder} disabled={disabled} />
+        <Textarea id={fieldId} ref={areaRef} value={value} onChange={(e) => onChange(e.target.value)} rows={3} placeholder={placeholder} disabled={disabled} />
       ) : (
-        <Input id={fieldId} ref={input.ref} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} disabled={disabled} />
+        <Input id={fieldId} ref={inputRef} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} disabled={disabled} />
       )}
       <PlaceholderWarning value={value} onChange={onChange} />
       {children}

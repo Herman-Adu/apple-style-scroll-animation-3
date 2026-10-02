@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useEffectEvent } from "react"
 
 /**
  * Re-run `refresh` on an interval while the tab is visible, and immediately
@@ -9,11 +9,10 @@ import { useEffect, useRef } from "react"
  * without a manual reload.
  */
 export function useLiveRefresh(refresh: () => void | Promise<void>, intervalMs = 20000): void {
-  const refreshRef = useRef(refresh)
-  refreshRef.current = refresh
+  const onTick = useEffectEvent(() => void refresh())
 
   useEffect(() => {
-    const tick = () => void refreshRef.current()
+    const tick = () => onTick()
 
     const id = setInterval(() => {
       if (document.visibilityState === "visible") tick()

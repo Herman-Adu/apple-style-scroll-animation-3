@@ -2,6 +2,10 @@
 
 The full guide with diagrams is in the app at `/docs/contributing-and-workflow`. This is the short version.
 
+## Agent rules and skills
+
+`AGENTS.md` (read by v0, Claude Code via `CLAUDE.md`, Codex and others) holds the non-negotiables and routes each task to one skill in `.agents/skills/`. Skills change through PRs like code; `qa/unit/meta/skills.test.ts` keeps them routed, small and with working links.
+
 ## The loop
 
 1. Branch from the **real** `main`. Run `git fetch origin +refs/heads/main:refs/remotes/origin/main`, check the SHA matches GitHub, then `git checkout -B v0/<short-name> origin/main`. Never commit to `main` directly. (A plain `git fetch origin main` doesn't move `origin/main`; see `docs/next-steps.md`.)

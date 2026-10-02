@@ -142,6 +142,29 @@ When an editor publishes in Strapi, a webhook hits `POST /api/revalidate`, which
 
 ---
 
+## Email system (`features/email`)
+
+Templates are stored as JSON block arrays in Postgres (Prisma) and rendered to HTML at send time. The slice keeps every editing rule in **pure, client-safe modules** so the editor and the tests share one implementation; Prisma access lives only in `repo.ts`, and mutations go through server actions in `admin-actions.ts` (which `revalidatePath` the templates routes).
+
+| Module | Responsibility |
+| --- | --- |
+| `blocks/types.ts` | `EmailBlock` union: hero, heading, text, button, image, divider, spacer, list, callout, orderSummary, productPicks, lowStockItems. Any block may carry an optional `locked` flag. |
+| `blocks/system-templates.ts` | Shipped templates (`order_confirmation`, `order_notification`, `personal_offer`, `shipping_update`, `refund_confirmation`, `low_stock`, `welcome`) plus `BLOCK_PRESETS`. These are the source for **Reset to original**. |
+| `blocks/render.ts`, `blocks/sample.ts` | Block → email HTML, and sample data for previews. |
+| `actions.ts` | Event senders: order confirmation, order notification (internal), low-stock alert, personal offer, refund confirmation, shipping confirmation. All no-op safely without `RESEND_API_KEY`. |
+| `placeholders.ts` | Placeholder catalogue (`{{customer_name}}`, `{{order_number}}`, `{{shop_url}}`, …), the picker's groups, and `unknownPlaceholders()` / `suggestPlaceholder()` for typo hints. |
+| `copy-quality.ts` | Subject spam-word flags and character-count tone for the copy hints. |
+| `versions.ts` | Version-retention rules. `VERSION_KEEP = 50`: the original plus the newest are kept, older snapshots are pruned. |
+| `sections.ts` | Saved sections: `pickSectionBlocks` (template order, ids stripped), `instantiateSection` (fresh ids per insert), `validateSectionInput` (`SECTION_NAME_MAX = 60`, `SECTION_MAX_BLOCKS = 20`). `SectionBlock` is a distributive `Omit` over the block union. |
+| `starters.ts` | Starter gallery, grouped `essentials` / `seasonal` (Blank, Newsletter, Product launch, Sale, Announcement, Black Friday, Bank Holiday, Christmas). Hero images live in `public/email/`. |
+| `locks.ts` | Locked-block rules: `updateIfUnlocked`, `removeIfUnlocked`, `canReorder` / `reorder` (nothing moves past a locked block), `insertionIndex` / `insertBlocks` (new content goes above the trailing locked run; appended if every block is locked). |
+
+**Tables:** `email_templates` (current state + `version`), `email_template_versions` (immutable snapshot on every create / save / reset / restore, `reason` column, cascade-deleted with the template), `email_sections` (saved sections, blocks without ids). Block JSON is not schema-validated on the server, so new optional block fields (like `locked`) round-trip without a migration.
+
+**Editor** (`features/admin/components/email/template-editor.tsx`): local undo/redo stack, Discard, Duplicate, an unsaved-changes guard on navigation, the placeholder picker, the saved-sections panel, the per-row lock toggle (locked rows render their fields inside a disabled `<fieldset>`), and `version-history.tsx` for preview/restore. `new-template-dialog.tsx` is the starter gallery. Locks are an accident guard, not an authorization boundary — any admin can toggle them.
+
+---
+
 ## Boundaries
 
 | File | Catches |

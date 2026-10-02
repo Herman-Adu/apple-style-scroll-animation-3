@@ -81,6 +81,7 @@ import { cn } from "@/lib/utils"
 import { formatMoney } from "@/lib/format"
 import type { BlockType, EmailBlock, EmailBranding } from "@/features/email/blocks/types"
 import { BLOCK_PRESETS } from "@/features/email/blocks/system-templates"
+import { PALETTE_BLOCKS, blockLabel } from "@/features/email/blocks/labels"
 import { PLACEHOLDERS, placeholderToken } from "@/features/email/placeholders"
 import { PlaceholderField } from "./placeholder-picker"
 import type { ProductImageMap } from "@/features/products/lib/product"
@@ -111,19 +112,21 @@ export type EditorTemplate = {
 
 const uid = () => `b-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
 
-const PALETTE: { type: BlockType; label: string; icon: typeof Type }[] = [
-  { type: "hero", label: "Hero", icon: Sparkles },
-  { type: "heading", label: "Heading", icon: HeadingIcon },
-  { type: "text", label: "Text", icon: Type },
-  { type: "button", label: "Button", icon: MousePointerClick },
-  { type: "image", label: "Image", icon: ImageIcon },
-  { type: "list", label: "List", icon: ListIcon },
-  { type: "callout", label: "Callout", icon: MessageSquareQuote },
-  { type: "orderSummary", label: "Order summary", icon: ShoppingBag },
-  { type: "productPicks", label: "Product picks", icon: LayoutGrid },
-  { type: "divider", label: "Divider", icon: SeparatorHorizontal },
-  { type: "spacer", label: "Spacer", icon: Minus },
-]
+const PALETTE_ICONS: Partial<Record<BlockType, typeof Type>> = {
+  hero: Sparkles,
+  heading: HeadingIcon,
+  text: Type,
+  button: MousePointerClick,
+  image: ImageIcon,
+  list: ListIcon,
+  callout: MessageSquareQuote,
+  orderSummary: ShoppingBag,
+  productPicks: LayoutGrid,
+  divider: SeparatorHorizontal,
+  spacer: Minus,
+}
+
+const PALETTE = PALETTE_BLOCKS.map((b) => ({ ...b, icon: PALETTE_ICONS[b.type] ?? Type }))
 
 function makeBlock(type: BlockType): EmailBlock {
   const id = uid()
@@ -155,9 +158,6 @@ function makeBlock(type: BlockType): EmailBlock {
   }
 }
 
-function blockLabel(type: BlockType): string {
-  return PALETTE.find((p) => p.type === type)?.label ?? type
-}
 
 const CATEGORIES = ["transactional", "marketing", "system"]
 

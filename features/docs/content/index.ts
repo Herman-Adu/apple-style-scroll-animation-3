@@ -21,6 +21,7 @@ import { emailCampaignWalkthrough } from "./email-campaign-walkthrough"
 import { emailCustomerMessages } from "./email-customer-messages"
 import { systemArchitecture } from "./system-architecture"
 import { dataLayerAndDatabase } from "./data-layer-and-database"
+import { emailPlatformArchitecture } from "./email-platform-architecture"
 import { theThemeSystem } from "./the-theme-system"
 import { serverFirstPlaybook } from "./server-first-playbook"
 import { strapiMigrationRunbook } from "./strapi-migration-runbook"
@@ -72,6 +73,7 @@ export const docs: Doc[] = [
   emailCustomerMessages,
   // Developer (public)
   systemArchitecture,
+  emailPlatformArchitecture,
   dataLayerAndDatabase,
   theThemeSystem,
   serverFirstPlaybook,

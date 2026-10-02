@@ -148,8 +148,8 @@ export const emailTemplatesGuide: Doc = {
     {
       type: "callout",
       variant: "note",
-      title: "A lock is a guard rail, not a permission",
-      text: "Any admin can unlock a block by clicking the icon again. Locks prevent accidental changes to the brand header and footer; they are not a way to restrict what a colleague is allowed to do.",
+      title: "Who can lock and unlock",
+      text: "Only the store owner and admins named on the block-locker list can lock or unlock blocks. Every other admin sees a Locked badge instead of the toggle and cannot change, move or delete locked blocks. Reset to original and Restore are refused for them too if they would change a locked block. Ask the owner to add you to the list if you need to manage brand blocks.",
     },
     {
       type: "heading",

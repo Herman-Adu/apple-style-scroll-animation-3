@@ -7,6 +7,9 @@ import type { EmailBlock, EmailBranding } from "./blocks/types"
 import { sampleVars, SAMPLE_ORDER_SUMMARY, SAMPLE_LOW_STOCK_ITEMS } from "./blocks/sample"
 import { getBaseUrl } from "@/lib/seo/site"
 import { validateSectionInput, type SectionBlock } from "./sections"
+import { lockViolations } from "./locks"
+import { fill, sendCampaign } from "./campaign-send"
+import { getServerCanLockBlocks, requireAdmin } from "@/lib/auth/server"
 
 /**
  * Final in-code fallback reply-to for customer messages, used when neither the
@@ -53,9 +56,17 @@ import {
 
 const EMAIL_BASE = "/admin/email"
 
+const LOCKED_BY_ADMIN = "Some blocks are locked. Ask an admin who can lock blocks to change them."
+
+/** Reset/restore replace every block, so only admins who can lock may run them on a template with locks. */
+async function blockedByLocks(blocks: EmailBlock[]): Promise<boolean> {
+  return blocks.some((b) => b.locked) && !(await getServerCanLockBlocks())
+}
+
 // ---------- Settings ----------
 
 export async function saveEmailSettings(patch: Partial<EmailBranding>) {
+  await requireAdmin()
   await updateEmailSettings(patch)
   revalidatePath(`${EMAIL_BASE}/settings`)
   revalidatePath(EMAIL_BASE)
@@ -72,6 +83,7 @@ export async function createTemplateAction(input: {
   description: string
   blocks: EmailBlock[]
 }) {
+  await requireAdmin()
   const row = await createTemplate(input)
   revalidatePath(`${EMAIL_BASE}/templates`)
   return { ok: true as const, id: row.id }
@@ -88,6 +100,13 @@ export async function saveTemplateAction(
     blocks: EmailBlock[]
   }>,
 ) {
+  await requireAdmin()
+  if (patch.blocks && !(await getServerCanLockBlocks())) {
+    const current = await getTemplate(id)
+    if (current && lockViolations(current.blocks, patch.blocks).length > 0) {
+      return { ok: false as const, error: LOCKED_BY_ADMIN }
+    }
+  }
   await updateTemplate(id, patch)
   revalidatePath(`${EMAIL_BASE}/templates`)
   revalidatePath(`${EMAIL_BASE}/templates/${id}`)
@@ -95,6 +114,7 @@ export async function saveTemplateAction(
 }
 
 export async function deleteTemplateAction(id: number) {
+  await requireAdmin()
   await deleteTemplate(id)
   revalidatePath(`${EMAIL_BASE}/templates`)
   return { ok: true as const }
@@ -116,8 +136,10 @@ function templateResult(row: TemplateRow) {
 
 /** System templates reset to their built-in default; custom ones to their original version. */
 export async function resetTemplateAction(id: number) {
+  await requireAdmin()
   const tpl = await getTemplate(id)
   if (!tpl) return { ok: false as const, error: "Template not found" }
+  if (await blockedByLocks(tpl.blocks)) return { ok: false as const, error: LOCKED_BY_ADMIN }
   const row = tpl.isSystem ? await resetSystemTemplate(id) : await resetCustomTemplate(id)
   if (!row) return { ok: false as const, error: "Could not find a version to reset to" }
   revalidatePath(`${EMAIL_BASE}/templates`)
@@ -126,6 +148,7 @@ export async function resetTemplateAction(id: number) {
 }
 
 export async function listTemplateVersionsAction(templateId: number) {
+  await requireAdmin()
   const versions = await listTemplateVersions(templateId)
   return versions.map((v) => ({ ...v, createdAt: v.createdAt.toISOString() }))
 }
@@ -133,11 +156,13 @@ export async function listTemplateVersionsAction(templateId: number) {
 // ---------- Saved sections ----------
 
 export async function listSavedSectionsAction() {
+  await requireAdmin()
   const rows = await listSavedSections()
   return rows.map((r) => ({ ...r, updatedAt: r.updatedAt.toISOString() }))
 }
 
 export async function createSavedSectionAction(input: { name: string; blocks: SectionBlock[] }) {
+  await requireAdmin()
   const check = validateSectionInput(input)
   if (!check.ok) return check
   const row = await createSavedSection({ name: check.name, blocks: input.blocks })
@@ -145,6 +170,7 @@ export async function createSavedSectionAction(input: { name: string; blocks: Se
 }
 
 export async function renameSavedSectionAction(id: number, name: string) {
+  await requireAdmin()
   const check = validateSectionInput({ name, blocks: [{ type: "divider" } as SectionBlock] })
   if (!check.ok) return check
   await renameSavedSection(id, check.name)
@@ -152,11 +178,15 @@ export async function renameSavedSectionAction(id: number, name: string) {
 }
 
 export async function deleteSavedSectionAction(id: number) {
+  await requireAdmin()
   await deleteSavedSection(id)
   return { ok: true as const }
 }
 
 export async function restoreTemplateVersionAction(templateId: number, versionId: number) {
+  await requireAdmin()
+  const current = await getTemplate(templateId)
+  if (current && (await blockedByLocks(current.blocks))) return { ok: false as const, error: LOCKED_BY_ADMIN }
   const row = await restoreTemplateVersion(templateId, versionId)
   if (!row) return { ok: false as const, error: "That version no longer exists" }
   revalidatePath(`${EMAIL_BASE}/templates`)
@@ -166,6 +196,7 @@ export async function restoreTemplateVersionAction(templateId: number, versionId
 
 /** Send a template to a single address as a real test of the built email. */
 export async function sendTemplateTestAction(input: { id: number; to: string }) {
+  await requireAdmin()
   const [tpl, branding] = await Promise.all([getTemplate(input.id), getBranding()])
   if (!tpl) return { ok: false as const, error: "Template not found" }
   const baseUrl = getBaseUrl()
@@ -191,6 +222,7 @@ export async function sendTemplateTestAction(input: { id: number; to: string }) 
 // ---------- Presets ----------
 
 export async function createPresetAction(input: { name: string; category: string; subject: string; body: string }) {
+  await requireAdmin()
   await createPreset(input)
   revalidatePath(`${EMAIL_BASE}/messages`)
   return { ok: true as const }
@@ -199,11 +231,13 @@ export async function savePresetAction(
   id: number,
   patch: Partial<{ name: string; category: string; subject: string; body: string }>,
 ) {
+  await requireAdmin()
   await updatePreset(id, patch)
   revalidatePath(`${EMAIL_BASE}/messages`)
   return { ok: true as const }
 }
 export async function deletePresetAction(id: number) {
+  await requireAdmin()
   await deletePreset(id)
   revalidatePath(`${EMAIL_BASE}/messages`)
   return { ok: true as const }
@@ -224,6 +258,7 @@ export async function sendCustomerMessageAction(input: {
   presetId?: number | null
   heading?: string
 }) {
+  await requireAdmin()
   if (!input.to.trim() || !input.subject.trim() || !input.body.trim()) {
     return { ok: false as const, error: "Recipient, subject and message are required." }
   }
@@ -279,16 +314,19 @@ export async function sendCustomerMessageAction(input: {
 // ---------- Subscribers ----------
 
 export async function addSubscriberAction(input: { email: string; name?: string }) {
+  await requireAdmin()
   await upsertSubscriber({ email: input.email.trim().toLowerCase(), name: input.name, source: "manual" })
   revalidatePath(`${EMAIL_BASE}/campaigns`)
   return { ok: true as const }
 }
 export async function toggleSubscriberAction(id: number, optedIn: boolean) {
+  await requireAdmin()
   await setSubscriberOptIn(id, optedIn)
   revalidatePath(`${EMAIL_BASE}/campaigns`)
   return { ok: true as const }
 }
 export async function removeSubscriberAction(id: number) {
+  await requireAdmin()
   await deleteSubscriber(id)
   revalidatePath(`${EMAIL_BASE}/campaigns`)
   return { ok: true as const }
@@ -303,6 +341,7 @@ export async function createCampaignAction(input: {
   previewText: string
   audience: AudienceSpec
 }) {
+  await requireAdmin()
   const row = await createCampaign(input)
   revalidatePath(`${EMAIL_BASE}/campaigns`)
   return { ok: true as const, id: row.id }
@@ -317,84 +356,21 @@ export async function saveCampaignAction(
     audience: AudienceSpec
   }>,
 ) {
+  await requireAdmin()
   await updateCampaign(id, patch)
   revalidatePath(`${EMAIL_BASE}/campaigns`)
   revalidatePath(`${EMAIL_BASE}/campaigns/${id}`)
   return { ok: true as const }
 }
 export async function deleteCampaignAction(id: number) {
+  await requireAdmin()
   await deleteCampaign(id)
   revalidatePath(`${EMAIL_BASE}/campaigns`)
   return { ok: true as const }
 }
 
-/**
- * Send a campaign to its resolved audience. Renders the linked template per
- * recipient with branding, sends sequentially (small volumes; keeps us well
- * within Resend rate limits), tallies stats, and marks the campaign sent.
- */
+/** Admin "Send now". The cron route calls sendCampaign directly with its own secret check. */
 export async function sendCampaignAction(id: number) {
-  const [campaign, branding] = await Promise.all([getCampaign(id), getBranding()])
-  if (!campaign) return { ok: false as const, error: "Campaign not found" }
-  if (!campaign.templateId) return { ok: false as const, error: "Attach a template before sending." }
-  const tpl = await getTemplate(campaign.templateId)
-  if (!tpl) return { ok: false as const, error: "Linked template no longer exists." }
-
-  const recipients = await resolveAudience(campaign.audience as unknown as AudienceSpec)
-  if (recipients.length === 0) return { ok: false as const, error: "Audience is empty." }
-
-  await updateCampaign(id, { status: "sending" })
-  const shopUrl = `${getBaseUrl()}/products`
-  let sent = 0
-  let failed = 0
-  let skipped = 0
-
-  for (const r of recipients) {
-    const vars: Record<string, string> = {
-      customer_name: r.name || "there",
-      brand_name: branding.brandName,
-      shop_url: shopUrl,
-    }
-    const subject = fill(campaign.subject || tpl.subject, vars)
-    const html = renderEmail(tpl.blocks, branding, { vars, baseUrl: getBaseUrl() })
-    const text = renderText(tpl.blocks, branding, { vars })
-    const result = await sendEmail({ to: r.email, subject, html, text, replyTo: branding.supportEmail || undefined })
-    if (!result.ok) failed++
-    else if ("skipped" in result && result.skipped) skipped++
-    else sent++
-    await recordLog({
-      to: r.email,
-      subject,
-      templateKey: tpl.key,
-      type: "campaign",
-      relatedId: String(id),
-      resendId: result.ok && result.id ? result.id : "",
-      status: result.ok ? (result.skipped ? "skipped" : "sent") : "failed",
-    })
-  }
-
-  await updateCampaign(id, {
-    status: "sent",
-    sentAt: new Date(),
-    stats: { recipients: recipients.length, sent, failed, skipped },
-  })
-  revalidatePath(`${EMAIL_BASE}/campaigns`)
-  revalidatePath(`${EMAIL_BASE}/campaigns/${id}`)
-  return { ok: true as const, sent, failed, skipped, recipients: recipients.length }
-}
-
-// ---------- helpers ----------
-
-function fill(s: string, vars: Record<string, string>): string {
-  return String(s ?? "").replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, k) => vars[k] ?? "")
-}
-
-async function resolveAudience(spec: AudienceSpec): Promise<{ email: string; name: string }[]> {
-  if (spec.type === "manual") {
-    return (spec.emails ?? []).map((e) => ({ email: e.trim(), name: "" })).filter((r) => r.email)
-  }
-  // all_subscribers — opted-in only
-  const { listSubscribers } = await import("./repo")
-  const subs = await listSubscribers()
-  return subs.filter((s) => s.optedIn).map((s) => ({ email: s.email, name: s.name }))
+  await requireAdmin()
+  return sendCampaign(id)
 }

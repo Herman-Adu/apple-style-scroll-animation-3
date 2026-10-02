@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 
 import { listDueCampaigns } from "@/features/email/repo"
-import { sendCampaignAction } from "@/features/email/admin-actions"
+import { sendCampaign } from "@/features/email/campaign-send"
 
 /**
  * Scheduled-send sweep for campaigns whose `scheduledAt` has passed. Not
@@ -15,7 +15,7 @@ import { sendCampaignAction } from "@/features/email/admin-actions"
  * below is what keeps it harmless if ever hit without that secret configured.
  *
  * Kept idempotent-ish: each due campaign is picked up once per run and
- * `sendCampaignAction` immediately flips its status away from "scheduled"
+ * `sendCampaign` immediately flips its status away from "scheduled"
  * (to "sending" then "sent"), so a slow send can't be double-picked by an
  * overlapping invocation.
  */
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   const due = await listDueCampaigns()
   const results = []
   for (const campaign of due) {
-    const result = await sendCampaignAction(campaign.id)
+    const result = await sendCampaign(campaign.id)
     results.push({ id: campaign.id, name: campaign.name, ...result })
   }
 

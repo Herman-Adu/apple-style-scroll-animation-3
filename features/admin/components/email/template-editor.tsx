@@ -165,11 +165,14 @@ export function TemplateEditor({
   template,
   branding,
   products,
+  canLock,
 }: {
   template: EditorTemplate
   branding: EmailBranding
   /** Slug -> live name/image lookup powering the product picker and preview. */
   products: ProductImageMap
+  /** Server-decided: only the owner and EMAIL_BLOCK_LOCKERS see the lock toggle. The save action re-checks. */
+  canLock: boolean
 }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
@@ -279,6 +282,7 @@ export function TemplateEditor({
   }
 
   function toggleLock(id: string) {
+    if (!canLock) return
     const block = blocks.find((b) => b.id === id)
     if (!block) return
     const locked = !isLocked(block)
@@ -750,6 +754,7 @@ export function TemplateEditor({
                         selected={selectedId === block.id}
                         products={products}
                         onSelect={() => setSelectedId(selectedId === block.id ? null : block.id)}
+                        canLock={canLock}
                         onToggleLock={() => toggleLock(block.id)}
                         onMove={(dir) => move(block.id, dir)}
                         onDuplicate={() => duplicateBlock(block.id)}
@@ -785,6 +790,7 @@ function SortableBlockRow({
   selected,
   products,
   onSelect,
+  canLock,
   onToggleLock,
   onMove,
   onDuplicate,
@@ -797,6 +803,7 @@ function SortableBlockRow({
   selected: boolean
   products: ProductImageMap
   onSelect: () => void
+  canLock: boolean
   onToggleLock: () => void
   onMove: (dir: -1 | 1) => void
   onDuplicate: () => void
@@ -848,17 +855,19 @@ function SortableBlockRow({
           <span className="truncate text-xs text-muted-foreground">{blockSummary(block, products)}</span>
         </button>
         <div className="flex items-center gap-0.5">
-          <Button
-            size="icon"
-            variant="ghost"
-            className={cn("size-7", locked ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground")}
-            onClick={onToggleLock}
-            aria-pressed={locked}
-            aria-label={locked ? `Unlock ${label}` : `Lock ${label}`}
-            title={locked ? "Unlock to edit, move or remove" : "Lock to protect from changes"}
-          >
-            {locked ? <Lock className="size-4" /> : <LockOpen className="size-4" />}
-          </Button>
+          {canLock ? (
+            <Button
+              size="icon"
+              variant="ghost"
+              className={cn("size-7", locked ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground")}
+              onClick={onToggleLock}
+              aria-pressed={locked}
+              aria-label={locked ? `Unlock ${label}` : `Lock ${label}`}
+              title={locked ? "Unlock to edit, move or remove" : "Lock to protect from changes"}
+            >
+              {locked ? <Lock className="size-4" /> : <LockOpen className="size-4" />}
+            </Button>
+          ) : null}
           <Button size="icon" variant="ghost" className="size-7" onClick={() => onMove(-1)} disabled={!canMoveUp} aria-label="Move up">
             <ChevronUp className="size-4" />
           </Button>
@@ -885,7 +894,9 @@ function SortableBlockRow({
           {locked ? (
             <p className="flex items-center gap-2 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
               <Lock className="size-3.5 shrink-0" aria-hidden="true" />
-              This block is locked. Unlock it to make changes.
+              {canLock
+                ? "This block is locked. Unlock it to make changes."
+                : "This block is locked by an admin. Ask an admin who can lock blocks to change it."}
             </p>
           ) : null}
           <fieldset disabled={locked} className="min-w-0 disabled:opacity-60">

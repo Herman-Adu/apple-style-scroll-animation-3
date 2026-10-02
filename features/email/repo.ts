@@ -201,21 +201,24 @@ export async function deleteTemplate(id: number): Promise<void> {
 }
 
 /** Reset a system template's blocks/copy back to the code default. */
-export async function resetSystemTemplate(id: number): Promise<void> {
+export async function resetSystemTemplate(id: number): Promise<TemplateRow | null> {
   const r = await prisma.emailTemplate.findUnique({ where: { id } })
-  if (!r || !r.isSystem) return
+  if (!r || !r.isSystem) return null
   const def = SYSTEM_TEMPLATES.find((t) => t.key === r.key)
-  if (!def) return
-  await prisma.emailTemplate.update({
+  if (!def) return null
+  const updated = await prisma.emailTemplate.update({
     where: { id },
     data: {
       name: def.name,
+      category: def.category,
       subject: def.subject,
       previewText: def.previewText,
       description: def.description,
       blocks: def.blocks as unknown as object,
+      version: { increment: 1 },
     },
   })
+  return toTemplateRow(updated)
 }
 
 // ---------- Presets ----------

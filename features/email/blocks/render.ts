@@ -1,6 +1,6 @@
 import type { EmailBlock, EmailBranding, BlockAlign } from "./types"
 import { DEFAULT_BRANDING } from "./types"
-import type { ProductImageMap } from "@/features/products/lib/product"
+import type { ProductImageMap } from "@/features/products"
 import { formatMoney } from "@/lib/format"
 
 /**

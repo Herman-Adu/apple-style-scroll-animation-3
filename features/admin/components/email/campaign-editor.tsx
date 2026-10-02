@@ -25,10 +25,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
-import type { EmailBlock, EmailBranding } from "@/features/email/blocks/types"
-import type { ProductImageMap } from "@/features/products/lib/product"
-import { saveCampaignAction, sendCampaignAction } from "@/features/email/admin-actions"
-import { SUBJECT_SOFT_LIMIT, PREVIEW_SOFT_LIMIT } from "@/features/email/copy-quality"
+import type { EmailBlock, EmailBranding } from "@/features/email"
+import type { ProductImageMap } from "@/features/products"
+import { saveCampaignAction, sendCampaignAction } from "@/features/email"
+import { SUBJECT_SOFT_LIMIT, PREVIEW_SOFT_LIMIT } from "@/features/email"
 import { CopyQualityHint } from "./copy-quality-hint"
 import { EmailPreviewPane } from "./block-preview"
 

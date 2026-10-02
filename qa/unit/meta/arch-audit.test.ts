@@ -13,6 +13,14 @@ describe("arch-audit measure", () => {
     expect(m.deepImports).toBe(1)
   })
 
+  it("treats a slice's server entry as public, like its index", () => {
+    const m = measure([
+      file("app/page.tsx", 'import { q } from "@/features/cart/server"'),
+      file("app/other.tsx", 'import { r } from "@/features/cart/server-utils"'),
+    ])
+    expect(m.deepImports).toBe(1)
+  })
+
   it("counts lib → features inversions", () => {
     const m = measure([file("lib/a.ts", 'import { a } from "@/features/cart"'), file("app/b.ts", 'import { a } from "@/features/cart"')])
     expect(m.libToFeatures).toBe(1)

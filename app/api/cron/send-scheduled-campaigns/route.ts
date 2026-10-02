@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 
-import { listDueCampaigns } from "@/features/email/repo"
-import { sendCampaign } from "@/features/email/campaign-send"
+import { listDueCampaigns } from "@/features/email/server"
+import { sendCampaign } from "@/features/email/server"
 
 /**
  * Scheduled-send sweep for campaigns whose `scheduledAt` has passed. Not

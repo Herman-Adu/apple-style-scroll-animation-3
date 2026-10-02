@@ -1,7 +1,7 @@
 import { AdminShell } from "@/features/admin"
-import { EmailTabs } from "@/features/admin/components/email/email-tabs"
-import { TemplateList } from "@/features/admin/components/email/template-list"
-import { listTemplates } from "@/features/email/repo"
+import { EmailTabs } from "@/features/admin"
+import { TemplateList } from "@/features/admin"
+import { listTemplates } from "@/features/email/server"
 
 export const dynamic = "force-dynamic"
 

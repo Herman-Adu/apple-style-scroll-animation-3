@@ -1,4 +1,4 @@
-import type { Article } from "@/lib/types"
+import type { Article } from "@/features/articles/schema"
 
 export const articles: Article[] = [
   {

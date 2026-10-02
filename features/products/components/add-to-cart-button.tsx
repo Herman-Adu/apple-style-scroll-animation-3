@@ -1,9 +1,9 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useCart } from "@/lib/cart-context"
+import { useCart } from "@/features/checkout"
 import { useProduct } from "@/features/catalog"
-import type { Product } from "@/lib/types"
+import type { Product } from "@/features/products/schema"
 import { isPurchasable, stockLevel } from "@/features/products"
 import { formatMoney } from "@/lib/format"
 import { cn } from "@/lib/utils"

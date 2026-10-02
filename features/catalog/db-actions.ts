@@ -7,7 +7,7 @@
 // directly. Hiding admin UI is not access control; this is the boundary.
 //
 // Design: marketing content (hero beats, features, specs) stays in the code
-// seed (`@/lib/data/products`). This overlay stores the admin-managed layer —
+// seed (`@/features/products/data`). This overlay stores the admin-managed layer —
 // price, stock, name, created products, deletions — merged onto the seed at
 // read time (overlay wins; a `deleted` row tombstones a seed product).
 
@@ -17,7 +17,7 @@ import type { Prisma } from "@prisma/client"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db/prisma"
 import { effectiveRole } from "@/lib/auth/config"
-import { getAllProducts } from "@/lib/data/products"
+import { getAllProducts } from "@/features/products"
 import { productSchema, type Product } from "@/features/products"
 import { toMap, type ProductMap } from "@/features/catalog/store"
 import { revalidateCatalog } from "./revalidate"

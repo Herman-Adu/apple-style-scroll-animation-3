@@ -39,7 +39,7 @@ fakeDb({
 
 // Heavy / unrelated collaborators imported at module load by checkout-finalize.
 vi.mock("next/server", () => ({ after: vi.fn() }));
-vi.mock("@/lib/data/products", () => ({ getAllProducts: vi.fn() }));
+vi.mock("@/features/products/data", () => ({ getAllProducts: vi.fn() }));
 vi.mock("@/features/products", () => ({
   productSchema: { safeParse: vi.fn() },
 }));
@@ -114,7 +114,7 @@ const uniqueError = (target: string[]) =>
   });
 
 async function load() {
-  return import("@/lib/orders/checkout-finalize");
+  return import("@/features/orders/checkout-finalize");
 }
 
 beforeEach(() => {

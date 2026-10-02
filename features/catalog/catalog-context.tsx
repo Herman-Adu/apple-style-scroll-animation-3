@@ -25,7 +25,7 @@ import {
   getCatalogProducts,
   resetCatalogOverlayAction,
   saveProductOverlayAction,
-} from "@/lib/catalog/db-actions"
+} from "@/features/catalog/db-actions"
 
 interface CatalogContextValue {
   /** Live catalog, stable-sorted (featured first, then name). */

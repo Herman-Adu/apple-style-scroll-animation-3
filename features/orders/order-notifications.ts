@@ -13,7 +13,7 @@ import {
   sendOrderNotification,
   sendRefundConfirmation,
   sendShippingConfirmation,
-} from "@/features/email/actions"
+} from "@/features/email"
 import type { Order, RefundEntry } from "./types"
 
 export async function dispatchOrderEmails(order: Order): Promise<void> {

@@ -13,9 +13,10 @@ import {
   ProductGridSkeleton,
   ProductReviews,
 } from "@/features/products"
-import { fetchProduct, fetchProductSlugs, fetchRelatedProducts } from "@/features/products/api"
+import { fetchProduct, fetchProductSlugs, fetchRelatedProducts } from "@/features/products/server"
 import { JsonLd } from "@/components/seo/json-ld"
-import { productLd, breadcrumbLd } from "@/lib/seo/structured-data"
+import { productLd } from "@/features/products"
+import { breadcrumbLd } from "@/lib/seo/structured-data"
 import { absoluteUrl } from "@/lib/seo/site"
 
 export async function generateStaticParams() {

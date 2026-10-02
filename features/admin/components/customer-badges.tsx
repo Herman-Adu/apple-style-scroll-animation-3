@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import type { OfferTag, UserRole, UserStatus } from "@/lib/auth/types"
-import { isOfferActive, offerDaysLeft } from "@/features/checkout/lib/pricing"
+import { isOfferActive, offerDaysLeft } from "@/features/checkout"
 
 const STATUS_TONE: Record<UserStatus, string> = {
   active: "border-emerald-500/30 bg-emerald-500/10 text-emerald-500",

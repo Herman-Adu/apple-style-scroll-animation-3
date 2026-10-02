@@ -1,9 +1,9 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { ordersAdapter } from "@/features/orders"
+import { ordersAdapter } from "@/features/orders/actions"
 import type { Order, OrderStatus } from "@/features/orders"
-import type { Carrier } from "@/lib/orders/tracking"
+import type { Carrier } from "@/features/orders"
 import { useLiveRefresh } from "@/hooks/use-live-refresh"
 
 /**

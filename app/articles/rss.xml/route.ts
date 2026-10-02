@@ -1,4 +1,4 @@
-import { fetchArticles } from "@/features/articles/api"
+import { fetchArticles } from "@/features/articles/server"
 import { absoluteUrl } from "@/lib/seo/site"
 import { siteConfig } from "@/lib/data/site"
 

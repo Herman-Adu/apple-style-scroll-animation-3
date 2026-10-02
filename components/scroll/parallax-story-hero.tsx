@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import Image from "next/image"
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion"
-import type { ParallaxHero, Product, StoryBeat } from "@/lib/types"
+import type { ParallaxHero, Product, StoryBeat } from "@/features/products"
 import { AddToCartButton } from "@/features/products"
 import { TwoToneTitle } from "@/components/primitives/two-tone-title"
 

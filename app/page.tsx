@@ -2,8 +2,8 @@ import { StoryHero } from "@/components/scroll/story-hero"
 import { BrandStatement } from "@/components/home/brand-statement"
 import { ProductShowcase } from "@/features/products"
 import { FeaturedArticles } from "@/features/articles"
-import { fetchProduct, fetchProducts } from "@/features/products/api"
-import { fetchArticles } from "@/features/articles/api"
+import { fetchProduct, fetchProducts } from "@/features/products/server"
+import { fetchArticles } from "@/features/articles/server"
 
 export default async function HomePage() {
   const [flagship, products, allArticles] = await Promise.all([

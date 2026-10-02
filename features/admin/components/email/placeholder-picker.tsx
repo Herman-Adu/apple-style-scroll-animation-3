@@ -13,7 +13,7 @@ import {
   insertAtSelection,
   placeholderToken,
   unknownPlaceholders,
-} from "@/features/email/placeholders"
+} from "@/features/email"
 
 type TextEl = HTMLInputElement | HTMLTextAreaElement
 

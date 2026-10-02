@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest"
 
-import { articleLd, breadcrumbLd, organizationLd, productLd, websiteLd } from "@/lib/seo/structured-data"
+import { articleLd } from "@/features/articles"
+import { productLd } from "@/features/products"
+import { breadcrumbLd, organizationLd, websiteLd } from "@/lib/seo/structured-data"
 import { productSchema } from "@/features/products/schema"
 import { articleSchema } from "@/features/articles/schema"
 import { mapStrapiProduct } from "@/features/products/mappers"

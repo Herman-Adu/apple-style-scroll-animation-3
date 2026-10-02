@@ -4,7 +4,7 @@
 // the aggregates computed from them. It holds no card/payment data — Stripe and
 // Clerk own that. These types are pure data; all computation lives in analytics.ts.
 
-import type { Order } from "@/lib/orders/types"
+import type { Order } from "@/features/orders"
 import type { User, UserRole } from "@/lib/auth/types"
 
 /** A product a customer has bought, with totals across all their paid orders. */

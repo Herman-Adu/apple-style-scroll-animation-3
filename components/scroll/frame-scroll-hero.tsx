@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion"
-import type { FrameHero, Product, StoryBeat } from "@/lib/types"
+import type { FrameHero, Product, StoryBeat } from "@/features/products"
 import { AddToCartButton } from "@/features/products"
 import { TwoToneTitle } from "@/components/primitives/two-tone-title"
 

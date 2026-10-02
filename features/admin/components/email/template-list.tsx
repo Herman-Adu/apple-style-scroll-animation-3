@@ -17,9 +17,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { CategoryDisclosure } from "@/components/category-disclosure"
-import type { EmailBlock } from "@/features/email/blocks/types"
-import { createTemplateAction, deleteTemplateAction } from "@/features/email/admin-actions"
-import { buildFromExisting, buildFromStarter, type NewTemplateInput } from "@/features/email/starters"
+import type { EmailBlock } from "@/features/email"
+import { createTemplateAction, deleteTemplateAction } from "@/features/email"
+import { buildFromExisting, buildFromStarter, type NewTemplateInput } from "@/features/email"
 import { NewTemplateDialog } from "./new-template-dialog"
 
 const newBlockId = () => crypto.randomUUID().slice(0, 8)

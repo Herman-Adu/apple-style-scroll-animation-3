@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { ArrowLeft, Loader2, Lock, ShoppingBag, Tag, X } from "lucide-react"
-import { useCart } from "@/lib/cart-context"
+import { useCart } from "@/features/checkout"
 import { useAuth } from "@/lib/auth/auth-context"
 import { priceCheckout } from "@/features/checkout"
 import type { QuoteRequestLine } from "@/features/checkout/actions"
@@ -14,7 +14,7 @@ import { EmbeddedPayment } from "@/components/checkout/embedded-payment"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { formatMoney } from "@/lib/format"
 import type { OfferTag } from "@/lib/auth/types"
-import type { OrderItem } from "@/lib/orders/types"
+import type { OrderItem } from "@/features/orders"
 
 export function CheckoutView() {
   const { lines, itemCount } = useCart()

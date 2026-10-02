@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, ArrowUpRight, Clock, Lock } from "lucide-react"
 import { DocBlocks, DocLockedNotice, DocsSidebar, getDocHeadings, toDocSummary } from "@/features/docs"
-import { fetchDoc, fetchDocForViewer, fetchDocs, fetchDocSlugs, fetchRelatedDocs } from "@/features/docs/api"
+import { fetchDoc, fetchDocForViewer, fetchDocs, fetchDocSlugs, fetchRelatedDocs } from "@/features/docs/server"
 import { SectionHeading } from "@/components/primitives/section-heading"
 import { PageToc } from "@/components/layout/page-toc"
 

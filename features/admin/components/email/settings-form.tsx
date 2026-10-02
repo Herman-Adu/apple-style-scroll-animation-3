@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import type { EmailBranding } from "@/features/email/blocks/types"
-import { SYSTEM_TEMPLATES } from "@/features/email/blocks/system-templates"
-import { saveEmailSettings } from "@/features/email/admin-actions"
+import type { EmailBranding } from "@/features/email"
+import { SYSTEM_TEMPLATES } from "@/features/email"
+import { saveEmailSettings } from "@/features/email"
 import { BlockPreview } from "./block-preview"
 
 const PREVIEW_BLOCKS = SYSTEM_TEMPLATES.find((t) => t.key === "welcome")!.blocks

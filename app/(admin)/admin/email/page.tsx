@@ -1,8 +1,8 @@
 import { AdminShell } from "@/features/admin"
-import { EmailTabs } from "@/features/admin/components/email/email-tabs"
-import { EmailOverview } from "@/features/admin/components/email/email-overview"
-import { getEmailStats } from "@/features/email/repo"
-import { isEmailConfigured } from "@/features/email/provider"
+import { EmailTabs } from "@/features/admin"
+import { EmailOverview } from "@/features/admin"
+import { getEmailStats } from "@/features/email/server"
+import { isEmailConfigured } from "@/features/email/server"
 
 export const dynamic = "force-dynamic"
 

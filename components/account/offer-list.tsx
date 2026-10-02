@@ -4,8 +4,8 @@ import { useMemo, useState } from "react"
 import Link from "next/link"
 import { Sparkles, Tag, X } from "lucide-react"
 import { useAuth } from "@/lib/auth/auth-context"
-import { offerDaysLeft } from "@/features/checkout/lib/pricing"
-import { offerHeadline, offerUrgency } from "@/lib/offers/active-offer"
+import { offerDaysLeft } from "@/features/checkout"
+import { offerHeadline, offerUrgency } from "@/features/checkout"
 import type { OfferTag } from "@/lib/auth/types"
 
 /**

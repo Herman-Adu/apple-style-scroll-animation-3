@@ -1,6 +1,6 @@
 import "server-only"
 
-import { getAllArticles, getArticleBySlug, getArticleSlugs } from "@/lib/data/articles"
+import { getAllArticles, getArticleBySlug, getArticleSlugs } from "@/features/articles/data"
 import { env } from "@/lib/env"
 import { fetchStrapi, toEntries } from "@/lib/strapi/client"
 import { strapiTags } from "@/lib/strapi/tags"

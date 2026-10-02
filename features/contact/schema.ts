@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { enquiryTypes } from "@/lib/data/contact"
+import { enquiryTypes } from "./data"
 
 /**
  * Server-side contract for a contact enquiry. This is the authoritative

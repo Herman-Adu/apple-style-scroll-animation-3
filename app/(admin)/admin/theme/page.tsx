@@ -1,6 +1,6 @@
 import { AdminShell } from "@/features/admin"
-import { ThemeTabs } from "@/features/admin/components/theme/theme-tabs"
-import { ActivePresets } from "@/features/admin/components/theme/active-presets"
+import { ThemeTabs } from "@/features/admin"
+import { ActivePresets } from "@/features/admin"
 
 export const dynamic = "force-dynamic"
 

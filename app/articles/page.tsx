@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
 import { ArticleCard, ArticleCardSkeleton, ArticleGridSkeleton, filterArticles } from "@/features/articles"
-import { fetchArticles } from "@/features/articles/api"
+import { fetchArticles } from "@/features/articles/server"
 import { pageHeroes } from "@/lib/data/heroes"
 import { PageHero } from "@/components/layout/page-hero"
 import { SearchField } from "@/components/primitives"

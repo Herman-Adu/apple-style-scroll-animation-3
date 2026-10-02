@@ -20,7 +20,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
-import type { DocChartDatum, DocChartSeries } from "@/features/docs/schema"
+import type { DocChartDatum, DocChartSeries } from "@/features/docs"
 
 type Props = {
   chartType: "bar" | "line" | "area"

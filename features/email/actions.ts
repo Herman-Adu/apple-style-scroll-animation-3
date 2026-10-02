@@ -12,9 +12,9 @@ import {
   type LowStockEmailItem,
 } from "./templates"
 import { getBranding, getTemplateBlocksByKey, recordLog } from "./repo"
-import type { Order } from "@/lib/orders/types"
+import type { Order } from "@/features/orders"
 import { getBaseUrl } from "@/lib/seo/site"
-import { fetchProductImageMap } from "@/features/products/api"
+import { fetchProductImageMap } from "@/features/products/server"
 
 /**
  * Final in-code fallback recipient for business notifications, used when neither

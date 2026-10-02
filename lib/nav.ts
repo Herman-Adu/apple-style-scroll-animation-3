@@ -1,21 +1,9 @@
-import { mainNav } from "@/lib/data/site"
-
 /** Split a section href into its path, query, and hash parts. */
 export function splitSectionHref(href: string) {
   const [pathAndQuery, hash = ""] = href.split("#")
   const [path, query = ""] = pathAndQuery.split("?")
   return { path, query, hash }
 }
-
-/** All scroll-spy anchor ids referenced anywhere in the nav (stable, module-level). */
-export const NAV_SECTION_IDS: string[] = Array.from(
-  new Set(
-    mainNav
-      .flatMap((link) => link.sections ?? [])
-      .map((section) => splitSectionHref(section.href).hash)
-      .filter(Boolean),
-  ),
-)
 
 /** Whether a top-level nav link is the active route. */
 export function isTopLevelActive(href: string, pathname: string) {

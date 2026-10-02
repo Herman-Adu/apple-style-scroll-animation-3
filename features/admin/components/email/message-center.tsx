@@ -30,7 +30,7 @@ import {
   deletePresetAction,
   savePresetAction,
   sendCustomerMessageAction,
-} from "@/features/email/admin-actions"
+} from "@/features/email"
 
 export type PresetItem = { id: number; name: string; category: string; subject: string; body: string }
 export type MessageItem = {

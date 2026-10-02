@@ -51,7 +51,7 @@ import {
 import { toast } from "sonner"
 import { VersionHistory } from "./version-history"
 import { SavedSections } from "./saved-sections"
-import { instantiateSection, type SectionBlock } from "@/features/email/sections"
+import { instantiateSection, type SectionBlock } from "@/features/email"
 import {
   canReorder,
   insertBlocks,
@@ -61,7 +61,7 @@ import {
   reorder,
   setLocked,
   updateIfUnlocked,
-} from "@/features/email/locks"
+} from "@/features/email"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -79,21 +79,21 @@ import {
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { formatMoney } from "@/lib/format"
-import type { BlockType, EmailBlock, EmailBranding } from "@/features/email/blocks/types"
-import { BLOCK_PRESETS } from "@/features/email/blocks/system-templates"
-import { PALETTE_BLOCKS, blockLabel } from "@/features/email/blocks/labels"
-import { PLACEHOLDERS, placeholderToken } from "@/features/email/placeholders"
+import type { BlockType, EmailBlock, EmailBranding } from "@/features/email"
+import { BLOCK_PRESETS } from "@/features/email"
+import { PALETTE_BLOCKS, blockLabel } from "@/features/email"
+import { PLACEHOLDERS, placeholderToken } from "@/features/email"
 import { PlaceholderField } from "./placeholder-picker"
-import type { ProductImageMap } from "@/features/products/lib/product"
-import type { Money } from "@/features/products/schema"
+import type { ProductImageMap } from "@/features/products"
+import type { Money } from "@/features/products"
 import {
   createTemplateAction,
   resetTemplateAction,
   restoreTemplateVersionAction,
   saveTemplateAction,
   sendTemplateTestAction,
-} from "@/features/email/admin-actions"
-import { SUBJECT_SOFT_LIMIT, PREVIEW_SOFT_LIMIT } from "@/features/email/copy-quality"
+} from "@/features/email"
+import { SUBJECT_SOFT_LIMIT, PREVIEW_SOFT_LIMIT } from "@/features/email"
 import { CopyQualityHint } from "./copy-quality-hint"
 import { EmailPreviewPane } from "./block-preview"
 

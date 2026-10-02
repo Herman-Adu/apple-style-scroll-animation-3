@@ -3,9 +3,9 @@
 import Image from "next/image"
 import { FileText, Truck } from "lucide-react"
 import { formatMoney } from "@/lib/format"
-import { printInvoice } from "@/lib/orders/invoice"
-import { carrierLabel } from "@/lib/orders/tracking"
-import type { Order, OrderStatus } from "@/lib/orders/types"
+import { printInvoice } from "@/features/orders"
+import { carrierLabel } from "@/features/orders"
+import type { Order, OrderStatus } from "@/features/orders"
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
   processing: "Processing",

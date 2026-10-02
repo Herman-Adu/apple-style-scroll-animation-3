@@ -15,10 +15,10 @@ import {
   Newspaper,
   Star as StarIcon,
 } from "lucide-react";
-import { enquiryTypes } from "@/lib/data/contact";
-import { products } from "@/lib/data/products";
+import { enquiryTypes } from "@/features/contact";
+import { products } from "@/features/products";
 import { submitEnquiryAction } from "@/app/contact/actions";
-import type { EnquiryField, EnquiryType } from "@/lib/contact/types";
+import type { EnquiryField, EnquiryType } from "@/features/contact";
 import { reviewsProvider } from "@/lib/reviews/provider";
 import { useAuth } from "@/lib/auth/auth-context";
 import { StarRating } from "./star-rating";

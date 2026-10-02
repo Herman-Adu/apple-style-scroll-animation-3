@@ -5,9 +5,9 @@
 // and a Strapi/Stripe-backed order list later. Keep all aggregation here so the
 // admin UI stays dumb and the math is testable in isolation.
 
-import type { Order } from "@/lib/orders/types"
-import type { Product } from "@/lib/types"
-import { effectiveStock, isLowStock, stockLevel } from "@/features/products/lib/product"
+import type { Order } from "@/features/orders/types"
+import type { Product } from "@/features/products"
+import { effectiveStock, isLowStock, stockLevel } from "@/features/products"
 
 /** Orders that represent realized activity (exclude cancelled; fully-refunded orders net to $0 automatically). */
 function revenueOrders(orders: Order[]): Order[] {

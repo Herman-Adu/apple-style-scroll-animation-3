@@ -1,7 +1,14 @@
 "use client"
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import type { CartLine, Product } from "@/lib/types"
+import type { Product } from "@/features/products"
+
+/** A line item in the cart: a product plus its selected options. */
+export interface CartLine {
+  product: Product
+  color: string
+  quantity: number
+}
 
 interface CartContextValue {
   lines: CartLine[]

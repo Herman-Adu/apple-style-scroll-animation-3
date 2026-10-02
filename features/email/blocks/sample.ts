@@ -1,5 +1,5 @@
 import type { EmailBranding } from "./types"
-import type { Order } from "@/lib/orders/types"
+import type { Order } from "@/features/orders"
 import { orderSummaryHtml, lowStockItemsHtml, type LowStockEmailItem } from "../templates"
 import { placeholderSamples } from "../placeholders"
 

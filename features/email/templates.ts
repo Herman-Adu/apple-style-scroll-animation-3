@@ -1,10 +1,10 @@
 import { formatMoney } from "@/lib/format"
-import type { Order } from "@/lib/orders/types"
-import { carrierLabel } from "@/lib/orders/tracking"
+import type { Order } from "@/features/orders"
+import { carrierLabel } from "@/features/orders"
 import { renderEmail, renderText, type RenderContext } from "./blocks/render"
 import { getSystemTemplate } from "./blocks/system-templates"
 import { DEFAULT_BRANDING, type EmailBlock, type EmailBranding } from "./blocks/types"
-import type { ProductImageMap } from "@/features/products/lib/product"
+import type { ProductImageMap } from "@/features/products"
 
 /**
  * Transactional + branded email templates, now rendered through the block

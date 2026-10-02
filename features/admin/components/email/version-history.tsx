@@ -6,8 +6,8 @@ import { History, Loader2, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { listTemplateVersionsAction } from "@/features/email/admin-actions"
-import { summarizeChange, type TemplateContent } from "@/features/email/versions"
+import { listTemplateVersionsAction } from "@/features/email"
+import { summarizeChange, type TemplateContent } from "@/features/email"
 
 type Version = Awaited<ReturnType<typeof listTemplateVersionsAction>>[number]
 

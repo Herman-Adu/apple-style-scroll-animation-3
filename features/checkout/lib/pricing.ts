@@ -8,7 +8,7 @@
 // charged and recorded. No I/O here; keep it deterministic and testable.
 
 import type { OfferTag } from "@/lib/auth/types"
-import type { AppliedOffer, OrderItem } from "@/lib/orders/types"
+import type { AppliedOffer, OrderItem } from "@/features/orders"
 
 const MAX_PERCENT = 100
 

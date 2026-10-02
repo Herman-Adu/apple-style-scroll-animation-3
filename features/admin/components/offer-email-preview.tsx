@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { personalOfferEmail } from "@/features/email/templates"
+import { personalOfferEmail } from "@/features/email"
 import type { OfferTag } from "@/lib/auth/types"
 
 /** The offer fields the branded email actually renders. */

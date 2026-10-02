@@ -1,0 +1,67 @@
+import type { Doc } from "../schema"
+
+export const whatsNew: Doc = {
+  slug: "whats-new",
+  title: "What's New",
+  category: "Technology Strategy",
+  audience: "cto",
+  access: "public",
+  summary:
+    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the documentation catch-up (PR #86). Each entry says what changed and why it matters.",
+  readingMinutes: 5,
+  order: 1,
+  updatedAt: "2026-10-02",
+  tags: ["changelog", "release notes", "email builder", "security", "documentation"],
+  body: [
+    {
+      type: "paragraph",
+      text: "Each change shipped as a small reviewed pull request: tests written first, type-check clean and squash-merged into main. Entries are grouped by theme and listed oldest first within each group.",
+    },
+    { type: "heading", text: "Email builder" },
+    {
+      type: "table",
+      headers: ["PR", "What shipped", "Why it matters"],
+      rows: [
+        ["#70", "Product picks block", "Emails show real catalog products with live prices and images instead of pasted copy."],
+        ["#71", "One shared preview pane", "Template and campaign editors render exactly the same preview, so what you see is what is sent."],
+        ["#72", "Undo/redo, copy hints and dark-mode-safe email shell", "Editing mistakes can be reversed, weak copy is flagged, and emails read well in dark-mode inboxes."],
+        ["#73", "Reset button fix", "Reset to default now restores the editor immediately."],
+        ["#74", "Discard, Duplicate and unsaved-changes guard", "No more lost work when closing the editor, and any template can be copied in one click."],
+        ["#75", "Renderer, copy-quality and reset test coverage", "The email renderer is protected by automated tests before larger changes."],
+        ["#76", "Version history, restore and Reset to original", "Every save is recorded; the last 50 can be restored and the original is always kept."],
+        ["#77", "Placeholder picker and typo warnings", "Tokens like {{customer_name}} are inserted from a list, and unknown ones are flagged before sending."],
+        ["#78", "Saved sections", "Brand headers and footers are saved once and inserted into any template as independent copies."],
+        ["#79", "Starter gallery with seasonal campaigns", "New templates start from Newsletter, Product launch, Sale, Announcement, Black Friday, Bank Holiday or Christmas starters."],
+        ["#80", "Hero images shrunk from 7.6 MB to 1.25 MB", "Faster emails and editor loads with no visible quality loss."],
+        ["#81", "Locked blocks", "Brand-critical blocks cannot be edited, moved or deleted by accident."],
+      ],
+    },
+    { type: "heading", text: "Security and permissions" },
+    {
+      type: "table",
+      headers: ["PR", "What shipped", "Why it matters"],
+      rows: [
+        ["#83", "Lock permission for the owner and named admins", "Only trusted admins can lock or unlock blocks, checked in three independent places: proxy, server actions and UI."],
+        ["#83", "Admin check on every email server action", "Closed a gap where email actions trusted the page to have checked the user. Each action now verifies the caller itself."],
+        ["#83", "Request proxy for admin routes", "Signed-out visitors are redirected before any admin page code runs."],
+      ],
+    },
+    { type: "heading", text: "Documentation" },
+    {
+      type: "table",
+      headers: ["PR", "What shipped", "Audience"],
+      rows: [
+        ["#82", "Developer and in-app docs caught up for PRs #63 to #81", "Developers, content managers"],
+        ["#84", "Security posture rewrite, permissions matrix and email architecture diagrams", "CTOs, security reviewers, developers"],
+        ["#85", "Engineering quality, decision records and contributing workflow", "CTOs, recruiters, contributors"],
+        ["#86", "Seasonal campaign walkthrough with real screenshots, and a platform glossary", "Content managers, clients, everyone"],
+      ],
+    },
+    {
+      type: "callout",
+      variant: "info",
+      title: "Still on the roadmap",
+      text: "Scheduled campaign sends are built and tested but not switched on, and the full click-through browser test is waiting for a dedicated test admin account. Both are tracked rather than hidden.",
+    },
+  ],
+}

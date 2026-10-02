@@ -47,6 +47,7 @@ import { productRoadmap } from "./product-roadmap"
 import { engineeringQuality } from "./engineering-quality"
 import { architectureDecisionRecords } from "./architecture-decision-records"
 import { contributingAndWorkflow } from "./contributing-and-workflow"
+import { whatsNew } from "./whats-new"
 
 /**
  * The local docs corpus. This is the single source that the api/ seam reads
@@ -76,6 +77,7 @@ export const docs: Doc[] = [
   emailTemplatesGuide,
   emailSeasonalCampaigns,
   platformGlossary,
+  whatsNew,
   emailCampaignWalkthrough,
   emailCustomerMessages,
   // Developer (public)

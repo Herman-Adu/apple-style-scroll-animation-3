@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Bell, Monitor, Moon, Palette, Store, Sun } from "lucide-react"
+import Link from "next/link"
+import { Bell, Monitor, Moon, Palette, ShieldCheck, Store, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -201,6 +202,22 @@ export function AdminSettings() {
             </Button>
           </div>
         </div>
+      </motion.section>
+
+      {/* Permissions */}
+      <motion.section
+        {...fade}
+        transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <SectionHeader
+          icon={ShieldCheck}
+          title="Permissions"
+          description="Who can lock email blocks, with a full audit log. Managed by the owner."
+        />
+        <Button asChild variant="outline" className="shrink-0">
+          <Link href="/admin/settings/permissions">Manage permissions</Link>
+        </Button>
       </motion.section>
     </div>
   )

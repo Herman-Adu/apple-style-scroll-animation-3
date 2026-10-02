@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type Stripe from "stripe";
+import { fakeDb } from "@/qa/fakes";
 
 /**
  * Order finalization is the money-to-order boundary and is reachable from two
@@ -26,20 +27,15 @@ const m = vi.hoisted(() => {
   };
 });
 
-vi.mock("@/lib/db/prisma", () => {
-  const tx = {
-    pendingCheckout: {
-      updateMany: (args: unknown) => m.updateMany(args),
-      findUniqueOrThrow: (args: unknown) => m.findUniqueOrThrow(args),
-    },
-    order: { create: (args: unknown) => m.orderCreate(args) },
-    $executeRaw: (...args: unknown[]) => m.executeRaw(...args),
-    $queryRaw: (...args: unknown[]) => m.queryRaw(...args),
-  };
-  return {
-    prisma: { $transaction: (fn: (t: typeof tx) => unknown) => fn(tx) },
-  };
-});
+fakeDb({
+  pendingCheckout: {
+    updateMany: (args: unknown) => m.updateMany(args),
+    findUniqueOrThrow: (args: unknown) => m.findUniqueOrThrow(args),
+  },
+  order: { create: (args: unknown) => m.orderCreate(args) },
+  $executeRaw: (...args: unknown[]) => m.executeRaw(...args),
+  $queryRaw: (...args: unknown[]) => m.queryRaw(...args),
+}).install();
 
 // Heavy / unrelated collaborators imported at module load by checkout-finalize.
 vi.mock("next/server", () => ({ after: vi.fn() }));

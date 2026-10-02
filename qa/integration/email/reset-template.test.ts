@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { SYSTEM_TEMPLATES } from "@/features/email/blocks/system-templates"
+import { fakeAuth, fakeCache, fakeDb, fakeEmail } from "@/qa/fakes"
 
 /**
  * Reset and restore are what content managers reach for after a messy
@@ -13,7 +14,8 @@ type VersionRec = Row & { templateId: number; reason: string; createdAt: Date }
 let templates: Map<number, Row>
 let versions: VersionRec[]
 let nextVersionId: number
-const revalidatePath = vi.fn()
+const cache = fakeCache()
+const revalidatePath = cache.revalidatePath
 
 const tpl = {
   findUnique: vi.fn(async ({ where }: { where: { id: number } }) => templates.get(where.id) ?? null),
@@ -50,14 +52,11 @@ const ver = {
   }),
 }
 
-vi.mock("@/lib/db/prisma", () => ({ prisma: { emailTemplate: tpl, emailTemplateVersion: ver } }))
-vi.mock("next/cache", () => ({ revalidatePath: (p: string) => revalidatePath(p) }))
+fakeDb({ emailTemplate: tpl, emailTemplateVersion: ver }).install()
+cache.install()
+fakeEmail().install()
+fakeAuth({ session: { email: "herman@adudev.co.uk", role: "admin" } }).install()
 vi.mock("@/lib/settings/db-actions", () => ({ getStoreSettingsAction: vi.fn() }))
-vi.mock("@/features/email/provider", () => ({ sendEmail: vi.fn() }))
-vi.mock("@/lib/auth/server", () => ({
-  requireAdmin: vi.fn(async () => ({ email: "herman@adudev.co.uk", role: "admin" })),
-  getServerCanLockBlocks: vi.fn(async () => true),
-}))
 
 const def = SYSTEM_TEMPLATES[0]
 

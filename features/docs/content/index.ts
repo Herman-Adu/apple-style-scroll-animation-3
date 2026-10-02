@@ -42,6 +42,9 @@ import { showcaseAndPortfolio } from "./showcase-and-portfolio"
 import { socialAndRecruitmentMarketing } from "./social-and-recruitment-marketing"
 import { salesDemoAndObjections } from "./sales-demo-and-objections"
 import { productRoadmap } from "./product-roadmap"
+import { engineeringQuality } from "./engineering-quality"
+import { architectureDecisionRecords } from "./architecture-decision-records"
+import { contributingAndWorkflow } from "./contributing-and-workflow"
 
 /**
  * The local docs corpus. This is the single source that the api/ seam reads
@@ -74,6 +77,8 @@ export const docs: Doc[] = [
   // Developer (public)
   systemArchitecture,
   emailPlatformArchitecture,
+  architectureDecisionRecords,
+  contributingAndWorkflow,
   dataLayerAndDatabase,
   theThemeSystem,
   serverFirstPlaybook,
@@ -89,6 +94,7 @@ export const docs: Doc[] = [
   whyThisStack,
   scaleAndReliability,
   securityAndCompliancePosture,
+  engineeringQuality,
   // Owner (owner-only)
   positioningAndSelling,
   pricingAndPackaging,

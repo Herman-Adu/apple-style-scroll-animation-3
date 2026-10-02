@@ -24,6 +24,7 @@ import {
   ChevronDown,
   ChevronUp,
   Copy,
+  Eraser,
   GripVertical,
   Redo2,
   Undo2,
@@ -69,6 +70,7 @@ import { TEMPLATE_TOKENS, BLOCK_PRESETS } from "@/features/email/blocks/system-t
 import type { ProductImageMap } from "@/features/products/lib/product"
 import type { Money } from "@/features/products/schema"
 import {
+  createTemplateAction,
   resetTemplateAction,
   saveTemplateAction,
   sendTemplateTestAction,
@@ -179,6 +181,26 @@ export function TemplateEditor({
   const [history, setHistory] = useState<Snapshot[]>([])
   const [future, setFuture] = useState<Snapshot[]>([])
   const HISTORY_LIMIT = 50
+  /** Last state persisted to the database; the target for "Discard changes". */
+  const [saved, setSaved] = useState<Snapshot>(() => ({
+    name: template.name,
+    category: template.category,
+    subject: template.subject,
+    previewText: template.previewText,
+    description: template.description,
+    blocks: template.blocks,
+  }))
+  const [leaveOpen, setLeaveOpen] = useState(false)
+  const [duplicating, setDuplicating] = useState(false)
+
+  useEffect(() => {
+    if (!dirty) return
+    function onBeforeUnload(e: BeforeUnloadEvent) {
+      e.preventDefault()
+    }
+    window.addEventListener("beforeunload", onBeforeUnload)
+    return () => window.removeEventListener("beforeunload", onBeforeUnload)
+  }, [dirty])
 
   function snapshot(): Snapshot {
     return { name, category, subject, previewText, description, blocks }
@@ -313,6 +335,7 @@ export function TemplateEditor({
     startTransition(async () => {
       const res = await saveTemplateAction(template.id, { name, category, subject, previewText, description, blocks })
       if (res.ok) {
+        setSaved(snapshot())
         setDirty(false)
         toast.success("Template saved")
         router.refresh()
@@ -332,11 +355,59 @@ export function TemplateEditor({
       setHistory((h) => [...h.slice(-(HISTORY_LIMIT - 1)), snapshot()])
       setFuture([])
       restore(res.template)
+      setSaved({
+        name: res.template.name,
+        category: res.template.category,
+        subject: res.template.subject,
+        previewText: res.template.previewText,
+        description: res.template.description,
+        blocks: res.template.blocks,
+      })
       setSelectedId(res.template.blocks[0]?.id ?? null)
       setDirty(false)
       toast.success("Template reset to default", { description: "Press Undo to bring your changes back." })
       router.refresh()
     })
+  }
+
+  /** Return to the last saved state without touching the database. Goes
+   *  through history so the discarded edits can be brought back with Undo. */
+  function discardChanges() {
+    if (!dirty) return
+    setHistory((h) => [...h.slice(-(HISTORY_LIMIT - 1)), snapshot()])
+    setFuture([])
+    restore(saved)
+    setSelectedId(saved.blocks[0]?.id ?? null)
+    setDirty(false)
+    toast.success("Changes discarded", { description: "Press Undo to bring them back." })
+  }
+
+  function duplicateTemplate() {
+    setDuplicating(true)
+    void (async () => {
+      const res = await createTemplateAction({
+        name: `${name || "Untitled template"} (copy)`,
+        category: category === "system" ? "marketing" : category,
+        subject,
+        previewText,
+        description,
+        blocks: blocks.map((b) => ({ ...b, id: uid() }) as EmailBlock),
+      })
+      setDuplicating(false)
+      if (!res.ok) {
+        toast.error("Could not duplicate template")
+        return
+      }
+      toast.success("Template duplicated", {
+        description: dirty ? "The copy includes your unsaved edits; this template is unchanged." : undefined,
+      })
+      router.push(`/admin/email/templates/${res.id}`)
+    })()
+  }
+
+  function goBack() {
+    if (dirty) setLeaveOpen(true)
+    else router.push("/admin/email/templates")
   }
 
   function sendTest() {
@@ -356,10 +427,35 @@ export function TemplateEditor({
     <div className="space-y-5">
       {/* Header bar */}
       <div className="flex flex-wrap items-center gap-3">
-        <Button variant="ghost" size="sm" className="gap-1.5" onClick={() => router.push("/admin/email/templates")}>
+        <Button variant="ghost" size="sm" className="gap-1.5" onClick={goBack}>
           <ArrowLeft className="size-4" />
           Templates
         </Button>
+        <Dialog open={leaveOpen} onOpenChange={setLeaveOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Leave without saving?</DialogTitle>
+              <DialogDescription>
+                You have unsaved changes to this template. If you leave now they will be lost.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setLeaveOpen(false)}>
+                Keep editing
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  setDirty(false)
+                  setLeaveOpen(false)
+                  router.push("/admin/email/templates")
+                }}
+              >
+                Leave without saving
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h2 className="truncate text-lg font-semibold tracking-tight">{name || "Untitled template"}</h2>
@@ -367,6 +463,28 @@ export function TemplateEditor({
             {dirty ? <span className="text-xs text-muted-foreground">Unsaved changes</span> : null}
           </div>
         </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1.5"
+          onClick={discardChanges}
+          disabled={pending || !dirty}
+          title="Go back to the last saved version"
+        >
+          <Eraser className="size-4" />
+          Discard changes
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={duplicateTemplate}
+          disabled={pending || duplicating}
+          title="Create an editable copy of this template"
+        >
+          {duplicating ? <Loader2 className="size-4 animate-spin" /> : <Copy className="size-4" />}
+          Duplicate
+        </Button>
         {template.isSystem ? (
           <Button variant="outline" size="sm" className="gap-1.5" onClick={reset} disabled={pending}>
             <RotateCcw className="size-4" />

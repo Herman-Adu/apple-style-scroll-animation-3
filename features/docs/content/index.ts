@@ -17,6 +17,8 @@ import { managingYourTheme } from "./managing-your-theme"
 import { companyProfileAndSetup } from "./company-profile-and-setup"
 import { emailSystemOverview } from "./email-system-overview"
 import { emailTemplatesGuide } from "./email-templates-guide"
+import { emailSeasonalCampaigns } from "./email-seasonal-campaigns"
+import { platformGlossary } from "./platform-glossary"
 import { emailCampaignWalkthrough } from "./email-campaign-walkthrough"
 import { emailCustomerMessages } from "./email-customer-messages"
 import { systemArchitecture } from "./system-architecture"
@@ -72,6 +74,8 @@ export const docs: Doc[] = [
   companyProfileAndSetup,
   emailSystemOverview,
   emailTemplatesGuide,
+  emailSeasonalCampaigns,
+  platformGlossary,
   emailCampaignWalkthrough,
   emailCustomerMessages,
   // Developer (public)

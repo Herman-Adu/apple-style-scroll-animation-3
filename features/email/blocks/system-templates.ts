@@ -21,10 +21,15 @@ export interface SystemTemplateDef {
   blocks: EmailBlock[]
 }
 
-let idc = 0
-const bid = (t: string) => `${t}-${++idc}`
+type SystemTemplateDraft = Omit<SystemTemplateDef, "blocks"> & { blocks: EmailBlockDraft[] }
 
-export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
+/** Ids come from the template key and block position, so they never depend on load order. */
+const withBlockIds = (draft: SystemTemplateDraft): SystemTemplateDef => ({
+  ...draft,
+  blocks: draft.blocks.map((block, index) => ({ ...block, id: `${draft.key}-${index}-${block.type}` }) as EmailBlock),
+})
+
+const SYSTEM_TEMPLATE_DRAFTS: SystemTemplateDraft[] = [
   {
     key: "order_confirmation",
     name: "Order confirmation",
@@ -34,7 +39,6 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
     description: "Sent automatically when a customer completes checkout.",
     blocks: [
       {
-        id: bid("hero"),
         type: "hero",
         eyebrow: "Order confirmed",
         heading: "Thank you, {{customer_name}}",
@@ -43,14 +47,12 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         align: "left",
       },
       {
-        id: bid("text"),
         type: "text",
         text: "Every MOMO product is inspected and tuned by hand before it ships. Here is a summary of what is on its way to you.",
         align: "left",
       },
-      { id: bid("order"), type: "orderSummary" },
+      { type: "orderSummary" },
       {
-        id: bid("list"),
         type: "list",
         title: "What happens next",
         items: [
@@ -60,7 +62,7 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         ],
         ordered: true,
       },
-      { id: bid("btn"), type: "button", label: "View your order", href: "{{order_url}}", align: "left" },
+      { type: "button", label: "View your order", href: "{{order_url}}", align: "left" },
     ],
   },
   {
@@ -72,7 +74,6 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
     description: "Sent to your support inbox whenever a customer completes checkout.",
     blocks: [
       {
-        id: bid("hero"),
         type: "hero",
         eyebrow: "New order received",
         heading: "Order {{order_number}}",
@@ -80,21 +81,19 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         imageUrl: "",
         align: "left",
       },
-      { id: bid("order"), type: "orderSummary" },
+      { type: "orderSummary" },
       {
-        id: bid("list"),
         type: "list",
         title: "Details",
         items: ["Placed: {{placed_at}}", "Customer: {{customer_email}}"],
         ordered: false,
       },
       {
-        id: bid("text"),
         type: "text",
         text: "Manage this order in the admin dashboard under Orders.",
         align: "left",
       },
-      { id: bid("btn"), type: "button", label: "View in admin", href: "{{admin_url}}", align: "left" },
+      { type: "button", label: "View in admin", href: "{{admin_url}}", align: "left" },
     ],
   },
   {
@@ -106,7 +105,6 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
     description: "Branded email sent when you grant a customer an offer.",
     blocks: [
       {
-        id: bid("hero"),
         type: "hero",
         eyebrow: "A little something for you",
         heading: "{{offer_headline}}",
@@ -115,12 +113,11 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         align: "left",
       },
       {
-        id: bid("callout"),
         type: "callout",
         title: "{{offer_label}}",
         body: "Applied *automatically* at checkout — no code needed. {{offer_expiry}}",
       },
-      { id: bid("btn"), type: "button", label: "Shop the collection", href: "{{shop_url}}", align: "left" },
+      { type: "button", label: "Shop the collection", href: "{{shop_url}}", align: "left" },
     ],
   },
   {
@@ -132,7 +129,6 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
     description: "Let a customer know their order is on the way (send from Messages).",
     blocks: [
       {
-        id: bid("hero"),
         type: "hero",
         eyebrow: "On its way",
         heading: "Your order is *shipping*, {{customer_name}}",
@@ -141,12 +137,11 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         align: "left",
       },
       {
-        id: bid("text"),
         type: "text",
         text: "Add tracking details or delivery instructions here before you send.",
         align: "left",
       },
-      { id: bid("btn"), type: "button", label: "Track your order", href: "{{shop_url}}", align: "left" },
+      { type: "button", label: "Track your order", href: "{{shop_url}}", align: "left" },
     ],
   },
   {
@@ -158,7 +153,6 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
     description: "Sent to a customer when a full or partial refund is processed.",
     blocks: [
       {
-        id: bid("hero"),
         type: "hero",
         eyebrow: "{{refund_eyebrow}}",
         heading: "Hi {{customer_name}}, your refund is on its way",
@@ -167,13 +161,12 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         align: "left",
       },
       {
-        id: bid("callout"),
         type: "callout",
         title: "{{amount}} refunded",
         body: "{{refund_note}}",
       },
-      { id: bid("order"), type: "orderSummary" },
-      { id: bid("btn"), type: "button", label: "View your order", href: "{{order_url}}", align: "left" },
+      { type: "orderSummary" },
+      { type: "button", label: "View your order", href: "{{order_url}}", align: "left" },
     ],
   },
   {
@@ -185,7 +178,6 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
     description: "Sent automatically to your support inbox when a product's stock crosses its threshold.",
     blocks: [
       {
-        id: bid("hero"),
         type: "hero",
         eyebrow: "Inventory",
         heading: "Low stock alert",
@@ -193,14 +185,13 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         imageUrl: "",
         align: "left",
       },
-      { id: bid("lowstock"), type: "lowStockItems" },
+      { type: "lowStockItems" },
       {
-        id: bid("text"),
         type: "text",
         text: "Review inventory in the admin dashboard to restock or pause sales.",
         align: "left",
       },
-      { id: bid("btn"), type: "button", label: "Manage inventory", href: "{{admin_url}}", align: "left" },
+      { type: "button", label: "Manage inventory", href: "{{admin_url}}", align: "left" },
     ],
   },
   {
@@ -212,7 +203,6 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
     description: "A starting point for newsletters and campaigns.",
     blocks: [
       {
-        id: bid("hero"),
         type: "hero",
         eyebrow: "The collection",
         heading: "Every product is a *reference instrument*",
@@ -221,19 +211,16 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         align: "left",
       },
       {
-        id: bid("text"),
         type: "text",
         text: "Write your campaign message here. Add sections from the block palette — or drop in a ready-made section preset to move faster.",
         align: "left",
       },
       {
-        id: bid("heading"),
         type: "heading",
         text: "Why people choose MOMO",
         align: "left",
       },
       {
-        id: bid("list"),
         type: "list",
         title: "",
         items: [
@@ -244,15 +231,16 @@ export const SYSTEM_TEMPLATES: SystemTemplateDef[] = [
         ordered: false,
       },
       {
-        id: bid("callout"),
         type: "callout",
         title: "Members save first",
         body: "Subscribers hear about *new releases and offers* before anyone else.",
       },
-      { id: bid("btn"), type: "button", label: "Explore the collection", href: "{{shop_url}}", align: "left" },
+      { type: "button", label: "Explore the collection", href: "{{shop_url}}", align: "left" },
     ],
   },
 ]
+
+export const SYSTEM_TEMPLATES: SystemTemplateDef[] = SYSTEM_TEMPLATE_DRAFTS.map(withBlockIds)
 
 /**
  * Ready-made section presets for the builder's "Insert a section" row. Each is a

@@ -1,9 +1,9 @@
 {
   "deepImports": 116,
   "libToFeatures": 16,
-  "useEffect": 55,
+  "useEffect": 53,
   "anyTypes": 28,
-  "incrementers": 8,
-  "clientComponents": 154,
+  "incrementers": 3,
+  "clientComponents": 153,
   "largeFiles": 22
 }

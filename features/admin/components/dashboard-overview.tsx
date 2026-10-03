@@ -1,13 +1,13 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { useMemo } from "react"
+import { use, useMemo } from "react"
 import Link from "next/link"
 import { motion, useReducedMotion } from "framer-motion"
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { AlertTriangle, ArrowUpRight, BarChart3, DollarSign, Package, Receipt, Sparkles, TrendingUp } from "lucide-react"
 import { useCatalog } from "@/features/catalog"
-import { inventorySummary, revenueByDay, salesSummary, topProducts } from "@/features/orders"
+import { inventorySummary, revenueByDay, salesSummary, topProducts, type Order } from "@/features/orders"
 import { formatMoney } from "@/lib/format"
 import { StatCard } from "./stat-card"
 import { StockBadge } from "./status-badges"
@@ -39,10 +39,10 @@ const QUICK_ACTIONS = [
   { href: "/admin/analytics", icon: BarChart3, label: "Analytics" },
 ]
 
-export function DashboardOverview() {
+export function DashboardOverview({ ordersPromise }: { ordersPromise: Promise<Order[]> }) {
   const reduce = useReducedMotion()
   const { products } = useCatalog()
-  const { orders, loading } = useAdminOrders()
+  const { orders } = useAdminOrders(use(ordersPromise))
 
   const sales = salesSummary(orders)
   const inventory = inventorySummary(products)
@@ -221,9 +221,7 @@ export function DashboardOverview() {
               </Link>
             </div>
             <div className="divide-y divide-border">
-              {loading ? (
-                <p className="px-5 py-8 text-center text-sm text-muted-foreground">Loading…</p>
-              ) : best.length === 0 ? (
+              {best.length === 0 ? (
                 <p className="px-5 py-8 text-center text-sm text-muted-foreground">No sales yet.</p>
               ) : (
                 best.map((p, i) => (

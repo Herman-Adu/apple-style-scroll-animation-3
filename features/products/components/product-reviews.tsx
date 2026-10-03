@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import useSWR from "swr"
 import { Star } from "lucide-react"
 import { reviewsProvider, summarize } from "@/lib/reviews/provider"
 import type { Review, ReviewSummary } from "@/lib/reviews/types"
@@ -42,32 +42,18 @@ export function ProductReviews({
   productName: string
 }) {
   const { user } = useAuth()
-  const [reviews, setReviews] = useState<Review[] | null>(null)
-  const [summary, setSummary] = useState<ReviewSummary | null>(null)
-
-  useEffect(() => {
-    let active = true
-    reviewsProvider
-      .list(productSlug, user?.id)
-      .then((list) => {
-        if (!active) return
-        setReviews(list)
-        // Public rating summary reflects published reviews only.
-        setSummary(summarize(list.filter((r) => r.status === "published")))
-      })
-      .catch(() => {
-        if (!active) return
-        setReviews([])
-        setSummary(summarize([]))
-      })
-    return () => {
-      active = false
-    }
-  }, [productSlug, user?.id])
+  const { data: reviews, mutate } = useSWR(
+    ["reviews", productSlug, user?.id],
+    ([, slug, viewerId]) => reviewsProvider.list(slug, viewerId).catch((): Review[] => []),
+  )
+  // Public rating summary reflects published reviews only.
+  const summary: ReviewSummary | null = reviews
+    ? summarize(reviews.filter((r) => r.status === "published"))
+    : null
 
   function handleSubmitted(review: Review) {
     // Reflect the author's own pending review immediately, in-session.
-    setReviews((prev) => [review, ...(prev ?? [])])
+    void mutate((prev) => [review, ...(prev ?? [])], { revalidate: false })
   }
 
   const publishedReviews = reviews?.filter((r) => r.status === "published") ?? []

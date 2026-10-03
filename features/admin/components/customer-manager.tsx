@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { use, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Search } from "lucide-react"
@@ -23,7 +23,7 @@ import {
   SEGMENTS,
 } from "@/features/customers"
 import type { CustomerRecord, CustomerSegment, CustomerSort } from "@/features/customers"
-import { useAdminCustomers } from "../hooks/use-admin-customers"
+import { useAdminCustomers, type AdminCustomersData } from "../hooks/use-admin-customers"
 import { CustomerStatusBadge, RoleBadge, OfferChip } from "./customer-badges"
 import { isOwner } from "@/lib/auth/config"
 import { ColumnsMenu, type ColumnOption } from "./columns-menu"
@@ -51,12 +51,12 @@ function KpiCard({ label, value, sub }: { label: string; value: string; sub?: st
   )
 }
 
-export function CustomerManager() {
+export function CustomerManager({ customersPromise }: { customersPromise: Promise<AdminCustomersData> }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const segment = (searchParams.get("segment") as CustomerSegment | null) ?? "all"
 
-  const { records, loading, refresh } = useAdminCustomers()
+  const { records, refresh } = useAdminCustomers(use(customersPromise))
   const [query, setQuery] = useState("")
   const [sort, setSort] = useState<CustomerSort>("recent")
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => new Set(["orders", "offers", "joined"]))
@@ -162,13 +162,7 @@ export function CustomerManager() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
-                    Loading customers…
-                  </td>
-                </tr>
-              ) : visible.length === 0 ? (
+              {visible.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
                     No customers in this view.

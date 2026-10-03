@@ -1,19 +1,15 @@
 "use client"
 
-import { useMemo } from "react"
+import { use, useMemo } from "react"
 import { BadgeCheck, Send, Ticket, TrendingUp } from "lucide-react"
 import { offerAnalytics } from "@/features/customers"
 import { StatCard } from "./stat-card"
-import { useAdminCustomers } from "../hooks/use-admin-customers"
+import { useAdminCustomers, type AdminCustomersData } from "../hooks/use-admin-customers"
 
-export function OfferAnalyticsPanel() {
-  const { records, loading } = useAdminCustomers()
+export function OfferAnalyticsPanel({ customersPromise }: { customersPromise: Promise<AdminCustomersData> }) {
+  const { records } = useAdminCustomers(use(customersPromise))
   const users = useMemo(() => records.map((r) => r.user), [records])
   const stats = useMemo(() => offerAnalytics(users), [users])
-
-  if (loading) {
-    return <p className="py-10 text-center text-sm text-muted-foreground">Loading offers…</p>
-  }
 
   if (stats.total === 0) {
     return (

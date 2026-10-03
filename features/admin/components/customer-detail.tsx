@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { use, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -22,7 +22,7 @@ import { OrderStatusBadge } from "./status-badges"
 import { CustomerStatusBadge, RoleBadge } from "./customer-badges"
 import { isOwner } from "@/lib/auth/config"
 import { OfferEditor } from "./offer-editor"
-import { useAdminCustomers } from "../hooks/use-admin-customers"
+import { useAdminCustomers, type AdminCustomersData } from "../hooks/use-admin-customers"
 import { sendPersonalOffer } from "@/features/email"
 import type { OfferTag } from "@/lib/auth/types"
 
@@ -45,19 +45,21 @@ function formatDateTime(iso: string): string {
   }).format(new Date(iso))
 }
 
-export function CustomerDetail({ customerId }: { customerId: string }) {
+export function CustomerDetail({
+  customerId,
+  customersPromise,
+}: {
+  customerId: string
+  customersPromise: Promise<AdminCustomersData>
+}) {
   const router = useRouter()
-  const { records, loading, setStatus, setRole, setNewsletter, setOffers } = useAdminCustomers()
+  const { records, setStatus, setRole, setNewsletter, setOffers } = useAdminCustomers(use(customersPromise))
   const [confirm, setConfirm] = useState<null | "block" | "role">(null)
 
   const record = useMemo(
     () => records.find((r) => r.user.id === customerId) ?? null,
     [records, customerId],
   )
-
-  if (loading && !record) {
-    return <p className="py-10 text-center text-muted-foreground">Loading customer…</p>
-  }
 
   if (!record) {
     return (

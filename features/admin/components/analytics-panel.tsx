@@ -1,10 +1,10 @@
 "use client"
 
-import { useMemo } from "react"
+import { use } from "react"
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { DollarSign, Receipt, RotateCcw, ShoppingBag, TrendingUp } from "lucide-react"
 import { useCatalog } from "@/features/catalog"
-import { ordersByStatus, revenueByDay, salesSummary, topProducts, type OrderStatus } from "@/features/orders"
+import { ordersByStatus, revenueByDay, salesSummary, topProducts, type Order, type OrderStatus } from "@/features/orders"
 import { formatMoney } from "@/lib/format"
 import { StatCard } from "./stat-card"
 import { useAdminOrders } from "../hooks/use-admin-orders"
@@ -27,19 +27,15 @@ const STATUS_COLOR: Record<OrderStatus, string> = {
 // through amber to the last of the pack.
 const RANK_COLOR = ["var(--color-success)", "var(--color-success)", "var(--color-warning)", "var(--color-warning)", "var(--color-accent-orange)", "var(--color-accent-orange)"]
 
-export function AnalyticsPanel() {
+export function AnalyticsPanel({ ordersPromise }: { ordersPromise: Promise<Order[]> }) {
   const { products } = useCatalog()
-  const { orders, loading } = useAdminOrders()
+  const { orders } = useAdminOrders(use(ordersPromise))
 
   const sales = salesSummary(orders)
   const currency = sales.currency
-  const revenueSeries = useMemo(() => revenueByDay(orders, 30).map((p) => ({ ...p, label: shortDate(p.date) })), [orders])
-  const best = useMemo(() => topProducts(orders, 6), [orders])
-  const statuses = useMemo(() => ordersByStatus(orders), [orders])
-
-  if (loading) {
-    return <p className="py-10 text-center text-sm text-muted-foreground">Loading analytics…</p>
-  }
+  const revenueSeries = revenueByDay(orders, 30).map((p) => ({ ...p, label: shortDate(p.date) }))
+  const best = topProducts(orders, 6)
+  const statuses = ordersByStatus(orders)
 
   if (orders.length === 0) {
     return (

@@ -1,4 +1,6 @@
-import { AdminShell, CustomerDetail } from "@/features/admin"
+import { Suspense } from "react"
+import { AdminLoading, AdminShell, CustomerDetail } from "@/features/admin"
+import { loadAdminCustomers } from "@/features/admin/server"
 
 export default async function AdminCustomerDetailPage({
   params,
@@ -8,7 +10,9 @@ export default async function AdminCustomerDetailPage({
   const { id } = await params
   return (
     <AdminShell title="Customer">
-      <CustomerDetail customerId={id} />
+      <Suspense fallback={<AdminLoading label="customer" />}>
+        <CustomerDetail customerId={id} customersPromise={loadAdminCustomers()} />
+      </Suspense>
     </AdminShell>
   )
 }

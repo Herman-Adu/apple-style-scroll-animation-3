@@ -1,11 +1,12 @@
 import { Suspense } from "react"
-import { AdminShell, CustomerManager } from "@/features/admin"
+import { AdminLoading, AdminShell, CustomerManager } from "@/features/admin"
+import { loadAdminCustomers } from "@/features/admin/server"
 
 export default function AdminCustomersPage() {
   return (
     <AdminShell title="Customers">
-      <Suspense fallback={<p className="py-10 text-center text-muted-foreground">Loading customers…</p>}>
-        <CustomerManager />
+      <Suspense fallback={<AdminLoading label="customers" />}>
+        <CustomerManager customersPromise={loadAdminCustomers()} />
       </Suspense>
     </AdminShell>
   )

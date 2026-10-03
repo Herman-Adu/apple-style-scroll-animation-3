@@ -2,7 +2,9 @@
 
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { Suspense, useState } from "react"
+import type { Order } from "@/features/orders"
+import { Spinner } from "@/components/ui/spinner"
 import { motion } from "framer-motion"
 import { LayoutDashboard, LogOut, ShoppingBag } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -33,19 +35,18 @@ function optionLabel(fieldKey: string, value?: string) {
   return value
 }
 
-export function AccountView() {
+export function AccountView({ ordersPromise }: { ordersPromise: Promise<Order[]> }) {
   const { user, signOut } = useAuth()
   const searchParams = useSearchParams()
   const [signingOut, setSigningOut] = useState(false)
   const [signOutOpen, setSignOutOpen] = useState(false)
 
-  // Deep-link support: /account?tab=orders opens the Orders tab, both on a
-  // fresh mount and while the page is already mounted (e.g. from the header
-  // dropdown or the mobile account submenu).
-  const [tab, setTab] = useState<AccountTab>(() => resolveTab(searchParams.get("tab")))
-  useEffect(() => {
-    setTab(resolveTab(searchParams.get("tab")))
-  }, [searchParams])
+  // Deep-link support: /account?tab=orders opens the Orders tab. A local pick
+  // wins until the URL's tab changes again (header dropdown, mobile submenu).
+  const urlTab = resolveTab(searchParams.get("tab"))
+  const [picked, setPicked] = useState<{ from: AccountTab; tab: AccountTab } | null>(null)
+  const tab = picked && picked.from === urlTab ? picked.tab : urlTab
+  const setTab = (next: AccountTab) => setPicked({ from: urlTab, tab: next })
 
   if (!user) return null
 
@@ -170,10 +171,18 @@ export function AccountView() {
             </TabsContent>
 
             <TabsContent value="orders">
-              <OrderHistory
-                userId={user.id}
-                billTo={{ name: displayName, email: user.email }}
-              />
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center py-20">
+                    <Spinner className="size-5 text-foreground/40" />
+                  </div>
+                }
+              >
+                <OrderHistory
+                  ordersPromise={ordersPromise}
+                  billTo={{ name: displayName, email: user.email }}
+                />
+              </Suspense>
             </TabsContent>
 
             <TabsContent value="offers">

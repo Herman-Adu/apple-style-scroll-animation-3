@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { use, useMemo, useState } from "react"
 import { Pencil, PlusCircle, Search, Ticket, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -33,8 +33,8 @@ function isExhausted(code: DiscountCode): boolean {
   return code.maxRedemptions != null && code.redemptionCount >= code.maxRedemptions
 }
 
-export function DiscountCodeManager() {
-  const { codes, loading, createCode, updateCode, deleteCode } = useAdminDiscountCodes()
+export function DiscountCodeManager({ codesPromise }: { codesPromise: Promise<DiscountCode[]> }) {
+  const { codes, createCode, updateCode, deleteCode } = useAdminDiscountCodes(use(codesPromise))
   const [query, setQuery] = useState("")
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<DiscountCode | undefined>(undefined)
@@ -109,7 +109,7 @@ export function DiscountCodeManager() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {!loading && filtered.length === 0 ? (
+              {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-10 text-center text-muted-foreground">
                     No discount codes yet.

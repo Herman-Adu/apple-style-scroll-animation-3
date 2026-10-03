@@ -2,3 +2,4 @@
 // client-safe exports live in ./index.
 export * from "./checkout-finalize"
 export * from "./order-notifications"
+export { listAllOrdersAction, listMyOrdersAction } from "./db-actions"

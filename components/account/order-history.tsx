@@ -1,27 +1,19 @@
 "use client"
 
 import Link from "next/link"
+import { use } from "react"
 import { Package } from "lucide-react"
-import { useOrders } from "@/hooks/use-orders"
-import { Spinner } from "@/components/ui/spinner"
+import type { Order } from "@/features/orders"
 import { OrderCard } from "@/components/account/order-card"
 
 export function OrderHistory({
-  userId,
+  ordersPromise,
   billTo,
 }: {
-  userId: string
+  ordersPromise: Promise<Order[]>
   billTo: { name: string; email: string }
 }) {
-  const { orders, loading } = useOrders(userId)
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Spinner className="size-5 text-foreground/40" />
-      </div>
-    )
-  }
+  const orders = use(ordersPromise)
 
   if (orders.length === 0) {
     return (

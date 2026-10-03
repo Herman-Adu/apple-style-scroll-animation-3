@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import { ordersAdapter } from "@/features/orders/actions"
 import type { Order, OrderStatus } from "@/features/orders"
 import type { Carrier } from "@/features/orders"
@@ -8,27 +8,16 @@ import { useLiveRefresh } from "@/hooks/use-live-refresh"
 
 /**
  * Admin view of the orders backend: every customer's orders plus a status
- * mutator. Talks only to the OrdersAdapter port, so a Stripe/server adapter
- * swaps in without touching this hook or the UI.
+ * mutator. The first list arrives from the server (see the admin pages), so
+ * there is no client-side loading state; later refreshes go through the
+ * OrdersAdapter port.
  */
-export function useAdminOrders() {
-  const [orders, setOrders] = useState<Order[]>([])
-  const [loading, setLoading] = useState(true)
-  const hasLoadedOnce = useRef(false)
+export function useAdminOrders(initialOrders: Order[]) {
+  const [orders, setOrders] = useState(initialOrders)
 
   const refresh = useCallback(async () => {
-    // Only show the loading state on the very first fetch — background
-    // polls shouldn't flash the table back to its skeleton/empty state.
-    if (!hasLoadedOnce.current) setLoading(true)
-    const list = await ordersAdapter.listAll()
-    setOrders(list)
-    setLoading(false)
-    hasLoadedOnce.current = true
+    setOrders(await ordersAdapter.listAll())
   }, [])
-
-  useEffect(() => {
-    refresh()
-  }, [refresh])
 
   // Keep polling while the tab is visible, and refresh instantly on refocus,
   // so a sale/refund/status change made elsewhere shows up without a reload.
@@ -62,5 +51,5 @@ export function useAdminOrders() {
     [refresh],
   )
 
-  return { orders, loading, updateStatus, refund, addTracking, refresh }
+  return { orders, updateStatus, refund, addTracking, refresh }
 }

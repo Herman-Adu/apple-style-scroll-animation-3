@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { use, useMemo, useState } from "react"
 import { toast } from "sonner"
 import {
   Select,
@@ -293,8 +293,8 @@ function TrackingPanel({
   )
 }
 
-export function OrderManager() {
-  const { orders, loading, updateStatus, refund, addTracking } = useAdminOrders()
+export function OrderManager({ ordersPromise }: { ordersPromise: Promise<Order[]> }) {
+  const { orders, updateStatus, refund, addTracking } = useAdminOrders(use(ordersPromise))
   const [filter, setFilter] = useState<OrderStatus | "all">("all")
   const [activeId, setActiveId] = useState<string | null>(null)
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(() => new Set(["customer", "date"]))
@@ -355,13 +355,7 @@ export function OrderManager() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
-                    Loading orders…
-                  </td>
-                </tr>
-              ) : visible.length === 0 ? (
+              {visible.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
                     No orders in this view.

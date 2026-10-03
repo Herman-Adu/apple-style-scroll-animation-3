@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { getAuthAdapter } from "@/lib/auth/adapters"
 import type { OfferTag, User, UserRole, UserStatus } from "@/lib/auth/types"
 import { ordersAdapter } from "@/features/orders/actions"
@@ -8,30 +8,27 @@ import type { Order } from "@/features/orders"
 import { buildCustomerRecords } from "@/features/customers"
 import type { CustomerRecord } from "@/features/customers"
 
+export type AdminCustomersData = { users: User[]; orders: Order[] }
+
 /**
  * Admin view of the customer base: every account left-joined with its orders,
  * plus the management mutators. Talks only to the AuthAdapter + OrdersAdapter
  * ports, so a Strapi/Stripe backend swaps in without touching this hook or the UI.
  *
+ * The first users + orders arrive from the server (see the admin pages).
+ *
  * No card or payment data is ever touched here — Stripe and Clerk own that.
  */
-export function useAdminCustomers() {
+export function useAdminCustomers(initial: AdminCustomersData) {
   const adapter = useMemo(() => getAuthAdapter(), [])
-  const [users, setUsers] = useState<User[]>([])
-  const [orders, setOrders] = useState<Order[]>([])
-  const [loading, setLoading] = useState(true)
+  const [users, setUsers] = useState(initial.users)
+  const [orders, setOrders] = useState(initial.orders)
 
   const refresh = useCallback(async () => {
-    setLoading(true)
     const [userList, orderList] = await Promise.all([adapter.listUsers(), ordersAdapter.listAll()])
     setUsers(userList)
     setOrders(orderList)
-    setLoading(false)
   }, [adapter])
-
-  useEffect(() => {
-    refresh()
-  }, [refresh])
 
   const records: CustomerRecord[] = useMemo(
     () => buildCustomerRecords(users, orders),
@@ -65,5 +62,5 @@ export function useAdminCustomers() {
     [adapter, patchUser],
   )
 
-  return { records, loading, refresh, setStatus, setRole, setNewsletter, setOffers }
+  return { records, refresh, setStatus, setRole, setNewsletter, setOffers }
 }

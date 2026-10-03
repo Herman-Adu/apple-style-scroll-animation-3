@@ -4,8 +4,8 @@ import { useState } from "react"
 import Link from "next/link"
 import { Star } from "lucide-react"
 import { useAuth } from "@/lib/auth/auth-context"
-import { reviewsProvider } from "@/lib/reviews/provider"
-import type { Review } from "@/lib/reviews/types"
+import { reviewsProvider } from "@/features/reviews"
+import type { Review } from "@/features/reviews"
 import { cn } from "@/lib/utils"
 
 function RatingPicker({
@@ -126,7 +126,7 @@ export function ReviewForm({
 
       if (review.status === "rejected") {
         // Moderation gate blocked it — show why, keep the draft for editing.
-        const { moderateReview } = await import("@/lib/reviews/moderation")
+        const { moderateReview } = await import("@/features/reviews")
         setErrors(moderateReview(headline.trim(), body.trim()).reasons)
         return
       }

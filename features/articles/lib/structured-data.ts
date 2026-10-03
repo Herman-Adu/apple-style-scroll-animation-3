@@ -1,6 +1,6 @@
 import { siteConfig } from "@/lib/data/site"
 import { absoluteUrl } from "@/lib/seo/site"
-import type { Article } from "../schema"
+import type { Article } from "./schema"
 
 export function articleLd(article: Article): Record<string, unknown> {
   return {

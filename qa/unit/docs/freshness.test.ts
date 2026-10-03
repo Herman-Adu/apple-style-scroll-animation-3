@@ -2,9 +2,9 @@ import { existsSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import { docs } from "@/features/docs/content"
-import { docImages, docText, internalDocLinks, missingMentions } from "@/features/docs/freshness"
-import { PALETTE_BLOCKS } from "@/features/email/blocks/labels"
-import { STARTERS } from "@/features/email/starters"
+import { docImages, docText, internalDocLinks, missingMentions } from "@/features/docs/lib/freshness"
+import { PALETTE_BLOCKS } from "@/features/email/lib/blocks/labels"
+import { STARTERS } from "@/features/email/lib/content/starters"
 
 const emailDocs = docs.filter((d) => d.slug.startsWith("email-"))
 const emailDocsText = emailDocs.map(docText).join("\n")

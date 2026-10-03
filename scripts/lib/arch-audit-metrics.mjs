@@ -10,8 +10,8 @@ const count = (text, pattern) => text.match(pattern)?.length ?? 0
 function deepImportCount({ path, text }) {
   const ownSlice = path.match(/^features\/([^/]+)\//)?.[1]
   const specifiers = [...text.matchAll(/from\s+["']@\/features\/([^/"']+)\/([^"']+)["']/g)]
-  // A slice has two public entries: index (client-safe) and server (server-only).
-  return specifiers.filter(([, slice, rest]) => slice !== ownSlice && rest !== "server").length
+  // A slice has three public entries: index (client-safe), server (server-only) and actions (server actions).
+  return specifiers.filter(([, slice, rest]) => slice !== ownSlice && rest !== "server" && rest !== "actions").length
 }
 
 const metricsFor = (record) => ({

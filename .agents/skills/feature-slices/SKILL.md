@@ -14,17 +14,17 @@ Two rules, deliberately different strengths:
 
 ```
 features/<slice>/
-  components/   UI for this slice (server by default)
+  index.ts      public, client-safe surface: export only what other code needs
+  server.ts     public server-only surface (optional)
+  actions.ts    public server actions (optional; requireAdmin → zod → rule → db → updateTag)
+  components/   UI and context providers for this slice (server by default)
   hooks/        client hooks used only by this slice
-  lib/          pure rules and helpers (most unit tests target these)
-  api/          server queries / external clients for this slice
-  actions.ts    server actions (requireAdmin → zod → rule → db → updateTag)
-  schema.ts     zod schemas and inferred types
-  mappers.ts    Prisma/CMS rows → domain types
-  index.ts      the public surface: export only what other code needs
+  lib/          everything else, grouped into sub-folders when it grows:
+                api.ts, schema.ts, mappers.ts, types.ts, actions/, data/, ...
+  content/      static content files (docs only)
 ```
 
-Create only the folders a slice needs. Current slices: admin, articles, catalog, checkout, customers, docs, email, orders, products, showcase, timeline.
+The slice root holds **only** the three entry files; every other file lives in one of the four folders. Root `lib/` holds shared infrastructure only (`auth`, `data`, `db`, `seo`, `strapi`, `stripe` + `env`, `format`, `nav`, `types`, `utils`). `qa/unit/meta/folder-layout.test.ts` enforces both. Create only the folders a slice needs. Current slices: admin, articles, catalog, checkout, customers, discount-codes, docs, email, orders, products, reviews, settings, showcase, timeline.
 
 ## Dependency direction
 

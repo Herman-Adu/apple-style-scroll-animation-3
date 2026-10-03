@@ -9,7 +9,7 @@
 // Satisfies the exact AuthAdapter contract the local/strapi adapters satisfy, so
 // the application layer and UI cannot tell the backend changed.
 
-import { authClient } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth/client"
 import {
   completeOnboardingAction,
   dismissOfferAction,

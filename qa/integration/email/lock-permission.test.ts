@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { EmailBlock } from "@/features/email/blocks/types"
+import type { EmailBlock } from "@/features/email/lib/blocks/types"
 import { fakeAuth, fakeCache, fakeDb, fakeEmail } from "@/qa/fakes"
 
 /**
@@ -36,7 +36,7 @@ fakeDb({ emailTemplate: tpl, emailTemplateVersion: ver }).install()
 fakeCache().install()
 fakeEmail().install()
 auth.install()
-vi.mock("@/lib/settings/db-actions", () => ({ getStoreSettingsAction: vi.fn() }))
+vi.mock("@/features/settings/actions", () => ({ getStoreSettingsAction: vi.fn() }))
 
 const header: EmailBlock = { id: "header", type: "heading", text: "Brand", align: "center", locked: true }
 const body: EmailBlock = { id: "body", type: "text", text: "Hello", align: "left" }
@@ -64,7 +64,7 @@ beforeEach(() => {
 })
 
 async function actions() {
-  return import("@/features/email/admin-actions")
+  return import("@/features/email/lib/actions/admin")
 }
 
 describe("server actions require an admin", () => {

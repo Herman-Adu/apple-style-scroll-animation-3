@@ -18,7 +18,7 @@ describe("products api — local-data fallback", () => {
 
   it("returns validated products from local data when Strapi is not configured", async () => {
     vi.stubEnv("STRAPI_API_URL", "")
-    const api = await import("@/features/products/api")
+    const api = await import("@/features/products/lib/api")
 
     const products = await api.fetchProducts()
     expect(products.length).toBeGreaterThan(0)
@@ -31,7 +31,7 @@ describe("products api — local-data fallback", () => {
 
   it("resolves a single product by slug and null for a miss", async () => {
     vi.stubEnv("STRAPI_API_URL", "")
-    const api = await import("@/features/products/api")
+    const api = await import("@/features/products/lib/api")
 
     const slugs = await api.fetchProductSlugs()
     expect(slugs.length).toBeGreaterThan(0)
@@ -50,7 +50,7 @@ describe("products api — Strapi path", () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(productListResponse))
     vi.stubGlobal("fetch", fetchMock)
 
-    const api = await import("@/features/products/api")
+    const api = await import("@/features/products/lib/api")
     const products = await api.fetchProducts()
 
     expect(products).toHaveLength(1)
@@ -66,7 +66,7 @@ describe("products api — Strapi path", () => {
     vi.stubEnv("STRAPI_API_URL", "https://cms.test/")
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(productEmptyResponse)))
 
-    const api = await import("@/features/products/api")
+    const api = await import("@/features/products/lib/api")
     expect(await api.fetchProduct("ghost")).toBeNull()
   })
 })

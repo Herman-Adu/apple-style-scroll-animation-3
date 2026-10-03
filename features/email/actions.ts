@@ -1,6 +1,6 @@
 "use server"
 
-import { isEmailConfigured, sendEmail } from "./provider"
+import { isEmailConfigured, sendEmail } from "./lib/sending/provider"
 import {
   orderConfirmationEmail,
   businessOrderNotificationEmail,
@@ -10,8 +10,8 @@ import {
   shippingConfirmationEmail,
   testEmail,
   type LowStockEmailItem,
-} from "./templates"
-import { getBranding, getTemplateBlocksByKey, recordLog } from "./repo"
+} from "./lib/content/templates"
+import { getBranding, getTemplateBlocksByKey, recordLog } from "./lib/data/repo"
 import type { Order } from "@/features/orders"
 import { getBaseUrl } from "@/lib/seo/site"
 import { fetchProductImageMap } from "@/features/products/server"

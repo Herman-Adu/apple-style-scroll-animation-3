@@ -1,4 +1,4 @@
-import type { Doc } from "../schema"
+import type { Doc } from "../lib/schema"
 
 export const warrantyAndReturnsGuide: Doc = {
   slug: "warranty-and-returns-guide",

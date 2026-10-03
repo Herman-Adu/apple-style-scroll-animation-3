@@ -1,4 +1,4 @@
-import type { Doc } from "../schema"
+import type { Doc } from "../lib/schema"
 
 export const productRoadmap: Doc = {
   slug: "product-roadmap-and-phase-2",

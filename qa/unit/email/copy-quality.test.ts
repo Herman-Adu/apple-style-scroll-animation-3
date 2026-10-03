@@ -4,7 +4,7 @@ import {
   SUBJECT_SOFT_LIMIT,
   charCountTone,
   findSpamFlags,
-} from "@/features/email/copy-quality"
+} from "@/features/email/lib/content/copy-quality"
 
 describe("findSpamFlags", () => {
   it("returns nothing for a clean subject", () => {

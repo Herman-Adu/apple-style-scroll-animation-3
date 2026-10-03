@@ -1,4 +1,4 @@
-import type { ProductSpec } from "@/features/products/schema"
+import type { ProductSpec } from "../lib/schema"
 
 export function ProductSpecs({ specs }: { specs: ProductSpec[] }) {
   return (

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Lock } from "lucide-react"
-import type { DocSummary } from "../schema"
+import type { DocSummary } from "../lib/schema"
 import { groupDocsByAudience, visibleDocs } from "../lib/doc"
 import { useAuth } from "@/lib/auth/auth-context"
 import { isOwner } from "@/lib/auth/config"

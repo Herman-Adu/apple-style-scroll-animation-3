@@ -28,8 +28,8 @@ These are never exposed to the client bundle.
 | `DATABASE_URL_UNPOOLED` | No | Direct (non-pooled) Neon connection string, for migrations/long-lived connections. |
 | `BETTER_AUTH_SECRET` | Yes (once on `db` auth) | Signs and encrypts Better Auth sessions/cookies. See the `better-auth` skill before changing auth config. |
 | `BETTER_AUTH_API_KEY` | No | Enables the `dash()` plugin so dash.better-auth.com can verify ownership of this auth server. Omit to skip that plugin entirely. |
-| `BETTER_AUTH_URL` | No | Explicit base URL for Better Auth. Falls back to the Vercel production/preview URL, then `V0_RUNTIME_URL` (see `lib/auth.ts`). |
-| `RESEND_API_KEY` | For outbound email | Enables transactional email (order confirmations, contact replies, admin campaigns) via `features/email/provider.ts`. Without it, sends are logged and skipped, never thrown. |
+| `BETTER_AUTH_URL` | No | Explicit base URL for Better Auth. Falls back to the Vercel production/preview URL, then `V0_RUNTIME_URL` (see `lib/auth/instance.ts`). |
+| `RESEND_API_KEY` | For outbound email | Enables transactional email (order confirmations, contact replies, admin campaigns) via `features/email/lib/sending/provider.ts`. Without it, sends are logged and skipped, never thrown. |
 | `EMAIL_FROM` | No | Verified sender address (`Name <addr@domain>`). Falls back to a safe default sender if unset or malformed. |
 | `EMAIL_TO` | No | Where order/contact notifications land. Falls back to `EMAIL_FROM`, then a default admin address. |
 

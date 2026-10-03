@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { mapStrapiMilestone } from "@/features/timeline/mappers"
-import { milestoneSchema } from "@/features/timeline/schema"
+import { mapStrapiMilestone } from "@/features/timeline/lib/mappers"
+import { milestoneSchema } from "@/features/timeline/lib/schema"
 import { strapiMilestoneEntries } from "@/qa/fixtures/strapi/timeline.fixture"
 
 describe("mapStrapiMilestone", () => {

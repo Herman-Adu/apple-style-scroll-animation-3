@@ -6,8 +6,8 @@ import {
   deleteDiscountCodeAction,
   listDiscountCodesAction,
   updateDiscountCodeAction,
-} from "@/lib/discount-codes/db-actions"
-import type { DiscountCode, DiscountCodeInput, DiscountCodePatch } from "@/lib/discount-codes/types"
+} from "@/features/discount-codes/actions"
+import type { DiscountCode, DiscountCodeInput, DiscountCodePatch } from "@/features/discount-codes"
 
 /** Admin view of store-wide discount codes, backed by the Neon-persisted
  * DiscountCode table via Server Actions. The first list arrives from the server. */

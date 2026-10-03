@@ -1,4 +1,4 @@
-import type { Doc } from "../schema"
+import type { Doc } from "../lib/schema"
 
 export const emailPlatformArchitecture: Doc = {
   slug: "email-platform-architecture",
@@ -26,13 +26,13 @@ export const emailPlatformArchitecture: Doc = {
       headers: ["Module", "Responsibility"],
       rows: [
         ["features/email/blocks", "Block types and the renderer shared by preview and send"],
-        ["features/email/repo.ts", "Prisma reads and writes for templates, versions, sections and campaigns"],
-        ["features/email/admin-actions.ts", "Server actions; each starts with requireAdmin()"],
-        ["features/email/locks.ts", "Pure lock rules: where new blocks go, lockViolations()"],
-        ["features/email/versions.ts", "Snapshot and retention rules for template history"],
-        ["features/email/sections.ts", "Saved-section validation and fresh ids on insert"],
-        ["features/email/starters.ts", "Starter gallery (Essentials and Seasonal campaigns)"],
-        ["features/email/campaign-send.ts", "Server-only send used by both Send now and the scheduler"],
+        ["features/email/lib/data/repo.ts", "Prisma reads and writes for templates, versions, sections and campaigns"],
+        ["features/email/lib/actions/admin.ts", "Server actions; each starts with requireAdmin()"],
+        ["features/email/lib/content/locks.ts", "Pure lock rules: where new blocks go, lockViolations()"],
+        ["features/email/lib/content/versions.ts", "Snapshot and retention rules for template history"],
+        ["features/email/lib/content/sections.ts", "Saved-section validation and fresh ids on insert"],
+        ["features/email/lib/content/starters.ts", "Starter gallery (Essentials and Seasonal campaigns)"],
+        ["features/email/lib/sending/campaign-send.ts", "Server-only send used by both Send now and the scheduler"],
         ["lib/auth/permissions.ts", "canLockBlocks, assertAdmin and the proxy gate decision"],
       ],
     },

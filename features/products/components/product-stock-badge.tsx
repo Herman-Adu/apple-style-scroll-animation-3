@@ -4,7 +4,7 @@
 // catalog state so stock/status changes made in the admin surface immediately
 // as badges, without making the whole listing a client component.
 
-import type { Product } from "@/features/products/schema"
+import type { Product } from "../lib/schema"
 import { useProduct } from "@/features/catalog"
 import { stockLabel, stockLevel } from "@/features/products/lib/product"
 import { cn } from "@/lib/utils"

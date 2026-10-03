@@ -1,7 +1,7 @@
 // Public surface of the products feature (client-safe). The server-only data
 // access lives at `@/features/products/api` and is imported separately so it
 // never leaks into client bundles.
-export * from "./schema"
+export * from "./lib/schema"
 export * from "./lib/product"
 export * from "./components/product-card"
 export * from "./components/product-stock-badge"
@@ -17,4 +17,4 @@ export * from "./components/review-form"
 export * from "./lib/structured-data"
 export * from "./components/offer-callout"
 export * from "./components/scroll-to-results"
-export * from "./data"
+export * from "./lib/data"

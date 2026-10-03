@@ -1,5 +1,5 @@
 import type { ElementType } from "react"
-import type { HeadingTier } from "@/lib/settings/theme"
+import type { HeadingTier } from "@/features/settings"
 import { TwoToneTitle } from "./two-tone-title"
 
 /**

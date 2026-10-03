@@ -1,7 +1,7 @@
 import { mkdirSync } from "node:fs"
 import path from "node:path"
 import { expect, test, type Page } from "@playwright/test"
-import { exportPlan } from "../../features/showcase/social/assets"
+import { exportPlan } from "../../features/showcase/lib/social-assets"
 
 const publicPath = (file: string) => path.join(process.cwd(), "public", file)
 

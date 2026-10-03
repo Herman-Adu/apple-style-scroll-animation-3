@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { applyLockToggle } from "@/features/admin/permissions/lib/optimistic"
-import type { AdminLockRight } from "@/features/admin/permissions/actions"
+import { applyLockToggle } from "@/features/admin/lib/permissions/optimistic"
+import type { AdminLockRight } from "@/features/admin/lib/permissions/actions"
 
 /**
  * The permissions switch updates optimistically with useOptimistic. The pure

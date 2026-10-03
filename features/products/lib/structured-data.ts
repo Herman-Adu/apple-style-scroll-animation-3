@@ -1,6 +1,6 @@
 import { siteConfig } from "@/lib/data/site"
 import { absoluteUrl } from "@/lib/seo/site"
-import type { Product } from "../schema"
+import type { Product } from "./schema"
 
 const availabilityFor = (status: Product["releaseStatus"]): string =>
   status === "available" ? "https://schema.org/InStock" : "https://schema.org/PreOrder"

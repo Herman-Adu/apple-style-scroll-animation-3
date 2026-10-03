@@ -7,7 +7,7 @@
 // `filterProducts` selector the server used, so behavior is identical.
 
 import { useCatalog } from "@/features/catalog"
-import type { Product } from "@/features/products/schema"
+import type { Product } from "../lib/schema"
 import { filterProducts } from "@/features/products/lib/product"
 import { ProductCard } from "./product-card"
 

@@ -1,7 +1,7 @@
 import "server-only"
 import { cache } from "react"
 import { cookies, headers } from "next/headers"
-import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth/instance"
 import { authConfig, effectiveRole, isOwner } from "./config"
 import { assertAdmin, blockLockerEmails, canLockBlocks, mergeLockers } from "./permissions"
 import { listGrantedLockerEmails } from "./lock-rights-repo"

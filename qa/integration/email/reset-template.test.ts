@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { SYSTEM_TEMPLATES } from "@/features/email/blocks/system-templates"
+import { SYSTEM_TEMPLATES } from "@/features/email/lib/blocks/system-templates"
 import { fakeAuth, fakeCache, fakeDb, fakeEmail } from "@/qa/fakes"
 
 /**
@@ -56,7 +56,7 @@ fakeDb({ emailTemplate: tpl, emailTemplateVersion: ver }).install()
 cache.install()
 fakeEmail().install()
 fakeAuth({ session: { email: "herman@adudev.co.uk", role: "admin" } }).install()
-vi.mock("@/lib/settings/db-actions", () => ({ getStoreSettingsAction: vi.fn() }))
+vi.mock("@/features/settings/actions", () => ({ getStoreSettingsAction: vi.fn() }))
 
 const def = SYSTEM_TEMPLATES[0]
 
@@ -86,7 +86,7 @@ beforeEach(() => {
 describe("resetTemplateAction", () => {
   it("restores a system template to its code default and keeps the edited state in history", async () => {
     templates.set(7, row())
-    const { resetTemplateAction } = await import("@/features/email/admin-actions")
+    const { resetTemplateAction } = await import("@/features/email/lib/actions/admin")
     const res = await resetTemplateAction(7)
 
     expect(res.ok).toBe(true)
@@ -108,7 +108,7 @@ describe("resetTemplateAction", () => {
       { ...row({ subject: "Latest" }), id: 91, templateId: 8, version: 3, reason: "save", createdAt: new Date() },
     )
     nextVersionId = 100
-    const { resetTemplateAction } = await import("@/features/email/admin-actions")
+    const { resetTemplateAction } = await import("@/features/email/lib/actions/admin")
     const res = await resetTemplateAction(8)
 
     expect(res.ok).toBe(true)
@@ -119,7 +119,7 @@ describe("resetTemplateAction", () => {
   })
 
   it("returns an error when the template does not exist", async () => {
-    const { resetTemplateAction } = await import("@/features/email/admin-actions")
+    const { resetTemplateAction } = await import("@/features/email/lib/actions/admin")
     expect((await resetTemplateAction(999)).ok).toBe(false)
   })
 })
@@ -129,7 +129,7 @@ describe("restoreTemplateVersionAction", () => {
     templates.set(8, row({ id: 8, isSystem: false, subject: "Now", version: 2 }))
     versions.push({ ...row({ subject: "Then" }), id: 50, templateId: 8, version: 1, reason: "create", createdAt: new Date() })
     nextVersionId = 60
-    const { restoreTemplateVersionAction } = await import("@/features/email/admin-actions")
+    const { restoreTemplateVersionAction } = await import("@/features/email/lib/actions/admin")
     const res = await restoreTemplateVersionAction(8, 50)
 
     expect(res.ok).toBe(true)
@@ -142,7 +142,7 @@ describe("restoreTemplateVersionAction", () => {
   it("refuses a version that belongs to another template", async () => {
     templates.set(8, row({ id: 8 }))
     versions.push({ ...row(), id: 50, templateId: 99, version: 1, reason: "create", createdAt: new Date() })
-    const { restoreTemplateVersionAction } = await import("@/features/email/admin-actions")
+    const { restoreTemplateVersionAction } = await import("@/features/email/lib/actions/admin")
     expect((await restoreTemplateVersionAction(8, 50)).ok).toBe(false)
     expect(tpl.update).not.toHaveBeenCalled()
   })

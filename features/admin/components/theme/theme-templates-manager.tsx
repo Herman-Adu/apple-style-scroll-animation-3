@@ -16,7 +16,7 @@ import {
   upsertTheme,
   type ThemeKind,
   type ThemeTemplate,
-} from "@/lib/settings/theme"
+} from "@/features/settings"
 import { cn } from "@/lib/utils"
 
 function slug(name: string) {

@@ -5,7 +5,7 @@
 // and a Strapi/Stripe-backed order list later. Keep all aggregation here so the
 // admin UI stays dumb and the math is testable in isolation.
 
-import type { Order } from "@/features/orders/types"
+import type { Order } from "./types"
 import type { Product } from "@/features/products"
 import { effectiveStock, isLowStock, stockLevel } from "@/features/products"
 

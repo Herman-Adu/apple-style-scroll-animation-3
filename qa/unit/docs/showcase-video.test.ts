@@ -2,7 +2,7 @@ import { existsSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import { docs } from "@/features/docs/content"
-import type { DocBlock } from "@/features/docs/schema"
+import type { DocBlock } from "@/features/docs/lib/schema"
 
 type VideoBlock = Extract<DocBlock, { type: "video" }>
 

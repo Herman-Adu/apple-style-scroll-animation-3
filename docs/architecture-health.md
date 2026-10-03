@@ -25,9 +25,9 @@ The ratchet in CI stops any metric getting worse. Each R-sprint lowers its numbe
 | 2 | Shared types depend on slices | `lib/types.ts` and `lib/seo/structured-data.ts` import the products/articles schemas | Hides domain types in a shared bucket | Callers import types from the slice `index.ts`; the SEO builders move to the slices |
 | 3 | Leaky slices | Deep imports: email 46, admin 31, products 23, articles 9, checkout 6 | Internals can't move without touching every caller | Fill in each slice's `index.ts`, rewrite imports, then add a lint rule that bans deep imports |
 | 4 | God file | `features/admin/components/email/template-editor.tsx` (1,366 lines) | Hard to test; one change re-renders everything | Split into toolbar, block list, inspector, preview, and a pure reducer |
-| 5 | God file | `lib/orders/checkout-finalize.ts` (570), `features/email/repo.ts` (549) | Payment, stock, and email all in one function | Split by step: verify, persist, decrement stock, notify |
+| 5 | God file | `lib/orders/checkout-finalize.ts` (570), `features/email/lib/data/repo.ts` (549) | Payment, stock, and email all in one function | Split by step: verify, persist, decrement stock, notify |
 | 6 | Effect-driven data | `features/admin/hooks/use-admin-{orders,customers,discount-codes}.ts`, `hooks/use-orders.ts`, `account-view`, `product-reviews`, `email-manager` | Loading waterfalls, spinners, and duplicated cache logic | Fetch in a server component and pass a promise to `use()`; refresh with `updateTag` |
-| 7 | Hidden module state | `features/email/blocks/system-templates.ts` `++idc` | Ids depend on call order, which is why a test misbehaves between runs | Deterministic ids derived from the template key and index |
+| 7 | Hidden module state | `features/email/lib/blocks/system-templates.ts` `++idc` | Ids depend on call order, which is why a test misbehaves between runs | Deterministic ids derived from the template key and index |
 | 8 | Duplicate hooks | `hooks/use-toast.ts` and `components/ui/use-toast.ts`; `hooks/use-mobile.ts` and `components/ui/use-mobile.tsx` | Two copies drift apart | Keep one copy each and re-point imports |
 | 9 | Client-side guards | `components/auth/route-guard.tsx`, `features/admin/components/admin-guard.tsx` | Protected UI flashes before redirecting; access is checked on the client | Check the session in the server layout and `redirect()`; `requireAdmin()` stays in actions |
 | 10 | Untyped boundaries | `lib/auth/adapters/strapi.ts` (8), `features/docs/lib/strapi-source.ts` (7), product/article mappers (7) | Bad CMS data fails deep in rendering, not at the edge | Zod schemas at the mapper edge (deferred to the Strapi phase, except non-Strapi ones) |
@@ -37,7 +37,7 @@ The ratchet in CI stops any metric getting worse. Each R-sprint lowers its numbe
 - **A slice's `index.ts`**: lets imports be redirected without behaviour changes (R3).
 - **Server action signatures**: the UI moves to `useActionState` while the action itself is unchanged (R6).
 - **`lib/db/prisma`, `features/email/provider`, `lib/stripe`, `lib/auth/server`**: the four outside-world boundaries. These are where the test fakes plug in (R1).
-- **`features/products/mappers.ts`, `features/articles/mappers.ts`**: the only place CMS data enters, so it's the place to validate it.
+- **`features/products/lib/mappers.ts`, `features/articles/lib/mappers.ts`**: the only place CMS data enters, so it's the place to validate it.
 
 ## 4. `useEffect` triage (55)
 

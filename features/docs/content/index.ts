@@ -1,4 +1,4 @@
-import type { Doc } from "../schema"
+import type { Doc } from "../lib/schema"
 import { gettingStartedWithYourDevice } from "./getting-started-with-your-device"
 import { caringForYourHeadphones } from "./caring-for-your-headphones"
 import { troubleshootingCommonIssues } from "./troubleshooting-common-issues"

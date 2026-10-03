@@ -1,4 +1,4 @@
-import type { Doc } from "../schema"
+import type { Doc } from "../lib/schema"
 
 export const strapiMigrationRunbook: Doc = {
   slug: "strapi-migration-runbook",
@@ -47,7 +47,7 @@ export const strapiMigrationRunbook: Doc = {
     {
       type: "code",
       language: "typescript",
-      title: "features/products/api/index.ts — swapping the source",
+      title: "features/products/lib/api.ts — swapping the source",
       code: `// BEFORE — local content
 export async function fetchProducts(): Promise<Product[]> {
   return getAllProducts()
@@ -117,7 +117,7 @@ export async function fetchProducts(): Promise<Product[]> {
     {
       type: "code",
       language: "typescript",
-      title: "features/products/mappers.ts",
+      title: "features/products/lib/mappers.ts",
       code: `import type { Product } from "./schema"
 
 export function mapStrapiProduct(entry: StrapiProductEntry): Product {

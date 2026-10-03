@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
-import { renderBlocks, renderEmail, renderText } from "@/features/email/blocks/render"
-import { DEFAULT_BRANDING, type EmailBlock } from "@/features/email/blocks/types"
-import { SYSTEM_TEMPLATES } from "@/features/email/blocks/system-templates"
+import { renderBlocks, renderEmail, renderText } from "@/features/email/lib/blocks/render"
+import { DEFAULT_BRANDING, type EmailBlock } from "@/features/email/lib/blocks/types"
+import { SYSTEM_TEMPLATES } from "@/features/email/lib/blocks/system-templates"
 
 const blocks: EmailBlock[] = [
   { id: "h1", type: "heading", text: "Hello {{customer_name}}", align: "center" },
@@ -79,7 +79,7 @@ describe("system templates", () => {
 
   it("produce identical ids when the module is loaded again", async () => {
     vi.resetModules()
-    const fresh = await import("@/features/email/blocks/system-templates")
+    const fresh = await import("@/features/email/lib/blocks/system-templates")
     expect(fresh.SYSTEM_TEMPLATES.map((t) => t.blocks.map((b) => b.id))).toEqual(
       SYSTEM_TEMPLATES.map((t) => t.blocks.map((b) => b.id)),
     )

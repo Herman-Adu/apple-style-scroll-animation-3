@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { mapStrapiProduct } from "@/features/products/mappers"
-import { productSchema } from "@/features/products/schema"
+import { mapStrapiProduct } from "@/features/products/lib/mappers"
+import { productSchema } from "@/features/products/lib/schema"
 import { strapiProductEntry } from "@/qa/fixtures/strapi/product.fixture"
 
 /**

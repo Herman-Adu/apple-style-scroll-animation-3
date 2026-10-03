@@ -1,6 +1,6 @@
 import "server-only"
 import { authConfig, isStrapiConfigured } from "@/lib/auth/config"
-import type { Doc, DocBlock } from "../schema"
+import type { Doc, DocBlock } from "./schema"
 
 /**
  * Strapi content source for docs. This is the CMS half of the data seam: when

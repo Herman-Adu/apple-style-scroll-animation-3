@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { useStoreSettings } from "@/features/admin/hooks/use-settings"
-import type { Currency } from "@/lib/settings/types"
+import type { Currency } from "@/features/settings"
 
 const currencies: { value: Currency; label: string; symbol: string }[] = [
   { value: "GBP", label: "GBP", symbol: "£" },

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { cn } from "@/lib/utils"
 import { useAdminDiscountCodes } from "@/features/admin/hooks/use-admin-discount-codes"
-import type { DiscountCode, DiscountCodeInput } from "@/lib/discount-codes/types"
+import type { DiscountCode, DiscountCodeInput } from "@/features/discount-codes"
 import { DiscountCodeFormDialog } from "./discount-code-form-dialog"
 
 function benefitLabel(code: DiscountCode): string {

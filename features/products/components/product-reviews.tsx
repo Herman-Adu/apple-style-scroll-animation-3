@@ -2,8 +2,8 @@
 
 import useSWR from "swr"
 import { Star } from "lucide-react"
-import { reviewsProvider, summarize } from "@/lib/reviews/provider"
-import type { Review, ReviewSummary } from "@/lib/reviews/types"
+import { reviewsProvider, summarize } from "@/features/reviews"
+import type { Review, ReviewSummary } from "@/features/reviews"
 import { useAuth } from "@/lib/auth/auth-context"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { ReviewForm } from "./review-form"

@@ -1,5 +1,5 @@
-export type { Doc, DocBlock, DocCategory, DocAudience, DocAccess, DocSummary, DocChartDatum, DocChartSeries } from "./schema"
-export { DOC_CATEGORIES, DOC_AUDIENCES, DOC_CATEGORY_AUDIENCE, docAudienceMeta } from "./schema"
+export type { Doc, DocBlock, DocCategory, DocAudience, DocAccess, DocSummary, DocChartDatum, DocChartSeries } from "./lib/schema"
+export { DOC_CATEGORIES, DOC_AUDIENCES, DOC_CATEGORY_AUDIENCE, docAudienceMeta } from "./lib/schema"
 export {
   filterDocs,
   filterDocsByCategory,

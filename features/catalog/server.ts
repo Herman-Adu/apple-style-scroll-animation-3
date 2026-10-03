@@ -1,2 +1,2 @@
 // Catalog slice, server-only entry: cache revalidation (uses `next/cache`).
-export * from "./revalidate"
+export * from "./lib/revalidate"

@@ -5,10 +5,10 @@ description: Authentication work on this repo with Better Auth on Prisma and Neo
 
 # Better Auth operations
 
-- `lib/auth.ts`: the `betterAuth()` instance (prismaAdapter, `additionalFields`, `trustedOrigins`, cookies, plugins with `nextCookies()` last).
+- `lib/auth/instance.ts`: the `betterAuth()` instance (prismaAdapter, `additionalFields`, `trustedOrigins`, cookies, plugins with `nextCookies()` last).
 - `lib/auth/`: `config.ts` (admin email allowlist and role precedence via one resolver), `server.ts` (`getSession`, `requireAdmin`), `permissions.ts` (pure rules), `adapters/` (db / local / strapi), `auth-context.tsx` (client).
 
-Load the generic `better-auth` platform skill only when you edit `lib/auth.ts` or add a plugin.
+Load the generic `better-auth` platform skill only when you edit `lib/auth/instance.ts` or add a plugin.
 
 ## Authorisation (every change)
 
@@ -20,10 +20,10 @@ Load the generic `better-auth` platform skill only when you edit `lib/auth.ts` o
 ## Adding user fields or plugins
 
 1. Test first: write a unit test for the permission rule and an integration test for the persisted field.
-2. In `lib/auth.ts`, add the field under `user.additionalFields`. Use `input: false` for anything security-relevant (as `role`, `status` and `roleOverride` already do), so sign-up can't set it.
+2. In `lib/auth/instance.ts`, add the field under `user.additionalFields`. Use `input: false` for anything security-relevant (as `role`, `status` and `roleOverride` already do), so sign-up can't set it.
 3. Generate the Prisma models with the CLI, then apply them via `db-schema-change`:
    ```bash
-   pnpm dlx @better-auth/cli@latest generate --config lib/auth.ts --output prisma/schema.prisma
+   pnpm dlx @better-auth/cli@latest generate --config lib/auth/instance.ts --output prisma/schema.prisma
    pnpm exec prisma db push && pnpm exec prisma generate
    ```
    Review the diff. The CLI may reorder models; keep only the auth changes.
@@ -31,7 +31,7 @@ Load the generic `better-auth` platform skill only when you edit `lib/auth.ts` o
 ## Dev and preview cookies
 
 - Role precedence (override, then stored role, then allowlist) is decided only in `lib/auth/config.ts`. Don't re-derive it elsewhere.
-- In development, `lib/auth.ts` uses `advanced.defaultCookieAttributes: { sameSite: "none", secure: true }`, so the v0 preview iframe keeps the session.
+- In development, `lib/auth/instance.ts` uses `advanced.defaultCookieAttributes: { sameSite: "none", secure: true }`, so the v0 preview iframe keeps the session.
 - `trustedOrigins` must include localhost and the preview and production origins. A login loop usually means a missing origin or a cookie blocked in the iframe.
 - `BETTER_AUTH_SECRET` comes from env only. Never log or print it.
 

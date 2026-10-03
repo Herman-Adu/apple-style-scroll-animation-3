@@ -39,19 +39,19 @@ fakeDb({
 
 // Heavy / unrelated collaborators imported at module load by checkout-finalize.
 vi.mock("next/server", () => ({ after: vi.fn() }));
-vi.mock("@/features/products/data", () => ({ getAllProducts: vi.fn() }));
+vi.mock("@/features/products/lib/data", () => ({ getAllProducts: vi.fn() }));
 vi.mock("@/features/products", () => ({
   productSchema: { safeParse: vi.fn() },
 }));
-vi.mock("@/features/catalog/store", () => ({
+vi.mock("@/features/catalog/lib/store", () => ({
   recordSale: vi.fn(),
   toMap: vi.fn(),
 }));
-vi.mock("@/lib/discount-codes/db-actions", () => ({
+vi.mock("@/features/discount-codes/actions", () => ({
   incrementDiscountCodeRedemption: vi.fn(),
 }));
 vi.mock("@/features/email/actions", () => ({ sendLowStockAlert: vi.fn() }));
-vi.mock("@/lib/settings/db-actions", () => ({
+vi.mock("@/features/settings/actions", () => ({
   getStoreSettingsAction: vi.fn(),
 }));
 
@@ -114,7 +114,7 @@ const uniqueError = (target: string[]) =>
   });
 
 async function load() {
-  return import("@/features/orders/checkout-finalize");
+  return import("@/features/orders/lib/finalize/checkout-finalize");
 }
 
 beforeEach(() => {

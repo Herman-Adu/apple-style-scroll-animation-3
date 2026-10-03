@@ -9,7 +9,7 @@
 
 import { useCallback } from "react"
 import type { CompanyProfile } from "@/lib/data/company"
-import { toCompanyProfile } from "@/lib/settings/types"
+import { toCompanyProfile } from "@/features/settings"
 import { useStoreSettings } from "./use-settings"
 
 export function useCompanyProfile() {

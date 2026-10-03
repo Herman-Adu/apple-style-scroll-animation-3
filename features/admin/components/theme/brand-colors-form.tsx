@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useStoreSettings } from "@/features/admin/hooks/use-settings"
-import { getActiveTheme, upsertTheme, type ThemeTemplate } from "@/lib/settings/theme"
+import { getActiveTheme, upsertTheme, type ThemeTemplate } from "@/features/settings"
 import { ThemePreview } from "./theme-preview"
 
 /** A colour input row that accepts any CSS colour string (oklch, hex, …). The

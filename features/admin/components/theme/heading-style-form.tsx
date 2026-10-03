@@ -15,7 +15,7 @@ import {
   type HeadingAccent,
   type HeadingStyle,
   type ThemeTemplate,
-} from "@/lib/settings/theme"
+} from "@/features/settings"
 import { cn } from "@/lib/utils"
 import { ThemePreview } from "./theme-preview"
 

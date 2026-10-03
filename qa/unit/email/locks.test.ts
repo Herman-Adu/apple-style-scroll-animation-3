@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { EmailBlock } from "@/features/email/blocks/types"
+import type { EmailBlock } from "@/features/email/lib/blocks/types"
 import {
   canReorder,
   insertBlocks,
@@ -10,7 +10,7 @@ import {
   reorder,
   setLocked,
   updateIfUnlocked,
-} from "@/features/email/locks"
+} from "@/features/email/lib/content/locks"
 
 const header = (locked = true): EmailBlock => ({ id: "header", type: "heading", text: "Brand", align: "center", locked })
 const body = (id: string): EmailBlock => ({ id, type: "text", text: id, align: "left" })

@@ -1,5 +1,5 @@
-import type { Doc, DocAudience, DocCategory, DocSummary } from "../schema"
-import { DOC_AUDIENCES, DOC_CATEGORIES, DOC_CATEGORY_AUDIENCE, docAudienceMeta } from "../schema"
+import type { Doc, DocAudience, DocCategory, DocSummary } from "./schema"
+import { DOC_AUDIENCES, DOC_CATEGORIES, DOC_CATEGORY_AUDIENCE, docAudienceMeta } from "./schema"
 
 /** Pure domain selectors for docs. Fully unit-testable, no I/O. */
 

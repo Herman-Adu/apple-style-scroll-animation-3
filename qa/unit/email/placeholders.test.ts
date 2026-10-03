@@ -6,7 +6,7 @@ import {
   placeholderSamples,
   suggestPlaceholder,
   unknownPlaceholders,
-} from "@/features/email/placeholders"
+} from "@/features/email/lib/content/placeholders"
 
 describe("placeholder registry", () => {
   it("has unique keys, each with a label, group and sample", () => {

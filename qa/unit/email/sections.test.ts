@@ -5,8 +5,8 @@ import {
   instantiateSection,
   pickSectionBlocks,
   validateSectionInput,
-} from "@/features/email/sections"
-import type { EmailBlock } from "@/features/email/blocks/types"
+} from "@/features/email/lib/content/sections"
+import type { EmailBlock } from "@/features/email/lib/blocks/types"
 
 const blocks = [
   { id: "a", type: "heading", text: "Hi" },

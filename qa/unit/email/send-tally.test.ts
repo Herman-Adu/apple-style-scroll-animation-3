@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { tallySendResults } from "@/features/email/send-tally"
+import { tallySendResults } from "@/features/email/lib/sending/send-tally"
 
 describe("tallySendResults", () => {
   it("counts sent, skipped and failed results", () => {

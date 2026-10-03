@@ -1,4 +1,4 @@
-import type { Product, Money } from "../schema"
+import type { Product, Money } from "./schema"
 
 /** Pure domain selectors — no I/O, safe to unit test and reuse anywhere. */
 

@@ -51,7 +51,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | R2 (#102) | Deterministic email template block ids, pure `tallySendResults`, `uniqueSlug` without counters, duplicate `use-toast`/`use-mobile` removed; incrementers 8 → 3 |
 | R3 (#103) | Slice boundaries: deep imports 116 → 0, lib→features inversions 16 → 0, ESLint blocks reaching inside a slice (entries: index, `/actions`, `/server`), `checkout-finalize` split into step files, guard test keeps Stripe out of client entries |
 | R4 | Server data for admin and account: 8 client data effects removed; pages load on the server and pass promises read with `use()` inside Suspense; `features/admin/server.ts` loaders; dead `email-manager` and `hooks/use-orders` deleted; guard test `qa/unit/meta/server-data.test.ts` |
-| R5 (next) | Folder hierarchy: every slice gets `index.ts` + `lib/` (+ `components/`, `hooks/`) like `customers`; `email`, `contact`, `catalog`, `timeline`, `orders` reorganised; domain code still in root `lib/` (`reviews`, `discount-codes`, `settings`, `data/reviews`) moves into slices; root `lib/` keeps only shared infrastructure; prop-drilling audit; guard test enforces the layout |
+| R5 | Folder hierarchy: 74 files moved; every slice root holds only `index.ts`/`server.ts`/`actions.ts`, everything else in `components/`, `hooks/`, `lib/` (+ `content/` for docs); new slices `reviews`, `discount-codes`, `settings` take the domain code out of root `lib/`; root `lib/` keeps only shared infrastructure; `actions` counted as a public entry in the deep-import metric; prop-drilling audit found none; guard test `qa/unit/meta/folder-layout.test.ts` |
 
 ## Idea notes
 

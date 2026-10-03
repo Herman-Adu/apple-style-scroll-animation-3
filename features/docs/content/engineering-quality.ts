@@ -1,4 +1,4 @@
-import type { Doc } from "../schema"
+import type { Doc } from "../lib/schema"
 
 export const engineeringQuality: Doc = {
   slug: "engineering-quality",
@@ -106,7 +106,7 @@ export const engineeringQuality: Doc = {
       items: [
         "Run pnpm test: unit and integration suites finish in seconds with no database or network.",
         "Open lib/auth/permissions.ts: every permission rule is a small pure function with its own tests.",
-        "Open features/email/locks.ts: lock rules are separate from the UI and enforced again on the server.",
+        "Open features/email/lib/content/locks.ts: lock rules are separate from the UI and enforced again on the server.",
         "Read the Architecture Decision Records guide for the reasoning behind the main design choices.",
       ],
     },

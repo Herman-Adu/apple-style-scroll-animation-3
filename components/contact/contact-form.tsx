@@ -19,7 +19,7 @@ import { enquiryTypes } from "@/features/contact";
 import { products } from "@/features/products";
 import { submitEnquiryAction } from "@/app/contact/actions";
 import type { EnquiryField, EnquiryType } from "@/features/contact";
-import { reviewsProvider } from "@/lib/reviews/provider";
+import { reviewsProvider } from "@/features/reviews";
 import { useAuth } from "@/lib/auth/auth-context";
 import { StarRating } from "./star-rating";
 import { cn } from "@/lib/utils";

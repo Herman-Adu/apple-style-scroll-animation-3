@@ -1,4 +1,4 @@
-import type { Doc } from "../schema"
+import type { Doc } from "../lib/schema"
 
 export const architectureDecisionRecords: Doc = {
   slug: "architecture-decision-records",
@@ -62,7 +62,7 @@ export const architectureDecisionRecords: Doc = {
     { type: "heading", text: "ADR-006 — Starters in code" },
     {
       type: "paragraph",
-      text: "Context: the starter gallery (Newsletter, Sale, Black Friday, Christmas and so on) needs to be the same in every environment. Decision: starters are defined in features/email/starters.ts, and choosing one creates a normal template. Trade-off: adding a starter needs a deploy. In return, starters are reviewed, tested and versioned like code.",
+      text: "Context: the starter gallery (Newsletter, Sale, Black Friday, Christmas and so on) needs to be the same in every environment. Decision: starters are defined in features/email/lib/content/starters.ts, and choosing one creates a normal template. Trade-off: adding a starter needs a deploy. In return, starters are reviewed, tested and versioned like code.",
     },
     { type: "heading", text: "ADR-007 — Pure permission rules, three layers" },
     {
@@ -92,7 +92,7 @@ export const architectureDecisionRecords: Doc = {
     { type: "heading", text: "ADR-009 — Separate path for scheduled sends" },
     {
       type: "paragraph",
-      text: "Context: scheduled sends run with no one signed in, so the admin check would block them. Decision: the sending logic lives in features/email/campaign-send.ts. The admin action wraps it with requireAdmin, and the cron route calls it only with a valid CRON_SECRET. Trade-off: two entry points to maintain. In return, neither path weakens the other.",
+      text: "Context: scheduled sends run with no one signed in, so the admin check would block them. Decision: the sending logic lives in features/email/lib/sending/campaign-send.ts. The admin action wraps it with requireAdmin, and the cron route calls it only with a valid CRON_SECRET. Trade-off: two entry points to maintain. In return, neither path weakens the other.",
     },
     { type: "heading", text: "ADR-010 — How we test" },
     {

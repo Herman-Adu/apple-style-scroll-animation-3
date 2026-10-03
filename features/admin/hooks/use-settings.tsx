@@ -9,8 +9,8 @@
 // on next load.
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
-import { getStoreSettingsAction, updateStoreSettingsAction } from "@/lib/settings/db-actions"
-import type { StoreSettings } from "@/lib/settings/types"
+import { getStoreSettingsAction, updateStoreSettingsAction } from "@/features/settings/actions"
+import type { StoreSettings } from "@/features/settings"
 
 interface SettingsContextValue {
   settings: StoreSettings

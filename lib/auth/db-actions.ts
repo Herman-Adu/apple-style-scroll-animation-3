@@ -8,7 +8,7 @@
 import { headers } from "next/headers"
 import type { Prisma } from "@prisma/client"
 
-import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth/instance"
 import { prisma } from "@/lib/db/prisma"
 import { effectiveRole } from "@/lib/auth/config"
 import {

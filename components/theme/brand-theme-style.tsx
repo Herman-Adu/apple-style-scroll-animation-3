@@ -1,4 +1,4 @@
-import { buildThemeCss, type ThemeTemplate } from "@/lib/settings/theme"
+import { buildThemeCss, type ThemeTemplate } from "@/features/settings"
 
 /**
  * Emits the active theme's accent/gradient token overrides as an inline

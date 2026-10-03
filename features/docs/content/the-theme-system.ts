@@ -1,4 +1,4 @@
-import type { Doc } from "../schema"
+import type { Doc } from "../lib/schema"
 
 export const theThemeSystem: Doc = {
   slug: "the-theme-system",
@@ -28,7 +28,7 @@ export const theThemeSystem: Doc = {
     {
       type: "code",
       language: "typescript",
-      title: "lib/settings/theme.ts — the persisted shape",
+      title: "features/settings/lib/theme.ts — the persisted shape",
       code: [
         "interface ThemeState {",
         "  activeThemeId: string",

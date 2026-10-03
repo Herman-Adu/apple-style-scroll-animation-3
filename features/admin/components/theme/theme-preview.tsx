@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from "react"
 import { TwoToneTitle } from "@/components/primitives/two-tone-title"
-import { resolveTokens, type ColorScheme, type ThemeTemplate } from "@/lib/settings/theme"
+import { resolveTokens, type ColorScheme, type ThemeTemplate } from "@/features/settings"
 import { cn } from "@/lib/utils"
 
 /** CSS custom props scoped to the preview so it re-themes independently of the

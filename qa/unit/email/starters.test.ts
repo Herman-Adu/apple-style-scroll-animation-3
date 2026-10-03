@@ -1,9 +1,9 @@
 import { existsSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
-import { STARTERS, buildFromExisting, buildFromStarter, getStarter } from "@/features/email/starters"
-import { findPlaceholderKeys, PLACEHOLDERS } from "@/features/email/placeholders"
-import type { EmailBlock } from "@/features/email/blocks/types"
+import { STARTERS, buildFromExisting, buildFromStarter, getStarter } from "@/features/email/lib/content/starters"
+import { findPlaceholderKeys, PLACEHOLDERS } from "@/features/email/lib/content/placeholders"
+import type { EmailBlock } from "@/features/email/lib/blocks/types"
 
 let n = 0
 const makeId = () => `id-${++n}`

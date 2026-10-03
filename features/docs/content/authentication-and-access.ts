@@ -1,4 +1,4 @@
-import type { Doc } from "../schema"
+import type { Doc } from "../lib/schema"
 
 export const authenticationAndAccess: Doc = {
   slug: "authentication-and-access-control",
@@ -31,7 +31,7 @@ export const authenticationAndAccess: Doc = {
       type: "table",
       headers: ["Piece", "Lives in", "Responsibility"],
       rows: [
-        ["Auth instance", "lib/auth.ts", "Better Auth config: email + password, sessions, autoSignIn, Neon adapter."],
+        ["Auth instance", "lib/auth/instance.ts", "Better Auth config: email + password, sessions, autoSignIn, Neon adapter."],
         ["Role derivation", "lib/auth/config.ts", "effectiveRole() resolves admin from an email allowlist or a persisted roleOverride."],
         ["Owner tier", "lib/auth/config.ts", "isOwner() marks the single platform owner (super-admin) — unlocks owner-only docs that even other admins can't read, and drives the Owner badge."],
         ["Client hook", "the auth client", "Exposes session/status and sign-in/out to client islands."],

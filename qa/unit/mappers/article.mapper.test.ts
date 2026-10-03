@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { mapStrapiArticle } from "@/features/articles/mappers"
-import { articleSchema } from "@/features/articles/schema"
+import { mapStrapiArticle } from "@/features/articles/lib/mappers"
+import { articleSchema } from "@/features/articles/lib/schema"
 import { strapiArticleEntry } from "@/qa/fixtures/strapi/article.fixture"
 
 describe("mapStrapiArticle", () => {

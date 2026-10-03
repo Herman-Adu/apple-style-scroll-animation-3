@@ -22,8 +22,8 @@ Each feature's `api/index.ts` returns the same validated domain types regardless
 1. A running Strapi instance (Cloud or self-hosted).
 2. Content-types created in Strapi that match the domain contracts. The mappers currently assume these singular model names and fields:
    - **`product`** — `slug`, `name`, `tagline`, `category`, `price` (`amount`, `currency`), `summary`, `description`, `image`, `accent`, `featured`, `releaseStatus`, `hero` (polymorphic: `parallax` | `exploded` | `frames`), `features[]`, `specs[]`, `colors[]`
-   - **`article`** — see `features/articles/mappers.ts` and `features/articles/schema`
-   - **`milestone`** (timeline) — see `features/timeline/mappers.ts` and `features/timeline/schema`
+   - **`article`** — see `features/articles/lib/mappers.ts` and `features/articles/schema`
+   - **`milestone`** (timeline) — see `features/timeline/lib/mappers.ts` and `features/timeline/schema`
 3. A read-only **API token** (Strapi: Settings → API Tokens).
 
 ---

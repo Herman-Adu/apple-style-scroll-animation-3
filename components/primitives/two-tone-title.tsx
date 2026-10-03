@@ -1,4 +1,4 @@
-import type { HeadingTier } from "@/lib/settings/theme"
+import type { HeadingTier } from "@/features/settings"
 import { cn } from "@/lib/utils"
 
 /**

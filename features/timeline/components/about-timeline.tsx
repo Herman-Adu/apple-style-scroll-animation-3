@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { motion, useScroll, useSpring, useInView, type Variants } from "framer-motion"
 import { Compass, AudioWaveform, FlaskConical, Headphones, type LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Milestone } from "../schema"
+import type { Milestone } from "../lib/schema"
 
 const iconMap: Record<string, LucideIcon> = {
   compass: Compass,

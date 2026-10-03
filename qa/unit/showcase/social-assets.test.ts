@@ -8,7 +8,7 @@ import {
   exportPlan,
   getSocialAsset,
   socialAssets,
-} from "@/features/showcase/social/assets"
+} from "@/features/showcase/lib/social-assets"
 import { docs } from "@/features/docs/content"
 
 const publicFile = (src: string) => existsSync(join(process.cwd(), "public", src))

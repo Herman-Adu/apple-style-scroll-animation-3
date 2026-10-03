@@ -1,4 +1,4 @@
-import type { Doc } from "../schema"
+import type { Doc } from "../lib/schema"
 
 export const contributingAndWorkflow: Doc = {
   slug: "contributing-and-workflow",
@@ -17,7 +17,7 @@ export const contributingAndWorkflow: Doc = {
       type: "steps",
       items: [
         { title: "Branch from the real main", text: "Refresh origin/main with an explicit refspec (git fetch origin +refs/heads/main:refs/remotes/origin/main), check its SHA matches GitHub, then branch from it, for example v0/s1-permissions. Never commit directly to main." },
-        { title: "Write the failing test", text: "Put pure rules in a small module (for example features/email/locks.ts) and write its unit tests first. Run them and confirm they fail for the right reason." },
+        { title: "Write the failing test", text: "Put pure rules in a small module (for example features/email/lib/content/locks.ts) and write its unit tests first. Run them and confirm they fail for the right reason." },
         { title: "Implement the rule", text: "Make the tests pass without touching the UI." },
         { title: "Wire it in", text: "Call the rule from server actions, enforce permissions there, then reflect it in the UI. Add an integration test for the server action." },
         { title: "Run the checks", text: "pnpm exec tsc --noEmit, pnpm test:unit and pnpm test:integration must all pass. For UI changes, run the smoke tests or check the page in a browser." },

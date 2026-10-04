@@ -1,13 +1,4 @@
-export {
-  sendOrderConfirmation,
-  sendOrderNotification,
-  sendPersonalOffer,
-  sendLowStockAlert,
-  getEmailConfigured,
-  sendTestEmail,
-  sendRefundConfirmation,
-  sendShippingConfirmation,
-} from "./actions";
+export * from "./lib/actions/transactional";
 export * from "./lib/actions/admin";
 export * from "./lib/blocks/labels";
 export * from "./lib/blocks/render";

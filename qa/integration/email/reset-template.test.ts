@@ -56,7 +56,7 @@ fakeDb({ emailTemplate: tpl, emailTemplateVersion: ver }).install()
 cache.install()
 fakeEmail().install()
 fakeAuth({ session: { email: "herman@adudev.co.uk", role: "admin" } }).install()
-vi.mock("@/features/settings/actions", () => ({ getStoreSettingsAction: vi.fn() }))
+vi.mock("@/features/settings", () => ({ getStoreSettingsAction: vi.fn() }))
 
 const def = SYSTEM_TEMPLATES[0]
 

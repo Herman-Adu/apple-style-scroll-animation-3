@@ -6,7 +6,7 @@ import {
   deleteDiscountCodeAction,
   listDiscountCodesAction,
   updateDiscountCodeAction,
-} from "@/features/discount-codes/actions"
+} from "@/features/discount-codes"
 import type { DiscountCode, DiscountCodeInput, DiscountCodePatch } from "@/features/discount-codes"
 
 /** Admin view of store-wide discount codes, backed by the Neon-persisted

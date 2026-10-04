@@ -5,7 +5,7 @@ import { ShieldCheck } from "lucide-react"
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js"
 
 import { getStripe } from "@/lib/stripe/client"
-import { startStripeCheckout, type QuoteRequestLine } from "@/features/checkout/actions"
+import { startStripeCheckout, type QuoteRequestLine } from "@/features/checkout"
 
 // Stripe always bootstraps with these two utility iframes (telemetry + outer
 // controller), appended straight to <body> before the real checkout content

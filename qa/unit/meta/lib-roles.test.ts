@@ -12,7 +12,8 @@ import { REPO_ROOT } from "@/qa/config/repo-root";
  *  - adapters/  boundary glue: SDK wrappers, CMS payload mappers, Next.js APIs, providers.
  *  - actions/   the only place `"use server"` files live.
  *
- * The slice-root `actions.ts` is a public entry: re-exports only, no logic.
+ * There is no slice-root `actions.ts`: a slice's server actions are exported from its
+ * `index.ts` (a "use server" file is an RPC boundary, so client bundles get stubs).
  */
 const FEATURES = join(REPO_ROOT, "features");
 
@@ -36,21 +37,27 @@ const stripComments = (source: string) =>
 const isCode = (file: string) => /\.(ts|tsx)$/.test(file);
 const USE_SERVER = /^\s*["']use server["']/m;
 
-describe("slice-root actions.ts is a public entry, not an implementation", () => {
-  const withActions = slices.filter((slice) =>
-    existsSync(join(FEATURES, slice, "actions.ts")),
-  );
+describe("server actions are exposed through the slice index.ts", () => {
+  it("no slice has a root actions.ts", () => {
+    const stray = slices.filter((slice) =>
+      existsSync(join(FEATURES, slice, "actions.ts")),
+    );
+    expect(stray).toEqual([]);
+  });
 
-  it.each(withActions)("%s/actions.ts only re-exports", (slice) => {
-    const source = stripComments(read(join(FEATURES, slice, "actions.ts")));
-    expect(source).not.toMatch(USE_SERVER);
-    const residue = source
-      .replace(
-        /export\s+(type\s+)?(\*(\s+as\s+\w+)?|\{[^}]*\})\s+from\s+["'][^"']+["']/g,
-        "",
-      )
-      .replace(/[;\s]/g, "");
-    expect(residue).toBe("");
+  it("nothing imports a slice's /actions entry", () => {
+    const importers = walk(FEATURES)
+      .concat(walk(join(REPO_ROOT, "app")), walk(join(REPO_ROOT, "components")))
+      .filter(isCode)
+      .filter((file) => /@\/features\/[^/"']+\/actions["']/.test(read(file)))
+      .map(posix);
+    expect(importers).toEqual([]);
+  });
+
+  it.each(
+    slices.filter((slice) => existsSync(join(FEATURES, slice, "index.ts"))),
+  )('%s/index.ts has no "use server" directive', (slice) => {
+    expect(read(join(FEATURES, slice, "index.ts"))).not.toMatch(USE_SERVER);
   });
 });
 

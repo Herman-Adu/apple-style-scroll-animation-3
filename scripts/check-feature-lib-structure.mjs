@@ -55,8 +55,13 @@ async function run() {
       looseFiles,
     };
 
-    if (unexpected.length > 0 || looseFiles.length > 0) {
-      report.issues.push({ feature: f, unexpected, looseFiles });
+    if (unexpected.length > 0 || looseFiles.length > 0 || hasRootActions) {
+      report.issues.push({
+        feature: f,
+        unexpected,
+        looseFiles,
+        hasRootActions,
+      });
     }
   }
 

@@ -3,7 +3,7 @@ import "server-only";
 import { after } from "next/server";
 
 import { sendLowStockAlert } from "@/features/email";
-import { getStoreSettingsAction } from "@/features/settings/actions";
+import { getStoreSettingsAction } from "@/features/settings";
 
 export type LowStockItem = {
   name: string;

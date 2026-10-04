@@ -14,7 +14,7 @@ import {
   type VersionReason,
 } from "../content/versions";
 import type { SectionBlock } from "../content/sections";
-import { getStoreSettingsAction } from "@/features/settings/actions";
+import { getStoreSettingsAction } from "@/features/settings";
 import { getActiveTheme, resolveTokens } from "@/features/settings";
 
 async function getThemeAccent(): Promise<string> {

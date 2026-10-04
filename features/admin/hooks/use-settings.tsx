@@ -9,7 +9,7 @@
 // on next load.
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
-import { getStoreSettingsAction, updateStoreSettingsAction } from "@/features/settings/actions"
+import { getStoreSettingsAction, updateStoreSettingsAction } from "@/features/settings"
 import type { StoreSettings } from "@/features/settings"
 
 interface SettingsContextValue {

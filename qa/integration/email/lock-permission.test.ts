@@ -36,7 +36,7 @@ fakeDb({ emailTemplate: tpl, emailTemplateVersion: ver }).install()
 fakeCache().install()
 fakeEmail().install()
 auth.install()
-vi.mock("@/features/settings/actions", () => ({ getStoreSettingsAction: vi.fn() }))
+vi.mock("@/features/settings", () => ({ getStoreSettingsAction: vi.fn() }))
 
 const header: EmailBlock = { id: "header", type: "heading", text: "Brand", align: "center", locked: true }
 const body: EmailBlock = { id: "body", type: "text", text: "Hello", align: "left" }

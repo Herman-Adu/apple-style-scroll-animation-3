@@ -1,8 +1,10 @@
-// Orders slice, client-safe entry: types, analytics, invoice and tracking helpers.
-// The adapter (which reaches server actions and Stripe) is in `@/features/orders/actions`;
-// webhook-side finalize code is in `@/features/orders/server`.
+// Orders slice, client-safe entry: types, analytics, invoice and tracking helpers,
+// and `ordersAdapter`, which only reaches "use server" files (RPC boundaries, so
+// Stripe stays on the server). Webhook-side finalize code is in `@/features/orders/server`.
 
-export * from "./lib/analytics"
-export * from "./lib/invoice"
-export * from "./lib/tracking"
-export * from "./lib/types"
+export { ordersAdapter } from "./lib/adapters";
+
+export * from "./lib/analytics";
+export * from "./lib/invoice";
+export * from "./lib/tracking";
+export * from "./lib/types";

@@ -37,4 +37,3 @@ Load the generic `better-auth` platform skill only when you edit `lib/auth/insta
 
 ## Testing auth in the browser
 
-`/admin` redirects to `/sign-in` without a session. Use `QA_ADMIN_EMAIL` / `QA_ADMIN_PASSWORD` from Vars if they're set; otherwise ask the user to add them (in Vars, never in chat).

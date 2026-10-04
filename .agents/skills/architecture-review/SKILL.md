@@ -29,16 +29,16 @@ find app features lib components -name "*.ts*" | xargs wc -l | sort -rn | head -
 
 ## 2. Smells to look for (read only the flagged files)
 
-| Smell | Signal | Usual fix |
-|---|---|---|
-| Leaky slice | deep imports into `features/x/...` | export from `index.ts` |
-| Inverted dependency | `lib/` imports `features/` | move domain code into a slice |
-| God file | >300 lines, many responsibilities | split by responsibility |
-| Effect-driven data | `useEffect` + `fetch`/`setState` | `react-next-patterns` decision tree |
-| Untyped boundary | `any`, unchecked `JSON.parse` | zod at the edge |
-| Hidden state | module-level `let`, `++` | derived or pure ids |
-| Client sprawl | `"use client"` high in the tree | push it down to leaves |
-| Duplicate logic | same rule in two slices | extract to the owner |
+| Smell               | Signal                             | Usual fix                           |
+| ------------------- | ---------------------------------- | ----------------------------------- |
+| Leaky slice         | deep imports into `features/x/...` | export from `index.ts`              |
+| Inverted dependency | `lib/` imports `features/`         | move domain code into a slice       |
+| God file            | >300 lines, many responsibilities  | split by responsibility             |
+| Effect-driven data  | `useEffect` + `fetch`/`setState`   | `react-next-patterns` decision tree |
+| Untyped boundary    | `any`, unchecked `JSON.parse`      | zod at the edge                     |
+| Hidden state        | module-level `let`, `++`           | derived or pure ids                 |
+| Client sprawl       | `"use client"` high in the tree    | push it down to leaves              |
+| Duplicate logic     | same rule in two slices            | extract to the owner                |
 
 ## 3. Seams
 

@@ -1,2 +1,2 @@
-export * from "..\..\permissions\actions";
-export * from "..\..\permissions\optimistic";
+export * from "../../permissions/actions";
+export * from "../../permissions/optimistic";

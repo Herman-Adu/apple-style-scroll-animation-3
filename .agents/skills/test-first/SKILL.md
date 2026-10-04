@@ -7,20 +7,20 @@ description: Red-green-refactor for this repo - choose the test layer (Vitest un
 
 ## The loop
 
-1. **Red.** Write the smallest test that states the behaviour. Run it. It must fail *for the right reason*: missing behaviour, not a typo or a bad import.
+1. **Red.** Write the smallest test that states the behaviour. Run it. It must fail _for the right reason_: missing behaviour, not a typo or a bad import.
 2. **Green.** Write the least code that passes.
 3. **Refactor.** Clean up with the tests green (see `typescript-clean-code`).
 4. Bug fix? First write a test that reproduces the bug.
 
 ## Pick the layer
 
-| Behaviour | Layer | Location |
-|---|---|---|
-| Pure rule, mapper, schema, formatter | unit | `qa/unit/<slice>/*.test.ts` |
-| Server action or query touching Neon | integration | `qa/integration/<slice>/*.test.ts` |
-| Page renders, route guard, critical click path | smoke | `qa/smoke/*.spec.ts` |
-| Metadata, sitemap, robots | seo | `qa/seo/*.spec.ts` |
-| Accessibility of a page | axe | `qa/axe/*.spec.ts` |
+| Behaviour                                      | Layer       | Location                           |
+| ---------------------------------------------- | ----------- | ---------------------------------- |
+| Pure rule, mapper, schema, formatter           | unit        | `qa/unit/<slice>/*.test.ts`        |
+| Server action or query touching Neon           | integration | `qa/integration/<slice>/*.test.ts` |
+| Page renders, route guard, critical click path | smoke       | `qa/smoke/*.spec.ts`               |
+| Metadata, sitemap, robots                      | seo         | `qa/seo/*.spec.ts`                 |
+| Accessibility of a page                        | axe         | `qa/axe/*.spec.ts`                 |
 
 Make it testable by design. Put the rule in a small pure module (`features/<x>/lib/*.ts`, `lib/auth/permissions.ts`) and keep components and actions thin, so most tests are fast unit tests.
 

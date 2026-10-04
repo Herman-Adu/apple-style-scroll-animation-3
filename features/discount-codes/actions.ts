@@ -12,10 +12,10 @@
 import { headers } from "next/headers"
 import { revalidatePath } from "next/cache"
 
-import { auth } from "@/lib/auth/instance"
+import { auth } from "@/lib/auth/adapters/instance"
 import { prisma } from "@/lib/db/prisma"
-import { effectiveRole } from "@/lib/auth/config"
-import type { OfferTag } from "@/lib/auth/types"
+import { effectiveRole } from "@/lib/auth/domain/config"
+import type { OfferTag } from "@/lib/auth/domain/types"
 import type { DiscountCode, DiscountCodeInput, DiscountCodePatch } from "./lib/types"
 
 type DiscountCodeRow = {

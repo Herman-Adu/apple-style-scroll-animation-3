@@ -14,9 +14,9 @@
 import { headers } from "next/headers"
 import type { Prisma } from "@prisma/client"
 
-import { auth } from "@/lib/auth/instance"
+import { auth } from "@/lib/auth/adapters/instance"
 import { prisma } from "@/lib/db/prisma"
-import { effectiveRole } from "@/lib/auth/config"
+import { effectiveRole } from "@/lib/auth/domain/config"
 import { getAllProducts } from "@/features/products"
 import { productSchema, type Product } from "@/features/products"
 import { toMap, type ProductMap } from "./store"

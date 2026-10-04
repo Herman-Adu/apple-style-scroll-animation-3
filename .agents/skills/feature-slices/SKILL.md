@@ -42,6 +42,22 @@ app/  →  features/<slice>/index.ts  →  lib/  →  components/ui
 
 Only cross-cutting infrastructure: `lib/auth`, the db client, `lib/seo`, `lib/strapi`, utils, env. Domain logic (orders, catalog, offers) belongs in a slice.
 
+### The four-folder convention (R6)
+
+Any `lib/` or slice `lib/` folder that mixes pure rules, repos and framework adapters gets split into:
+
+```
+domain/     pure rules and types, no I/O (e.g. permissions, config)
+data/       repo-style reads/writes against a store (e.g. lock-rights-repo)
+adapters/   framework/provider glue — the only place allowed to import a provider SDK
+            or a Next.js server API directly (e.g. auth providers, session cookie/token)
+actions.ts  / server.ts / client.ts stay at the folder root as the public entry files
+```
+
+`lib/auth/` uses this today (R6). Apply it to a feature's `lib/` only once it has outgrown a
+flat folder — small single-purpose folders (`lib/db`, `lib/seo`, `lib/strapi`, `lib/stripe`)
+don't need it.
+
 ## Where a component goes
 
 | It is... | Put it in | Examples |

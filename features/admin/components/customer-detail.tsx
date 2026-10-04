@@ -20,11 +20,11 @@ import { formatMoney, formatDate } from "@/lib/format"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { OrderStatusBadge } from "./status-badges"
 import { CustomerStatusBadge, RoleBadge } from "./customer-badges"
-import { isOwner } from "@/lib/auth/config"
+import { isOwner } from "@/lib/auth/domain/config"
 import { OfferEditor } from "./offer-editor"
 import { useAdminCustomers, type AdminCustomersData } from "../hooks/use-admin-customers"
 import { sendPersonalOffer } from "@/features/email"
-import type { OfferTag } from "@/lib/auth/types"
+import type { OfferTag } from "@/lib/auth/domain/types"
 
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (

@@ -1,5 +1,5 @@
 import "server-only"
-import { authConfig, isStrapiConfigured } from "@/lib/auth/config"
+import { authConfig, isStrapiConfigured } from "@/lib/auth/domain/config"
 import type { Doc, DocBlock } from "./schema"
 
 /**

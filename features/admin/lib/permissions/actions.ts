@@ -2,14 +2,14 @@
 
 import { revalidatePath } from "next/cache"
 import { requireAdmin } from "@/lib/auth/server"
-import { isOwner } from "@/lib/auth/config"
+import { isOwner } from "@/lib/auth/domain/config"
 import {
   AuthorizationError,
   blockLockerEmails,
   canManagePermissions,
   validateGrant,
   type GrantAction,
-} from "@/lib/auth/permissions"
+} from "@/lib/auth/domain/permissions"
 import {
   grantLockRights,
   listAdminEmails,
@@ -17,7 +17,7 @@ import {
   listPermissionAudit,
   revokeLockRights,
   type PermissionAuditEntry,
-} from "@/lib/auth/lock-rights-repo"
+} from "@/lib/auth/data/lock-rights-repo"
 
 export type LockRightSource = "owner" | "granted" | "env" | null
 export type AdminLockRight = { email: string; isOwner: boolean; canLock: boolean; source: LockRightSource }

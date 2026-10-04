@@ -42,7 +42,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | S2 | Admin → Settings → Permissions screen (switch per admin, audit log), docs + ADR-011 |
 | S3 | Demo video tooling: Playwright `recordVideo` clips → `.mp4` via `ffmpeg-static` |
 | S4 | Social launch assets: LinkedIn carousel PDF + 1080×1080 squares |
-| S5 | Production deploy, Stripe live-keys checklist, final gap analysis |
+| S5 | **Replaces "Go live".** This repo stays a prototype template, not a production deploy — no deploy gate, no Stripe live-keys checklist. Instead: `docs/template-handover.md` (what the template is, how to fork it, env vars to swap, what to delete vs. keep), a template-vs-live-product note at the top of `README.md`, and a final gap analysis against the architecture-health baseline to close the ledger |
 | W1 (#96) | Rules in the repo: `AGENTS.md` router + 11 skills in `.agents/skills/`, guard test `qa/unit/meta/skills.test.ts` |
 | W1b (#97) | Feature-slices rule (100% slices, atomic only for `components/ui`), loader contrast fix, vendored grill-me / grill-with-docs (MIT) |
 | W2 (#98, #100) | Strict checks: 0 lint errors, no ignored TS build errors, arch-audit ratchet, CI (`checks` + `app`) live and required on `main` |
@@ -52,6 +52,15 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | R3 (#103) | Slice boundaries: deep imports 116 → 0, lib→features inversions 16 → 0, ESLint blocks reaching inside a slice (entries: index, `/actions`, `/server`), `checkout-finalize` split into step files, guard test keeps Stripe out of client entries |
 | R4 | Server data for admin and account: 8 client data effects removed; pages load on the server and pass promises read with `use()` inside Suspense; `features/admin/server.ts` loaders; dead `email-manager` and `hooks/use-orders` deleted; guard test `qa/unit/meta/server-data.test.ts` |
 | R5 | Folder hierarchy: 74 files moved; every slice root holds only `index.ts`/`server.ts`/`actions.ts`, everything else in `components/`, `hooks/`, `lib/` (+ `content/` for docs); new slices `reviews`, `discount-codes`, `settings` take the domain code out of root `lib/`; root `lib/` keeps only shared infrastructure; `actions` counted as a public entry in the deep-import metric; prop-drilling audit found none; guard test `qa/unit/meta/folder-layout.test.ts` |
+| R6 | `lib/auth/` split into the `actions` / `data` / `domain` / `adapters` convention: `domain/` (types, config, permissions — pure rules), `data/` (`lock-rights-repo`), `adapters/` (db/local/strapi auth providers, session cookie/token, auth context), root keeps only the public `actions.ts`/`server.ts`/`client.ts` entries; every import (absolute and relative) rewritten in the same pass; other root `lib/` folders (`data`, `db`, `seo`, `strapi`, `stripe`) left as-is — each is already a single-purpose set of files with no mixed concerns to split |
+
+## Upcoming sprints (continued)
+
+| Sprint | Scope |
+| --- | --- |
+| R7 | Apply the same `actions` / `data` / `domain` / `adapters` split inside each feature's `lib/` (starting with the slices that mix pure rules, repos and framework adapters in one flat folder) |
+| R8 | Close the remaining deep-import and `lib` → `features` inversions found by `scripts/arch-audit.mjs` |
+| R9 | Final dependency-inversion / prop-drilling sweep across the app, plus a guard test that keeps the four-folder convention and the inversion count from regressing |
 
 ## Idea notes
 

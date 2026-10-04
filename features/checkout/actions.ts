@@ -14,7 +14,7 @@ import { headers } from "next/headers"
 import type Stripe from "stripe"
 
 import { products } from "@/features/products"
-import type { OfferTag } from "@/lib/auth/types"
+import type { OfferTag } from "@/lib/auth/domain/types"
 import type { OrderItem } from "@/features/orders"
 import { prisma } from "@/lib/db/prisma"
 import { env } from "@/lib/env"

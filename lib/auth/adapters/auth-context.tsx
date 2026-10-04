@@ -4,7 +4,7 @@
 // Depends only on the AuthAdapter port — never on a concrete backend.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { getAuthAdapter } from "./adapters"
+import { getAuthAdapter } from "../adapters"
 import {
   AuthError,
   ProfileUpdate,
@@ -12,7 +12,7 @@ import {
   SignInInput,
   SignUpInput,
   User,
-} from "./types"
+} from "../domain/types"
 
 export type AuthStatus = "loading" | "authenticated" | "unauthenticated"
 

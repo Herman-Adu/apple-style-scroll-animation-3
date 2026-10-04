@@ -6,7 +6,7 @@ import "./globals.css"
 import { Inter } from "next/font/google"
 import { CartProvider } from "@/features/checkout"
 import { CatalogProvider } from "@/features/catalog"
-import { AuthProvider } from "@/lib/auth/auth-context"
+import { AuthProvider } from "@/lib/auth/adapters/auth-context"
 // `fetchAppSession` used to seed the session at the root layout, but that
 // forces every page to be server-rendered. We fetch session client-side in
 // `AuthProvider` so public pages can be statically prerendered or ISR.

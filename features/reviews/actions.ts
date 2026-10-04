@@ -9,7 +9,7 @@
 
 import { headers } from "next/headers"
 
-import { auth } from "@/lib/auth/instance"
+import { auth } from "@/lib/auth/adapters/instance"
 import { prisma } from "@/lib/db/prisma"
 import { seedReviews } from "./lib/seed"
 import { moderateReview } from "./lib/moderation"

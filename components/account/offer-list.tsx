@@ -3,10 +3,10 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import { Sparkles, Tag, X } from "lucide-react"
-import { useAuth } from "@/lib/auth/auth-context"
+import { useAuth } from "@/lib/auth/adapters/auth-context"
 import { offerDaysLeft } from "@/features/checkout"
 import { offerHeadline, offerUrgency } from "@/features/checkout"
-import type { OfferTag } from "@/lib/auth/types"
+import type { OfferTag } from "@/lib/auth/domain/types"
 
 /**
  * How long a used or expired offer keeps showing on the account page after it

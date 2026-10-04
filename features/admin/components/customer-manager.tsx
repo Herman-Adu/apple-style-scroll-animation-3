@@ -25,7 +25,7 @@ import {
 import type { CustomerRecord, CustomerSegment, CustomerSort } from "@/features/customers"
 import { useAdminCustomers, type AdminCustomersData } from "../hooks/use-admin-customers"
 import { CustomerStatusBadge, RoleBadge, OfferChip } from "./customer-badges"
-import { isOwner } from "@/lib/auth/config"
+import { isOwner } from "@/lib/auth/domain/config"
 import { ColumnsMenu, type ColumnOption } from "./columns-menu"
 
 const CUSTOMER_COLUMNS: ColumnOption[] = [

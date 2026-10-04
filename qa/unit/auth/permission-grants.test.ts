@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { canManagePermissions, mergeLockers, validateGrant } from "@/lib/auth/permissions"
+import { canManagePermissions, mergeLockers, validateGrant } from "@/lib/auth/domain/permissions"
 
 /**
  * Lock rights are granted by the owner from the admin UI and stored in the

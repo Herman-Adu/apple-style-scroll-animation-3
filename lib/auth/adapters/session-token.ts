@@ -1,5 +1,5 @@
 import "server-only"
-import type { UserRole } from "./types"
+import type { UserRole } from "../domain/types"
 
 // Server-only session token: an HMAC-SHA256 signed, URL-safe string of the form
 // `<base64url(payload)>.<base64url(signature)>`. The signing secret never leaves

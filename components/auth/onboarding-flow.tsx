@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { OnboardingFieldControl } from "@/components/auth/onboarding-field"
 import { onboardingSteps } from "@/lib/data/onboarding"
-import { useAuth } from "@/lib/auth/auth-context"
-import type { ProfileUpdate, UserProfile } from "@/lib/auth/types"
+import { useAuth } from "@/lib/auth/adapters/auth-context"
+import type { ProfileUpdate, UserProfile } from "@/lib/auth/domain/types"
 
 export function OnboardingFlow() {
   const { user, completeOnboarding } = useAuth()

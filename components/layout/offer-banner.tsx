@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import { ArrowRight, Sparkles, X } from "lucide-react"
-import { useAuth } from "@/lib/auth/auth-context"
+import { useAuth } from "@/lib/auth/adapters/auth-context"
 import { offerHeadline, offerUrgency, pickActiveOffer } from "@/features/checkout"
 
 /**

@@ -6,7 +6,7 @@ import { nextCookies } from "better-auth/next-js"
 import { dash } from "@better-auth/infra"
 
 import { prisma } from "@/lib/db/prisma"
-import { resolveRole } from "@/lib/auth/config"
+import { resolveRole } from "@/lib/auth/domain/config"
 
 /**
  * Better Auth server — the permanent owner of identity and sessions.

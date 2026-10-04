@@ -5,7 +5,7 @@
 // today and a Strapi/Stripe-backed list later. No card/payment data anywhere.
 
 import type { Order } from "@/features/orders"
-import type { OfferTag, User, UserRole } from "@/lib/auth/types"
+import type { OfferTag, User, UserRole } from "@/lib/auth/domain/types"
 import { isOfferActive } from "@/features/checkout"
 import type {
   CustomerKpis,

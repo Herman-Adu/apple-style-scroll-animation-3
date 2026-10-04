@@ -5,7 +5,7 @@ import {
   assertAdmin,
   blockLockerEmails,
   canLockBlocks,
-} from "@/lib/auth/permissions"
+} from "@/lib/auth/domain/permissions"
 
 /**
  * Lock permission is a real authorization rule: the owner can always lock

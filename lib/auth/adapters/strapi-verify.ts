@@ -1,6 +1,6 @@
 import "server-only"
-import { authConfig, resolveRole } from "./config"
-import type { UserRole } from "./types"
+import { authConfig, resolveRole } from "../domain/config"
+import type { UserRole } from "../domain/types"
 
 // Server-side verification of a Strapi session. The browser hands us the JWT it
 // received from /api/auth/local; we do NOT trust it. Instead we call Strapi's

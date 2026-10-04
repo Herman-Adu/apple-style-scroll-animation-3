@@ -7,7 +7,7 @@
 // mapping helpers below to match your exact content-type — that is the only place
 // backend-specific shape lives.
 
-import { authConfig, resolveRole } from "../config"
+import { authConfig, resolveRole } from "../domain/config"
 import { clearSession, establishSession } from "../actions"
 import {
   AuthAdapter,
@@ -18,7 +18,7 @@ import {
   SignUpInput,
   User,
   UserProfile,
-} from "../types"
+} from "../domain/types"
 
 function readToken(): string | null {
   if (typeof window === "undefined") return null

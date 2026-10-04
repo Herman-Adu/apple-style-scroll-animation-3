@@ -6,7 +6,7 @@ import { AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { AuthField } from "@/components/auth/auth-field"
-import { AuthError, useAuth } from "@/lib/auth/auth-context"
+import { AuthError, useAuth } from "@/lib/auth/adapters/auth-context"
 
 export function SignUpForm() {
   const { signUp } = useAuth()

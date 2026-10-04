@@ -7,8 +7,8 @@ import { Spinner } from "@/components/ui/spinner"
 import { OnboardingFieldControl } from "@/components/auth/onboarding-field"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { onboardingSteps } from "@/lib/data/onboarding"
-import { useAuth } from "@/lib/auth/auth-context"
-import type { ProfileUpdate, UserProfile } from "@/lib/auth/types"
+import { useAuth } from "@/lib/auth/adapters/auth-context"
+import type { ProfileUpdate, UserProfile } from "@/lib/auth/domain/types"
 
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024 // 2MB
 

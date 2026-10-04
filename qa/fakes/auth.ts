@@ -1,5 +1,5 @@
 import { vi } from "vitest"
-import { assertAdmin, canLockBlocks } from "@/lib/auth/permissions"
+import { assertAdmin, canLockBlocks } from "@/lib/auth/domain/permissions"
 
 export type FakeSession = { email: string; role: "admin" | "customer" } | null
 

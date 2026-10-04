@@ -5,7 +5,7 @@
 // Clerk own that. These types are pure data; all computation lives in analytics.ts.
 
 import type { Order } from "@/features/orders"
-import type { User, UserRole } from "@/lib/auth/types"
+import type { User, UserRole } from "@/lib/auth/domain/types"
 
 /** A product a customer has bought, with totals across all their paid orders. */
 export interface PurchasedProduct {

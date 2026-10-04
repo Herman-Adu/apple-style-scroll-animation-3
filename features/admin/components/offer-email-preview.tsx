@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { personalOfferEmail } from "@/features/email"
-import type { OfferTag } from "@/lib/auth/types"
+import type { OfferTag } from "@/lib/auth/domain/types"
 
 /** The offer fields the branded email actually renders. */
 export type PreviewOffer = Pick<OfferTag, "label" | "kind" | "value" | "expiresAt" | "note">

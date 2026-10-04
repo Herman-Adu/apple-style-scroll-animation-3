@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import type { OfferTag, UserRole, UserStatus } from "@/lib/auth/types"
+import type { OfferTag, UserRole, UserStatus } from "@/lib/auth/domain/types"
 import { isOfferActive, offerDaysLeft } from "@/features/checkout"
 
 const STATUS_TONE: Record<UserStatus, string> = {

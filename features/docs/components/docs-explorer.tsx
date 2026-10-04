@@ -35,8 +35,8 @@ import { groupDocsByAudienceAndCategory, visibleDocs } from "../lib/doc"
 import { useDocSearch } from "../hooks/use-doc-search"
 import { DocCard } from "./doc-card"
 import { CategoryDisclosure } from "@/components/category-disclosure"
-import { useAuth } from "@/lib/auth/auth-context"
-import { isOwner } from "@/lib/auth/config"
+import { useAuth } from "@/lib/auth/adapters/auth-context"
+import { isOwner } from "@/lib/auth/domain/config"
 import { cn } from "@/lib/utils"
 
 type AudienceTab = "all" | DocAudience

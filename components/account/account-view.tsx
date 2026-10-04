@@ -15,7 +15,7 @@ import { OfferList } from "@/components/account/offer-list"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { SignOutConfirmDialog } from "@/components/account/sign-out-confirm"
 import { onboardingSteps } from "@/lib/data/onboarding"
-import { useAuth } from "@/lib/auth/auth-context"
+import { useAuth } from "@/lib/auth/adapters/auth-context"
 
 type AccountTab = "profile" | "orders" | "offers"
 

@@ -9,9 +9,9 @@
 import { headers } from "next/headers"
 import type { Prisma } from "@prisma/client"
 
-import { auth } from "@/lib/auth/instance"
+import { auth } from "@/lib/auth/adapters/instance"
 import { prisma } from "@/lib/db/prisma"
-import { effectiveRole } from "@/lib/auth/config"
+import { effectiveRole } from "@/lib/auth/domain/config"
 import { stripe } from "@/lib/stripe/server"
 import { restoreStock, type ReservedLine } from "../finalize/checkout-finalize"
 import { dispatchRefundEmail } from "../notifications"

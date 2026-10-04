@@ -3,7 +3,7 @@ import { ShieldCheck } from "lucide-react"
 import { AdminShell } from "@/features/admin"
 import { getLockPermissionsAction } from "@/features/admin"
 import { LockPermissionsPanel, PanelHeader } from "@/features/admin"
-import { canManagePermissions } from "@/lib/auth/permissions"
+import { canManagePermissions } from "@/lib/auth/domain/permissions"
 import { getServerCanLockBlocks, getServerSession } from "@/lib/auth/server"
 
 export const metadata: Metadata = { title: "Permissions", robots: { index: false } }

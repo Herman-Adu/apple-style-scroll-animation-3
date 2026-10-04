@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { OfferTag } from "@/lib/auth/types"
+import type { OfferTag } from "@/lib/auth/domain/types"
 import { OfferChip, offerSummary } from "./customer-badges"
 import { OfferEmailPreview, type PreviewOffer } from "./offer-email-preview"
 

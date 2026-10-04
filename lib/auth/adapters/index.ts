@@ -1,8 +1,8 @@
 // Factory: resolves the active adapter from config. This is the single seam where
 // a concrete backend is chosen; everything upstream depends only on AuthAdapter.
 
-import { authConfig } from "../config"
-import { AuthAdapter } from "../types"
+import { authConfig } from "../domain/config"
+import { AuthAdapter } from "../domain/types"
 import { createDbAdapter } from "./db"
 import { createLocalAdapter } from "./local"
 import { createStrapiAdapter } from "./strapi"

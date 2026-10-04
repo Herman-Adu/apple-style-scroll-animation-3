@@ -5,7 +5,7 @@
 // can reuse it without duplicating the selection/urgency logic.
 
 import { isOfferActive, offerDaysLeft } from "@/features/checkout/lib/pricing"
-import type { OfferTag } from "@/lib/auth/types"
+import type { OfferTag } from "@/lib/auth/domain/types"
 
 /** Headline describing an offer's benefit, e.g. "15% off" or "Free shipping". */
 export function offerHeadline(offer: OfferTag): string {

@@ -16,11 +16,11 @@
 //    local adapter, so demo mode remains a UX gate rather than a hard boundary.
 
 import { cookies } from "next/headers"
-import { resolveRole } from "./config"
-import { SESSION_COOKIE, SESSION_MAX_AGE_SECONDS } from "./session-cookie"
-import { signSession } from "./session-token"
-import { verifyStrapiToken } from "./strapi-verify"
-import type { UserRole } from "./types"
+import { resolveRole } from "./domain/config"
+import { SESSION_COOKIE, SESSION_MAX_AGE_SECONDS } from "./adapters/session-cookie"
+import { signSession } from "./adapters/session-token"
+import { verifyStrapiToken } from "./adapters/strapi-verify"
+import type { UserRole } from "./domain/types"
 
 export interface EstablishSessionInput {
   id: string

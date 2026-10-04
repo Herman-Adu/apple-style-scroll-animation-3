@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Star } from "lucide-react"
-import { useAuth } from "@/lib/auth/auth-context"
+import { useAuth } from "@/lib/auth/adapters/auth-context"
 import { reviewsProvider } from "@/features/reviews"
 import type { Review } from "@/features/reviews"
 import { cn } from "@/lib/utils"

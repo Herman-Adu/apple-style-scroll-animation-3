@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { Sparkles } from "lucide-react"
-import { useAuth } from "@/lib/auth/auth-context"
+import { useAuth } from "@/lib/auth/adapters/auth-context"
 import { offerHeadline, offerUrgency, pickActiveOffer } from "@/features/checkout"
 
 /**

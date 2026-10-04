@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { getRequestSession } from "@/lib/auth/server"
-import { adminGateDecision } from "@/lib/auth/permissions"
+import { adminGateDecision } from "@/lib/auth/domain/permissions"
 
 /**
  * First line of defence for /admin: page visits and server-action POSTs are

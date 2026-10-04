@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useAuth } from "@/lib/auth/auth-context"
+import { useAuth } from "@/lib/auth/adapters/auth-context"
 import { UserAvatar } from "@/components/account/user-avatar"
 import { cn } from "@/lib/utils"
 import { SignOutConfirmDialog } from "./sign-out-confirm"

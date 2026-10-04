@@ -1,13 +1,13 @@
 import "server-only"
 import { cache } from "react"
 import { cookies, headers } from "next/headers"
-import { auth } from "@/lib/auth/instance"
-import { authConfig, effectiveRole, isOwner } from "./config"
-import { assertAdmin, blockLockerEmails, canLockBlocks, mergeLockers } from "./permissions"
-import { listGrantedLockerEmails } from "./lock-rights-repo"
-import { SESSION_COOKIE } from "./session-cookie"
-import { verifySession, type SessionPayload } from "./session-token"
-import type { UserRole } from "./types"
+import { auth } from "@/lib/auth/adapters/instance"
+import { authConfig, effectiveRole, isOwner } from "./domain/config"
+import { assertAdmin, blockLockerEmails, canLockBlocks, mergeLockers } from "./domain/permissions"
+import { listGrantedLockerEmails } from "./data/lock-rights-repo"
+import { SESSION_COOKIE } from "./adapters/session-cookie"
+import { verifySession, type SessionPayload } from "./adapters/session-token"
+import type { UserRole } from "./domain/types"
 
 /**
  * The verified server-side session. In "db" mode this is the Better Auth

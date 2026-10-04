@@ -3,7 +3,7 @@
 // with zero backend. Mirrors the exact AuthAdapter contract the Strapi adapter uses,
 // so the application layer cannot tell them apart.
 
-import { authConfig, resolveRole } from "../config"
+import { authConfig, resolveRole } from "../domain/config"
 import { clearSession, establishSession } from "../actions"
 import {
   AuthAdapter,
@@ -17,7 +17,7 @@ import {
   UserProfile,
   UserRole,
   UserStatus,
-} from "../types"
+} from "../domain/types"
 
 const USERS_KEY = "momo.auth.users"
 

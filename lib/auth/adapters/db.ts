@@ -33,7 +33,7 @@ import {
   User,
   UserRole,
   UserStatus,
-} from "../types"
+} from "../domain/types"
 
 /** Map a Better Auth client error to the app's friendly AuthError. */
 function toAuthError(error: { code?: string; message?: string } | null): AuthError {

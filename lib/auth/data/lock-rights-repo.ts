@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/prisma"
-import { effectiveRole } from "./config"
+import { effectiveRole } from "../domain/config"
 
 /**
  * Persistence for lock rights. Callers decide whether a change is allowed

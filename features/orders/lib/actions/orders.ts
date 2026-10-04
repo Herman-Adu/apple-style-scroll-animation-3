@@ -12,6 +12,7 @@ import type { Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth/adapters/instance";
 import { prisma } from "@/lib/db/prisma";
 import { nextOrderNumber } from "../finalize/checkout-finalize";
+import { sessionUser, requireUser, requireAdminId } from "./session";
 import { effectiveRole } from "@/lib/auth/domain/config";
 import { getAllProducts } from "@/features/products";
 import { productSchema } from "@/features/products";
@@ -109,27 +110,7 @@ function toOrder(row: OrderRow): Order {
 
 // --- session guards --------------------------------------------------------
 
-async function sessionUser(): Promise<{ id: string; email: string } | null> {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) return null;
-  return { id: session.user.id, email: session.user.email ?? "" };
-}
-
-async function requireUser(): Promise<{ id: string; email: string }> {
-  const user = await sessionUser();
-  if (!user) throw new Error("Not signed in.");
-  return user;
-}
-
-async function requireAdminId(): Promise<string> {
-  const user = await requireUser();
-  const me = await prisma.user.findUnique({
-    where: { id: user.id },
-    select: { email: true, role: true, roleOverride: true },
-  });
-  if (!me || effectiveRole(me) !== "admin") throw new Error("Admins only.");
-  return user.id;
-}
+// session guards have been extracted to ./session to keep this file focused.
 
 // Order numbers are allocated via `nextOrderNumber(tx)` which takes a
 // transaction-scoped advisory lock to serialize concurrent allocators.

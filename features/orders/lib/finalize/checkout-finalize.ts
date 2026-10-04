@@ -24,4 +24,4 @@ export {
   reconcileRefund,
   releaseCheckout,
   releaseReservationById,
-} from "./release";
+} from "./orders/release";

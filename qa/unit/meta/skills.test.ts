@@ -11,7 +11,8 @@ const MAX_AGENTS_LINES = 80
 const NAME_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
 function readFrontmatter(source: string): Record<string, string> {
-  const match = source.match(/^---\n([\s\S]*?)\n---\n/)
+  // Normalise CRLF: Windows checkouts (core.autocrlf=true) rewrite line endings.
+  const match = source.replace(/\r\n/g, "\n").match(/^---\n([\s\S]*?)\n---\n/)
   if (!match) return {}
   return Object.fromEntries(
     match[1]

@@ -36,6 +36,40 @@ describe("test runner discovery", () => {
   });
 });
 
+describe("tests do not depend on the working directory", () => {
+  // Editors start Vitest from the config folder or a package folder, so
+  // process.cwd() is not the repo root. Tests resolve it through qa/config/repo-root.
+  const testFiles = ["qa/unit", "qa/integration"]
+    .flatMap((dir) =>
+      readdirSync(join(ROOT, dir), { recursive: true, encoding: "utf8" }).map(
+        (file) => `${dir}/${file.replace(/\\/g, "/")}`,
+      ),
+    )
+    .filter(
+      (file) =>
+        file.endsWith(".test.ts") && !file.endsWith("meta/tooling.test.ts"),
+    );
+
+  it("has a shared repo-root helper", () => {
+    expect(existsSync(join(ROOT, "qa/config/repo-root.ts"))).toBe(true);
+  });
+
+  it.each(testFiles)(
+    "%s does not use process.cwd() as the repo root",
+    (file) => {
+      expect(readFileSync(join(ROOT, file), "utf8")).not.toMatch(
+        /process\.cwd\(\)/,
+      );
+    },
+  );
+
+  it.each(testFiles)("%s does not copy the package.json walk-up", (file) => {
+    expect(readFileSync(join(ROOT, file), "utf8")).not.toMatch(
+      /existsSync\(join\(repoRoot, "package\.json"\)\)/,
+    );
+  });
+});
+
 describe("scripts are cross-platform", () => {
   it.each(scriptFiles("scripts"))(
     "%s does not build paths from URL.pathname",

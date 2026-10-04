@@ -10,17 +10,10 @@ import {
   socialAssets,
 } from "@/features/showcase/lib/social-assets";
 import { docs } from "@/features/docs/content";
+import { REPO_ROOT } from "@/qa/config/repo-root";
 
-const publicFile = (src: string) => {
-  let repoRoot = __dirname;
-  while (
-    !existsSync(join(repoRoot, "package.json")) &&
-    repoRoot !== join(repoRoot, "..")
-  ) {
-    repoRoot = join(repoRoot, "..");
-  }
-  return existsSync(join(repoRoot, "public", src.replace(/^[/\\\\]/, "")));
-};
+const publicFile = (src: string) =>
+  existsSync(join(REPO_ROOT, "public", src.replace(/^[/\\\\]/, "")));
 
 describe("social asset catalogue", () => {
   it("uses the native LinkedIn portrait and square sizes", () => {

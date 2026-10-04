@@ -7,11 +7,7 @@ import { prisma } from "@/lib/db/prisma";
 import { revalidateCatalog } from "@/features/catalog/server";
 import type { Order } from "../../types";
 import { orderSelect, toOrder } from "./order-row";
-import {
-  restoreStock,
-  toReserved,
-  type ReservedLine,
-} from "../stock/restore-stock";
+import { restoreStock, toReserved, type ReservedLine } from "../stock";
 
 export async function releaseCheckout(
   session: Stripe.Checkout.Session,

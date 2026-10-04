@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const gettingStartedWithYourDevice: Doc = {
   slug: "getting-started-with-your-device",
@@ -10,7 +10,7 @@ export const gettingStartedWithYourDevice: Doc = {
     "Unbox, charge, pair, and personalise your new headphones or earbuds in a few minutes.",
   readingMinutes: 5,
   order: 1,
-  updatedAt: "2026-09-20",
+  updatedAt: "2026-10-04",
   tags: ["setup", "pairing", "bluetooth", "first steps"],
   body: [
     {

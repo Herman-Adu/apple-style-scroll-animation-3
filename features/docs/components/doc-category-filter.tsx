@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { DOC_CATEGORIES } from "../lib/schema"
+import { DOC_CATEGORIES } from "../lib/domain/schema"
 import { cn } from "@/lib/utils"
 
 /**

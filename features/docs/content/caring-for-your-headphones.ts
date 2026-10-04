@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const caringForYourHeadphones: Doc = {
   slug: "caring-for-your-headphones",
@@ -10,7 +10,7 @@ export const caringForYourHeadphones: Doc = {
     "Keep your devices sounding and looking their best: cleaning, storage, ear tips, and battery health.",
   readingMinutes: 4,
   order: 2,
-  updatedAt: "2026-09-20",
+  updatedAt: "2026-10-04",
   tags: ["cleaning", "storage", "battery", "maintenance", "ear tips"],
   body: [
     {

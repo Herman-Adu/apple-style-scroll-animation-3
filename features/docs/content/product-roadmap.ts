@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const productRoadmap: Doc = {
   slug: "product-roadmap-and-phase-2",
@@ -10,7 +10,7 @@ export const productRoadmap: Doc = {
     "What is shipped, what is next, and what is later — the honest roadmap. Use it to show depth in a pitch (there is a credible plan beyond today), to scope paid phases with a client, and to keep your own build sequence clear. Each item lists its value, rough effort, and dependency.",
   readingMinutes: 8,
   order: 7,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["roadmap", "phase 2", "planning", "positioning", "scope"],
   body: [
     {

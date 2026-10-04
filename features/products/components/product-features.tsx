@@ -1,4 +1,4 @@
-import type { ProductFeature } from "../lib/schema"
+import type { ProductFeature } from "../lib/domain/schema"
 import { Reveal } from "@/components/primitives"
 
 export function ProductFeatures({ features }: { features: ProductFeature[] }) {

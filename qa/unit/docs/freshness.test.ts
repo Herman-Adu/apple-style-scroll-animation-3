@@ -7,7 +7,7 @@ import {
   docText,
   internalDocLinks,
   missingMentions,
-} from "@/features/docs/lib/freshness";
+} from "@/features/docs/lib/domain/freshness";
 import { PALETTE_BLOCKS } from "@/features/email/lib/domain/blocks/labels";
 import { STARTERS } from "@/features/email/lib/domain/content/starters";
 import { REPO_ROOT } from "@/qa/config/repo-root";

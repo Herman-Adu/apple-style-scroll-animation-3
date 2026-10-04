@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const yourOffersAndDiscounts: Doc = {
   slug: "your-offers-and-discounts",
@@ -10,7 +10,7 @@ export const yourOffersAndDiscounts: Doc = {
     "Where to find the personal offers we send you, how to read the expiry date and time remaining, how an offer is applied at checkout, and why an offer disappears once it expires. Everything about the Offers tab in your account, in one place.",
   readingMinutes: 5,
   order: 6,
-  updatedAt: "2026-09-29",
+  updatedAt: "2026-10-04",
   tags: ["offers", "discounts", "account", "checkout", "expiry", "redemption"],
   body: [
     {

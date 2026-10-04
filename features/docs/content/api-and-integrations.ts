@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const apiAndIntegrations: Doc = {
   slug: "api-and-integrations",
@@ -10,7 +10,7 @@ export const apiAndIntegrations: Doc = {
     "The store's HTTP surface and third-party integrations — the route handlers it exposes, the services it depends on (Neon, Better Auth, Stripe, Resend, Strapi), and how secrets and webhooks are secured.",
   readingMinutes: 7,
   order: 1,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["developer", "api", "integrations", "webhooks", "stripe", "resend", "strapi", "neon"],
   body: [
     {

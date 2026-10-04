@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Minus, Plus } from "lucide-react"
-import type { Product } from "../lib/schema"
+import type { Product } from "../lib/domain/schema"
 import { formatMoney } from "@/lib/format"
 import { useProduct } from "@/features/catalog"
 import { isPurchasable, purchasableQuantity, stockLabel, stockLevel } from "@/features/products"

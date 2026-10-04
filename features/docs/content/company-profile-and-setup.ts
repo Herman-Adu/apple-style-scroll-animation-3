@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const companyProfileAndSetup: Doc = {
   slug: "company-profile-and-admin-setup",
@@ -10,7 +10,7 @@ export const companyProfileAndSetup: Doc = {
     "Set up the business identity once and reuse it everywhere — the company profile, the guided admin onboarding, and how the structured address becomes the single source of truth for invoices, email footers, and Strapi.",
   readingMinutes: 8,
   order: 1,
-  updatedAt: "2026-09-23",
+  updatedAt: "2026-10-04",
   tags: ["admin", "onboarding", "company profile", "address", "settings", "single source of truth"],
   body: [
     {

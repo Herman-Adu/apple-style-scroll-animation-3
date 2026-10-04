@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const emailCustomerMessages: Doc = {
   slug: "email-customer-messages",
@@ -10,7 +10,7 @@ export const emailCustomerMessages: Doc = {
     "Send a single, branded email to one customer — a reply, a heads-up, a back-in-stock nudge — starting from a saved preset so you are not writing from scratch. Covers presets, the message composer, and the variables that personalise each send.",
   readingMinutes: 6,
   order: 4,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["email", "messages", "presets", "customer support"],
   body: [
     {

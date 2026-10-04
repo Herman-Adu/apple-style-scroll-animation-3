@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const whatsNew: Doc = {
   slug: "whats-new",
@@ -10,7 +10,7 @@ export const whatsNew: Doc = {
     "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92). Each entry says what changed and why it matters.",
   readingMinutes: 5,
   order: 1,
-  updatedAt: "2026-10-02",
+  updatedAt: "2026-10-04",
   tags: ["changelog", "release notes", "email builder", "security", "documentation"],
   body: [
     {

@@ -10,9 +10,9 @@ import { env } from "@/lib/env"
 import { fetchStrapi, toEntries } from "@/lib/strapi/client"
 import { strapiTags } from "@/lib/strapi/tags"
 import { z } from "zod"
-import { productSchema, type Product } from "./schema"
-import { selectRelatedProducts, toProductImageMap, type ProductImageMap } from "./product"
-import { mapStrapiProduct } from "./mappers"
+import { productSchema, type Product } from "../domain/schema"
+import { selectRelatedProducts, toProductImageMap, type ProductImageMap } from "../domain/product"
+import { mapStrapiProduct } from "../adapters/mappers"
 
 /**
  * Product data access — the single seam the Strapi migration flips.

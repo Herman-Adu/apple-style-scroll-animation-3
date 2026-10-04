@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const securityAndCompliancePosture: Doc = {
   slug: "security-and-compliance-posture",
@@ -10,7 +10,7 @@ export const securityAndCompliancePosture: Doc = {
     "How the platform earns trust: server-verified auth, three independent permission layers (proxy, server actions, UI), payment data that never touches our servers, a full version history on every template, and defence-in-depth headers. Written for a buyer's security review.",
   readingMinutes: 10,
   order: 1,
-  updatedAt: "2026-10-02",
+  updatedAt: "2026-10-04",
   tags: ["security", "compliance", "trust", "pci", "auth", "cto", "posture", "permissions", "defence in depth"],
   body: [
     {

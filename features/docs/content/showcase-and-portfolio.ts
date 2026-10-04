@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const showcaseAndPortfolio: Doc = {
   slug: "showcase-and-portfolio",
@@ -10,7 +10,7 @@ export const showcaseAndPortfolio: Doc = {
     "How to present this project as proof of senior engineering skill — on LinkedIn, Telegram, and a portfolio. What to highlight, ready-to-adapt post templates, the screenshots and links to attach, and where to drop the live URL once it is deployed.",
   readingMinutes: 9,
   order: 4,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["portfolio", "showcase", "linkedin", "personal brand", "career"],
   body: [
     {

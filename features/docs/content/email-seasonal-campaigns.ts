@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const emailSeasonalCampaigns: Doc = {
   slug: "email-seasonal-campaigns",
@@ -10,7 +10,7 @@ export const emailSeasonalCampaigns: Doc = {
     "A worked example of building a Black Friday email from the starter gallery: pick a starter, personalise it with placeholders, reuse your brand header as a saved section, protect it with locked blocks, and recover safely with version history. Includes real renders of every seasonal starter.",
   readingMinutes: 8,
   order: 5,
-  updatedAt: "2026-10-02",
+  updatedAt: "2026-10-04",
   tags: ["email", "templates", "starters", "seasonal", "black friday", "christmas", "walkthrough"],
   body: [
     {

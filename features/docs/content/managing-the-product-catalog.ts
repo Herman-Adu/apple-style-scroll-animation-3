@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const managingTheProductCatalog: Doc = {
   slug: "managing-the-product-catalog",
@@ -10,7 +10,7 @@ export const managingTheProductCatalog: Doc = {
     "Add, edit, and retire products from the admin dashboard, and understand how stock controls what customers can buy.",
   readingMinutes: 7,
   order: 1,
-  updatedAt: "2026-09-20",
+  updatedAt: "2026-10-04",
   tags: ["admin", "products", "stock", "inventory", "catalog"],
   body: [
     {

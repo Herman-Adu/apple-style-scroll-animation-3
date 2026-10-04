@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const dataLayerAndDatabase: Doc = {
   slug: "data-layer-and-database",
@@ -10,7 +10,7 @@ export const dataLayerAndDatabase: Doc = {
     "Every piece of business data now lives in Neon Postgres via Prisma, reached through a port/adapter seam. This guide is the schema map, the merge-on-read catalog model, the transactional stock/order write path, and the cache-revalidation strategy — the ground truth for the Strapi migration.",
   readingMinutes: 13,
   order: 1,
-  updatedAt: "2026-09-28",
+  updatedAt: "2026-10-04",
   tags: ["database", "neon", "prisma", "postgres", "ports and adapters", "transactions", "caching", "ssr", "theme"],
   body: [
     {

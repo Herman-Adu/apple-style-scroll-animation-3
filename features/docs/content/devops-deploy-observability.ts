@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const devopsDeployObservability: Doc = {
   slug: "devops-deploy-cache-observability",
@@ -10,7 +10,7 @@ export const devopsDeployObservability: Doc = {
     "The delivery pipeline: CI gates, preview deploys, the caching layers from ISR to cache tags, and what to watch in production.",
   readingMinutes: 12,
   order: 1,
-  updatedAt: "2026-09-16",
+  updatedAt: "2026-10-04",
   tags: ["ci", "vercel", "isr", "caching", "observability", "web vitals"],
   body: [
     {

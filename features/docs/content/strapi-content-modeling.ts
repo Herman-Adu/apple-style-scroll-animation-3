@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const strapiContentModeling: Doc = {
   slug: "strapi-content-modeling",
@@ -10,7 +10,7 @@ export const strapiContentModeling: Doc = {
     "The exact Strapi content types, components, and dynamic zones that back this app — with schema JSON you can paste into a fresh instance.",
   readingMinutes: 13,
   order: 2,
-  updatedAt: "2026-09-18",
+  updatedAt: "2026-10-04",
   tags: ["strapi", "content-types", "components", "dynamic-zone", "schema"],
   body: [
     {

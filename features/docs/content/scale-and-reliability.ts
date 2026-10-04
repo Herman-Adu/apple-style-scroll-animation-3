@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const scaleAndReliability: Doc = {
   slug: "scale-performance-and-reliability",
@@ -10,7 +10,7 @@ export const scaleAndReliability: Doc = {
     "How the platform holds up under load and traffic spikes: serverless autoscaling, edge delivery, cache-tag revalidation, and the performance budget that keeps Core Web Vitals green as the catalog and traffic grow.",
   readingMinutes: 7,
   order: 2,
-  updatedAt: "2026-09-28",
+  updatedAt: "2026-10-04",
   tags: ["scale", "performance", "reliability", "core web vitals", "caching", "cto"],
   body: [
     {

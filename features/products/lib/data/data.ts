@@ -1,4 +1,4 @@
-import type { Product } from "./schema"
+import type { Product } from "../domain/schema"
 
 export const products: Product[] = [
   {

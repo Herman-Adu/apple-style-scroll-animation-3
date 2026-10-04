@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const salesDemoAndObjections: Doc = {
   slug: "sales-demo-and-objection-handling",
@@ -10,7 +10,7 @@ export const salesDemoAndObjections: Doc = {
     "A repeatable way to sell the build in a live conversation: discovery questions to open with, a ten-minute guided demo flow with what to say at each screen, straight answers to the objections you will actually hear (why not Shopify, why not Klaviyo, who maintains it), and a clean close.",
   readingMinutes: 10,
   order: 6,
-  updatedAt: "2026-10-02",
+  updatedAt: "2026-10-04",
   tags: ["sales", "demo", "objections", "positioning", "pitch", "closing"],
   body: [
     {

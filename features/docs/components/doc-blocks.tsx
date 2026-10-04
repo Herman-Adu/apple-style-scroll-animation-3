@@ -1,6 +1,6 @@
 import { Info, TriangleAlert, CheckCircle2, Lightbulb, NotebookPen } from "lucide-react"
-import type { DocBlock } from "../lib/schema"
-import { slugifyHeading } from "../lib/doc"
+import type { DocBlock } from "../lib/domain/schema"
+import { slugifyHeading } from "../lib/domain/doc"
 import { MermaidDiagram } from "@/components/docs/mermaid-diagram"
 import { DocChart } from "@/components/docs/doc-chart"
 

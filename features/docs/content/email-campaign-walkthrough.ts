@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const emailCampaignWalkthrough: Doc = {
   slug: "email-campaign-walkthrough",
@@ -10,7 +10,7 @@ export const emailCampaignWalkthrough: Doc = {
     "A complete, screenshot-by-screenshot walkthrough of composing and sending an email campaign — from the empty draft to a live preview to hitting send. Uses a real example launch so you can follow along without guessing.",
   readingMinutes: 9,
   order: 3,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["email", "campaigns", "walkthrough", "broadcast", "subscribers"],
   body: [
     {

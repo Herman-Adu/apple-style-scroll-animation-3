@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const authenticationAndAccess: Doc = {
   slug: "authentication-and-access-control",
@@ -10,7 +10,7 @@ export const authenticationAndAccess: Doc = {
     "How sign-in, sessions, roles, server-side guards, and doc gating fit together. Authentication is server-enforced with Better Auth on Neon — sessions are real, roles are verified on the server, and gated owner-tier bodies never reach a non-owner browser.",
   readingMinutes: 12,
   order: 1,
-  updatedAt: "2026-10-02",
+  updatedAt: "2026-10-04",
   tags: ["auth", "authorization", "security", "better auth", "sessions", "roles", "route guard", "gating"],
   body: [
     {

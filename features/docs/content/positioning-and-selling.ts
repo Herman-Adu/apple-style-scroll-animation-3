@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const positioningAndSelling: Doc = {
   slug: "positioning-and-selling-the-platform",
@@ -10,7 +10,7 @@ export const positioningAndSelling: Doc = {
     "How to frame this stack to a buyer: the market it fits, the value it delivers over a template, and the objections to answer before they are raised.",
   readingMinutes: 10,
   order: 1,
-  updatedAt: "2026-09-19",
+  updatedAt: "2026-10-04",
   tags: ["market", "value proposition", "sales", "positioning", "roi"],
   body: [
     {

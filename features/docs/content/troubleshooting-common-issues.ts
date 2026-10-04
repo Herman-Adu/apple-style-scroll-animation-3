@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const troubleshootingCommonIssues: Doc = {
   slug: "troubleshooting-common-issues",
@@ -10,7 +10,7 @@ export const troubleshootingCommonIssues: Doc = {
     "Quick fixes for pairing drops, one side going silent, charging problems, and how to factory reset.",
   readingMinutes: 6,
   order: 3,
-  updatedAt: "2026-09-20",
+  updatedAt: "2026-10-04",
   tags: ["troubleshooting", "reset", "bluetooth", "charging", "support"],
   body: [
     {

@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const emailTemplatesGuide: Doc = {
   slug: "email-templates-guide",
@@ -10,7 +10,7 @@ export const emailTemplatesGuide: Doc = {
     "Templates are the branded, block-based emails your campaigns and customer messages are built from. This guide covers the system templates, the starter gallery, the editor (undo, placeholders, saved sections, locked blocks) and how version history keeps every change recoverable.",
   readingMinutes: 9,
   order: 2,
-  updatedAt: "2026-10-02",
+  updatedAt: "2026-10-04",
   tags: ["email", "templates", "blocks", "branding", "theme", "starters", "versions", "sections", "locks"],
   body: [
     {

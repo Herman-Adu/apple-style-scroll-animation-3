@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const ordersAndEmailOperations: Doc = {
   slug: "orders-and-email-operations",
@@ -10,7 +10,7 @@ export const ordersAndEmailOperations: Doc = {
     "Process orders through their lifecycle and manage the transactional emails customers receive.",
   readingMinutes: 6,
   order: 1,
-  updatedAt: "2026-09-20",
+  updatedAt: "2026-10-04",
   tags: ["admin", "orders", "fulfilment", "email", "notifications"],
   body: [
     {

@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { docs } from "@/features/docs/content";
 import type { DocBlock } from "@/features/docs/lib/schema";
+import { REPO_ROOT } from "@/qa/config/repo-root";
 
 type VideoBlock = Extract<DocBlock, { type: "video" }>;
 
@@ -11,16 +12,8 @@ const videosIn = (slug: string): VideoBlock[] =>
     (b): b is VideoBlock => b.type === "video",
   );
 
-const publicFile = (src: string) => {
-  let repoRoot = __dirname;
-  while (
-    !existsSync(join(repoRoot, "package.json")) &&
-    repoRoot !== join(repoRoot, "..")
-  ) {
-    repoRoot = join(repoRoot, "..");
-  }
-  return existsSync(join(repoRoot, "public", src.replace(/^[/\\\\]/, "")));
-};
+const publicFile = (src: string) =>
+  existsSync(join(REPO_ROOT, "public", src.replace(/^[/\\\\]/, "")));
 
 describe("showcase video embeds", () => {
   it.each(["case-study-email-platform", "social-launch-kit"])(

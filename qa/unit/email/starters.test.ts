@@ -12,6 +12,7 @@ import {
   PLACEHOLDERS,
 } from "@/features/email/lib/content/placeholders";
 import type { EmailBlock } from "@/features/email/lib/blocks/types";
+import { REPO_ROOT } from "@/qa/config/repo-root";
 
 let n = 0;
 const makeId = () => `id-${++n}`;
@@ -43,7 +44,7 @@ describe("STARTERS", () => {
         if (b.type === "hero" && b.imageUrl) {
           expect(
             existsSync(
-              join(process.cwd(), "public", b.imageUrl.replace(/^[/\\\\]/, "")),
+              join(REPO_ROOT, "public", b.imageUrl.replace(/^[/\\\\]/, "")),
             ),
             `${s.id}: ${b.imageUrl}`,
           ).toBe(true);

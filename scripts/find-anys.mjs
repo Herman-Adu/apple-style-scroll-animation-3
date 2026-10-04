@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SOURCE_DIRS = ["app", "components", "features", "hooks", "lib"];
 const ANY_RE = /:\s*any\b|\bas any\b|<any>/g;
 

@@ -10,6 +10,7 @@ import {
 } from "@/features/docs/lib/freshness";
 import { PALETTE_BLOCKS } from "@/features/email/lib/blocks/labels";
 import { STARTERS } from "@/features/email/lib/content/starters";
+import { REPO_ROOT } from "@/qa/config/repo-root";
 
 const emailDocs = docs.filter((d) => d.slug.startsWith("email-"));
 const emailDocsText = emailDocs.map(docText).join("\n");
@@ -93,17 +94,8 @@ describe("docs registry integrity", () => {
       docImages(d)
         .filter((src) => {
           if (!src.startsWith("/")) return false;
-          // Find the repository root by walking up from the test file directory so
-          // checks work even when Vitest runs with a different CWD.
-          let repoRoot = __dirname;
-          while (
-            !existsSync(join(repoRoot, "package.json")) &&
-            repoRoot !== join(repoRoot, "..")
-          ) {
-            repoRoot = join(repoRoot, "..");
-          }
           return !existsSync(
-            join(repoRoot, "public", src.replace(/^[/\\\\]/, "")),
+            join(REPO_ROOT, "public", src.replace(/^[/\\\\]/, "")),
           );
         })
         .map((src) => `${d.slug} -> ${src}`),

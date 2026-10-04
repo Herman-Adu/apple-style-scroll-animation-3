@@ -5,12 +5,10 @@ import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/db/prisma";
 import { revalidateCatalog } from "@/features/catalog/server";
-import type { Order } from "../types";
+import type { Order } from "../../types";
 import { orderSelect, toOrder } from "./order-row";
-import { restoreStock, toReserved, type ReservedLine } from "./stock";
+import { restoreStock, toReserved, type ReservedLine } from "../stock";
 
-/** Release a reservation for an expired/failed Stripe session: restore the
- * reserved stock and mark the pending row released. Idempotent. */
 export async function releaseCheckout(
   session: Stripe.Checkout.Session,
 ): Promise<void> {
@@ -19,14 +17,6 @@ export async function releaseCheckout(
   await releaseReservationById(pendingId);
 }
 
-/**
- * Reconcile a Stripe `charge.refunded` event into the matching Order. This is
- * the safety net for refunds issued directly from the Stripe Dashboard (i.e.
- * NOT through refundOrderAction): it mirrors the same restock-on-full-refund
- * rule, keyed off the PaymentIntent id, and is idempotent by refund id so a
- * refund already recorded by refundOrderAction is never double-applied.
- * Returns the updated Order, or null if no matching order was found.
- */
 export async function reconcileRefund(
   charge: Stripe.Charge,
 ): Promise<Order | null> {
@@ -94,8 +84,6 @@ export async function reconcileRefund(
   return toOrder(updated);
 }
 
-/** Release a reservation by pending id — also used if Stripe session creation
- * fails after we've already reserved stock. Idempotent (no-op unless reserved). */
 export async function releaseReservationById(pendingId: string): Promise<void> {
   const released = await prisma.$transaction(async (tx) => {
     const pending = await tx.pendingCheckout.findUnique({

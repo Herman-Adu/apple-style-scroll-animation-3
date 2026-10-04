@@ -60,12 +60,12 @@ don't need it.
 
 ## Where a component goes
 
-| It is... | Put it in | Examples |
-|---|---|---|
-| Atom: shadcn primitive, no business logic | `components/ui/` | button, dialog, input |
-| Molecule: brand design-system piece, no domain knowledge | `components/primitives/` (export from its `index.ts`) | eyebrow, section-heading, glass-panel |
-| App shell shared by every page | `components/layout/`, `scroll/`, `theme/`, `seo/` | site-header, json-ld |
-| Anything that knows a domain concept (organism) | `features/<slice>/components/` | order-card, sign-in-form, contact-form |
+| It is...                                                 | Put it in                                             | Examples                               |
+| -------------------------------------------------------- | ----------------------------------------------------- | -------------------------------------- |
+| Atom: shadcn primitive, no business logic                | `components/ui/`                                      | button, dialog, input                  |
+| Molecule: brand design-system piece, no domain knowledge | `components/primitives/` (export from its `index.ts`) | eyebrow, section-heading, glass-panel  |
+| App shell shared by every page                           | `components/layout/`, `scroll/`, `theme/`, `seo/`     | site-header, json-ld                   |
+| Anything that knows a domain concept (organism)          | `features/<slice>/components/`                        | order-card, sign-in-form, contact-form |
 
 Test: if the component imports a domain type or a slice, or its name contains a domain word, it belongs in a slice.
 

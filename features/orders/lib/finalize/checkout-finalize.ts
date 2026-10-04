@@ -10,7 +10,7 @@ import "server-only";
 // stock (reserve / restore / low-stock alert), finalize (paid session -> Order)
 // and release (expired session, refund reconciliation).
 
-export { nextOrderNumber } from "./order-number";
+export { nextOrderNumber } from "./orders/order-number";
 export {
   commitStock,
   effectiveProductsFor,
@@ -19,5 +19,9 @@ export {
   type LowStockItem,
   type ReservedLine,
 } from "./stock";
-export { finalizeCheckout, getOrderByStripeSession } from "./finalize";
-export { reconcileRefund, releaseCheckout, releaseReservationById } from "./release";
+export { finalizeCheckout, getOrderByStripeSession } from "./orders/finalize";
+export {
+  reconcileRefund,
+  releaseCheckout,
+  releaseReservationById,
+} from "./orders/release";

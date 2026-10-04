@@ -19,13 +19,13 @@ If all three answers are "nothing", write "Retro: nothing to change" in the ledg
 
 Prefer the strongest fix that's cheap. A test or CI check beats a lint rule, which beats a skill line.
 
-| Kind of lesson | Where it goes |
-|---|---|
-| Can be checked by a machine | a test, a lint rule or a CI step (W2 tooling) |
-| Process step was missed | the step in `sprint-workflow` |
-| Coding rule | the relevant skill (`react-next-patterns`, `typescript-clean-code`, `feature-slices`, ...) |
-| Sandbox or tool quirk | `.agents/skills/sprint-workflow/references/troubleshooting.md` |
-| Applies to every task | one line in `AGENTS.md` (keep it under 80 lines) |
+| Kind of lesson              | Where it goes                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------------ |
+| Can be checked by a machine | a test, a lint rule or a CI step (W2 tooling)                                              |
+| Process step was missed     | the step in `sprint-workflow`                                                              |
+| Coding rule                 | the relevant skill (`react-next-patterns`, `typescript-clean-code`, `feature-slices`, ...) |
+| Sandbox or tool quirk       | `.agents/skills/sprint-workflow/references/troubleshooting.md`                             |
+| Applies to every task       | one line in `AGENTS.md` (keep it under 80 lines)                                           |
 
 ## Rules
 

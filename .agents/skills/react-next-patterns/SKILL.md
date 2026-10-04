@@ -18,12 +18,12 @@ Default to the modern API. Reach for the older pattern only when the modern one 
 
 ```ts
 async function getProducts() {
-  "use cache"
-  cacheTag("products")
-  return db.product.findMany()
+  "use cache";
+  cacheTag("products");
+  return db.product.findMany();
 }
 // in a server action after a write:
-updateTag("products")                 // read-your-writes
+updateTag("products"); // read-your-writes
 // elsewhere: revalidateTag("products", "max")
 ```
 

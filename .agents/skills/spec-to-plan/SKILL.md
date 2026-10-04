@@ -25,6 +25,7 @@ For every sprint, write:
 
 ```md
 ### <ID>: <outcome in plain words>
+
 - **Why:** the user-visible or engineering reason.
 - **Acceptance:** 2–5 checkable statements ("Admin sees X when Y").
 - **Tests first:** the failing tests to write, with their layer (unit / integration / smoke / axe).

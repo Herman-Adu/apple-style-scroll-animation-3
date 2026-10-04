@@ -10,7 +10,7 @@ description: TypeScript and clean-code rules for this repo - no any (parse with 
 - **No `any`.** At boundaries (request bodies, JSON, CMS, Stripe, env), type data as `unknown` and parse it with a zod schema. The schema is the type: `type X = z.infer<typeof XSchema>`.
 - Model states as discriminated unions, not optional-field soup:
   ```ts
-  type Result<T> = { ok: true; data: T } | { ok: false; error: string }
+  type Result<T> = { ok: true; data: T } | { ok: false; error: string };
   ```
 - Prefer `satisfies` to `as`. A cast needs a comment saying why it's safe.
 - Use the generated Prisma types for rows; map them to domain types in the slice's `mappers.ts`.
@@ -21,9 +21,10 @@ description: TypeScript and clean-code rules for this repo - no any (parse with 
 - No `let x = 0; x++` counters and no module-level mutable state. Shared counters make ids depend on call order and leak between requests and tests.
   ```ts
   // bad
-  let idc = 0; const id = () => `b${++idc}`
+  let idc = 0;
+  const id = () => `b${++idc}`;
   // good: derive ids from data or position
-  blocks.map((b, i) => ({ ...b, id: `${templateKey}-${i}` }))   // or crypto.randomUUID() at creation
+  blocks.map((b, i) => ({ ...b, id: `${templateKey}-${i}` })); // or crypto.randomUUID() at creation
   ```
 - Build values with `map` / `filter` / `reduce` / spread. Don't push into arrays you've returned.
 - Use `const` everywhere. `let` only for a local accumulator that a loop really needs.
@@ -48,4 +49,4 @@ If something close exists, extend or compose it. If you copy logic twice, extrac
 
 - Names say intent: `isLocked`, `toOrderSummary`, `requireAdmin`. No `data2` or `temp`.
 - No unused imports, variables or params, and no commented-out code (git keeps history).
-- Comments explain *why*, never *what*.
+- Comments explain _why_, never _what_.

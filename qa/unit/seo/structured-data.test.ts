@@ -6,7 +6,7 @@ import { breadcrumbLd, organizationLd, websiteLd } from "@/lib/seo/structured-da
 import { productSchema } from "@/features/products/lib/schema"
 import { articleSchema } from "@/features/articles/lib/domain/schema"
 import { mapStrapiProduct } from "@/features/products/lib/mappers"
-import { mapStrapiArticle } from "@/features/articles/lib/domain/mappers"
+import { mapStrapiArticle } from "@/features/articles/lib/adapters/mappers"
 import { strapiProductEntry } from "@/qa/fixtures/strapi/product.fixture"
 import { strapiArticleEntry } from "@/qa/fixtures/strapi/article.fixture"
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { mapStrapiArticle } from "@/features/articles/lib/domain/mappers"
+import { mapStrapiArticle } from "@/features/articles/lib/adapters/mappers"
 import { articleSchema } from "@/features/articles/lib/domain/schema"
 import { strapiArticleEntry } from "@/qa/fixtures/strapi/article.fixture"
 

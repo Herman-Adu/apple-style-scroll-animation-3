@@ -23,8 +23,8 @@ import { getServerSession } from "@/lib/auth/server"
 import { commitStock, notifyLowStock, releaseReservationById } from "@/features/orders/server"
 import { resolveDiscountCode } from "@/features/discount-codes/actions"
 import { revalidateCatalog } from "@/features/catalog/server"
-import { priceCheckout, type PricedQuote } from "./lib/pricing"
-import { buildStripeLineItems, toMinorUnits } from "./lib/stripe-line-items"
+import { priceCheckout, type PricedQuote } from "./lib/domain/pricing"
+import { buildStripeLineItems, toMinorUnits } from "./lib/adapters/stripe-line-items"
 
 /** Max units per line — a coarse abuse guard on the aggregate quantity. */
 const MAX_QTY_PER_LINE = 20

@@ -1,13 +1,13 @@
 import "server-only"
 
-import { getAllArticles, getArticleBySlug, getArticleSlugs } from "./data"
+import { getAllArticles, getArticleBySlug, getArticleSlugs } from "./articles"
 import { env } from "@/lib/env"
 import { fetchStrapi, toEntries } from "@/lib/strapi/client"
 import { strapiTags } from "@/lib/strapi/tags"
 import { z } from "zod"
-import { articleSchema, type Article } from "./schema"
-import { selectMoreArticles } from "./article"
-import { mapStrapiArticle } from "./mappers"
+import { articleSchema, type Article } from "../domain/schema"
+import { selectMoreArticles } from "../domain/article"
+import { mapStrapiArticle } from "../domain/mappers"
 
 /**
  * Article data access. Same seam and rationale as the products `api` — reads

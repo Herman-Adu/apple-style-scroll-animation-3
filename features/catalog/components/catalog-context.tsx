@@ -19,13 +19,13 @@ import {
   type ProductMap,
   type ProductPatch,
   type SaleLine,
-} from "../lib/store"
+} from "../lib/domain/store"
 import {
   deleteProductOverlayAction,
   getCatalogProducts,
   resetCatalogOverlayAction,
   saveProductOverlayAction,
-} from "../lib/actions"
+} from "../lib/actions/catalog"
 
 interface CatalogContextValue {
   /** Live catalog, stable-sorted (featured first, then name). */

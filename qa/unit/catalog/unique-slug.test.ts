@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { uniqueSlug } from "@/features/catalog/lib/store"
-import type { ProductMap } from "@/features/catalog/lib/store"
+import { uniqueSlug } from "@/features/catalog/lib/domain/store"
+import type { ProductMap } from "@/features/catalog/lib/domain/store"
 
 const taken = (...slugs: string[]) => Object.fromEntries(slugs.map((s) => [s, {}])) as unknown as ProductMap
 

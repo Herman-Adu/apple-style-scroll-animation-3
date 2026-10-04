@@ -4,8 +4,8 @@ import { companyMilestones } from "@/lib/data/site"
 import { env } from "@/lib/env"
 import { fetchStrapi, toEntries } from "@/lib/strapi/client"
 import { strapiTags } from "@/lib/strapi/tags"
-import { milestoneSchema, type Milestone } from "./schema"
-import { mapStrapiMilestone } from "./mappers"
+import { milestoneSchema, type Milestone } from "../domain/schema"
+import { mapStrapiMilestone } from "../domain/mappers"
 
 const useStrapi = Boolean(env.STRAPI_API_URL)
 const revalidate = env.STRAPI_REVALIDATE_SECONDS

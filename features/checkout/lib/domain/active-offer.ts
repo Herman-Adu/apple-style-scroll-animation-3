@@ -4,7 +4,7 @@
 // source of truth for the actual money math. Kept pure so any client component
 // can reuse it without duplicating the selection/urgency logic.
 
-import { isOfferActive, offerDaysLeft } from "@/features/checkout/lib/pricing"
+import { isOfferActive, offerDaysLeft } from "@/features/checkout/lib/domain/pricing"
 import type { OfferTag } from "@/lib/auth/domain/types"
 
 /** Headline describing an offer's benefit, e.g. "15% off" or "Free shipping". */

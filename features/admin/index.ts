@@ -12,8 +12,8 @@ export { OfferAnalyticsPanel } from "./components/offer-analytics-panel"
 export { AdminSettings } from "./components/admin-settings"
 export { CompanyProfileView } from "./components/company-profile"
 export { AdminOnboarding } from "./components/admin-onboarding"
-export { adminNav, isActive } from "./lib/nav"
-export type { AdminNavItem } from "./lib/nav"
+export { adminNav, isActive } from "./lib/domain/nav"
+export type { AdminNavItem } from "./lib/domain/nav"
 export * from "./components/email/campaign-editor"
 export * from "./components/email/campaign-list"
 export * from "./components/email/email-overview"
@@ -28,5 +28,11 @@ export * from "./components/theme/heading-style-form"
 export * from "./components/theme/theme-tabs"
 export * from "./components/theme/theme-templates-manager"
 export * from "./hooks/use-settings"
-export * from "./lib/permissions/actions"
+export * from "./lib/actions/permissions"
+export type {
+  AdminLockRight,
+  GrantResult,
+  LockPermissionsView,
+  LockRightSource,
+} from "./lib/domain/permissions/types"
 export * from "./components/permissions/lock-permissions-panel"

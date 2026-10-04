@@ -8,7 +8,7 @@ import {
   exportPlan,
   getSocialAsset,
   socialAssets,
-} from "@/features/showcase/lib/social-assets";
+} from "@/features/showcase/lib/domain/social-assets";
 import { docs } from "@/features/docs/content";
 import { REPO_ROOT } from "@/qa/config/repo-root";
 

@@ -1,4 +1,4 @@
 // Public surface of the catalog feature (client-safe).
-export * from "./lib/store"
+export * from "./lib/domain/store"
 export * from "./components/catalog-context"
-export * from "./lib/actions"
+export * from "./lib/actions/catalog"

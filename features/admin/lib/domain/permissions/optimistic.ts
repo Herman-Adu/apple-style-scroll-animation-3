@@ -1,4 +1,4 @@
-import type { AdminLockRight } from "./actions"
+import type { AdminLockRight } from "./types"
 
 export type LockToggle = { email: string; canLock: boolean }
 

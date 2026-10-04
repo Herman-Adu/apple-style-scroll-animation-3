@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { priceCheckout } from "@/features/checkout/lib/pricing"
+import { priceCheckout } from "@/features/checkout/lib/domain/pricing"
 import {
   buildStripeLineItems,
   toMinorUnits,
-} from "@/features/checkout/lib/stripe-line-items"
+} from "@/features/checkout/lib/adapters/stripe-line-items"
 import type { OrderItem } from "@/features/orders/lib/types"
 
 /**

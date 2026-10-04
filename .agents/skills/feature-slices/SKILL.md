@@ -19,8 +19,7 @@ features/<slice>/
   actions.ts    public server actions (optional; requireAdmin → zod → rule → db → updateTag)
   components/   UI and context providers for this slice (server by default)
   hooks/        client hooks used only by this slice
-  lib/          everything else, grouped into sub-folders when it grows:
-                api.ts, schema.ts, mappers.ts, types.ts, actions/, data/, ...
+  lib/          everything else, in four folders only: actions/, data/, domain/, adapters/ (see R6/R7 below)
   content/      static content files (docs only)
 ```
 
@@ -42,7 +41,7 @@ app/  →  features/<slice>/index.ts  →  lib/  →  components/ui
 
 Only cross-cutting infrastructure: `lib/auth`, the db client, `lib/seo`, `lib/strapi`, utils, env. Domain logic (orders, catalog, offers) belongs in a slice.
 
-### The four-folder convention (R6)
+### The four-folder convention (R6, R7)
 
 Any `lib/` or slice `lib/` folder that mixes pure rules, repos and framework adapters gets split into:
 
@@ -51,12 +50,15 @@ domain/     pure rules and types, no I/O (e.g. permissions, config)
 data/       repo-style reads/writes against a store (e.g. lock-rights-repo)
 adapters/   framework/provider glue — the only place allowed to import a provider SDK
             or a Next.js server API directly (e.g. auth providers, session cookie/token)
-actions.ts  / server.ts / client.ts stay at the folder root as the public entry files
+actions/    "use server" files for the slice (the public `actions.ts` at the slice root re-exports)
 ```
 
-`lib/auth/` uses this today (R6). Apply it to a feature's `lib/` only once it has outgrown a
-flat folder — small single-purpose folders (`lib/db`, `lib/seo`, `lib/strapi`, `lib/stripe`)
-don't need it.
+Every `features/<slice>/lib/` uses exactly these four folders and no loose files at its root
+(`qa/unit/meta/lib-layout.test.ts`, `pnpm check:feature-lib`). Static config and datasets that
+rules depend on stay in `domain/`; static fallback datasets for a loader go in `data/`. Types
+shared by `actions/` and `domain/` live in `domain/` (domain never imports from `actions/`).
+Root `lib/` small single-purpose folders (`lib/db`, `lib/seo`, `lib/strapi`, `lib/stripe`) don't
+need the split; `lib/auth/` already uses it (R6).
 
 ## Where a component goes
 

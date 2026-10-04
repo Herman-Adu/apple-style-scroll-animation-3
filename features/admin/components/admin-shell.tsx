@@ -11,7 +11,7 @@ import { useAuth } from "@/lib/auth/adapters/auth-context"
 import { useCatalog } from "@/features/catalog"
 import { inventorySummary } from "@/features/orders"
 import { UserAvatar } from "@/components/account/user-avatar"
-import { adminNav, isActive, isChildActive, type AdminNavItem } from "../lib/nav"
+import { adminNav, isActive, isChildActive, type AdminNavItem } from "../lib/domain/nav"
 import { AdminAccountMenu } from "./admin-account-menu"
 import { AdminOnboarding } from "./admin-onboarding"
 

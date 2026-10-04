@@ -19,8 +19,8 @@ import { prisma } from "@/lib/db/prisma"
 import { effectiveRole } from "@/lib/auth/domain/config"
 import { getAllProducts } from "@/features/products"
 import { productSchema, type Product } from "@/features/products"
-import { toMap, type ProductMap } from "./store"
-import { revalidateCatalog } from "./revalidate"
+import { toMap, type ProductMap } from "../domain/store"
+import { revalidateCatalog } from "../adapters/revalidate"
 
 type OverlayRow = { slug: string; data: unknown; deleted: boolean }
 

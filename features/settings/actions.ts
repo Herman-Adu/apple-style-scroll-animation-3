@@ -14,8 +14,8 @@ import { auth } from "@/lib/auth/adapters/instance"
 import { prisma } from "@/lib/db/prisma"
 import { effectiveRole } from "@/lib/auth/domain/config"
 import { EMPTY_ADDRESS, type CompanyAddress } from "@/lib/data/company"
-import { DEFAULT_STORE_SETTINGS, type Currency, type StoreSettings } from "./lib/types"
-import { normalizeThemeState } from "./lib/theme"
+import { DEFAULT_STORE_SETTINGS, type Currency, type StoreSettings } from "./lib/domain/types"
+import { normalizeThemeState } from "./lib/domain/theme"
 
 async function requireAdmin(): Promise<void> {
   const session = await auth.api.getSession({ headers: await headers() })

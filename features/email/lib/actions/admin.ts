@@ -1,14 +1,14 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { sendEmail } from "../sending/provider"
-import { renderEmail, renderText } from "../blocks/render"
-import type { EmailBlock, EmailBranding } from "../blocks/types"
-import { sampleVars, SAMPLE_ORDER_SUMMARY, SAMPLE_LOW_STOCK_ITEMS } from "../blocks/sample"
+import { sendEmail } from "../adapters/sending/provider"
+import { renderEmail, renderText } from "../domain/blocks/render"
+import type { EmailBlock, EmailBranding } from "../domain/blocks/types"
+import { sampleVars, SAMPLE_ORDER_SUMMARY, SAMPLE_LOW_STOCK_ITEMS } from "../domain/blocks/sample"
 import { getBaseUrl } from "@/lib/seo/site"
-import { validateSectionInput, type SectionBlock } from "../content/sections"
-import { lockViolations } from "../content/locks"
-import { fill, sendCampaign } from "../sending/campaign-send"
+import { validateSectionInput, type SectionBlock } from "../domain/content/sections"
+import { lockViolations } from "../domain/content/locks"
+import { fill, sendCampaign } from "../adapters/sending/campaign-send"
 import { getServerCanLockBlocks, requireAdmin } from "@/lib/auth/server"
 
 /**

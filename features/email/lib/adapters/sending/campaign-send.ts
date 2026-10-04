@@ -2,9 +2,9 @@ import "server-only"
 
 import { revalidatePath } from "next/cache"
 import { getBaseUrl } from "@/lib/seo/site"
-import { renderEmail, renderText } from "../blocks/render"
+import { renderEmail, renderText } from "../../domain/blocks/render"
 import { sendEmail } from "./provider"
-import { type SendOutcome, tallySendResults } from "./send-tally"
+import { type SendOutcome, tallySendResults } from "../../domain/send-tally"
 import {
   type AudienceSpec,
   getBranding,
@@ -13,7 +13,7 @@ import {
   listSubscribers,
   recordLog,
   updateCampaign,
-} from "../data/repo"
+} from "../../data/repo"
 
 /**
  * Campaign sending, kept out of the "use server" actions file so trusted

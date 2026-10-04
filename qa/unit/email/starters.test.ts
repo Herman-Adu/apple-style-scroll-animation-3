@@ -6,12 +6,12 @@ import {
   buildFromExisting,
   buildFromStarter,
   getStarter,
-} from "@/features/email/lib/content/starters";
+} from "@/features/email/lib/domain/content/starters";
 import {
   findPlaceholderKeys,
   PLACEHOLDERS,
-} from "@/features/email/lib/content/placeholders";
-import type { EmailBlock } from "@/features/email/lib/blocks/types";
+} from "@/features/email/lib/domain/content/placeholders";
+import type { EmailBlock } from "@/features/email/lib/domain/blocks/types";
 import { REPO_ROOT } from "@/qa/config/repo-root";
 
 let n = 0;

@@ -175,7 +175,7 @@ Email admin access and block locking are enforced at three independent layers. E
 
 **Who can lock:** owners (`NEXT_PUBLIC_OWNER_EMAILS`, default `herman@adudev.co.uk`) plus any admin the owner grants rights to in **Admin → Settings → Permissions** (`/admin/settings/permissions`). Grants are stored in the `EmailLockRight` table and every grant or revoke writes a `PermissionAudit` row (`lib/auth/lock-rights-repo.ts`, `features/admin/lib/actions/permissions.ts`). The server-only `EMAIL_BLOCK_LOCKERS` variable is still honoured as a read-only fallback seed. The lookup is cached per request with React `cache()` and is never shipped to the browser. See ADR-011.
 
-**Scheduled sends:** the cron route has no session, so the campaign-send logic lives in `features/email/lib/sending/campaign-send.ts` (`sendCampaign`). The cron route calls it directly; the admin action is a thin `requireAdmin()` wrapper around it.
+**Scheduled sends:** the cron route has no session, so the campaign-send logic lives in `features/email/lib/adapters/sending/campaign-send.ts` (`sendCampaign`). The cron route calls it directly; the admin action is a thin `requireAdmin()` wrapper around it.
 
 ```mermaid
 sequenceDiagram

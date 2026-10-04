@@ -8,8 +8,8 @@ import {
   internalDocLinks,
   missingMentions,
 } from "@/features/docs/lib/freshness";
-import { PALETTE_BLOCKS } from "@/features/email/lib/blocks/labels";
-import { STARTERS } from "@/features/email/lib/content/starters";
+import { PALETTE_BLOCKS } from "@/features/email/lib/domain/blocks/labels";
+import { STARTERS } from "@/features/email/lib/domain/content/starters";
 import { REPO_ROOT } from "@/qa/config/repo-root";
 
 const emailDocs = docs.filter((d) => d.slug.startsWith("email-"));

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { SYSTEM_TEMPLATES } from "@/features/email/lib/blocks/system-templates"
+import { SYSTEM_TEMPLATES } from "@/features/email/lib/domain/blocks/system-templates"
 import { fakeAuth, fakeCache, fakeDb, fakeEmail } from "@/qa/fakes"
 
 /**

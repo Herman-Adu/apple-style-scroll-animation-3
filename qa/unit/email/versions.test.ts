@@ -5,8 +5,8 @@ import {
   summarizeChange,
   versionIdsToPrune,
   type TemplateContent,
-} from "@/features/email/lib/content/versions"
-import type { EmailBlock } from "@/features/email/lib/blocks/types"
+} from "@/features/email/lib/domain/content/versions"
+import type { EmailBlock } from "@/features/email/lib/domain/blocks/types"
 
 const content = (over: Partial<TemplateContent> = {}): TemplateContent => ({
   name: "Promo",

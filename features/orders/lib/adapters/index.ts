@@ -11,4 +11,4 @@ const provider = process.env.NEXT_PUBLIC_AUTH_PROVIDER || "db"
 export const ordersAdapter =
   provider === "local" ? createLocalOrdersAdapter() : createDbOrdersAdapter()
 
-export type { Order, OrderItem, OrderStatus, CreateOrderInput, OrdersAdapter } from "../types"
+export type { Order, OrderItem, OrderStatus, CreateOrderInput, OrdersAdapter } from "../domain/types"

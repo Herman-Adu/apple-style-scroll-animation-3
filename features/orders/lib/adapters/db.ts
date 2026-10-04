@@ -12,8 +12,8 @@ import {
   updateOrderStatusAction,
 } from "../actions/orders"
 import { refundOrderAction } from "../actions/refunds"
-import type { Carrier } from "../tracking"
-import type { CreateOrderInput, Order, OrderStatus, OrdersAdapter } from "../types"
+import type { Carrier } from "../domain/tracking"
+import type { CreateOrderInput, Order, OrderStatus, OrdersAdapter } from "../domain/types"
 
 export function createDbOrdersAdapter(): OrdersAdapter {
   return {

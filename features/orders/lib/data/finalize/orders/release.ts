@@ -5,8 +5,8 @@ import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/db/prisma";
 import { revalidateCatalog } from "@/features/catalog/server";
-import type { Order } from "../../types";
-import { orderSelect, toOrder } from "./order-row";
+import type { Order } from "../../../domain/types";
+import { orderSelect, toOrder } from "../../../domain/order-row";
 import { restoreStock, toReserved, type ReservedLine } from "../stock";
 
 export async function releaseCheckout(

@@ -114,7 +114,7 @@ const uniqueError = (target: string[]) =>
   });
 
 async function load() {
-  return import("@/features/orders/lib/finalize/checkout-finalize");
+  return import("@/features/orders/lib/data/finalize/orders");
 }
 
 beforeEach(() => {

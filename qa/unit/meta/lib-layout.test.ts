@@ -15,19 +15,11 @@ const LIB_FOLDERS = new Set(["actions", "data", "domain", "adapters"]);
 /** Folders outside the four-folder split, per slice. */
 const UNMIGRATED_FOLDERS: Record<string, string[]> = {
   email: ["blocks", "content", "sending"],
-  orders: ["finalize"],
 };
 
 /** Files loose at the root of `lib/`, per slice. */
 const UNMIGRATED_LOOSE_FILES: Record<string, string[]> = {
   docs: ["api.ts", "doc.ts", "freshness.ts", "schema.ts", "strapi-source.ts"],
-  orders: [
-    "analytics.ts",
-    "invoice.ts",
-    "notifications.ts",
-    "tracking.ts",
-    "types.ts",
-  ],
   products: [
     "api.ts",
     "data.ts",

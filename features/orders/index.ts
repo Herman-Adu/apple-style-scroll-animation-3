@@ -4,7 +4,7 @@
 
 export { ordersAdapter } from "./lib/adapters";
 
-export * from "./lib/analytics";
-export * from "./lib/invoice";
-export * from "./lib/tracking";
-export * from "./lib/types";
+export * from "./lib/domain/analytics";
+export * from "./lib/domain/invoice";
+export * from "./lib/domain/tracking";
+export * from "./lib/domain/types";

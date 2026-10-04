@@ -52,7 +52,9 @@ describe("R3 slice boundaries", () => {
 
   it("checkout finalize is split into steps under 300 lines each", () => {
     const finalize = records.filter((r) =>
-      r.path.replace(/\\/g, "/").startsWith("features/orders/lib/finalize/"),
+      r.path
+        .replace(/\\/g, "/")
+        .startsWith("features/orders/lib/data/finalize/"),
     );
     expect(finalize.length).toBeGreaterThan(1);
     for (const r of finalize)

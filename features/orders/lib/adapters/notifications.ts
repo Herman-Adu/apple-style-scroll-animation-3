@@ -14,7 +14,7 @@ import {
   sendRefundConfirmation,
   sendShippingConfirmation,
 } from "@/features/email"
-import type { Order, RefundEntry } from "./types"
+import type { Order, RefundEntry } from "../domain/types"
 
 export async function dispatchOrderEmails(order: Order): Promise<void> {
   let name = order.email

@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/schema";
 
 export const commerceStripePayments: Doc = {
   slug: "commerce-stripe-payments-and-webhooks",
@@ -11,7 +11,14 @@ export const commerceStripePayments: Doc = {
   readingMinutes: 14,
   order: 2,
   updatedAt: "2026-10-04",
-  tags: ["stripe", "checkout", "webhooks", "payments", "server actions", "idempotency"],
+  tags: [
+    "stripe",
+    "checkout",
+    "webhooks",
+    "payments",
+    "server actions",
+    "idempotency",
+  ],
   body: [
     {
       type: "paragraph",
@@ -30,7 +37,7 @@ export const commerceStripePayments: Doc = {
     {
       type: "list",
       items: [
-        "features/checkout/actions.ts — the server action that reserves stock and creates the Checkout Session.",
+        "features/checkout/lib/actions/checkout.ts — the server action that reserves stock and creates the Checkout Session.",
         "features/checkout/lib/adapters/stripe-line-items.ts — maps cart lines to Stripe line items (with absolute product image URLs).",
         "lib/stripe/server.ts — the server-only Stripe client, keyed by STRIPE_SECRET_KEY.",
         "app/api/stripe/webhook/route.ts — the signature-verified endpoint Stripe calls.",
@@ -77,7 +84,8 @@ export const commerceStripePayments: Doc = {
     {
       type: "code",
       language: "typescript",
-      title: "features/checkout/actions.ts — reserve, then create the session",
+      title:
+        "features/checkout/lib/actions/checkout.ts — reserve, then create the session",
       code: `"use server"
 
 // 1. Validate + re-price on the server (never trust client prices).
@@ -112,7 +120,8 @@ const session = await stripe.checkout.sessions.create(
     {
       type: "code",
       language: "typescript",
-      title: "features/checkout/lib/adapters/stripe-line-items.ts — absolute image URLs",
+      title:
+        "features/checkout/lib/adapters/stripe-line-items.ts — absolute image URLs",
       code: `function absoluteImageUrl(src: string, origin: string): string | undefined {
   if (!src) return undefined
   if (src.startsWith("http://") || src.startsWith("https://")) return src
@@ -192,11 +201,26 @@ switch (event.type) {
     {
       type: "steps",
       items: [
-        { title: "Verify", text: "Reject anything without a valid Stripe signature before reading the body." },
-        { title: "Match", text: "Look up the pending checkout by the id stored in session metadata." },
-        { title: "Guard", text: "Only act if the pending row is still 'reserved' — redelivery is a no-op." },
-        { title: "Materialize", text: "Create the Order (status 'processing') and mark the pending row completed, in one transaction." },
-        { title: "Notify", text: "Send the confirmation email after the order row is committed." },
+        {
+          title: "Verify",
+          text: "Reject anything without a valid Stripe signature before reading the body.",
+        },
+        {
+          title: "Match",
+          text: "Look up the pending checkout by the id stored in session metadata.",
+        },
+        {
+          title: "Guard",
+          text: "Only act if the pending row is still 'reserved' — redelivery is a no-op.",
+        },
+        {
+          title: "Materialize",
+          text: "Create the Order (status 'processing') and mark the pending row completed, in one transaction.",
+        },
+        {
+          title: "Notify",
+          text: "Send the confirmation email after the order row is committed.",
+        },
       ],
     },
     {
@@ -216,9 +240,21 @@ switch (event.type) {
       title: "Stripe environment variables",
       headers: ["Variable", "Where", "Purpose"],
       rows: [
-        ["STRIPE_SECRET_KEY", "Server only", "Authenticates the Stripe SDK to create sessions and read objects."],
-        ["STRIPE_WEBHOOK_SECRET", "Server only", "Verifies inbound webhook signatures. Unique per endpoint."],
-        ["NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", "Client", "Mounts the embedded Checkout UI in the browser."],
+        [
+          "STRIPE_SECRET_KEY",
+          "Server only",
+          "Authenticates the Stripe SDK to create sessions and read objects.",
+        ],
+        [
+          "STRIPE_WEBHOOK_SECRET",
+          "Server only",
+          "Verifies inbound webhook signatures. Unique per endpoint.",
+        ],
+        [
+          "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+          "Client",
+          "Mounts the embedded Checkout UI in the browser.",
+        ],
       ],
     },
     {
@@ -234,4 +270,4 @@ switch (event.type) {
       text: "Embedded Checkout takes its branding (business name, logo, colors) from the Stripe Dashboard, not from code. Full in-code control of the payment form's look requires migrating to the Stripe Payment Element, which supports an appearance API. That migration is planned and tracked separately; this guide documents the embedded Checkout flow as it exists today.",
     },
   ],
-}
+};

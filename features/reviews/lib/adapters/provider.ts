@@ -1,7 +1,7 @@
 import { env } from "@/lib/env"
 import { seedReviews } from "../data/seed"
 import { moderateReview } from "../domain/moderation"
-import { addReviewAction, listReviewsAction } from "../../actions"
+import { addReviewAction, listReviewsAction } from "../actions/reviews"
 import type { Review, ReviewInput, ReviewsProvider, ReviewSummary } from "../domain/types"
 
 // Transport / persistence layer for reviews.

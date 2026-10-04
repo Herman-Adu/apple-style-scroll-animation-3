@@ -7,7 +7,7 @@ import { strapiTags } from "@/lib/strapi/tags"
 import { z } from "zod"
 import { articleSchema, type Article } from "../domain/schema"
 import { selectMoreArticles } from "../domain/article"
-import { mapStrapiArticle } from "../domain/mappers"
+import { mapStrapiArticle } from "../adapters/mappers"
 
 /**
  * Article data access. Same seam and rationale as the products `api` — reads

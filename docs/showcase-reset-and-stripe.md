@@ -15,22 +15,22 @@ Plus notes on the provider "scaffolding" code so you know it isn't accidental de
 
 **Wiped** (all user-generated / demo runtime data):
 
-| Table          | What it holds                                  |
-| -------------- | ---------------------------------------------- |
-| `session`      | Better Auth login sessions                     |
-| `account`      | Better Auth credential/OAuth records           |
-| `verification` | Better Auth email-verification / reset tokens  |
-| `user`         | All user accounts (customers **and** admins)   |
-| `orders`       | All placed orders                              |
+| Table          | What it holds                                 |
+| -------------- | --------------------------------------------- |
+| `session`      | Better Auth login sessions                    |
+| `account`      | Better Auth credential/OAuth records          |
+| `verification` | Better Auth email-verification / reset tokens |
+| `user`         | All user accounts (customers **and** admins)  |
+| `orders`       | All placed orders                             |
 
 **Kept** (your configured store, not demo noise):
 
-| Table                                   | Why keep it                              |
-| --------------------------------------- | ---------------------------------------- |
-| `store_settings`                        | Theme + company profile                  |
-| `email_settings` / `email_templates`    | Email configuration and templates        |
-| `message_presets`                       | Canned admin replies                      |
-| `product_overlay`                       | Admin product edits + live stock counts  |
+| Table                                | Why keep it                             |
+| ------------------------------------ | --------------------------------------- |
+| `store_settings`                     | Theme + company profile                 |
+| `email_settings` / `email_templates` | Email configuration and templates       |
+| `message_presets`                    | Canned admin replies                    |
+| `product_overlay`                    | Admin product edits + live stock counts |
 
 > `reviews` and `subscribers` may contain a mix of seeded and real entries. They are **not** wiped by the steps below. Clear them explicitly (see optional step) only if you want a truly empty review wall / mailing list.
 
@@ -123,7 +123,7 @@ SQL
 Stripe embedded Checkout is **now wired in**. The flow is:
 
 1. **Review step** — `components/checkout/checkout-view.tsx` shows the order summary, then "Pay now" calls the `startStripeCheckout` server action.
-2. **Server action** (`features/checkout/actions.ts`) re-prices the cart server-side (never trusts client amounts), writes a `pending_checkouts` row, and creates a Stripe Checkout Session with `ui_mode: "embedded_page"` and an idempotency key.
+2. **Server action** (`features/checkout/lib/actions/checkout.ts`) re-prices the cart server-side (never trusts client amounts), writes a `pending_checkouts` row, and creates a Stripe Checkout Session with `ui_mode: "embedded_page"` and an idempotency key.
 3. **Embedded payment** — `components/checkout/embedded-payment.tsx` mounts Stripe's `<EmbeddedCheckout>` inline on `/checkout` using the session `client_secret`.
 4. **Webhook** (`app/api/stripe/webhook/route.ts`) is the source of truth: on `checkout.session.completed` (paid) it calls `finalizeCheckout` to atomically create the `orders` row + decrement stock, then dispatches confirmation emails. On `expired` / `async_payment_failed` it releases the reservation.
 5. **Return page** (`app/checkout/return/page.tsx`) shows the confirmed order (falls back to finalizing if the webhook hasn't landed yet — finalization is idempotent, so the order is created exactly once) and clears the cart.
@@ -149,6 +149,7 @@ Steps:
    | `STRIPE_WEBHOOK_SECRET`              | `whsec_...` (see below)            | Verifies webhook authenticity.                   |
 
    Set them for the environments you demo from (Production and/or Preview), then redeploy.
+
 3. **Test cards:** with test keys you can pay with `4242 4242 4242 4242`, any future expiry, any CVC/ZIP. Payments show up in **your** Stripe dashboard under Test mode.
 
 ### The webhook secret

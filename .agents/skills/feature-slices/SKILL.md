@@ -16,7 +16,7 @@ Two rules, deliberately different strengths:
 features/<slice>/
   index.ts      public, client-safe surface: export only what other code needs
   server.ts     public server-only surface (optional)
-  actions.ts    public server actions (optional; requireAdmin → zod → rule → db → updateTag)
+  actions.ts    public server-action entry (optional): re-exports ./lib/actions/*, no logic
   components/   UI and context providers for this slice (server by default)
   hooks/        client hooks used only by this slice
   lib/          everything else, in four folders only: actions/, data/, domain/, adapters/ (see R6/R7 below)
@@ -43,22 +43,22 @@ Only cross-cutting infrastructure: `lib/auth`, the db client, `lib/seo`, `lib/st
 
 ### The four-folder convention (R6, R7)
 
-Any `lib/` or slice `lib/` folder that mixes pure rules, repos and framework adapters gets split into:
+Any `lib/` or slice `lib/` folder that mixes pure rules, repos and framework adapters gets split into four folders.
+Every `features/<slice>/lib/` uses exactly these, no loose files
+(`qa/unit/meta/lib-layout.test.ts`, `lib-roles.test.ts`, `pnpm check:feature-lib`):
 
-```
-domain/     pure rules and types, no I/O (e.g. permissions, config)
-data/       repo-style reads/writes against a store (e.g. lock-rights-repo)
-adapters/   framework/provider glue — the only place allowed to import a provider SDK
-            or a Next.js server API directly (e.g. auth providers, session cookie/token)
-actions/    "use server" files for the slice (the public `actions.ts` at the slice root re-exports)
-```
+| Folder      | Means                                                                                                                                                            | Never contains                        |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `domain/`   | Pure types, zod schemas, rules, selectors, static config the rules need. Same input, same output                                                                 | I/O, env, `server-only`, Next, SDKs   |
+| `data/`     | Where data comes from: Prisma repos (database data), CMS/Strapi loaders, seed and fallback datasets, and `api.ts`, the slice's read loader that picks the source | UI, `"use server"`, SDK wrappers      |
+| `adapters/` | Boundary glue: SDK wrappers (Stripe, Resend), CMS payload mappers, `next/*` helpers, providers, limiters                                                         | business rules                        |
+| `actions/`  | The only place `"use server"` files live: auth guard, zod, call a rule, call `data/`                                                                             | pure helpers (move them to `domain/`) |
 
-Every `features/<slice>/lib/` uses exactly these four folders and no loose files at its root
-(`qa/unit/meta/lib-layout.test.ts`, `pnpm check:feature-lib`). Static config and datasets that
-rules depend on stay in `domain/`; static fallback datasets for a loader go in `data/`. Types
-shared by `actions/` and `domain/` live in `domain/` (domain never imports from `actions/`).
-Root `lib/` small single-purpose folders (`lib/db`, `lib/seo`, `lib/strapi`, `lib/stripe`) don't
-need the split; `lib/auth/` already uses it (R6).
+- **There is no `api/` or `database/` folder.** `api` is a file name (`data/api.ts`, exported through `server.ts`); database data is just `data/`.
+- **Imports point inward:** `actions` and `data` may import `domain`; `adapters` may import `domain`; `domain` imports no sibling folder. Types shared with `actions/` live in `domain/`.
+- **Slice root `actions.ts` is a public entry:** `export * from "./lib/actions/..."`, no logic, no `"use server"`.
+- Static config that a schema depends on stays in `domain/`; a dataset standing in for a store goes in `data/`.
+- Root `lib/` small single-purpose folders (`lib/db`, `lib/seo`, `lib/strapi`, `lib/stripe`) don't need the split; `lib/auth/` already uses it (R6).
 
 ## Where a component goes
 

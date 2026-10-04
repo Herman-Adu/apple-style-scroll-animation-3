@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/schema";
 
 export const emailPlatformArchitecture: Doc = {
   slug: "email-platform-architecture",
@@ -10,8 +10,17 @@ export const emailPlatformArchitecture: Doc = {
     "How the block-based email editor works under the hood: the Neon tables, the save path with lock checks and version snapshots, the template lifecycle, saved sections, starters, and how a campaign gets sent, both manually and on a schedule.",
   readingMinutes: 12,
   order: 2,
-  updatedAt: "2026-10-02",
-  tags: ["email", "architecture", "templates", "versions", "locks", "campaigns", "resend", "prisma"],
+  updatedAt: "2026-10-04",
+  tags: [
+    "email",
+    "architecture",
+    "templates",
+    "versions",
+    "locks",
+    "campaigns",
+    "resend",
+    "prisma",
+  ],
   body: [
     {
       type: "paragraph",
@@ -25,15 +34,42 @@ export const emailPlatformArchitecture: Doc = {
       type: "table",
       headers: ["Module", "Responsibility"],
       rows: [
-        ["features/email/blocks", "Block types and the renderer shared by preview and send"],
-        ["features/email/lib/data/repo.ts", "Prisma reads and writes for templates, versions, sections and campaigns"],
-        ["features/email/lib/actions/admin.ts", "Server actions; each starts with requireAdmin()"],
-        ["features/email/lib/content/locks.ts", "Pure lock rules: where new blocks go, lockViolations()"],
-        ["features/email/lib/content/versions.ts", "Snapshot and retention rules for template history"],
-        ["features/email/lib/content/sections.ts", "Saved-section validation and fresh ids on insert"],
-        ["features/email/lib/content/starters.ts", "Starter gallery (Essentials and Seasonal campaigns)"],
-        ["features/email/lib/sending/campaign-send.ts", "Server-only send used by both Send now and the scheduler"],
-        ["lib/auth/permissions.ts", "canLockBlocks, assertAdmin and the proxy gate decision"],
+        [
+          "features/email/blocks",
+          "Block types and the renderer shared by preview and send",
+        ],
+        [
+          "features/email/lib/data/repo.ts",
+          "Prisma reads and writes for templates, versions, sections and campaigns",
+        ],
+        [
+          "features/email/lib/actions/admin.ts",
+          "Server actions; each starts with requireAdmin()",
+        ],
+        [
+          "features/email/lib/domain/content/locks.ts",
+          "Pure lock rules: where new blocks go, lockViolations()",
+        ],
+        [
+          "features/email/lib/domain/content/versions.ts",
+          "Snapshot and retention rules for template history",
+        ],
+        [
+          "features/email/lib/domain/content/sections.ts",
+          "Saved-section validation and fresh ids on insert",
+        ],
+        [
+          "features/email/lib/domain/content/starters.ts",
+          "Starter gallery (Essentials and Seasonal campaigns)",
+        ],
+        [
+          "features/email/lib/adapters/sending/campaign-send.ts",
+          "Server-only send used by both Send now and the scheduler",
+        ],
+        [
+          "lib/auth/permissions.ts",
+          "canLockBlocks, assertAdmin and the proxy gate decision",
+        ],
       ],
     },
     {
@@ -44,11 +80,12 @@ export const emailPlatformArchitecture: Doc = {
       type: "mermaid",
       kind: "er",
       title: "Figure 1 — Email tables on Neon",
-      caption: "Templates own their version history (deleted with the template). Saved sections are independent: inserting one copies its blocks, so deleting a section never changes a template.",
+      caption:
+        "Templates own their version history (deleted with the template). Saved sections are independent: inserting one copies its blocks, so deleting a section never changes a template.",
       diagram: [
         "erDiagram",
-        "  EMAIL_TEMPLATE ||--o{ EMAIL_TEMPLATE_VERSION : \"has history\"",
-        "  EMAIL_TEMPLATE ||--o{ CAMPAIGN : \"used by\"",
+        '  EMAIL_TEMPLATE ||--o{ EMAIL_TEMPLATE_VERSION : "has history"',
+        '  EMAIL_TEMPLATE ||--o{ CAMPAIGN : "used by"',
         "  EMAIL_TEMPLATE {",
         "    int id PK",
         "    string key UK",
@@ -97,7 +134,8 @@ export const emailPlatformArchitecture: Doc = {
       type: "mermaid",
       kind: "sequence",
       title: "Figure 2 — Save with lock checks and a version snapshot",
-      caption: "Reset and Restore follow the same path. The lock check compares the stored blocks with the incoming ones, so a crafted request can't bypass the editor.",
+      caption:
+        "Reset and Restore follow the same path. The lock check compares the stored blocks with the incoming ones, so a crafted request can't bypass the editor.",
       diagram: [
         "sequenceDiagram",
         "  participant E as Editor (client)",
@@ -131,7 +169,8 @@ export const emailPlatformArchitecture: Doc = {
       type: "mermaid",
       kind: "state",
       title: "Figure 3 — From starter to sent",
-      caption: "Every arrow that changes content writes a version snapshot, so any state can be restored.",
+      caption:
+        "Every arrow that changes content writes a version snapshot, so any state can be restored.",
       diagram: [
         "stateDiagram-v2",
         "  [*] --> Draft: New from starter, blank or duplicate",
@@ -168,7 +207,8 @@ export const emailPlatformArchitecture: Doc = {
       type: "mermaid",
       kind: "flow",
       title: "Figure 4 — Two entry points, one sender",
-      caption: "Send now runs as a signed-in admin; the scheduler runs with no session. Both call the same server-only sendCampaign.",
+      caption:
+        "Send now runs as a signed-in admin; the scheduler runs with no session. Both call the same server-only sendCampaign.",
       diagram: [
         "flowchart TD",
         "  A[Admin clicks Send now] --> B[sendCampaignAction: requireAdmin]",
@@ -196,14 +236,38 @@ export const emailPlatformArchitecture: Doc = {
     },
     {
       type: "table",
-      headers: ["Area", "Unit tests (pure rules)", "Integration tests (actions)"],
+      headers: [
+        "Area",
+        "Unit tests (pure rules)",
+        "Integration tests (actions)",
+      ],
       rows: [
-        ["Locks", "Insert position, lockViolations", "Non-locker save, reset, restore refused"],
-        ["Versions", "Snapshot reasons, retention", "Reset to original, restore adds a version"],
-        ["Sections", "Order, fresh ids, name and size limits", "Covered through the editor actions"],
-        ["Starters", "Groups, unique keys, valid blocks", "Created template matches starter"],
-        ["Permissions", "Owner, locker, admin, customer, signed out", "requireAdmin on every action"],
+        [
+          "Locks",
+          "Insert position, lockViolations",
+          "Non-locker save, reset, restore refused",
+        ],
+        [
+          "Versions",
+          "Snapshot reasons, retention",
+          "Reset to original, restore adds a version",
+        ],
+        [
+          "Sections",
+          "Order, fresh ids, name and size limits",
+          "Covered through the editor actions",
+        ],
+        [
+          "Starters",
+          "Groups, unique keys, valid blocks",
+          "Created template matches starter",
+        ],
+        [
+          "Permissions",
+          "Owner, locker, admin, customer, signed out",
+          "requireAdmin on every action",
+        ],
       ],
     },
   ],
-}
+};

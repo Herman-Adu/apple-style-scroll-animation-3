@@ -5,15 +5,15 @@ import {
   DEFAULT_BRANDING,
   type EmailBlock,
   type EmailBranding,
-} from "../blocks/types";
-import { SYSTEM_TEMPLATES } from "../blocks/system-templates";
+} from "../domain/blocks/types";
+import { SYSTEM_TEMPLATES } from "../domain/blocks/system-templates";
 import {
   pickOriginalVersion,
   versionIdsToPrune,
   type TemplateContent,
   type VersionReason,
-} from "../content/versions";
-import type { SectionBlock } from "../content/sections";
+} from "../domain/content/versions";
+import type { SectionBlock } from "../domain/content/sections";
 import { getStoreSettingsAction } from "@/features/settings";
 import { getActiveTheme, resolveTokens } from "@/features/settings";
 

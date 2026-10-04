@@ -1,5 +1,5 @@
 import { vi } from "vitest"
-import type { SendEmailInput, SendEmailResult } from "@/features/email/lib/sending/provider"
+import type { SendEmailInput, SendEmailResult } from "@/features/email/lib/adapters/sending/provider"
 
 /** Stands in for `@/features/email/provider`: sent mail lands in `outbox`; `failNext()` makes the next send fail. */
 export function fakeEmail() {
@@ -23,6 +23,6 @@ export function fakeEmail() {
     failNext: (error = "fake send failure") => {
       state.failure = error
     },
-    install: () => vi.doMock("@/features/email/lib/sending/provider", () => module),
+    install: () => vi.doMock("@/features/email/lib/adapters/sending/provider", () => module),
   }
 }

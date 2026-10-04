@@ -73,8 +73,6 @@ describe('"use server" files live in lib/actions/', () => {
 });
 
 describe("domain/ is pure", () => {
-  /** Barrels that still re-export from outside domain/. Shrinks to empty in R7c. */
-  const DOMAIN_REEXPORTS = ["features/email/lib/domain/blocks/index.ts"];
   const domainFiles = slices
     .flatMap((slice) => walk(join(FEATURES, slice, "lib", "domain")))
     .filter(isCode);
@@ -101,21 +99,22 @@ describe("domain/ is pure", () => {
     },
   );
 
-  it.each(
-    domainFiles.map(posix).filter((file) => !DOMAIN_REEXPORTS.includes(file)),
-  )("%s never imports a relative path outside domain/", (file) => {
-    const abs = join(REPO_ROOT, file);
-    const domainRoot = file.slice(
-      0,
-      file.indexOf("/domain/") + "/domain".length,
-    );
-    const source = stripComments(read(abs));
-    const escaping = [...source.matchAll(/from\s+["'](\.[^"']*)["']/g)]
-      .map((match) => match[1])
-      .filter((spec) => {
-        const target = posix(resolve(dirname(abs), spec));
-        return target !== domainRoot && !target.startsWith(`${domainRoot}/`);
-      });
-    expect(escaping).toEqual([]);
-  });
+  it.each(domainFiles.map(posix))(
+    "%s never imports a relative path outside domain/",
+    (file) => {
+      const abs = join(REPO_ROOT, file);
+      const domainRoot = file.slice(
+        0,
+        file.indexOf("/domain/") + "/domain".length,
+      );
+      const source = stripComments(read(abs));
+      const escaping = [...source.matchAll(/from\s+["'](\.[^"']*)["']/g)]
+        .map((match) => match[1])
+        .filter((spec) => {
+          const target = posix(resolve(dirname(abs), spec));
+          return target !== domainRoot && !target.startsWith(`${domainRoot}/`);
+        });
+      expect(escaping).toEqual([]);
+    },
+  );
 });

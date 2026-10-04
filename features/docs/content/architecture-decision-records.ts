@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/schema";
 
 export const architectureDecisionRecords: Doc = {
   slug: "architecture-decision-records",
@@ -10,8 +10,15 @@ export const architectureDecisionRecords: Doc = {
     "The key design decisions behind the email platform and permissions, each with the context, the choice, the alternatives considered and the trade-offs accepted. Read this before changing how templates, versions, locks or sends work.",
   readingMinutes: 10,
   order: 3,
-  updatedAt: "2026-10-02",
-  tags: ["adr", "decisions", "architecture", "email", "permissions", "trade-offs"],
+  updatedAt: "2026-10-04",
+  tags: [
+    "adr",
+    "decisions",
+    "architecture",
+    "email",
+    "permissions",
+    "trade-offs",
+  ],
   body: [
     {
       type: "paragraph",
@@ -22,16 +29,40 @@ export const architectureDecisionRecords: Doc = {
       title: "Index",
       headers: ["ADR", "Decision", "Status"],
       rows: [
-        ["001", "Store templates as typed blocks in one JSON column", "Accepted"],
+        [
+          "001",
+          "Store templates as typed blocks in one JSON column",
+          "Accepted",
+        ],
         ["002", "One renderer for editor, preview and sender", "Accepted"],
-        ["003", "Own the email stack (Resend + Neon) instead of renting an ESP", "Accepted"],
-        ["004", "Snapshot every template write; restore appends, never rewinds", "Accepted"],
+        [
+          "003",
+          "Own the email stack (Resend + Neon) instead of renting an ESP",
+          "Accepted",
+        ],
+        [
+          "004",
+          "Snapshot every template write; restore appends, never rewinds",
+          "Accepted",
+        ],
         ["005", "Saved sections are copied on insert, not linked", "Accepted"],
         ["006", "Starters live in code, not in the database", "Accepted"],
-        ["007", "Permissions as pure rules, enforced in three layers", "Accepted"],
-        ["008", "Lockers configured by environment variable for now", "Accepted, revisit"],
+        [
+          "007",
+          "Permissions as pure rules, enforced in three layers",
+          "Accepted",
+        ],
+        [
+          "008",
+          "Lockers configured by environment variable for now",
+          "Accepted, revisit",
+        ],
         ["009", "Scheduled sends use a separate server-only path", "Accepted"],
-        ["010", "Tests first for rules; in-memory Prisma for integration tests", "Accepted"],
+        [
+          "010",
+          "Tests first for rules; in-memory Prisma for integration tests",
+          "Accepted",
+        ],
       ],
     },
     { type: "heading", text: "ADR-001 — Typed blocks in one JSON column" },
@@ -62,7 +93,7 @@ export const architectureDecisionRecords: Doc = {
     { type: "heading", text: "ADR-006 — Starters in code" },
     {
       type: "paragraph",
-      text: "Context: the starter gallery (Newsletter, Sale, Black Friday, Christmas and so on) needs to be the same in every environment. Decision: starters are defined in features/email/lib/content/starters.ts, and choosing one creates a normal template. Trade-off: adding a starter needs a deploy. In return, starters are reviewed, tested and versioned like code.",
+      text: "Context: the starter gallery (Newsletter, Sale, Black Friday, Christmas and so on) needs to be the same in every environment. Decision: starters are defined in features/email/lib/domain/content/starters.ts, and choosing one creates a normal template. Trade-off: adding a starter needs a deploy. In return, starters are reviewed, tested and versioned like code.",
     },
     { type: "heading", text: "ADR-007 — Pure permission rules, three layers" },
     {
@@ -92,17 +123,20 @@ export const architectureDecisionRecords: Doc = {
     { type: "heading", text: "ADR-009 — Separate path for scheduled sends" },
     {
       type: "paragraph",
-      text: "Context: scheduled sends run with no one signed in, so the admin check would block them. Decision: the sending logic lives in features/email/lib/sending/campaign-send.ts. The admin action wraps it with requireAdmin, and the cron route calls it only with a valid CRON_SECRET. Trade-off: two entry points to maintain. In return, neither path weakens the other.",
+      text: "Context: scheduled sends run with no one signed in, so the admin check would block them. Decision: the sending logic lives in features/email/lib/adapters/sending/campaign-send.ts. The admin action wraps it with requireAdmin, and the cron route calls it only with a valid CRON_SECRET. Trade-off: two entry points to maintain. In return, neither path weakens the other.",
     },
     { type: "heading", text: "ADR-010 — How we test" },
     {
       type: "paragraph",
       text: "Context: tests that need a database or browser are slow and flaky. Decision: rules live in pure modules with unit tests written first. Server actions are integration-tested against an in-memory Prisma mock, and Playwright covers smoke, SEO and accessibility. Trade-off: the mock can drift from Postgres behaviour. In return, the full unit and integration run takes seconds.",
     },
-    { type: "heading", text: "ADR-011 — Lock permissions stored in the database" },
+    {
+      type: "heading",
+      text: "ADR-011 — Lock permissions stored in the database",
+    },
     {
       type: "paragraph",
       text: "Context: ADR-008 meant every change to who can lock needed a redeploy, with no record of who changed what. Decision: lock rights live in a database table, granted and revoked by the owner in Admin → Settings → Permissions, and every change writes an audit row. The owner always has the right, and EMAIL_BLOCK_LOCKERS still works as a read-only fallback seed. The rules stay pure (canGrantPermission, resolveLockRights) and the lookup is cached per request with React cache(). Trade-off: one extra query per admin request. In return, changes take effect immediately and are fully auditable.",
     },
   ],
-}
+};

@@ -1169,7 +1169,7 @@ const UNLINKED = "__unlinked__"
  * URL. Selecting a product resolves its name/image at render time
  * (`RenderContext.products`), so the picture can never drift out of sync with
  * — or be mismatched against — the product title. See `HeroBlock.productSlug`
- * / `ImageBlock.productSlug` in `features/email/lib/blocks/types.ts`.
+ * / `ImageBlock.productSlug` in `features/email/lib/domain/blocks/types.ts`.
  */
 function ProductLinkField({
   productSlug,
@@ -1219,7 +1219,7 @@ function ProductLinkField({
  * like"). Each entry resolves its image/name/price live from
  * `RenderContext.products` at render time — only the slug is stored — so the
  * picks can never drift out of sync with the catalog. See
- * `ProductPicksBlock` in `features/email/lib/blocks/types.ts`.
+ * `ProductPicksBlock` in `features/email/lib/domain/blocks/types.ts`.
  */
 function ProductMultiPickField({
   slugs,

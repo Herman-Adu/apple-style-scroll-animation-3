@@ -13,9 +13,7 @@ import { REPO_ROOT } from "@/qa/config/repo-root";
 const LIB_FOLDERS = new Set(["actions", "data", "domain", "adapters"]);
 
 /** Folders outside the four-folder split, per slice. */
-const UNMIGRATED_FOLDERS: Record<string, string[]> = {
-  email: ["blocks", "content", "sending"],
-};
+const UNMIGRATED_FOLDERS: Record<string, string[]> = {};
 
 /** Files loose at the root of `lib/`, per slice. */
 const UNMIGRATED_LOOSE_FILES: Record<string, string[]> = {

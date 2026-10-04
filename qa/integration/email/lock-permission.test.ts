@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { EmailBlock } from "@/features/email/lib/blocks/types"
+import type { EmailBlock } from "@/features/email/lib/domain/blocks/types"
 import { fakeAuth, fakeCache, fakeDb, fakeEmail } from "@/qa/fakes"
 
 /**

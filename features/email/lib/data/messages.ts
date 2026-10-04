@@ -1,7 +1,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db/prisma";
-import { SYSTEM_PRESETS } from "../blocks/system-templates";
+import { SYSTEM_PRESETS } from "../domain/blocks/system-templates";
 
 export async function seedPresets(): Promise<void> {
   const count = await prisma.messagePreset.count();

@@ -10,7 +10,7 @@ export const commerceStripePayments: Doc = {
     "How this storefront actually charges a card: embedded Checkout created from a server action, stock reserved up front, and a signature-verified webhook that materializes the order and sends email. The concrete, code-level companion to the cart architecture guide.",
   readingMinutes: 14,
   order: 2,
-  updatedAt: "2026-09-29",
+  updatedAt: "2026-10-04",
   tags: ["stripe", "checkout", "webhooks", "payments", "server actions", "idempotency"],
   body: [
     {
@@ -31,7 +31,7 @@ export const commerceStripePayments: Doc = {
       type: "list",
       items: [
         "features/checkout/actions.ts — the server action that reserves stock and creates the Checkout Session.",
-        "features/checkout/lib/stripe-line-items.ts — maps cart lines to Stripe line items (with absolute product image URLs).",
+        "features/checkout/lib/adapters/stripe-line-items.ts — maps cart lines to Stripe line items (with absolute product image URLs).",
         "lib/stripe/server.ts — the server-only Stripe client, keyed by STRIPE_SECRET_KEY.",
         "app/api/stripe/webhook/route.ts — the signature-verified endpoint Stripe calls.",
         "lib/orders/checkout-finalize.ts — shared, transaction-aware reserve / finalize / release mechanics.",
@@ -112,7 +112,7 @@ const session = await stripe.checkout.sessions.create(
     {
       type: "code",
       language: "typescript",
-      title: "features/checkout/lib/stripe-line-items.ts — absolute image URLs",
+      title: "features/checkout/lib/adapters/stripe-line-items.ts — absolute image URLs",
       code: `function absoluteImageUrl(src: string, origin: string): string | undefined {
   if (!src) return undefined
   if (src.startsWith("http://") || src.startsWith("https://")) return src

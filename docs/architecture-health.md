@@ -37,7 +37,7 @@ The ratchet in CI stops any metric getting worse. Each R-sprint lowers its numbe
 - **A slice's `index.ts`**: lets imports be redirected without behaviour changes (R3).
 - **Server action signatures**: the UI moves to `useActionState` while the action itself is unchanged (R6).
 - **`lib/db/prisma`, `features/email/provider`, `lib/stripe`, `lib/auth/server`**: the four outside-world boundaries. These are where the test fakes plug in (R1).
-- **`features/products/lib/mappers.ts`, `features/articles/lib/mappers.ts`**: the only place CMS data enters, so it's the place to validate it.
+- **`features/products/lib/mappers.ts`, `features/articles/lib/domain/mappers.ts`**: the only place CMS data enters, so it's the place to validate it.
 
 ## 4. `useEffect` triage (55)
 

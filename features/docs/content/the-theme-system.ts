@@ -10,7 +10,7 @@ export const theThemeSystem: Doc = {
     "How brand identity became a single source of truth: a library of named theme templates in the StoreSettings.theme JSON column, one active at a time, resolved server-side and injected as CSS variables after globals.css so the storefront, admin, and email all re-theme with zero per-component edits and no flash on first paint.",
   readingMinutes: 10,
   order: 6,
-  updatedAt: "2026-09-29",
+  updatedAt: "2026-10-04",
   tags: ["theme", "branding", "css variables", "ssr", "prisma", "architecture"],
   body: [
     {
@@ -28,7 +28,7 @@ export const theThemeSystem: Doc = {
     {
       type: "code",
       language: "typescript",
-      title: "features/settings/lib/theme.ts — the persisted shape",
+      title: "features/settings/lib/domain/theme.ts — the persisted shape",
       code: [
         "interface ThemeState {",
         "  activeThemeId: string",

@@ -177,7 +177,7 @@ stripe trigger checkout.session.completed
 
 Nothing is obviously abandoned, but a few things are worth knowing:
 
-- **Alternate storage adapters are intentional, not dead code.** `lib/orders/adapters/local.ts`, `lib/auth/adapters/strapi.ts`, and the `local` branch in `features/reviews/lib/provider.ts` are provider-switching scaffolding selected by `NEXT_PUBLIC_AUTH_PROVIDER` (`db` is the default and what you run in production). They're unused while you're on `db`, but they're reachable by design — leave them unless you decide to commit permanently to the Neon/`db` backend, in which case they can be removed together with the `provider` switches.
+- **Alternate storage adapters are intentional, not dead code.** `lib/orders/adapters/local.ts`, `lib/auth/adapters/strapi.ts`, and the `local` branch in `features/reviews/lib/adapters/provider.ts` are provider-switching scaffolding selected by `NEXT_PUBLIC_AUTH_PROVIDER` (`db` is the default and what you run in production). They're unused while you're on `db`, but they're reachable by design — leave them unless you decide to commit permanently to the Neon/`db` backend, in which case they can be removed together with the `provider` switches.
 - **Stripe references in `features/docs/content/*`** are documentation examples (sample code shown in the in-app docs), not real integration code. Keep them if the docs pages are part of the showcase.
 - **No dead-code tooling is installed** (`knip` / `ts-prune` / `depcheck`). If you want a rigorous, repeatable audit, add one as a dev dependency and run it in CI, e.g.:
 

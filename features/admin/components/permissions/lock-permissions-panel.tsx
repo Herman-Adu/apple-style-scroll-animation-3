@@ -6,8 +6,9 @@ import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { grantLockRightsAction, revokeLockRightsAction, type AdminLockRight } from "../../lib/permissions/actions"
-import { applyLockToggle } from "../../lib/permissions/optimistic"
+import { grantLockRightsAction, revokeLockRightsAction } from "../../lib/actions/permissions"
+import type { AdminLockRight } from "../../lib/domain/permissions/types"
+import { applyLockToggle } from "../../lib/domain/permissions/optimistic"
 
 export type AuditRow = { id: number; action: string; subjectEmail: string; actorEmail: string; when: string }
 

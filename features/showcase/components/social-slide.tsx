@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { siteConfig } from "@/lib/data/site"
-import { SOCIAL_FORMATS, type SocialAsset } from "../lib/social-assets"
+import { SOCIAL_FORMATS, type SocialAsset } from "../lib/domain/social-assets"
 
 type Props = {
   asset: SocialAsset

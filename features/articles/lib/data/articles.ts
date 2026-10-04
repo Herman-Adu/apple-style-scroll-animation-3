@@ -1,4 +1,4 @@
-import type { Article } from "./schema"
+import type { Article } from "../domain/schema"
 
 export const articles: Article[] = [
   {

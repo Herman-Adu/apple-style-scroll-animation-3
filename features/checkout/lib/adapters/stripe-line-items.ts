@@ -4,7 +4,7 @@
 // in major units (e.g. 349 = £349.00); Stripe wants integer minor units.
 
 import type Stripe from "stripe"
-import type { PricedQuote } from "./pricing"
+import type { PricedQuote } from "../domain/pricing"
 
 /** Convert a major-unit amount (349, 9.99) to Stripe minor units (34900, 999).
  * Note: assumes a 2-decimal currency (GBP/USD/EUR), which is what this store

@@ -51,7 +51,7 @@ db.install()
 fakeCache().install()
 auth.install()
 
-const actions = () => import("@/features/admin/lib/permissions/actions")
+const actions = () => import("@/features/admin/lib/actions/permissions")
 
 beforeEach(() => {
   vi.clearAllMocks()

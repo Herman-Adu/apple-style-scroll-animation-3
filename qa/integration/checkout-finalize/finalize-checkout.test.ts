@@ -43,7 +43,7 @@ vi.mock("@/features/products/lib/data", () => ({ getAllProducts: vi.fn() }));
 vi.mock("@/features/products", () => ({
   productSchema: { safeParse: vi.fn() },
 }));
-vi.mock("@/features/catalog/lib/store", () => ({
+vi.mock("@/features/catalog/lib/domain/store", () => ({
   recordSale: vi.fn(),
   toMap: vi.fn(),
 }));

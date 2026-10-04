@@ -17,7 +17,7 @@ export interface StoreSettings extends CompanyProfile {
   currency: Currency
   lowStockThreshold: number
   emailAlerts: boolean
-  /** The single source of truth for brand identity (see features/settings/lib/theme.ts). */
+  /** The single source of truth for brand identity (see features/settings/lib/domain/theme.ts). */
   theme: ThemeState
 }
 

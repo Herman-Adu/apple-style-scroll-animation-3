@@ -25,6 +25,15 @@ async function listDirs(path) {
   }
 }
 
+async function listFiles(path) {
+  try {
+    const entries = await readdir(path, { withFileTypes: true });
+    return entries.filter((e) => e.isFile()).map((e) => e.name);
+  } catch {
+    return [];
+  }
+}
+
 async function run() {
   const features = await listDirs(FEATURES);
   const report = { features: {}, issues: [] };
@@ -33,6 +42,7 @@ async function run() {
     const libPath = join(FEATURES, f, "lib");
     const libDirs = await listDirs(libPath);
     const unexpected = libDirs.filter((d) => !ALLOWED.has(d));
+    const looseFiles = await listFiles(libPath);
     const rootFiles = await readdir(join(FEATURES, f)).catch(() => []);
     const hasRootActions = rootFiles.includes("actions.ts");
     const hasLibActions = libDirs.includes("actions");
@@ -42,10 +52,11 @@ async function run() {
       hasRootActions,
       hasLibActions,
       unexpected,
+      looseFiles,
     };
 
-    if (unexpected.length > 0) {
-      report.issues.push({ feature: f, unexpected });
+    if (unexpected.length > 0 || looseFiles.length > 0) {
+      report.issues.push({ feature: f, unexpected, looseFiles });
     }
   }
 

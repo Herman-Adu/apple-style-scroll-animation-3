@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import type { Article } from "../lib/schema"
+import type { Article } from "../lib/domain/schema"
 import { Eyebrow, AccentDivider, Reveal } from "@/components/primitives"
 import { TwoToneTitle } from "@/components/primitives/two-tone-title"
 import { ArticleCard } from "./article-card"

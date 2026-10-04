@@ -1,4 +1,4 @@
-import type { Review } from "./types"
+import type { Review } from "../domain/types"
 
 /**
  * Seed reviews so product pages show social proof out of the box. User-submitted

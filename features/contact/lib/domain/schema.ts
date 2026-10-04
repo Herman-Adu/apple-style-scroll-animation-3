@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { enquiryTypes } from "./data"
+import { enquiryTypes } from "./contact-info"
 
 /**
  * Server-side contract for a contact enquiry. This is the authoritative

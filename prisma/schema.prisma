@@ -181,7 +181,7 @@ model PendingCheckout {
 /// from OfferTag (admin-assigned, per-customer, lives on User.offers) — a code
 /// is a single shared string the customer types in at checkout. At checkout a
 /// valid code is turned into a synthetic OfferTag and priced through the exact
-/// same engine personal offers use (features/checkout/lib/pricing.ts), so the
+/// same engine personal offers use (features/checkout/lib/domain/pricing.ts), so the
 /// "single best percent offer" / shipping-waiver rules apply identically either
 /// way and a code can never stack with a percent offer to exceed 100%.
 model DiscountCode {

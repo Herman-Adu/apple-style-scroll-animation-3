@@ -6,7 +6,7 @@
 // access control, this is the boundary). `resolveDiscountCode` is the one
 // public export: any signed-in customer at checkout may call it, and it turns
 // a validated code into a synthetic OfferTag that flows through the exact
-// same pricing engine (features/checkout/lib/pricing.ts) personal offers use,
+// same pricing engine (features/checkout/lib/domain/pricing.ts) personal offers use,
 // so a code can never stack with a percent offer to exceed 100%.
 
 import { headers } from "next/headers"
@@ -16,7 +16,7 @@ import { auth } from "@/lib/auth/adapters/instance"
 import { prisma } from "@/lib/db/prisma"
 import { effectiveRole } from "@/lib/auth/domain/config"
 import type { OfferTag } from "@/lib/auth/domain/types"
-import type { DiscountCode, DiscountCodeInput, DiscountCodePatch } from "./lib/types"
+import type { DiscountCode, DiscountCodeInput, DiscountCodePatch } from "./lib/domain/types"
 
 type DiscountCodeRow = {
   id: string

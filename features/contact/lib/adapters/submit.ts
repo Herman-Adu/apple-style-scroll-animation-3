@@ -3,7 +3,7 @@ import "server-only"
 import { env } from "@/lib/env"
 import { sendEmail } from "@/features/email/server"
 import { recordMessage, recordLog } from "@/features/email/server"
-import type { ContactSubmitResult, EnquiryPayload } from "./types"
+import type { ContactSubmitResult, EnquiryPayload } from "../domain/types"
 
 /**
  * Transport layer for contact enquiries.

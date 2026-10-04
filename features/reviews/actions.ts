@@ -11,9 +11,9 @@ import { headers } from "next/headers"
 
 import { auth } from "@/lib/auth/adapters/instance"
 import { prisma } from "@/lib/db/prisma"
-import { seedReviews } from "./lib/seed"
-import { moderateReview } from "./lib/moderation"
-import type { Review, ReviewInput, ReviewStatus } from "./lib/types"
+import { seedReviews } from "./lib/data/seed"
+import { moderateReview } from "./lib/domain/moderation"
+import type { Review, ReviewInput, ReviewStatus } from "./lib/domain/types"
 
 const VALID_STATUSES: ReviewStatus[] = ["published", "pending", "rejected"]
 

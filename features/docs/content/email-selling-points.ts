@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const emailSellingPoints: Doc = {
   slug: "email-system-selling-points",
@@ -10,7 +10,7 @@ export const emailSellingPoints: Doc = {
     "The commercial case for the built-in email system: it replaces a rented ESP (Klaviyo, Mailchimp) with email that runs on your own domain and database, beside real order data. Covers the core pitch, five durable selling points, the total-cost story, and the roadmap that proves depth.",
   readingMinutes: 11,
   order: 3,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["email", "positioning", "sales", "roi", "tco", "esp"],
   body: [
     {

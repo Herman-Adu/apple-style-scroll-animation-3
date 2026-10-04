@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const socialAndRecruitmentMarketing: Doc = {
   slug: "social-and-recruitment-marketing",
@@ -10,7 +10,7 @@ export const socialAndRecruitmentMarketing: Doc = {
     "The tactical companion to the Showcase guide: a ready-to-run content engine. A two-week launch calendar, a copy bank of post variants for LinkedIn, X, and Telegram tuned to each audience, and recruitment artifacts — CV line, STAR bullets, interview talking points, and a 60-second verbal pitch — so this build works as hard for your career as it does for the client.",
   readingMinutes: 12,
   order: 5,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["marketing", "social", "linkedin", "recruitment", "personal brand", "career", "content"],
   body: [
     {

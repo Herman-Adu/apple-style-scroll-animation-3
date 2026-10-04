@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { ArrowUpRight, Lock } from "lucide-react"
-import type { DocSummary } from "../lib/schema"
+import type { DocSummary } from "../lib/domain/schema"
 import { Reveal } from "@/components/primitives"
 
 export function DocCard({ doc, index = 0, snippet }: { doc: DocSummary; index?: number; snippet?: string }) {

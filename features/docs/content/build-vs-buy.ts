@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const buildVsBuy: Doc = {
   slug: "build-vs-buy-the-decision",
@@ -10,7 +10,7 @@ export const buildVsBuy: Doc = {
     "A decision framework for the classic question — off-the-shelf platform, cheap template, or a purpose-built stack. When each wins, and why a CMS-decoupled custom build is the pragmatic middle a growing brand actually needs.",
   readingMinutes: 8,
   order: 2,
-  updatedAt: "2026-09-28",
+  updatedAt: "2026-10-04",
   tags: ["build vs buy", "decision", "strategy", "cto", "platform", "lock-in"],
   body: [
     {

@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const systemArchitecture: Doc = {
   slug: "system-architecture-overview",
@@ -10,7 +10,7 @@ export const systemArchitecture: Doc = {
     "The whole system on one page: the Next.js App Router front, the port/adapter data seam, Neon Postgres via Prisma, and the third-party edges (Resend, Stripe, and the planned Strapi CMS). Start here, then follow the links into auth and the data layer.",
   readingMinutes: 11,
   order: 1,
-  updatedAt: "2026-10-02",
+  updatedAt: "2026-10-04",
   tags: ["architecture", "next.js", "rsc", "prisma", "neon", "ports and adapters"],
   body: [
     {

@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const cmsAndPublishing: Doc = {
   slug: "cms-and-publishing",
@@ -10,7 +10,7 @@ export const cmsAndPublishing: Doc = {
     "How content moves from draft to live — the Strapi-backed publishing model, the fallback that keeps the site working without a CMS, and the webhook that makes a publish appear instantly with no redeploy.",
   readingMinutes: 6,
   order: 1,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["admin", "cms", "strapi", "publishing", "revalidation", "webhook"],
   body: [
     {

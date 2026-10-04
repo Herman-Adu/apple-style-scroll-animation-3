@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const warrantyAndReturnsGuide: Doc = {
   slug: "warranty-and-returns-guide",
@@ -10,7 +10,7 @@ export const warrantyAndReturnsGuide: Doc = {
     "A plain-English walkthrough of the 30-day home trial, how returns and refunds work, and what the 2-year warranty covers — with the formal pages linked for the fine print.",
   readingMinutes: 6,
   order: 1,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["warranty", "returns", "refunds", "home-trial", "support"],
   body: [
     {

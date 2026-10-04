@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const ordersAndFulfillment: Doc = {
   slug: "orders-and-fulfillment",
@@ -10,7 +10,7 @@ export const ordersAndFulfillment: Doc = {
     "Work the order queue day to day — filter by status, open an order to see its lines and total, and move it through the processing → fulfilled lifecycle, plus how cancellations and refunds fit in.",
   readingMinutes: 6,
   order: 1,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["admin", "orders", "fulfillment", "status", "refunds", "stripe"],
   body: [
     {

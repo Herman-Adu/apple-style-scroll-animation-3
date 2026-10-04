@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const platformGlossary: Doc = {
   slug: "platform-glossary",
@@ -10,7 +10,7 @@ export const platformGlossary: Doc = {
     "Plain-English definitions of the terms used across the store, the email builder, security and engineering docs. Useful for new team members, clients reviewing the platform and recruiters reading the engineering pages.",
   readingMinutes: 6,
   order: 99,
-  updatedAt: "2026-10-02",
+  updatedAt: "2026-10-04",
   tags: ["glossary", "terms", "definitions", "onboarding"],
   body: [
     {

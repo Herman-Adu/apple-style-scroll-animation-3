@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const frequentlyAskedQuestions: Doc = {
   slug: "frequently-asked-questions",
@@ -10,7 +10,7 @@ export const frequentlyAskedQuestions: Doc = {
     "Quick answers to the questions we hear most — ordering and delivery, the 30-day home trial, the 2-year warranty, pairing, and looking after your Momo Audio devices.",
   readingMinutes: 7,
   order: 1,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["faq", "shipping", "returns", "warranty", "orders", "support"],
   body: [
     {

@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const roiAndCostOfOwnership: Doc = {
   slug: "roi-and-total-cost-of-ownership",
@@ -10,7 +10,7 @@ export const roiAndCostOfOwnership: Doc = {
     "The money case for the platform in the language a CTO signs off on: what it costs over three years versus a template or page builder, where the savings come from, and how fast it pays back.",
   readingMinutes: 9,
   order: 1,
-  updatedAt: "2026-09-28",
+  updatedAt: "2026-10-04",
   tags: ["roi", "tco", "cost", "business case", "budget", "cto"],
   body: [
     {

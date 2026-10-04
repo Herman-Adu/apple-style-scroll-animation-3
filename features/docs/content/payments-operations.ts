@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const paymentsOperations: Doc = {
   slug: "payments-operations-refunds-reconciliation",
@@ -10,7 +10,7 @@ export const paymentsOperations: Doc = {
     "The operational side of payments: where money actually lives, how an order becomes 'processing', how to issue a refund correctly, and how to reconcile the Stripe Dashboard against the store's own orders so the two never drift.",
   readingMinutes: 10,
   order: 1,
-  updatedAt: "2026-09-29",
+  updatedAt: "2026-10-04",
   tags: ["payments", "refunds", "reconciliation", "orders", "stripe", "operations"],
   body: [
     {

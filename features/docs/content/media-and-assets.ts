@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const mediaAndAssets: Doc = {
   slug: "media-and-assets",
@@ -10,7 +10,7 @@ export const mediaAndAssets: Doc = {
     "How imagery and files work across the store — where product photos and brand assets live, how the Strapi media library fits in, and the naming, sizing, and alt-text conventions that keep the site fast and accessible.",
   readingMinutes: 6,
   order: 1,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["admin", "media", "images", "assets", "strapi", "accessibility"],
   body: [
     {

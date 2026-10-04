@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const managingCustomers: Doc = {
   slug: "managing-customers",
@@ -10,7 +10,7 @@ export const managingCustomers: Doc = {
     "Understand and act on your customer base — read the KPI row, segment and search the list, and open a profile to see lifetime value, order history, and to grant offers, manage roles, or block an account.",
   readingMinutes: 7,
   order: 1,
-  updatedAt: "2026-09-28",
+  updatedAt: "2026-10-04",
   tags: ["admin", "customers", "segments", "offers", "roles", "owner", "lifetime value"],
   body: [
     {

@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema";
+import type { Doc } from "../lib/domain/schema";
 
 export const emailPlatformArchitecture: Doc = {
   slug: "email-platform-architecture",

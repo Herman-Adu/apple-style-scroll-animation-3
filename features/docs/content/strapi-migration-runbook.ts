@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const strapiMigrationRunbook: Doc = {
   slug: "strapi-migration-runbook",
@@ -10,7 +10,7 @@ export const strapiMigrationRunbook: Doc = {
     "The end-to-end plan for swapping local content for a live Strapi instance: the data seam, cache tags, webhook revalidation, and the go-live checklist.",
   readingMinutes: 14,
   order: 1,
-  updatedAt: "2026-09-18",
+  updatedAt: "2026-10-04",
   tags: ["strapi", "cms", "revalidation", "webhooks", "isr", "seam"],
   body: [
     {

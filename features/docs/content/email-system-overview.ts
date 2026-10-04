@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const emailSystemOverview: Doc = {
   slug: "email-system-overview",
@@ -10,7 +10,7 @@ export const emailSystemOverview: Doc = {
     "One place to understand everything MOMO can send: automatic transactional emails, broadcast campaigns to your audience, and one-to-one customer messages. Start here, then follow the links into templates, the campaign walkthrough, and customer messaging.",
   readingMinutes: 7,
   order: 1,
-  updatedAt: "2026-09-26",
+  updatedAt: "2026-10-04",
   tags: ["email", "resend", "campaigns", "transactional", "overview"],
   body: [
     {

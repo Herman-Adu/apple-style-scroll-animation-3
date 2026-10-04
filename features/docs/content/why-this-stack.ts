@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const whyThisStack: Doc = {
   slug: "why-this-technology-stack",
@@ -10,7 +10,7 @@ export const whyThisStack: Doc = {
     "The technology-strategy rationale a CTO needs: why Next.js 16, Neon Postgres, Better Auth, and Stripe — and why server-first. Each choice tied to a business outcome, not a trend.",
   readingMinutes: 8,
   order: 1,
-  updatedAt: "2026-09-28",
+  updatedAt: "2026-10-04",
   tags: ["stack", "strategy", "next.js", "neon", "stripe", "architecture", "cto"],
   body: [
     {

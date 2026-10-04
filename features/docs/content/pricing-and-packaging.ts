@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const pricingAndPackaging: Doc = {
   slug: "pricing-and-packaging-the-build",
@@ -10,7 +10,7 @@ export const pricingAndPackaging: Doc = {
     "Turn the platform into an offer: how to package it into tiers, price on value rather than hours, structure recurring revenue, and run a demo that closes.",
   readingMinutes: 9,
   order: 2,
-  updatedAt: "2026-09-23",
+  updatedAt: "2026-10-04",
   tags: ["pricing", "packaging", "sales", "positioning", "retainer", "demo"],
   body: [
     {

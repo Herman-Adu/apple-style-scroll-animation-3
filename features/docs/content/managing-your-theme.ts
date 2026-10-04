@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const managingYourTheme: Doc = {
   slug: "managing-your-theme",
@@ -10,7 +10,7 @@ export const managingYourTheme: Doc = {
     "Run the store's look from one place. The Theme section controls brand colours, heading style (two-tone, solid, or gradient), and email accent — and every change flows to the storefront, the admin, and your emails at once. Covers the four tabs: Active & presets, Brand colours, Headings & style, and Theme templates.",
   readingMinutes: 8,
   order: 3,
-  updatedAt: "2026-09-29",
+  updatedAt: "2026-10-04",
   tags: ["theme", "branding", "colours", "headings", "email", "store operations"],
   body: [
     {

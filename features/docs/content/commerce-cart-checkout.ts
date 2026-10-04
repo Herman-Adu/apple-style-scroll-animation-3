@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const commerceCartCheckout: Doc = {
   slug: "commerce-cart-checkout-architecture",
@@ -10,7 +10,7 @@ export const commerceCartCheckout: Doc = {
     "How a server-first storefront handles a fundamentally client-side thing — the cart — plus the checkout flow and the server-side validation that protects it.",
   readingMinutes: 12,
   order: 1,
-  updatedAt: "2026-09-17",
+  updatedAt: "2026-10-04",
   tags: ["cart", "checkout", "state", "server actions", "validation"],
   body: [
     {

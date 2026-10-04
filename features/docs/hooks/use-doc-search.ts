@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import MiniSearch from "minisearch"
-import type { DocSummary } from "../lib/schema"
+import type { DocSummary } from "../lib/domain/schema"
 
 export interface DocSearchResult {
   slug: string

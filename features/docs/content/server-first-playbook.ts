@@ -1,4 +1,4 @@
-import type { Doc } from "../lib/schema"
+import type { Doc } from "../lib/domain/schema"
 
 export const serverFirstPlaybook: Doc = {
   slug: "server-first-rendering-playbook",
@@ -10,7 +10,7 @@ export const serverFirstPlaybook: Doc = {
     "How this codebase decides between Server Components and client islands, how streaming works, and the rules that keep the client bundle small.",
   readingMinutes: 11,
   order: 1,
-  updatedAt: "2026-09-15",
+  updatedAt: "2026-10-04",
   tags: ["rsc", "streaming", "suspense", "client islands", "performance"],
   body: [
     {

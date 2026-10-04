@@ -1,9 +1,9 @@
 import "server-only"
 import { getServerRole, getServerIsOwner } from "@/lib/auth/server"
-import type { Doc } from "./schema"
-import { docs } from "../content"
-import { fetchStrapiDoc, fetchStrapiDocs } from "./strapi-source"
-import { canViewDoc, selectRelatedDocs, sortDocs } from "./doc"
+import type { Doc } from "../domain/schema"
+import { docs } from "../../content"
+import { fetchStrapiDoc, fetchStrapiDocs } from "../adapters/strapi-source"
+import { canViewDoc, selectRelatedDocs, sortDocs } from "../domain/doc"
 
 /**
  * Docs data seam. Mirrors features/products and features/articles: async

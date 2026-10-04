@@ -29,9 +29,9 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react"
-import type { DocAudience, DocCategory, DocSummary } from "../lib/schema"
-import { DOC_AUDIENCES, docAudienceMeta } from "../lib/schema"
-import { groupDocsByAudienceAndCategory, visibleDocs } from "../lib/doc"
+import type { DocAudience, DocCategory, DocSummary } from "../lib/domain/schema"
+import { DOC_AUDIENCES, docAudienceMeta } from "../lib/domain/schema"
+import { groupDocsByAudienceAndCategory, visibleDocs } from "../lib/domain/doc"
 import { useDocSearch } from "../hooks/use-doc-search"
 import { DocCard } from "./doc-card"
 import { CategoryDisclosure } from "@/components/category-disclosure"

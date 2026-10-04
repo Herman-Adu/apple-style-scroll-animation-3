@@ -14,16 +14,15 @@ Two rules, deliberately different strengths:
 
 ```
 features/<slice>/
-  index.ts      public, client-safe surface: export only what other code needs
-  server.ts     public server-only surface (optional)
-  actions.ts    public server-action entry (optional): re-exports ./lib/actions/*, no logic
+  index.ts      public surface: components, hooks, rules and the slice's server actions ("use server" files are RPC boundaries)
+  server.ts     public server-only surface (optional): loaders, Prisma, `server-only`, `next/headers`
   components/   UI and context providers for this slice (server by default)
   hooks/        client hooks used only by this slice
   lib/          everything else, in four folders only: actions/, data/, domain/, adapters/ (see R6/R7 below)
   content/      static content files (docs only)
 ```
 
-The slice root holds **only** the three entry files; every other file lives in one of the four folders. Root `lib/` holds shared infrastructure only (`auth`, `data`, `db`, `seo`, `strapi`, `stripe` + `env`, `format`, `nav`, `types`, `utils`). `qa/unit/meta/folder-layout.test.ts` enforces both. Create only the folders a slice needs. Current slices: admin, articles, catalog, checkout, customers, discount-codes, docs, email, orders, products, reviews, settings, showcase, timeline.
+The slice root holds **only** `index.ts` and `server.ts`; every other file lives in one of the four folders. There is **no root `actions.ts`**. Root `lib/` holds shared infrastructure only (`auth`, `data`, `db`, `seo`, `strapi`, `stripe` + `env`, `format`, `nav`, `types`, `utils`). `qa/unit/meta/folder-layout.test.ts` enforces both. Create only the folders a slice needs. Current slices: admin, articles, catalog, checkout, customers, discount-codes, docs, email, orders, products, reviews, settings, showcase, timeline.
 
 ## Dependency direction
 
@@ -56,7 +55,7 @@ Every `features/<slice>/lib/` uses exactly these, no loose files
 
 - **There is no `api/` or `database/` folder.** `api` is a file name (`data/api.ts`, exported through `server.ts`); database data is just `data/`.
 - **Imports point inward:** `actions` and `data` may import `domain`; `adapters` may import `domain`; `domain` imports no sibling folder. Types shared with `actions/` live in `domain/`.
-- **Slice root `actions.ts` is a public entry:** `export * from "./lib/actions/..."`, no logic, no `"use server"`.
+- **Actions go out through `index.ts`:** `export * from "./lib/actions/..."`. A `"use server"` file is an RPC boundary, so a client bundle gets stubs, never the code behind them; `client-barrels.test.ts` stops its walk there. `index.ts` has no directive and no `server-only`/Prisma/Stripe/`next/headers` import outside `"use server"` files; that code goes in `server.ts`. Server components import loaders from `server.ts`; client islands import hooks and components from `index.ts`. Every admin action starts with `await requireAdmin()`.
 - Static config that a schema depends on stays in `domain/`; a dataset standing in for a store goes in `data/`.
 - Root `lib/` small single-purpose folders (`lib/db`, `lib/seo`, `lib/strapi`, `lib/stripe`) don't need the split; `lib/auth/` already uses it (R6).
 

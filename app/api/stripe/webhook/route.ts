@@ -1,6 +1,6 @@
 import type Stripe from "stripe"
 
-import { stripe } from "@/lib/stripe/server"
+import { getStripe } from "@/lib/stripe/server"
 import { env } from "@/lib/env"
 import {
   finalizeCheckout,
@@ -25,7 +25,7 @@ export async function POST(req: Request): Promise<Response> {
   const payload = await req.text()
   let event: Stripe.Event
   try {
-    event = await stripe.webhooks.constructEventAsync(
+    event = await getStripe().webhooks.constructEventAsync(
       payload,
       signature,
       env.STRIPE_WEBHOOK_SECRET,

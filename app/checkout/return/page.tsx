@@ -2,7 +2,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { CheckCircle2, Clock } from "lucide-react"
 
-import { stripe } from "@/lib/stripe/server"
+import { getStripe } from "@/lib/stripe/server"
 import {
   finalizeCheckout,
   getOrderByStripeSession,
@@ -21,7 +21,7 @@ export default async function CheckoutReturnPage({
   const { session_id: sessionId } = await searchParams
   if (!sessionId) redirect("/checkout")
 
-  const session = await stripe.checkout.sessions.retrieve(sessionId)
+  const session = await getStripe().checkout.sessions.retrieve(sessionId)
 
   // Still on the payment step (e.g. user navigated here early) → back to checkout.
   if (session.status === "open") redirect("/checkout")

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { AdminGuard } from "@/features/admin"
 import { SettingsProvider } from "@/features/admin"
-import { getStoreSettingsAction } from "@/features/settings/actions"
+import { getStoreSettingsAction } from "@/features/settings"
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const initialSettings = await getStoreSettingsAction()

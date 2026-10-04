@@ -47,11 +47,11 @@ vi.mock("@/features/catalog/lib/domain/store", () => ({
   recordSale: vi.fn(),
   toMap: vi.fn(),
 }));
-vi.mock("@/features/discount-codes/actions", () => ({
+vi.mock("@/features/discount-codes", () => ({
   incrementDiscountCodeRedemption: vi.fn(),
 }));
-vi.mock("@/features/email/actions", () => ({ sendLowStockAlert: vi.fn() }));
-vi.mock("@/features/settings/actions", () => ({
+vi.mock("@/features/email", () => ({ sendLowStockAlert: vi.fn() }));
+vi.mock("@/features/settings", () => ({
   getStoreSettingsAction: vi.fn(),
 }));
 

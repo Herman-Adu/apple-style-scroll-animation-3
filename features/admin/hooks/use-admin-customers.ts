@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react"
 import { getAuthAdapter } from "@/lib/auth/adapters"
 import type { OfferTag, User, UserRole, UserStatus } from "@/lib/auth/domain/types"
-import { ordersAdapter } from "@/features/orders/actions"
+import { ordersAdapter } from "@/features/orders"
 import type { Order } from "@/features/orders"
 import { buildCustomerRecords } from "@/features/customers"
 import type { CustomerRecord } from "@/features/customers"

@@ -18,10 +18,10 @@ import type { OfferTag } from "@/lib/auth/domain/types"
 import type { OrderItem } from "@/features/orders"
 import { prisma } from "@/lib/db/prisma"
 import { env } from "@/lib/env"
-import { stripe } from "@/lib/stripe/server"
+import { getStripe } from "@/lib/stripe/server"
 import { getServerSession } from "@/lib/auth/server"
 import { commitStock, notifyLowStock, releaseReservationById } from "@/features/orders/server"
-import { resolveDiscountCode } from "@/features/discount-codes/actions"
+import { resolveDiscountCode } from "@/features/discount-codes"
 import { revalidateCatalog } from "@/features/catalog/server"
 import { priceCheckout, type PricedQuote } from "../domain/pricing"
 import { buildStripeLineItems, toMinorUnits } from "../adapters/stripe-line-items"
@@ -197,7 +197,7 @@ export async function startStripeCheckout({
           .filter((offer) => offer.amount > 0)
           .map((offer) => offer.label)
           .join(", ") || "Offer discount"
-      const coupon = await stripe.coupons.create({
+      const coupon = await getStripe().coupons.create({
         amount_off: toMinorUnits(priced.discount),
         currency,
         duration: "once",
@@ -219,7 +219,7 @@ export async function startStripeCheckout({
           ]
         : undefined
 
-    const checkout = await stripe.checkout.sessions.create({
+    const checkout = await getStripe().checkout.sessions.create({
       ui_mode: "embedded_page",
       mode: "payment",
       line_items: buildStripeLineItems(priced, { origin }),

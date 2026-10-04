@@ -12,7 +12,7 @@ import type { Prisma } from "@prisma/client"
 import { auth } from "@/lib/auth/adapters/instance"
 import { prisma } from "@/lib/db/prisma"
 import { effectiveRole } from "@/lib/auth/domain/config"
-import { stripe } from "@/lib/stripe/server"
+import { getStripe } from "@/lib/stripe/server"
 import { restoreStock, type ReservedLine } from "../finalize/checkout-finalize"
 import { dispatchRefundEmail } from "../notifications"
 import { revalidateCatalog } from "@/features/catalog/server"
@@ -112,7 +112,7 @@ async function resolvePaymentIntentId(row: OrderRow): Promise<string> {
   if (!row.stripeSessionId) {
     throw new Error("This order has no linked Stripe payment — it cannot be refunded automatically.")
   }
-  const session = await stripe.checkout.sessions.retrieve(row.stripeSessionId)
+  const session = await getStripe().checkout.sessions.retrieve(row.stripeSessionId)
   const paymentIntentId =
     typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id
   if (!paymentIntentId) {
@@ -144,7 +144,7 @@ export async function refundOrderAction(orderId: string, amount?: number, reason
   const amountInMinorUnits = Math.round(requested * 100)
   const idempotencyKey = `${orderId}:${existing.refundedAmount}:${amountInMinorUnits}`
 
-  const refund = await stripe.refunds.create(
+  const refund = await getStripe().refunds.create(
     {
       payment_intent: paymentIntentId,
       amount: amountInMinorUnits,

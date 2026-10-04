@@ -4,7 +4,7 @@ import "server-only"
 import { listAllOrdersAction } from "@/features/orders/server"
 import type { Order } from "@/features/orders"
 import { listUsersAction } from "@/lib/auth/db-actions"
-import { listDiscountCodesAction } from "@/features/discount-codes/actions"
+import { listDiscountCodesAction } from "@/features/discount-codes"
 import type { DiscountCode } from "@/features/discount-codes"
 import type { AdminCustomersData } from "./hooks/use-admin-customers"
 

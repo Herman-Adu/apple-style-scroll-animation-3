@@ -3,8 +3,8 @@
 // works in preview with zero backend. Implements the same OrdersAdapter port a
 // real Stripe/server adapter would, so the application layer cannot tell them apart.
 
-import type { Carrier } from "../tracking"
-import type { CreateOrderInput, Order, OrderStatus, OrdersAdapter } from "../types"
+import type { Carrier } from "../domain/tracking"
+import type { CreateOrderInput, Order, OrderStatus, OrdersAdapter } from "../domain/types"
 
 const ORDERS_KEY = "momo.orders"
 

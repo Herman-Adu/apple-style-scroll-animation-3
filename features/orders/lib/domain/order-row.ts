@@ -1,4 +1,4 @@
-import type { Order, OrderStatus } from "../../types";
+import type { Order, OrderStatus } from "./types";
 
 const VALID_STATUSES: OrderStatus[] = [
   "processing",

@@ -11,15 +11,15 @@ import type { Prisma } from "@prisma/client";
 
 import { auth } from "@/lib/auth/adapters/instance";
 import { prisma } from "@/lib/db/prisma";
-import { nextOrderNumber } from "../finalize/checkout-finalize";
+import { nextOrderNumber } from "../data/finalize/orders";
 import { sessionUser, requireUser, requireAdminId } from "./session";
 import { effectiveRole } from "@/lib/auth/domain/config";
 import { getAllProducts } from "@/features/products";
 import { productSchema } from "@/features/products";
 import { recordSale, toMap, type ProductMap } from "@/features/catalog";
-import { dispatchShippingEmail } from "../notifications";
-import { buildTrackingUrl, type Carrier } from "../tracking";
-import type { CreateOrderInput, Order, OrderStatus } from "../types";
+import { dispatchShippingEmail } from "../adapters/notifications";
+import { buildTrackingUrl, type Carrier } from "../domain/tracking";
+import type { CreateOrderInput, Order, OrderStatus } from "../domain/types";
 
 const VALID_STATUSES: OrderStatus[] = [
   "processing",
@@ -114,7 +114,7 @@ function toOrder(row: OrderRow): Order {
 
 // Order numbers are allocated via `nextOrderNumber(tx)` which takes a
 // transaction-scoped advisory lock to serialize concurrent allocators.
-// See `lib/orders/checkout-finalize.ts` for the implementation.
+// See `lib/data/finalize/` for the implementation.
 
 // --- actions ---------------------------------------------------------------
 

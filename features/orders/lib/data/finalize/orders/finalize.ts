@@ -4,8 +4,8 @@ import type Stripe from "stripe";
 
 import { prisma } from "@/lib/db/prisma";
 import { incrementDiscountCodeRedemption } from "@/features/discount-codes";
-import type { AppliedOffer, Order } from "../../types";
-import { orderSelect, toOrder } from "./order-row";
+import type { AppliedOffer, Order } from "../../../domain/types";
+import { orderSelect, toOrder } from "../../../domain/order-row";
 import {
   createOrderForSession,
   isSessionAlreadyFinalizedError,

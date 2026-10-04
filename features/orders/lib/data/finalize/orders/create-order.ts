@@ -4,7 +4,7 @@ import type Stripe from "stripe";
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/db/prisma";
-import { orderSelect } from "./order-row";
+import { orderSelect } from "../../../domain/order-row";
 import { nextOrderNumber } from "./order-number";
 
 export async function createOrderForSession(

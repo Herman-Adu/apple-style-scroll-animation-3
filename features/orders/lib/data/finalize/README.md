@@ -11,7 +11,7 @@ Seams
 
 Rules
 
-- Public entrypoint: keep `checkout-finalize.ts` (or top-level barrel) unchanged for consumers.
+- Public entrypoint: `features/orders/server.ts` exports the finalize steps from `data/finalize/orders` and `data/finalize/stock`; low-stock alerts live in `adapters/low-stock.ts` and `order-row` (pure mapper) in `domain/`.
 - Internal implementation: place files under `orders/` or `stock/` and add an `index.ts` barrel in each seam.
 - File size: prefer <= 300 lines per file. If a file grows past 300 lines, split along logical responsibilities.
 - Exports: only export named functions/types required by other features. Keep most helpers module-private.

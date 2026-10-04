@@ -41,7 +41,7 @@ export const commerceStripePayments: Doc = {
         "features/checkout/lib/adapters/stripe-line-items.ts — maps cart lines to Stripe line items (with absolute product image URLs).",
         "lib/stripe/server.ts — the server-only Stripe client, keyed by STRIPE_SECRET_KEY.",
         "app/api/stripe/webhook/route.ts — the signature-verified endpoint Stripe calls.",
-        "lib/orders/checkout-finalize.ts — shared, transaction-aware reserve / finalize / release mechanics.",
+        "features/orders/lib/data/finalize — shared, transaction-aware reserve / finalize / release mechanics.",
         "app/checkout/return/page.tsx — the post-payment confirmation screen.",
       ],
     },
@@ -184,7 +184,7 @@ switch (event.type) {
     {
       type: "code",
       language: "typescript",
-      title: "lib/orders/checkout-finalize.ts — guarded finalize",
+      title: "features/orders/lib/data/finalize — guarded finalize",
       code: `const created = await prisma.$transaction(async (tx) => {
   const pending = await tx.pendingCheckout.findUnique({ where: { id: pendingId } })
   if (!pending || pending.status !== "reserved") return null  // already handled

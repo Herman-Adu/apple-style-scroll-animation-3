@@ -6,10 +6,21 @@ import { recordSale } from "@/features/catalog";
 import { effectiveProductsFor } from "./effective-products";
 import type { ReservedLine } from "./restore-stock";
 
+export type CrossedLowStockRow = {
+  name: string;
+  slug: string;
+  stock: number;
+  threshold: number;
+  image?: string;
+};
+
 export async function commitStock(
   tx: Prisma.TransactionClient,
   lines: ReservedLine[],
-): Promise<{ reserved: ReservedLine[]; crossedLowStock: any[] }> {
+): Promise<{
+  reserved: ReservedLine[];
+  crossedLowStock: CrossedLowStockRow[];
+}> {
   const clean = lines.filter((l) => l.quantity > 0);
   const slugs = [...new Set(clean.map((l) => l.slug))];
   if (slugs.length === 0) return { reserved: [], crossedLowStock: [] };
@@ -20,7 +31,7 @@ export async function commitStock(
     throw new Error(sale.error ?? "Some items are no longer available.");
 
   const decremented: ReservedLine[] = [];
-  const crossedLowStock: any[] = [];
+  const crossedLowStock: CrossedLowStockRow[] = [];
   for (const slug of slugs) {
     const prev = before[slug];
     const next = sale.map[slug];
@@ -40,7 +51,7 @@ export async function commitStock(
         slug,
         stock: next.stock,
         threshold,
-        image: next.image,
+        image: next.image ?? undefined,
       });
     }
   }

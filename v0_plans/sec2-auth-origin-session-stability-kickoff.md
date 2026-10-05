@@ -16,7 +16,7 @@ Read first:
 
 - AGENTS.md
 - docs/next-steps.md (SEC2 section)
-Use matching skills per step:
+- Use matching skills per step:
 - sprint-workflow, test-first, better-auth-ops, react-next-patterns, typescript-clean-code, feature-slices
 
 Security constraint:

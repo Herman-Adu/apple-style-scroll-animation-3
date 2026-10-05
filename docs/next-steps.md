@@ -23,17 +23,18 @@ approved plan. This file is the source of truth for **what is on `main`**.
 
 ## Sprint ledger
 
-| Sprint | PR        | Merge SHA | What shipped                                                                                               |
-| ------ | --------- | --------- | ---------------------------------------------------------------------------------------------------------- |
-| Locks  | #83       | `df311b7` | Lock permissions: owner + named admins, three-layer check                                                  |
-| D1     | #84       | `a0fd4bb` | Security posture, permissions matrix, email architecture diagrams                                          |
-| D2     | #85       | `8d06675` | Engineering quality, decision records, contributing workflow                                               |
-| D3     | #86       | `b5a1b69` | Seasonal campaign walkthrough + glossary                                                                   |
-| D4     | #87       | `899e25e` | What's new changelog, docs link previews, README overhaul                                                  |
-| D5     | #88       | `8213218` | Social launch kit, public case study, demo script                                                          |
-| D6     | #89       | `a8bb019` | Docs freshness tests, shared palette labels                                                                |
-| S0     | _this PR_ | _pending_ | This ledger and the sprint protocol                                                                        |
-| SEC1   | #122      | `c6e8b40` | Guard admin transactional actions; move server-only email/discount exports out of `"use server"` endpoints |
+| Sprint | PR        | Merge SHA | What shipped                                                                                                                             |
+| ------ | --------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Locks  | #83       | `df311b7` | Lock permissions: owner + named admins, three-layer check                                                                                |
+| D1     | #84       | `a0fd4bb` | Security posture, permissions matrix, email architecture diagrams                                                                        |
+| D2     | #85       | `8d06675` | Engineering quality, decision records, contributing workflow                                                                             |
+| D3     | #86       | `b5a1b69` | Seasonal campaign walkthrough + glossary                                                                                                 |
+| D4     | #87       | `899e25e` | What's new changelog, docs link previews, README overhaul                                                                                |
+| D5     | #88       | `8213218` | Social launch kit, public case study, demo script                                                                                        |
+| D6     | #89       | `a8bb019` | Docs freshness tests, shared palette labels                                                                                              |
+| S1     | #91       | `0865f28` | Owner-managed lock permissions: DB `BlockLocker` + `PermissionAudit`, pure grant rules, owner-only actions                               |
+| S0     | _this PR_ | _pending_ | This ledger and the sprint protocol                                                                                                      |
+| SEC1   | #122      | `c6e8b40` | Guard admin transactional actions; move server-only email/discount exports out of `"use server"` endpoints                               |
 | SEC2   | #124      | `3d32053` | Stabilized auth/session origin handling: Better Auth trusted canonical/proxy host set and checkout return URL pinned to canonical origin |
 
 ## Upcoming sprints
@@ -70,6 +71,8 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | ------ | ----- |
 
 **SEC2 shipped in #124.** Fixed production `Invalid Origin` on email/password sign-in and post-checkout signed-out regression by removing host drift between Better Auth origin config and Stripe return URL origin resolution.
+
+**S1 shipped in #91.** Lock permissions moved to the database (`BlockLocker`, `PermissionAudit`) with owner-only grant/revoke actions and tests.
 
 **SEC1 shipped in #122.** Admin-only transactional actions are now guarded and server-only email/discount helpers were moved out of `"use server"` endpoint surfaces.
 

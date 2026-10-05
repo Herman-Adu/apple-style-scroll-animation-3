@@ -34,7 +34,7 @@ export function docText(doc: Doc): string {
 
 /** Slugs referenced via `/docs/<slug>` links. Asset paths (with a file extension) are ignored. */
 export function internalDocLinks(doc: Doc): string[] {
-  const matches = docText(doc).matchAll(/(?<![a-z0-9_-])\/docs\/([a-z0-9-]+)(?![a-z0-9./-]*\.[a-z]{2,4}\b)(?=[^a-z0-9/-]|$)/g)
+  const matches = docText(doc).matchAll(/(?<![a-z0-9_-])\/docs\/([a-z0-9-]+)(?![a-z0-9./-]*\.[a-zA-Z]{2,4}\b)(?=[^a-z0-9/-]|$)/g)
   return [...new Set([...matches].map((m) => m[1]))]
 }
 
@@ -43,7 +43,10 @@ export function docImages(doc: Doc): string[] {
 }
 
 /** Terms not found in the text, compared case-insensitively. */
-export function missingMentions(text: string, terms: readonly string[]): string[] {
+export function missingMentions(
+  text: string,
+  terms: readonly string[],
+): string[] {
   const haystack = text.toLowerCase()
   return terms.filter((t) => !haystack.includes(t.toLowerCase()))
 }

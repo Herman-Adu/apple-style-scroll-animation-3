@@ -3,7 +3,7 @@ import "server-only";
 import type Stripe from "stripe";
 
 import { prisma } from "@/lib/db/prisma";
-import { incrementDiscountCodeRedemption } from "@/features/discount-codes";
+import { incrementDiscountCodeRedemption } from "@/features/discount-codes/server";
 import type { AppliedOffer, Order } from "../../../domain/types";
 import { orderSelect, toOrder } from "../../../domain/order-row";
 import {

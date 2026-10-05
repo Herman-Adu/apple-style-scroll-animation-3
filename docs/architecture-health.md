@@ -90,16 +90,16 @@ Status: template handover complete.
 
 Compared with the W3 baseline and shipped R/SEC sprint ledger, the architecture goals for this repository are closed as a reusable template rather than a production launch artifact:
 
-| Metric             | Baseline | Final (`pnpm arch`) |
-| ------------------ | -------- | ------------------- |
-| deepImports        | 0        | 0                   |
-| libToFeatures      | 0        | 0                   |
-| routePropDrilling  | 0        | 0                   |
-| useEffect          | 45       | 45                  |
-| anyTypes           | 28       | 28                  |
-| incrementers       | 3        | 3                   |
-| clientComponents   | 151      | 151                 |
-| largeFiles         | 21       | 21                  |
+| Metric            | Baseline | Final (`pnpm arch`) |
+| ----------------- | -------- | ------------------- |
+| deepImports       | 0        | 0                   |
+| libToFeatures     | 0        | 0                   |
+| routePropDrilling | 0        | 0                   |
+| useEffect         | 45       | 45                  |
+| anyTypes          | 28       | 28                  |
+| incrementers      | 3        | 3                   |
+| clientComponents  | 151      | 151                 |
+| largeFiles        | 21       | 21                  |
 
 - Structural debt targets have dedicated shipped sprints (R1-R9) with guard tests and CI ratchets.
 - Auth/origin hardening work is shipped and tracked (SEC1, SEC2) for stable demo/template behavior.

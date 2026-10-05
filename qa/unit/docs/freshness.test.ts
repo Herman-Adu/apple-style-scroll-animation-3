@@ -53,6 +53,23 @@ describe("docs freshness helpers", () => {
     ]);
   });
 
+  it("keeps query/hash links and ignores asset-like doc paths regardless of extension case", () => {
+    const linksSample = {
+      ...docs[0],
+      body: [
+        {
+          type: "paragraph" as const,
+          text: "Links: /docs/engineering-quality?view=full and /docs/platform-glossary#terms and /docs/showcase-image.PNG",
+        },
+      ],
+    };
+
+    expect(internalDocLinks(linksSample)).toEqual([
+      "engineering-quality",
+      "platform-glossary",
+    ]);
+  });
+
   it("lists image sources", () => {
     expect(docImages(sample)).toEqual(["/docs/showcase/email-christmas.png"]);
   });

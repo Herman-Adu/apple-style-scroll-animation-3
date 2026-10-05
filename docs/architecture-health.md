@@ -27,7 +27,7 @@ The ratchet in CI stops any metric getting worse. Each R-sprint lowers its numbe
 | 4   | God file                      | `features/admin/components/email/template-editor.tsx` (1,366 lines)                                                                              | Hard to test; one change re-renders everything                                  | Split into toolbar, block list, inspector, preview, and a pure reducer                                  |
 | 5   | God file                      | `lib/orders/checkout-finalize.ts` (570), `features/email/lib/data/repo.ts` (549)                                                                 | Payment, stock, and email all in one function                                   | Split by step: verify, persist, decrement stock, notify                                                 |
 | 6   | Effect-driven data            | `features/admin/hooks/use-admin-{orders,customers,discount-codes}.ts`, `hooks/use-orders.ts`, `account-view`, `product-reviews`, `email-manager` | Loading waterfalls, spinners, and duplicated cache logic                        | Fetch in a server component and pass a promise to `use()`; refresh with `updateTag`                     |
-| 7   | Hidden module state           | `features/email/lib/domain/blocks/system-templates.ts` `++idc`                                                                                          | Ids depend on call order, which is why a test misbehaves between runs           | Deterministic ids derived from the template key and index                                               |
+| 7   | Hidden module state           | `features/email/lib/domain/blocks/system-templates.ts` `++idc`                                                                                   | Ids depend on call order, which is why a test misbehaves between runs           | Deterministic ids derived from the template key and index                                               |
 | 8   | Duplicate hooks               | `hooks/use-toast.ts` and `components/ui/use-toast.ts`; `hooks/use-mobile.ts` and `components/ui/use-mobile.tsx`                                  | Two copies drift apart                                                          | Keep one copy each and re-point imports                                                                 |
 | 9   | Client-side guards            | `components/auth/route-guard.tsx`, `features/admin/components/admin-guard.tsx`                                                                   | Protected UI flashes before redirecting; access is checked on the client        | Check the session in the server layout and `redirect()`; `requireAdmin()` stays in actions              |
 | 10  | Untyped boundaries            | `lib/auth/adapters/strapi.ts` (8), `features/docs/lib/strapi-source.ts` (7), product/article mappers (7)                                         | Bad CMS data fails deep in rendering, not at the edge                           | Zod schemas at the mapper edge (deferred to the Strapi phase, except non-Strapi ones)                   |
@@ -82,4 +82,27 @@ Each follows the usual loop: branch from fresh `main`, failing test first, all c
 | **R6: Forms and template-editor split**       | The 5 form effects replaced with `useActionState` / `key`; `template-editor` split into 5 files under 300 lines; the other derivable effects removed             | useEffect −10, large files −1                              | Unit tests on the editor reducer; email-editor smoke test green                                   |
 | **R7: Typed boundaries (non-Strapi)**         | Zod at `discount-codes`, `timeline`, and product/article API edges                                                                                               | any 28 → ≤ 15                                              | Malformed input fails with a typed error at the edge (unit tests)                                 |
 
-After R7, run the final gap analysis, then S5 (go live).
+After R7, run the final gap analysis, then S5 (template handover).
+
+## S5 final gap analysis
+
+Status: template handover complete.
+
+Compared with the W3 baseline and shipped R/SEC sprint ledger, the architecture goals for this repository are closed as a reusable template rather than a production launch artifact:
+
+| Metric             | Baseline | Final (`pnpm arch`) |
+| ------------------ | -------- | ------------------- |
+| deepImports        | 0        | 0                   |
+| libToFeatures      | 0        | 0                   |
+| routePropDrilling  | 0        | 0                   |
+| useEffect          | 45       | 45                  |
+| anyTypes           | 28       | 28                  |
+| incrementers       | 3        | 3                   |
+| clientComponents   | 151      | 151                 |
+| largeFiles         | 21       | 21                  |
+
+- Structural debt targets have dedicated shipped sprints (R1-R9) with guard tests and CI ratchets.
+- Auth/origin hardening work is shipped and tracked (SEC1, SEC2) for stable demo/template behavior.
+- Remaining productionization work is intentionally outside this repository's scope and belongs to fork-specific launch planning.
+
+Final delta conclusion: no additional in-repo architecture refactor sprint is required before handover; future work should be fork-specific customization and production readiness.

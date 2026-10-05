@@ -36,7 +36,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | S2     | #92, #93  | `0f29299`, `2475fbe` | Owner permissions page (optimistic per-admin lock toggle + audit log) and docs/ADR-011 updates                                           |
 | S3     | #94       | `3ae0095`            | Demo video tooling: Playwright clip capture, ffmpeg-static MP4/poster pipeline, showcase video script + docs                             |
 | S4     | #95       | `c5184b9`            | Social launch assets workflow and generated social deliverables                                                                          |
-| S5     | _this PR_ | _pending_            | Template handover: `docs/template-handover.md`, README template note, and final architecture-gap closeout                                |
+| S5     | #129      | `027b39a`            | Template handover: `docs/template-handover.md`, README template note, and final architecture-gap closeout                                |
 | S0     | _this PR_ | _pending_            | This ledger and the sprint protocol                                                                                                      |
 | SEC1   | #122      | `c6e8b40`            | Guard admin transactional actions; move server-only email/discount exports out of `"use server"` endpoints                               |
 | SEC2   | #124      | `3d32053`            | Stabilized auth/session origin handling: Better Auth trusted canonical/proxy host set and checkout return URL pinned to canonical origin |
@@ -83,7 +83,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 
 **S4 shipped in #95.** Added social launch assets generation and workflow.
 
-**S5 shipped in _this PR_.** Delivered template handover docs, added a README template note, and recorded the final architecture-gap closeout for clean future-session context.
+**S5 shipped in #129.** Delivered template handover docs, added a README template note, and recorded the final architecture-gap closeout for clean future-session context.
 
 **SEC1 shipped in #122.** Admin-only transactional actions are now guarded and server-only email/discount helpers were moved out of `"use server"` endpoint surfaces.
 

@@ -34,6 +34,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | D6     | #89       | `a8bb019` | Docs freshness tests, shared palette labels                                                                |
 | S0     | _this PR_ | _pending_ | This ledger and the sprint protocol                                                                        |
 | SEC1   | #122      | `c6e8b40` | Guard admin transactional actions; move server-only email/discount exports out of `"use server"` endpoints |
+| SEC2   | #124      | `3d32053` | Stabilized auth/session origin handling: Better Auth trusted canonical/proxy host set and checkout return URL pinned to canonical origin |
 
 ## Upcoming sprints
 
@@ -68,7 +69,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | Sprint | Scope |
 | ------ | ----- |
 
-**SEC2 (auth/session stability on prod + mobile).** Investigate and fix `Invalid Origin` on email/password sign-in and the post-checkout signed-out regression. Root hypothesis: host/origin drift between Better Auth server config and Stripe return URL origin resolution (custom domain vs forwarded host/preview host). Plan: TDD first, then harden Better Auth host resolution (`baseURL` dynamic hosts + trusted proxy headers in production), make checkout return origin deterministic/canonical, and verify with targeted integration tests plus smoke flows on desktop and iOS Safari.
+**SEC2 shipped in #124.** Fixed production `Invalid Origin` on email/password sign-in and post-checkout signed-out regression by removing host drift between Better Auth origin config and Stripe return URL origin resolution.
 
 **SEC1 shipped in #122.** Admin-only transactional actions are now guarded and server-only email/discount helpers were moved out of `"use server"` endpoint surfaces.
 

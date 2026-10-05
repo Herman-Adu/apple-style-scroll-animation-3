@@ -111,6 +111,9 @@ export async function quoteCheckout({
 
 /** Absolute canonical origin for building Stripe's return_url. */
 async function resolveOrigin(): Promise<string> {
+  if (env.STRIPE_PUBLIC_ORIGIN) {
+    return env.STRIPE_PUBLIC_ORIGIN.replace(/\/$/, "");
+  }
   return getBaseUrl();
 }
 

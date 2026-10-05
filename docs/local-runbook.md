@@ -42,6 +42,7 @@ BETTER_AUTH_URL
 NEXT_PUBLIC_SITE_URL
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 STRIPE_WEBHOOK_SECRET      # the whsec_... printed by `stripe listen`
+STRIPE_PUBLIC_ORIGIN       # optional public origin (e.g. ngrok) for Stripe-hosted product images
 ```
 
 ### Refresh variables from Vercel

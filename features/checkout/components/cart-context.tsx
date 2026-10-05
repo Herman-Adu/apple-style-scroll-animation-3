@@ -42,6 +42,26 @@ interface StoredLine {
   quantity: number;
 }
 
+export function rehydrateCartLines(
+  raw: string | null,
+  catalog: Product[],
+): CartLine[] {
+  if (!raw) return [];
+  try {
+    const stored: StoredLine[] = JSON.parse(raw);
+    return stored
+      .map((line) => {
+        if (!Number.isInteger(line.quantity) || line.quantity < 1) return null;
+        const product = catalog.find((item) => item.slug === line.slug);
+        if (!product) return null;
+        return { product, color: line.color, quantity: line.quantity };
+      })
+      .filter((line): line is CartLine => line !== null);
+  } catch {
+    return [];
+  }
+}
+
 export function CartProvider({
   children,
   catalog,
@@ -50,25 +70,18 @@ export function CartProvider({
   /** Product catalog used to rehydrate stored cart lines. */
   catalog: Product[];
 }) {
-  const [lines, setLines] = useState<CartLine[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) return [];
-      const stored: StoredLine[] = JSON.parse(raw);
-      return stored
-        .map((line) => {
-          const product = catalog.find((item) => item.slug === line.slug);
-          if (!product) return null;
-          return { product, color: line.color, quantity: line.quantity };
-        })
-        .filter((line): line is CartLine => line !== null);
-    } catch {
-      return [];
-    }
-  });
+  const [lines, setLines] = useState<CartLine[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [hydrated] = useState(() => typeof window !== "undefined");
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const nextLines = rehydrateCartLines(raw, catalog);
+    queueMicrotask(() => {
+      setLines(nextLines);
+      setHydrated(true);
+    });
+  }, [catalog]);
 
   // Persist whenever the cart changes (after hydration).
   useEffect(() => {

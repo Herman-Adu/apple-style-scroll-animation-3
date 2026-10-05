@@ -8,11 +8,14 @@ const m = vi.hoisted(() => ({
   userFindUnique: vi.fn(),
 }));
 
+const envMock = vi.hoisted(() => ({
+  STRIPE_SECRET_KEY: "set",
+  NEXT_PUBLIC_SITE_URL: "https://shop.example.com",
+  STRIPE_PUBLIC_ORIGIN: undefined as string | undefined,
+}));
+
 vi.mock("@/lib/env", () => ({
-  env: {
-    STRIPE_SECRET_KEY: "set",
-    NEXT_PUBLIC_SITE_URL: "https://shop.example.com",
-  },
+  env: envMock,
 }));
 
 vi.mock("@/features/products", () => ({
@@ -60,7 +63,40 @@ m.pendingUpdate.mockResolvedValue({});
 m.userFindUnique.mockResolvedValue({ offers: [] });
 
 describe("startStripeCheckout return origin", () => {
+  it("prefers STRIPE_PUBLIC_ORIGIN when provided", async () => {
+    envMock.STRIPE_PUBLIC_ORIGIN = "https://checkout-assets.example.com";
+
+    fakeAuth({
+      session: {
+        email: "buyer@example.com",
+        role: "customer",
+      },
+    }).install();
+
+    fakeDb({
+      user: { findUnique: m.userFindUnique },
+      pendingCheckout: {
+        create: m.pendingCreate,
+        update: m.pendingUpdate,
+      },
+    }).install();
+
+    const { startStripeCheckout } =
+      await import("@/features/checkout/lib/actions/checkout");
+
+    await startStripeCheckout({
+      lines: [{ slug: "momo-x", quantity: 1 }],
+    });
+
+    const payload = m.checkoutCreate.mock.calls[0][0] as { return_url: string };
+    expect(payload.return_url).toContain(
+      "https://checkout-assets.example.com/checkout/return",
+    );
+  });
+
   it("builds return_url from canonical site URL, not forwarded host", async () => {
+    envMock.STRIPE_PUBLIC_ORIGIN = undefined;
+
     fakeAuth({
       session: {
         email: "buyer@example.com",

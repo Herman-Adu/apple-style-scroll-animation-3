@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -96,31 +97,34 @@ export function NewTemplateDialog({
                           className="flex flex-col gap-1 rounded-lg bg-muted/50 p-2"
                           aria-hidden
                         >
-                          {s.blocks.slice(0, 5).map((b, i) =>
-                            b.type === "hero" && heroImage ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                key={i}
-                                src={heroImage.imageUrl}
-                                alt=""
-                                loading="lazy"
-                                className="aspect-[2/1] w-full rounded object-cover"
-                              />
-                            ) : (
-                              <span
-                                key={i}
-                                className={
-                                  b.type === "hero"
-                                    ? "h-6 rounded bg-accent-teal/25"
-                                    : b.type === "button"
-                                      ? "h-2.5 w-1/3 rounded-full bg-accent-teal/60"
-                                      : b.type === "productPicks"
-                                        ? "h-4 rounded bg-foreground/15"
-                                        : "h-1.5 rounded bg-foreground/15"
-                                }
-                              />
-                            ),
-                          )}
+                          {s.blocks
+                            .slice(0, 5)
+                            .map((b, i) =>
+                              b.type === "hero" && heroImage ? (
+                                <Image
+                                  key={i}
+                                  src={heroImage.imageUrl}
+                                  alt=""
+                                  width={600}
+                                  height={300}
+                                  unoptimized
+                                  className="aspect-[2/1] w-full rounded object-cover"
+                                />
+                              ) : (
+                                <span
+                                  key={i}
+                                  className={
+                                    b.type === "hero"
+                                      ? "h-6 rounded bg-accent-teal/25"
+                                      : b.type === "button"
+                                        ? "h-2.5 w-1/3 rounded-full bg-accent-teal/60"
+                                        : b.type === "productPicks"
+                                          ? "h-4 rounded bg-foreground/15"
+                                          : "h-1.5 rounded bg-foreground/15"
+                                  }
+                                />
+                              ),
+                            )}
                         </div>
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-semibold tracking-tight">

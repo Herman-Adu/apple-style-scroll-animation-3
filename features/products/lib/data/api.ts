@@ -1,18 +1,22 @@
-import "server-only"
+import "server-only";
 
 import {
   getAllProducts,
   getProductBySlug,
   getFeaturedProducts,
   getProductSlugs,
-} from "./data"
-import { env } from "@/lib/env"
-import { fetchStrapi, toEntries } from "@/lib/strapi/client"
-import { strapiTags } from "@/lib/strapi/tags"
-import { z } from "zod"
-import { productSchema, type Product } from "../domain/schema"
-import { selectRelatedProducts, toProductImageMap, type ProductImageMap } from "../domain/product"
-import { mapStrapiProduct } from "../adapters/mappers"
+} from "./data";
+import { env } from "@/lib/env";
+import { fetchStrapi, toEntries } from "@/lib/strapi/client";
+import { strapiTags } from "@/lib/strapi/tags";
+import { z } from "zod";
+import { productSchema, type Product } from "../domain/schema";
+import {
+  selectRelatedProducts,
+  toProductImageMap,
+  type ProductImageMap,
+} from "../domain/product";
+import { mapStrapiProduct } from "../adapters/mappers";
 
 /**
  * Product data access — the single seam the Strapi migration flips.
@@ -26,60 +30,85 @@ import { mapStrapiProduct } from "../adapters/mappers"
  * `server-only` keeps this (and the Strapi token) out of client bundles.
  */
 
-const useStrapi = Boolean(env.STRAPI_API_URL)
-const revalidate = env.STRAPI_REVALIDATE_SECONDS
+const useStrapi = Boolean(env.STRAPI_API_URL);
+const revalidate = env.STRAPI_REVALIDATE_SECONDS;
 
 export async function fetchProducts(): Promise<Product[]> {
   if (useStrapi) {
     return fetchStrapi("/api/products?populate=*", {
-      parse: (data) => productSchema.array().parse(toEntries(data).map(mapStrapiProduct)),
+      parse: (data) =>
+        productSchema.array().parse(toEntries(data).map(mapStrapiProduct)),
       tags: [strapiTags.products.all()],
       revalidate,
-    })
+    });
   }
-  return productSchema.array().parse(getAllProducts())
+  return productSchema.array().parse(getAllProducts());
 }
 
 export async function fetchProduct(slug: string): Promise<Product | null> {
   if (useStrapi) {
-    return fetchStrapi(`/api/products?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`, {
-      parse: (data) => {
-        const [first] = toEntries(data).map(mapStrapiProduct)
-        return first ? productSchema.parse(first) : null
+    return fetchStrapi(
+      `/api/products?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`,
+      {
+        parse: (data) => {
+          const [first] = toEntries(data).map(mapStrapiProduct);
+          return first ? productSchema.parse(first) : null;
+        },
+        tags: [strapiTags.products.detail(slug), strapiTags.products.all()],
+        revalidate,
       },
-      tags: [strapiTags.products.detail(slug), strapiTags.products.all()],
-      revalidate,
-    })
+    );
   }
-  const raw = getProductBySlug(slug)
-  return raw ? productSchema.parse(raw) : null
+  const raw = getProductBySlug(slug);
+  return raw ? productSchema.parse(raw) : null;
 }
 
 export async function fetchFeaturedProducts(): Promise<Product[]> {
   if (useStrapi) {
     return fetchStrapi("/api/products?filters[featured][$eq]=true&populate=*", {
-      parse: (data) => productSchema.array().parse(toEntries(data).map(mapStrapiProduct)),
+      parse: (data) =>
+        productSchema.array().parse(toEntries(data).map(mapStrapiProduct)),
       tags: [strapiTags.products.all()],
       revalidate,
-    })
+    });
   }
-  return productSchema.array().parse(getFeaturedProducts())
+  return productSchema.array().parse(getFeaturedProducts());
 }
 
 export async function fetchProductSlugs(): Promise<string[]> {
   if (useStrapi) {
     return fetchStrapi("/api/products?fields[0]=slug", {
-      parse: (data) => z.string().array().parse(toEntries(data).map((e: any) => (e?.attributes ?? e)?.slug)),
+      parse: (data) =>
+        z
+          .string()
+          .array()
+          .parse(
+            toEntries(data).map((e) => {
+              const record =
+                typeof e === "object" && e !== null
+                  ? (e as Record<string, unknown>)
+                  : {};
+              const attrs =
+                typeof record.attributes === "object" &&
+                record.attributes !== null
+                  ? (record.attributes as Record<string, unknown>)
+                  : record;
+              return attrs.slug;
+            }),
+          ),
       tags: [strapiTags.products.all()],
       revalidate,
-    })
+    });
   }
-  return getProductSlugs()
+  return getProductSlugs();
 }
 
-export async function fetchRelatedProducts(slug: string, limit = 3): Promise<Product[]> {
-  const all = await fetchProducts()
-  return selectRelatedProducts(all, slug, limit)
+export async function fetchRelatedProducts(
+  slug: string,
+  limit = 3,
+): Promise<Product[]> {
+  const all = await fetchProducts();
+  return selectRelatedProducts(all, slug, limit);
 }
 
 /**
@@ -89,5 +118,5 @@ export async function fetchRelatedProducts(slug: string, limit = 3): Promise<Pro
  * images/names/prices the same way.
  */
 export async function fetchProductImageMap(): Promise<ProductImageMap> {
-  return toProductImageMap(await fetchProducts())
+  return toProductImageMap(await fetchProducts());
 }

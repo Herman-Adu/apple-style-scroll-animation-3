@@ -37,7 +37,7 @@ for (const d of SOURCE_DIRS) {
         for (const h of hits) console.log(`  L${h.line}: ${h.text}`);
       }
     }
-  } catch (e) {
+  } catch {
     // skip missing dirs
   }
 }

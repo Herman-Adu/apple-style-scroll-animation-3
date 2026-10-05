@@ -6,14 +6,11 @@
 // actions (listAll / updateStatus) additionally require an admin session. This
 // is the authorization boundary; hiding UI is not access control.
 
-import { headers } from "next/headers";
 import type { Prisma } from "@prisma/client";
 
-import { auth } from "@/lib/auth/adapters/instance";
 import { prisma } from "@/lib/db/prisma";
 import { nextOrderNumber } from "../data/finalize/orders";
 import { sessionUser, requireUser, requireAdminId } from "./session";
-import { effectiveRole } from "@/lib/auth/domain/config";
 import { getAllProducts } from "@/features/products";
 import { productSchema } from "@/features/products";
 import { recordSale, toMap, type ProductMap } from "@/features/catalog";

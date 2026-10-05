@@ -95,8 +95,8 @@ Compared with the W3 baseline and shipped R/SEC sprint ledger, the architecture 
 | deepImports       | 0        | 0                   |
 | libToFeatures     | 0        | 0                   |
 | routePropDrilling | 0        | 0                   |
-| useEffect         | 45       | 45                  |
-| anyTypes          | 28       | 28                  |
+| useEffect         | 45       | 32                  |
+| anyTypes          | 28       | 0                   |
 | incrementers      | 3        | 3                   |
 | clientComponents  | 151      | 151                 |
 | largeFiles        | 21       | 21                  |
@@ -104,5 +104,30 @@ Compared with the W3 baseline and shipped R/SEC sprint ledger, the architecture 
 - Structural debt targets have dedicated shipped sprints (R1-R9) with guard tests and CI ratchets.
 - Auth/origin hardening work is shipped and tracked (SEC1, SEC2) for stable demo/template behavior.
 - Remaining productionization work is intentionally outside this repository's scope and belongs to fork-specific launch planning.
+
+### Full `useEffect` look (Oct 5, 2026)
+
+Current code scan (`app/components/features/hooks/lib`) finds **32** `useEffect` occurrences.
+
+| Class                                                                    | Count | Decision                                                                       |
+| ------------------------------------------------------------------------ | ----: | ------------------------------------------------------------------------------ |
+| Keep (external system sync: DOM, listeners, timers, third-party widgets) |    23 | Keep as `useEffect`                                                            |
+| Replace with server data + server redirect                               |     3 | Move auth/guard redirect logic to server layouts/pages                         |
+| Replace with `useSyncExternalStore`                                      |     3 | External store subscriptions (`matchMedia`, listener stores, scroll snapshots) |
+| Replace with event handler                                               |     2 | Persist/write side-effects at event time instead of reactive effect            |
+| Replace with key-reset/remount pattern                                   |     1 | Remove timer-driven mount animation state                                      |
+
+Top low-risk replacements for a next station:
+
+1. `hooks/use-toast.ts` → `useSyncExternalStore` subscription.
+2. `hooks/use-mobile.ts` → `useSyncExternalStore` over `matchMedia`.
+3. `features/admin/components/admin-shell.tsx` sidebar preference write → do it in toggle handler.
+4. `components/layout/site-header.tsx` scroll subscription → `useSyncExternalStore`-style scroll store hook.
+5. `features/admin/components/radial-gauge.tsx` timer effect → `key` remount / pure CSS mount animation trigger.
+
+High-value guard migrations (server-side redirects):
+
+- Replace client guard logic in `components/auth/route-guard.tsx` and `features/admin/components/admin-guard.tsx` with server redirects in corresponding route layouts/pages.
+- This aligns with Next.js 16 server-first routing and removes protected-UI flash risk.
 
 Final delta conclusion: no additional in-repo architecture refactor sprint is required before handover; future work should be fork-specific customization and production readiness.

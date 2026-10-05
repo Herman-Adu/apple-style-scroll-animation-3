@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useRef, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { LayoutDashboard, LogOut, Package, Tag, UserRound } from "lucide-react"
-import { useAuth } from "@/lib/auth/adapters/auth-context"
-import { UserAvatar } from "@/components/account/user-avatar"
-import { SignOutConfirmDialog } from "@/components/account/sign-out-confirm"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { LayoutDashboard, LogOut, Package, Tag, UserRound } from "lucide-react";
+import { useAuth } from "@/lib/auth/adapters/auth-context";
+import { UserAvatar } from "@/components/account/user-avatar";
+import { SignOutConfirmDialog } from "@/components/account/sign-out-confirm";
+import { cn } from "@/lib/utils";
 
 interface AccountMenuProps {
   /** Chrome text colour class, matching the rest of the header actions. */
-  chromeText: string
+  chromeText: string;
   /** Chrome hover class, matching the rest of the header actions. */
-  chromeHover: string
+  chromeHover: string;
 }
 
 interface AccountItem {
-  href: string
-  label: string
-  icon: React.ReactNode
-  active?: boolean
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  active?: boolean;
 }
 
 /**
@@ -31,38 +31,27 @@ interface AccountItem {
  * account panel instead, so there is a single slide-in implementation.
  */
 export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
-  const { user, signOut } = useAuth()
-  const pathname = usePathname()
-  const [open, setOpen] = useState(false)
-  const [signingOut, setSigningOut] = useState(false)
-  const [signOutOpen, setSignOutOpen] = useState(false)
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const { user } = useAuth();
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const [signOutOpen, setSignOutOpen] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  if (!user) return null
+  if (!user) return null;
 
   const cancelClose = () => {
-    if (timer.current) clearTimeout(timer.current)
-  }
+    if (timer.current) clearTimeout(timer.current);
+  };
   const openNow = () => {
-    cancelClose()
-    setOpen(true)
-  }
+    cancelClose();
+    setOpen(true);
+  };
   const closeSoon = () => {
-    cancelClose()
-    timer.current = setTimeout(() => setOpen(false), 120)
-  }
+    cancelClose();
+    timer.current = setTimeout(() => setOpen(false), 120);
+  };
 
-  async function handleSignOut() {
-    setSignOutOpen(false)
-    setSigningOut(true)
-    setOpen(false)
-    await signOut()
-    // Hard navigation home so a guarded page's RouteGuard can't intercept the
-    // now-unauthenticated session and bounce us to /sign-in mid-transition.
-    window.location.replace("/")
-  }
-
-  const displayName = user.profile.displayName || user.name
+  const displayName = user.profile.displayName || user.name;
 
   const items: AccountItem[] = [
     {
@@ -91,10 +80,14 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
           },
         ]
       : []),
-  ]
+  ];
 
   return (
-    <div className="relative hidden lg:block" onMouseEnter={openNow} onMouseLeave={closeSoon}>
+    <div
+      className="relative hidden lg:block"
+      onMouseEnter={openNow}
+      onMouseLeave={closeSoon}
+    >
       <Link
         href="/account"
         className={cn(
@@ -127,17 +120,25 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
             <div className="absolute inset-x-0 -top-3 h-3" aria-hidden />
             <div className="glass overflow-hidden rounded-2xl border p-2 shadow-2xl backdrop-blur-xl backdrop-saturate-150">
               <div className="flex items-center gap-3 border-b border-foreground/10 px-3 pb-3 pt-2">
-                <UserAvatar name={displayName} src={user.profile.avatarUrl} size={40} />
+                <UserAvatar
+                  name={displayName}
+                  src={user.profile.avatarUrl}
+                  size={40}
+                />
                 <span className="min-w-0">
                   <span className="flex items-center gap-2">
-                    <span className="truncate text-sm font-medium text-foreground">{displayName}</span>
+                    <span className="truncate text-sm font-medium text-foreground">
+                      {displayName}
+                    </span>
                     {user.role === "admin" && (
                       <span className="shrink-0 rounded-full bg-accent-teal/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-teal">
                         Admin
                       </span>
                     )}
                   </span>
-                  <span className="block truncate text-xs text-foreground/40">{user.email}</span>
+                  <span className="block truncate text-xs text-foreground/40">
+                    {user.email}
+                  </span>
                 </span>
               </div>
 
@@ -156,11 +157,10 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
                   type="button"
                   role="menuitem"
                   onClick={() => setSignOutOpen(true)}
-                  disabled={signingOut}
                   className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-foreground/80 transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-60"
                 >
                   <LogOut className="h-4 w-4" strokeWidth={1.5} />
-                  {signingOut ? "Signing out…" : "Sign out"}
+                  Sign out
                 </button>
               </div>
             </div>
@@ -169,7 +169,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
       </AnimatePresence>
       <SignOutConfirmDialog open={signOutOpen} onOpenChange={setSignOutOpen} />
     </div>
-  )
+  );
 }
 
 function MenuLink({
@@ -179,11 +179,11 @@ function MenuLink({
   active = false,
   onSelect,
 }: {
-  href: string
-  label: string
-  icon: React.ReactNode
-  active?: boolean
-  onSelect: () => void
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  active?: boolean;
+  onSelect: () => void;
 }) {
   return (
     <Link
@@ -201,5 +201,5 @@ function MenuLink({
       {icon}
       {label}
     </Link>
-  )
+  );
 }

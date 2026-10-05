@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { ArrowLeft, ArrowRight, Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
-import { CompanyFieldset } from "./company-field"
-import { useCompanyProfile } from "../hooks/use-company-profile"
+import { useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { CompanyFieldset } from "./company-field";
+import { useCompanyProfile } from "../hooks/use-company-profile";
 import {
   addressSubFields,
   companyOnboardingSteps,
@@ -16,7 +16,7 @@ import {
   type CompanyAddressSubKey,
   type CompanyProfile,
   type CompanyScalarKey,
-} from "@/lib/data/company"
+} from "@/lib/data/company";
 
 /**
  * First-run company onboarding, shown as a full-screen takeover inside the admin
@@ -24,111 +24,110 @@ import {
  * onboarding flow but collects *business* details and is skippable.
  */
 export function AdminOnboarding() {
-  const { company, completeOnboarding, skipOnboarding } = useCompanyProfile()
-  const [dismissed, setDismissed] = useState(false)
+  const { company, completeOnboarding, skipOnboarding } = useCompanyProfile();
+  const [dismissed, setDismissed] = useState(false);
 
-  const [stepIndex, setStepIndex] = useState(0)
-  const [direction, setDirection] = useState(1)
-  const [submitting, setSubmitting] = useState(false)
-  const [draft, setDraft] = useState<CompanyProfile>(company)
+  const [stepIndex, setStepIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [draft, setDraft] = useState<CompanyProfile>(company);
 
-  // Seed the draft from any existing values once, when the overlay first mounts.
-  useEffect(() => {
-    setDraft(company)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const step = companyOnboardingSteps[stepIndex];
+  const isLast = stepIndex === companyOnboardingSteps.length - 1;
+  const progress = ((stepIndex + 1) / companyOnboardingSteps.length) * 100;
 
-  const step = companyOnboardingSteps[stepIndex]
-  const isLast = stepIndex === companyOnboardingSteps.length - 1
-  const progress = ((stepIndex + 1) / companyOnboardingSteps.length) * 100
-
-  const hasAddressField = step.fields.some((field) => field.type === "address")
+  const hasAddressField = step.fields.some((field) => field.type === "address");
 
   // Gating errors (required + format) — used to disable Continue / Finish.
   const gateScalarErrors = useMemo(() => {
-    const errs: Partial<Record<CompanyScalarKey, string>> = {}
+    const errs: Partial<Record<CompanyScalarKey, string>> = {};
     for (const field of step.fields) {
-      if (field.type === "address") continue
-      const key = field.key as CompanyScalarKey
-      const err = validateCompanyField(field, draft[key])
-      if (err) errs[key] = err
+      if (field.type === "address") continue;
+      const key = field.key as CompanyScalarKey;
+      const err = validateCompanyField(field, draft[key]);
+      if (err) errs[key] = err;
     }
-    return errs
-  }, [step, draft])
+    return errs;
+  }, [step, draft]);
 
   const gateAddressErrors = useMemo(() => {
-    if (!hasAddressField) return {}
+    if (!hasAddressField) return {};
     // An empty address is allowed (the whole flow is skippable); only validate once
     // the admin starts filling it in.
-    return isAddressEmpty(draft.address) ? {} : validateAddress(draft.address)
-  }, [hasAddressField, draft.address])
+    return isAddressEmpty(draft.address) ? {} : validateAddress(draft.address);
+  }, [hasAddressField, draft.address]);
 
-  const stepValid = Object.keys(gateScalarErrors).length === 0 && Object.keys(gateAddressErrors).length === 0
+  const stepValid =
+    Object.keys(gateScalarErrors).length === 0 &&
+    Object.keys(gateAddressErrors).length === 0;
 
   // Live (format-only) errors — shown as the admin types, without nagging about
   // required-but-empty fields (the disabled button already signals that).
   const liveScalarErrors = useMemo(() => {
-    const errs: Partial<Record<CompanyScalarKey, string>> = {}
+    const errs: Partial<Record<CompanyScalarKey, string>> = {};
     for (const field of step.fields) {
-      if (field.type === "address" || !field.validate) continue
-      const key = field.key as CompanyScalarKey
-      const value = (draft[key] as string) ?? ""
-      if (!value.trim()) continue
-      const err = field.validate(value)
-      if (err) errs[key] = err
+      if (field.type === "address" || !field.validate) continue;
+      const key = field.key as CompanyScalarKey;
+      const value = (draft[key] as string) ?? "";
+      if (!value.trim()) continue;
+      const err = field.validate(value);
+      if (err) errs[key] = err;
     }
-    return errs
-  }, [step, draft])
+    return errs;
+  }, [step, draft]);
 
   const liveAddressErrors = useMemo(() => {
-    const errs: Partial<Record<CompanyAddressSubKey, string>> = {}
-    if (!hasAddressField) return errs
+    const errs: Partial<Record<CompanyAddressSubKey, string>> = {};
+    if (!hasAddressField) return errs;
     for (const sub of addressSubFields) {
-      if (!sub.validate) continue
-      const value = draft.address[sub.key] ?? ""
-      if (!value.trim()) continue
-      const err = sub.validate(value)
-      if (err) errs[sub.key] = err
+      if (!sub.validate) continue;
+      const value = draft.address[sub.key] ?? "";
+      if (!value.trim()) continue;
+      const err = sub.validate(value);
+      if (err) errs[sub.key] = err;
     }
-    return errs
-  }, [hasAddressField, draft.address])
+    return errs;
+  }, [hasAddressField, draft.address]);
 
   // Once the admin chooses to leave (skip or finish), latch the overlay closed
   // for this session so a slow or transient settings write can't yank it back.
   // The choice is still persisted to Neon via the provider.
-  if (dismissed || company.onboarded) return null
+  if (dismissed || company.onboarded) return null;
 
   function setScalar(key: CompanyScalarKey, value: string) {
-    setDraft((prev) => ({ ...prev, [key]: value }))
+    setDraft((prev) => ({ ...prev, [key]: value }));
   }
 
   function setAddress(key: CompanyAddressSubKey, value: string) {
-    setDraft((prev) => ({ ...prev, address: { ...prev.address, [key]: value } }))
+    setDraft((prev) => ({
+      ...prev,
+      address: { ...prev.address, [key]: value },
+    }));
   }
 
   function goNext() {
     if (!isLast) {
-      setDirection(1)
-      setStepIndex((i) => i + 1)
+      setDirection(1);
+      setStepIndex((i) => i + 1);
     }
   }
 
   function goBack() {
     if (stepIndex > 0) {
-      setDirection(-1)
-      setStepIndex((i) => i - 1)
+      setDirection(-1);
+      setStepIndex((i) => i - 1);
     }
   }
 
   function finish() {
-    setSubmitting(true)
-    setDismissed(true)
-    completeOnboarding(draft)
+    setSubmitting(true);
+    setDismissed(true);
+    completeOnboarding(draft);
   }
 
   function handleSkip() {
-    setDismissed(true)
-    skipOnboarding()
+    setDismissed(true);
+    skipOnboarding();
   }
 
   return (
@@ -140,7 +139,9 @@ export function AdminOnboarding() {
       <div className="relative w-full max-w-xl">
         <div className="mb-8 flex items-center justify-between">
           <span className="flex items-center gap-2.5">
-            <span className="text-sm font-bold tracking-[0.35em] text-foreground">MOMO</span>
+            <span className="text-sm font-bold tracking-[0.35em] text-foreground">
+              MOMO
+            </span>
             <span className="rounded-sm border border-accent-teal/30 bg-accent-teal/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-accent-teal">
               Admin
             </span>
@@ -180,8 +181,12 @@ export function AdminOnboarding() {
             exit={{ opacity: 0, x: direction * -40 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground text-balance">{step.title}</h1>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{step.subtitle}</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground text-balance">
+              {step.title}
+            </h1>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              {step.subtitle}
+            </p>
 
             <div className="mt-10">
               <CompanyFieldset
@@ -238,5 +243,5 @@ export function AdminOnboarding() {
         </div>
       </div>
     </div>
-  )
+  );
 }

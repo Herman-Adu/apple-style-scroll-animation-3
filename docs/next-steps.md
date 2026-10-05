@@ -10,6 +10,20 @@ approved plan. This file is the source of truth for **what is on `main`**.
 - Template handover is the active posture (`docs/template-handover.md`), not in-repo production go-live.
 - All required gates were run green for S5 before merge (`tsc`, lint, test, arch, build, smoke, axe).
 
+## Current handoff snapshot (Oct 5, 2026)
+
+- Cleanup pass is complete and validated: `pnpm typecheck`, `pnpm lint`, and `pnpm arch` all pass on the working tree.
+- Architecture metrics are currently stable at: `deepImports 0`, `libToFeatures 0`, `routePropDrilling 0`, `useEffect 32`, `anyTypes 0`, `incrementers 3`, `clientComponents 151`, `largeFiles 21`.
+- Post-formatter regressions were fixed in strict-typing boundaries and client search sync; no lint or architecture regressions were introduced.
+
+### Ready-to-ship checklist for next station
+
+1. Rebase/branch from real `origin/main` using the protocol in this file.
+2. Keep scope narrow to one station outcome (prefer docs/tests/template-quality unless explicitly approved otherwise).
+3. Before PR: run `pnpm typecheck`, `pnpm lint`, `pnpm arch`, plus targeted tests for changed areas.
+4. Confirm `git diff --stat origin/main` only includes the station’s intended files.
+5. After squash merge: verify `main` points to the merge SHA, then update this ledger immediately.
+
 ## Sprint protocol (every sprint, no exceptions)
 
 1. **Start from the real main.** `git fetch origin +refs/heads/main:refs/remotes/origin/main`, then check that
@@ -45,8 +59,8 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | S4     | #95      | `c5184b9`            | Social launch assets workflow and generated social deliverables                                                                          |
 | S5     | #129     | `027b39a`            | Template handover: `docs/template-handover.md`, README template note, and final architecture-gap closeout                                |
 | S5a    | #130     | `0951aec`            | Closeout sync: finalized S5 ledger metadata and stamped final `pnpm arch` baseline-vs-now metrics                                        |
-| S6     | #131     | `0d9ba3b`            | Ledger cleanup: removed stale placeholders/duplication and aligned next-chat kickoff with template posture                                 |
-| S6a    | #132     | `2edb520`            | PR cleanup: removed stale `next-steps` sections and replaced them with concise template-mode kickoff/open-work/backlog blocks             |
+| S6     | #131     | `0d9ba3b`            | Ledger cleanup: removed stale placeholders/duplication and aligned next-chat kickoff with template posture                               |
+| S6a    | #132     | `2edb520`            | PR cleanup: removed stale `next-steps` sections and replaced them with concise template-mode kickoff/open-work/backlog blocks            |
 | S0     | archived | archived             | Historical placeholder for initial ledger/protocol setup; retained for chronology                                                        |
 | SEC1   | #122     | `c6e8b40`            | Guard admin transactional actions; move server-only email/discount exports out of `"use server"` endpoints                               |
 | SEC2   | #124     | `3d32053`            | Stabilized auth/session origin handling: Better Auth trusted canonical/proxy host set and checkout return URL pinned to canonical origin |

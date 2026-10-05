@@ -50,7 +50,7 @@ async function main() {
     try {
       const list = await walk(dir);
       for (const f of list) if (/\.(ts|tsx|js|jsx)$/.test(f)) files.push(f);
-    } catch (err) {
+    } catch {
       // ignore
     }
   }
@@ -78,7 +78,7 @@ async function main() {
             deepImports.push({ file: path.relative(ROOT, f), imports: imp });
         }
       }
-    } catch (err) {
+    } catch {
       // ignore read errors
     }
   }

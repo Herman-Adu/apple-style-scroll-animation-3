@@ -35,8 +35,8 @@ describe("R3 slice boundaries", () => {
     expect(metrics.libToFeatures).toBe(0);
   });
 
-  it("other code reaches a slice through its index or server entry (at most 10 exceptions)", () => {
-    expect(metrics.deepImports).toBeLessThanOrEqual(10);
+  it("other code reaches a slice only through its index, server or actions entry", () => {
+    expect(metrics.deepImports).toBe(0);
   });
 
   it("domain folders have left lib/", () => {

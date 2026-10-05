@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 // Server-authoritative checkout pricing.
 //
@@ -10,54 +10,68 @@
 // tampered with from the browser. When the auth store moves server-side (Strapi),
 // offers will be re-read here too; the shape and callers stay identical.
 
-import { headers } from "next/headers"
-import type Stripe from "stripe"
+import type Stripe from "stripe";
 
-import { products } from "@/features/products"
-import type { OfferTag } from "@/lib/auth/domain/types"
-import type { OrderItem } from "@/features/orders"
-import { prisma } from "@/lib/db/prisma"
-import { env } from "@/lib/env"
-import { getStripe } from "@/lib/stripe/server"
-import { getServerSession } from "@/lib/auth/server"
-import { commitStock, notifyLowStock, releaseReservationById } from "@/features/orders/server"
-import { resolveDiscountCode } from "@/features/discount-codes"
-import { revalidateCatalog } from "@/features/catalog/server"
-import { priceCheckout, type PricedQuote } from "../domain/pricing"
-import { buildStripeLineItems, toMinorUnits } from "../adapters/stripe-line-items"
+import { products } from "@/features/products";
+import type { OfferTag } from "@/lib/auth/domain/types";
+import type { OrderItem } from "@/features/orders";
+import { prisma } from "@/lib/db/prisma";
+import { env } from "@/lib/env";
+import { getStripe } from "@/lib/stripe/server";
+import { getServerSession } from "@/lib/auth/server";
+import {
+  commitStock,
+  notifyLowStock,
+  releaseReservationById,
+} from "@/features/orders/server";
+import { resolveDiscountCode } from "@/features/discount-codes";
+import { revalidateCatalog } from "@/features/catalog/server";
+import { getBaseUrl } from "@/lib/seo/site";
+import { priceCheckout, type PricedQuote } from "../domain/pricing";
+import {
+  buildStripeLineItems,
+  toMinorUnits,
+} from "../adapters/stripe-line-items";
 
 /** Max units per line — a coarse abuse guard on the aggregate quantity. */
-const MAX_QTY_PER_LINE = 20
+const MAX_QTY_PER_LINE = 20;
 
 export interface QuoteRequestLine {
-  slug: string
-  color?: string
-  quantity: number
+  slug: string;
+  color?: string;
+  quantity: number;
 }
 
 export interface QuoteRequest {
-  lines: QuoteRequestLine[]
-  offers: OfferTag[]
+  lines: QuoteRequestLine[];
+  offers: OfferTag[];
   /** Store-wide discount code the customer entered, if any. Validated here. */
-  code?: string
+  code?: string;
 }
 
 /** A priced quote, plus the outcome of resolving an optional discount `code`. */
 export interface CheckoutQuote extends PricedQuote {
   /** The normalized code that was actually applied, if valid. */
-  discountCode?: string
+  discountCode?: string;
   /** Friendly reason `code` could not be applied. Undefined when no code was sent, or it applied cleanly. */
-  codeError?: string
+  codeError?: string;
 }
 
-export async function quoteCheckout({ lines, offers, code }: QuoteRequest): Promise<CheckoutQuote> {
-  const items: OrderItem[] = []
+export async function quoteCheckout({
+  lines,
+  offers,
+  code,
+}: QuoteRequest): Promise<CheckoutQuote> {
+  const items: OrderItem[] = [];
 
   for (const line of lines) {
-    const product = products.find((candidate) => candidate.slug === line.slug)
-    if (!product) continue // silently drop unknown/removed products
+    const product = products.find((candidate) => candidate.slug === line.slug);
+    if (!product) continue; // silently drop unknown/removed products
 
-    const quantity = Math.min(Math.max(Math.floor(line.quantity), 1), MAX_QTY_PER_LINE)
+    const quantity = Math.min(
+      Math.max(Math.floor(line.quantity), 1),
+      MAX_QTY_PER_LINE,
+    );
 
     items.push({
       slug: product.slug,
@@ -68,42 +82,36 @@ export async function quoteCheckout({ lines, offers, code }: QuoteRequest): Prom
       // Authoritative price — the browser cannot influence this.
       unitAmount: product.price.amount,
       currency: product.price.currency,
-    })
+    });
   }
 
   // A code is turned into a synthetic OfferTag and priced through the exact
   // same engine personal offers use, so it can never stack with a percent
   // offer to exceed 100% — see resolveDiscountCode for the full rationale.
-  let allOffers = offers ?? []
-  let discountCode: string | undefined
-  let codeError: string | undefined
+  let allOffers = offers ?? [];
+  let discountCode: string | undefined;
+  let codeError: string | undefined;
   if (code) {
-    const rawSubtotal = items.reduce((sum, item) => sum + item.unitAmount * item.quantity, 0)
-    const resolved = await resolveDiscountCode(code, rawSubtotal)
+    const rawSubtotal = items.reduce(
+      (sum, item) => sum + item.unitAmount * item.quantity,
+      0,
+    );
+    const resolved = await resolveDiscountCode(code, rawSubtotal);
     if (resolved.ok) {
-      allOffers = [...allOffers, resolved.offer]
-      discountCode = resolved.code
+      allOffers = [...allOffers, resolved.offer];
+      discountCode = resolved.code;
     } else {
-      codeError = resolved.error
+      codeError = resolved.error;
     }
   }
 
-  const priced = priceCheckout({ items, offers: allOffers })
-  return { ...priced, discountCode, codeError }
+  const priced = priceCheckout({ items, offers: allOffers });
+  return { ...priced, discountCode, codeError };
 }
 
-/** Absolute origin for building Stripe's return_url. Prefers the real request
- * host (works in preview + prod), falling back to the configured site URL. */
+/** Absolute canonical origin for building Stripe's return_url. */
 async function resolveOrigin(): Promise<string> {
-  const h = await headers()
-  const host = h.get("x-forwarded-host") ?? h.get("host")
-  if (host) {
-    const proto =
-      h.get("x-forwarded-proto") ??
-      (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https")
-    return `${proto}://${host}`
-  }
-  return env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+  return getBaseUrl();
 }
 
 /**
@@ -124,42 +132,49 @@ export async function startStripeCheckout({
   lines,
   code,
 }: {
-  lines: QuoteRequestLine[]
+  lines: QuoteRequestLine[];
   /** Store-wide discount code the customer applied during review, if any. */
-  code?: string
+  code?: string;
 }): Promise<{ clientSecret: string }> {
-  if (!env.STRIPE_SECRET_KEY) throw new Error("Payments are not configured.")
+  if (!env.STRIPE_SECRET_KEY) throw new Error("Payments are not configured.");
 
-  const session = await getServerSession()
-  if (!session) throw new Error("Please sign in to check out.")
-  const userId = session.sub
-  const email = session.email
+  const session = await getServerSession();
+  if (!session) throw new Error("Please sign in to check out.");
+  const userId = session.sub;
+  const email = session.email;
 
   // Authoritative offers for this user, read from the DB (not the client).
   const userRow = await prisma.user.findUnique({
     where: { id: userId },
     select: { offers: true },
-  })
-  const offers = (Array.isArray(userRow?.offers) ? userRow.offers : []) as unknown as OfferTag[]
+  });
+  const offers = (Array.isArray(userRow?.offers)
+    ? userRow.offers
+    : []) as unknown as OfferTag[];
 
-  const priced = await quoteCheckout({ lines, offers, code })
-  if (priced.items.length === 0) throw new Error("Your cart is empty.")
+  const priced = await quoteCheckout({ lines, offers, code });
+  if (priced.items.length === 0) throw new Error("Your cart is empty.");
   // The code was valid moments ago at review, but re-validate at the moment we
   // charge — it may have expired or been exhausted in between. Fail loudly
   // rather than silently charging full price when the customer expects a
   // discount.
-  if (code && priced.codeError) throw new Error(priced.codeError)
+  if (code && priced.codeError) throw new Error(priced.codeError);
 
   // Reserve stock + persist the pending checkout atomically. The oversell guard
   // lives in commitStock and rolls the whole thing back on failure.
-  const pendingId = crypto.randomUUID()
-  let crossedLowStock: Awaited<ReturnType<typeof commitStock>>["crossedLowStock"] = []
+  const pendingId = crypto.randomUUID();
+  let crossedLowStock: Awaited<
+    ReturnType<typeof commitStock>
+  >["crossedLowStock"] = [];
   await prisma.$transaction(async (tx) => {
     const { reserved, crossedLowStock: crossed } = await commitStock(
       tx,
-      priced.items.map((item) => ({ slug: item.slug, quantity: item.quantity })),
-    )
-    crossedLowStock = crossed
+      priced.items.map((item) => ({
+        slug: item.slug,
+        quantity: item.quantity,
+      })),
+    );
+    crossedLowStock = crossed;
     await tx.pendingCheckout.create({
       data: {
         id: pendingId,
@@ -176,48 +191,53 @@ export async function startStripeCheckout({
         currency: priced.currency,
         status: "reserved",
       },
-    })
-  })
+    });
+  });
   // Only notify once the reservation transaction has actually committed —
   // notifying from inside the transaction would fire even if it later rolled
   // back (e.g. the pendingCheckout write failing after stock was decremented).
-  notifyLowStock(crossedLowStock)
-  revalidateCatalog()
+  notifyLowStock(crossedLowStock);
+  revalidateCatalog();
 
   try {
-    const origin = await resolveOrigin()
-    const currency = priced.currency.toLowerCase()
+    const origin = await resolveOrigin();
+    const currency = priced.currency.toLowerCase();
 
     // Order-level offer savings become a one-time coupon (Stripe has no negative
     // line items). Shipping, when charged, is a fixed shipping rate.
-    let discounts: Stripe.Checkout.SessionCreateParams.Discount[] | undefined
+    let discounts: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
     if (priced.discount > 0) {
       const label =
         priced.appliedOffers
           .filter((offer) => offer.amount > 0)
           .map((offer) => offer.label)
-          .join(", ") || "Offer discount"
+          .join(", ") || "Offer discount";
       const coupon = await getStripe().coupons.create({
         amount_off: toMinorUnits(priced.discount),
         currency,
         duration: "once",
         name: label.slice(0, 40),
-      })
-      discounts = [{ coupon: coupon.id }]
+      });
+      discounts = [{ coupon: coupon.id }];
     }
 
-    const shipping_options: Stripe.Checkout.SessionCreateParams.ShippingOption[] | undefined =
+    const shipping_options:
+      | Stripe.Checkout.SessionCreateParams.ShippingOption[]
+      | undefined =
       priced.shipping > 0
         ? [
             {
               shipping_rate_data: {
                 type: "fixed_amount",
-                fixed_amount: { amount: toMinorUnits(priced.shipping), currency },
+                fixed_amount: {
+                  amount: toMinorUnits(priced.shipping),
+                  currency,
+                },
                 display_name: "Shipping",
               },
             },
           ]
-        : undefined
+        : undefined;
 
     const checkout = await getStripe().checkout.sessions.create({
       ui_mode: "embedded_page",
@@ -229,17 +249,18 @@ export async function startStripeCheckout({
       return_url: `${origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
       metadata: { pendingCheckoutId: pendingId },
       payment_intent_data: { metadata: { pendingCheckoutId: pendingId } },
-    })
+    });
 
-    if (!checkout.client_secret) throw new Error("Stripe did not return a client secret.")
+    if (!checkout.client_secret)
+      throw new Error("Stripe did not return a client secret.");
     await prisma.pendingCheckout.update({
       where: { id: pendingId },
       data: { stripeSessionId: checkout.id },
-    })
-    return { clientSecret: checkout.client_secret }
+    });
+    return { clientSecret: checkout.client_secret };
   } catch (err) {
     // Roll back the stock we reserved so an abandoned attempt strands nothing.
-    await releaseReservationById(pendingId).catch(() => {})
-    throw err
+    await releaseReservationById(pendingId).catch(() => {});
+    throw err;
   }
 }

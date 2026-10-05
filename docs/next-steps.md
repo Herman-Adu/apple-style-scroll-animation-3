@@ -34,6 +34,8 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | D6     | #89       | `a8bb019`            | Docs freshness tests, shared palette labels                                                                                              |
 | S1     | #91       | `0865f28`            | Owner-managed lock permissions: DB `BlockLocker` + `PermissionAudit`, pure grant rules, owner-only actions                               |
 | S2     | #92, #93  | `0f29299`, `2475fbe` | Owner permissions page (optimistic per-admin lock toggle + audit log) and docs/ADR-011 updates                                           |
+| S3     | #94       | `3ae0095`            | Demo video tooling: Playwright clip capture, ffmpeg-static MP4/poster pipeline, showcase video script + docs                             |
+| S4     | #95       | `c5184b9`            | Social launch assets workflow and generated social deliverables                                                                            |
 | S0     | _this PR_ | _pending_            | This ledger and the sprint protocol                                                                                                      |
 | SEC1   | #122      | `c6e8b40`            | Guard admin transactional actions; move server-only email/discount exports out of `"use server"` endpoints                               |
 | SEC2   | #124      | `3d32053`            | Stabilized auth/session origin handling: Better Auth trusted canonical/proxy host set and checkout return URL pinned to canonical origin |
@@ -76,6 +78,10 @@ approved plan. This file is the source of truth for **what is on `main`**.
 **S1 shipped in #91.** Lock permissions moved to the database (`BlockLocker`, `PermissionAudit`) with owner-only grant/revoke actions and tests.
 
 **S2 shipped in #92 and #93.** Added the owner permissions screen with optimistic lock-right toggles and audit log, plus ADR-011 and supporting docs updates.
+
+**S3 shipped in #94.** Added demo video tooling for Playwright-recorded clips, ffmpeg-static MP4 conversion, and poster generation.
+
+**S4 shipped in #95.** Added social launch assets generation and workflow.
 
 **SEC1 shipped in #122.** Admin-only transactional actions are now guarded and server-only email/discount helpers were moved out of `"use server"` endpoint surfaces.
 

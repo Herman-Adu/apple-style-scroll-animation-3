@@ -3,6 +3,43 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
+export const SECTION_OFFSET = 120;
+
+type ActiveSectionInput = {
+  presentIds: string[];
+  offset: number;
+  scrolledToBottom: boolean;
+  getTop: (id: string) => number | null;
+};
+
+export function isScrolledToBottom(
+  innerHeight: number,
+  scrollY: number,
+  scrollHeight: number,
+): boolean {
+  return innerHeight + scrollY >= scrollHeight - 2;
+}
+
+export function getActiveSectionId({
+  presentIds,
+  offset,
+  scrolledToBottom,
+  getTop,
+}: ActiveSectionInput): string | null {
+  if (presentIds.length === 0) return null;
+  if (scrolledToBottom) return presentIds[presentIds.length - 1] ?? null;
+
+  let current: string | null = null;
+  for (const id of presentIds) {
+    const top = getTop(id);
+    if (top == null) continue;
+    if (top <= offset) current = id;
+    else break;
+  }
+
+  return current;
+}
+
 /**
  * Tracks which of the given section ids is currently in view.
  *
@@ -28,30 +65,23 @@ export function useActiveSection(ids: string[]): string | null {
       return;
     }
 
-    // Decision line: just below the fixed header.
-    const OFFSET = 120;
-
     const compute = () => {
-      // At the very bottom of the page, force the last section active so the
-      // final short section can always be reached.
-      const scrolledToBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 2;
-      if (scrolledToBottom) {
-        setActiveId(present[present.length - 1]);
-        return;
-      }
+      const active = getActiveSectionId({
+        presentIds: present,
+        offset: SECTION_OFFSET,
+        scrolledToBottom: isScrolledToBottom(
+          window.innerHeight,
+          window.scrollY,
+          document.documentElement.scrollHeight,
+        ),
+        getTop: (id) => {
+          const el = document.getElementById(id);
+          if (!el) return null;
+          return el.getBoundingClientRect().top;
+        },
+      });
 
-      // Nothing is active until the first section has scrolled under the
-      // header line. At the top of the page (hero in view) no sub-link lights.
-      let current: string | null = null;
-      for (const id of present) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-        if (el.getBoundingClientRect().top <= OFFSET) current = id;
-        else break;
-      }
-      setActiveId(current);
+      setActiveId(active);
     };
 
     compute();

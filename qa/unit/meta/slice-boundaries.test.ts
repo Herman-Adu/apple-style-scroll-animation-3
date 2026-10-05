@@ -6,6 +6,17 @@ import { measure } from "@/scripts/lib/arch-audit-metrics.mjs";
 const ROOT = join(__dirname, "../../..");
 const SOURCE_DIRS = ["app", "components", "features", "hooks", "lib"];
 
+function resolveRelativePosix(fromPath: string, specifier: string): string {
+  const stack = fromPath.replace(/\\/g, "/").split("/");
+  stack.pop();
+  for (const part of specifier.split("/")) {
+    if (!part || part === ".") continue;
+    if (part === "..") stack.pop();
+    else stack.push(part);
+  }
+  return stack.join("/");
+}
+
 function* walk(dir: string): Generator<string> {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
@@ -26,10 +37,16 @@ const metrics = measure(records);
 describe("R3 slice boundaries", () => {
   it("lib/ never imports a feature slice", () => {
     const offenders = records
-      .filter(
-        (r) =>
-          r.path.startsWith("lib/") && /from\s+["']@\/features/.test(r.text),
-      )
+      .filter((r) => {
+        if (!r.path.startsWith("lib/")) return false;
+        if (/from\s+["']@\/features/.test(r.text)) return true;
+        const relativeSpecs = [
+          ...r.text.matchAll(/from\s+["'](\.{1,2}\/[^"']+)["']/g),
+        ].map((match) => match[1]);
+        return relativeSpecs.some((spec) =>
+          resolveRelativePosix(r.path, spec).startsWith("features/"),
+        );
+      })
       .map((r) => r.path);
     expect(offenders).toEqual([]);
     expect(metrics.libToFeatures).toBe(0);

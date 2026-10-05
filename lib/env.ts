@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs"
-import { z } from "zod"
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
 /**
  * Type-safe, validated environment access.
@@ -33,6 +33,7 @@ export const env = createEnv({
     // can't create/finalize a payment until they are.
     STRIPE_SECRET_KEY: z.string().min(1).optional(),
     STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
+    STRIPE_PUBLIC_ORIGIN: z.string().url().optional(),
   },
   client: {
     // Canonical public origin used for metadata, sitemap, robots, OG images and
@@ -60,13 +61,16 @@ export const env = createEnv({
     STRAPI_PREVIEW_SECRET: process.env.STRAPI_PREVIEW_SECRET,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    STRIPE_PUBLIC_ORIGIN: process.env.STRIPE_PUBLIC_ORIGIN,
     NEXT_PUBLIC_AUTH_PROVIDER: process.env.NEXT_PUBLIC_AUTH_PROVIDER,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_CONTACT_ENDPOINT: process.env.NEXT_PUBLIC_CONTACT_ENDPOINT,
     NEXT_PUBLIC_REVIEWS_ENDPOINT: process.env.NEXT_PUBLIC_REVIEWS_ENDPOINT,
-    NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL,
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL:
+      process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
   /** Treat empty strings as "unset" so blank values don't pass URL checks. */
   emptyStringAsUndefined: true,
-})
+});

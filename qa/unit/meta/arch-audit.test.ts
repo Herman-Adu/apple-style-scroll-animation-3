@@ -1,7 +1,10 @@
-import { describe, expect, it } from "vitest"
-import { compare, measure } from "@/scripts/lib/arch-audit-metrics.mjs"
+import { describe, expect, it } from "vitest";
+import { compare, measure } from "@/scripts/lib/arch-audit-metrics.mjs";
 
-const file = (path: string, ...lines: string[]) => ({ path, text: lines.join("\n") })
+const file = (path: string, ...lines: string[]) => ({
+  path,
+  text: lines.join("\n"),
+});
 
 describe("arch-audit measure", () => {
   it("counts a deep import from outside the slice but not from inside it", () => {
@@ -9,47 +12,87 @@ describe("arch-audit measure", () => {
       file("app/page.tsx", 'import { x } from "@/features/cart/components/x"'),
       file("features/cart/a.ts", 'import { y } from "@/features/cart/lib/y"'),
       file("app/ok.tsx", 'import { z } from "@/features/cart"'),
-    ])
-    expect(m.deepImports).toBe(1)
-  })
+    ]);
+    expect(m.deepImports).toBe(1);
+  });
 
   it("treats a slice's server entry as public, like its index", () => {
     const m = measure([
       file("app/page.tsx", 'import { q } from "@/features/cart/server"'),
       file("app/other.tsx", 'import { r } from "@/features/cart/server-utils"'),
-    ])
-    expect(m.deepImports).toBe(1)
-  })
+    ]);
+    expect(m.deepImports).toBe(1);
+  });
 
   it("counts lib → features inversions", () => {
-    const m = measure([file("lib/a.ts", 'import { a } from "@/features/cart"'), file("app/b.ts", 'import { a } from "@/features/cart"')])
-    expect(m.libToFeatures).toBe(1)
-  })
+    const m = measure([
+      file("lib/a.ts", 'import { a } from "@/features/cart"'),
+      file("lib/b.ts", 'import { b } from "../features/orders"'),
+      file("app/c.ts", 'import { a } from "@/features/cart"'),
+    ]);
+    expect(m.libToFeatures).toBe(2);
+  });
+
+  it("counts route-level prop drilling in app page/layout entries", () => {
+    const m = measure([
+      file(
+        "app/products/page.tsx",
+        "export default function ProductsPage({ params, category }: { params: unknown; category: string }) {",
+        "  return null",
+        "}",
+      ),
+      file(
+        "app/(admin)/admin/layout.tsx",
+        "export default function AdminLayout({ children }: { children: React.ReactNode }) {",
+        "  return children",
+        "}",
+      ),
+    ]);
+    expect(m.routePropDrilling).toBe(1);
+  });
 
   it("counts useEffect calls, any types and ++ counters", () => {
     const m = measure([
-      file("features/a.tsx", "useEffect(() => {}, [])", "useEffect(() => {})", "const v: any = 1", "const w = x as any"),
-      file("lib/ids.ts", "let n = 0", "export const id = () => ++n", "for (let i = 0; i < 3; i++) {}"),
-    ])
-    expect(m.useEffect).toBe(2)
-    expect(m.anyTypes).toBe(2)
-    expect(m.incrementers).toBe(2)
-  })
+      file(
+        "features/a.tsx",
+        "useEffect(() => {}, [])",
+        "useEffect(() => {})",
+        "const v: any = 1",
+        "const w = x as any",
+      ),
+      file(
+        "lib/ids.ts",
+        "let n = 0",
+        "export const id = () => ++n",
+        "for (let i = 0; i < 3; i++) {}",
+      ),
+    ]);
+    expect(m.useEffect).toBe(2);
+    expect(m.anyTypes).toBe(2);
+    expect(m.incrementers).toBe(2);
+  });
 
   it("counts client components and files over 300 lines", () => {
-    const long = Array.from({ length: 301 }, () => "x").join("\n")
-    const m = measure([file("components/a.tsx", '"use client"', "x"), { path: "features/big.ts", text: long }])
-    expect(m.clientComponents).toBe(1)
-    expect(m.largeFiles).toBe(1)
-  })
-})
+    const long = Array.from({ length: 301 }, () => "x").join("\n");
+    const m = measure([
+      file("components/a.tsx", '"use client"', "x"),
+      { path: "features/big.ts", text: long },
+    ]);
+    expect(m.clientComponents).toBe(1);
+    expect(m.largeFiles).toBe(1);
+  });
+});
 
 describe("arch-audit compare", () => {
   it("passes when every metric is equal or better", () => {
-    expect(compare({ useEffect: 5, anyTypes: 3 }, { useEffect: 4, anyTypes: 3 })).toEqual([])
-  })
+    expect(
+      compare({ useEffect: 5, anyTypes: 3 }, { useEffect: 4, anyTypes: 3 }),
+    ).toEqual([]);
+  });
 
   it("reports each metric that got worse", () => {
-    expect(compare({ useEffect: 5, anyTypes: 3 }, { useEffect: 6, anyTypes: 3 })).toEqual([{ metric: "useEffect", baseline: 5, now: 6 }])
-  })
-})
+    expect(
+      compare({ useEffect: 5, anyTypes: 3 }, { useEffect: 6, anyTypes: 3 }),
+    ).toEqual([{ metric: "useEffect", baseline: 5, now: 6 }]);
+  });
+});

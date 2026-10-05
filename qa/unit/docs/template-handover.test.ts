@@ -68,4 +68,11 @@ describe("S5 template handover docs", () => {
     expect(ledger).toContain("| S15");
     expect(ledger).toContain("274a9fa");
   });
+
+  it("tracks merged PR #143 in current state and sprint ledger", () => {
+    const ledger = read("docs/next-steps.md");
+    expect(ledger).toContain("PR #143");
+    expect(ledger).toContain("| S16");
+    expect(ledger).toContain("f4124dd");
+  });
 });

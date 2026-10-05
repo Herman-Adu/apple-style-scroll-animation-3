@@ -1,12 +1,11 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Lock } from "lucide-react"
-import type { DocSummary } from "../lib/domain/schema"
-import { groupDocsByAudience, visibleDocs } from "../lib/domain/doc"
-import { useAuth } from "@/lib/auth/adapters/auth-context"
-import { isOwner } from "@/lib/auth/domain/config"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import type { DocSummary } from "../lib/domain/schema";
+import { groupDocsByAudience, visibleDocs } from "../lib/domain/doc";
+import { useAuth } from "@/lib/auth/adapters/auth-context";
+import { isOwner } from "@/lib/auth/domain/config";
+import { cn } from "@/lib/utils";
 
 /**
  * Persistent docs navigation rail. Receives the full corpus as summaries and,
@@ -14,11 +13,20 @@ import { cn } from "@/lib/utils"
  * DocsExplorer gating model so a non-admin never sees internal guides listed.
  * Bodies are never shipped here; only card-level metadata.
  */
-export function DocsSidebar({ docs, activeSlug }: { docs: DocSummary[]; activeSlug: string }) {
-  const { user } = useAuth()
+export function DocsSidebar({
+  docs,
+  activeSlug,
+}: {
+  docs: DocSummary[];
+  activeSlug: string;
+}) {
+  const { user } = useAuth();
   const groups = groupDocsByAudience(
-    visibleDocs(docs, { isAdmin: user?.role === "admin", isOwner: isOwner(user?.email) }),
-  )
+    visibleDocs(docs, {
+      isAdmin: user?.role === "admin",
+      isOwner: isOwner(user?.email),
+    }),
+  );
 
   return (
     <nav aria-label="All documentation" className="sticky top-28 space-y-8">
@@ -29,7 +37,7 @@ export function DocsSidebar({ docs, activeSlug }: { docs: DocSummary[]; activeSl
           </p>
           <ul className="space-y-1 border-l border-foreground/10">
             {group.docs.map((doc) => {
-              const active = doc.slug === activeSlug
+              const active = doc.slug === activeSlug;
               return (
                 <li key={doc.slug}>
                   <Link
@@ -45,11 +53,11 @@ export function DocsSidebar({ docs, activeSlug }: { docs: DocSummary[]; activeSl
                     {doc.title}
                   </Link>
                 </li>
-              )
+              );
             })}
           </ul>
         </div>
       ))}
     </nav>
-  )
+  );
 }

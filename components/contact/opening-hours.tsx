@@ -20,20 +20,17 @@ function formatHour(time: string) {
 }
 
 export function OpeningHours() {
-  // Stays null on the server and first client render to avoid hydration mismatch;
-  // the "open now" state resolves after mount using the visitor's local time.
-  const [now, setNow] = useState<Date | null>(null);
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
-    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
   }, []);
 
   // JS getDay(): 0=Sun..6=Sat. Shift so Monday is index 0 to match our data.
-  const todayIndex = now ? (now.getDay() + 6) % 7 : -1;
-  const nowMinutes = now ? now.getHours() * 60 + now.getMinutes() : -1;
-  const today = todayIndex >= 0 ? openingHours[todayIndex] : null;
+  const todayIndex = (now.getDay() + 6) % 7;
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  const today = openingHours[todayIndex] ?? null;
   const openNow =
     !!today &&
     !!today.open &&
@@ -48,25 +45,23 @@ export function OpeningHours() {
           <Clock className="h-4 w-4" strokeWidth={1.5} />
           Opening hours
         </div>
-        {now && (
+        <span
+          className={cn(
+            "flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em]",
+            openNow
+              ? "bg-emerald-400/15 text-emerald-300"
+              : "bg-foreground/10 text-foreground/50",
+          )}
+        >
           <span
             className={cn(
-              "flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em]",
-              openNow
-                ? "bg-emerald-400/15 text-emerald-300"
-                : "bg-foreground/10 text-foreground/50",
+              "h-1.5 w-1.5 rounded-full",
+              openNow ? "bg-emerald-400" : "bg-foreground/40",
             )}
-          >
-            <span
-              className={cn(
-                "h-1.5 w-1.5 rounded-full",
-                openNow ? "bg-emerald-400" : "bg-foreground/40",
-              )}
-              aria-hidden
-            />
-            {openNow ? "Open now" : "Closed"}
-          </span>
-        )}
+            aria-hidden
+          />
+          {openNow ? "Open now" : "Closed"}
+        </span>
       </div>
 
       <ul className="mt-5 flex flex-col gap-1">

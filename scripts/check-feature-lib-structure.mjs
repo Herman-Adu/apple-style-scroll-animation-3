@@ -15,12 +15,12 @@ async function listDirs(path) {
       try {
         const s = await stat(full);
         if (s.isDirectory()) dirs.push(name);
-      } catch (e) {
+      } catch {
         // ignore
       }
     }
     return dirs;
-  } catch (e) {
+  } catch {
     return [];
   }
 }

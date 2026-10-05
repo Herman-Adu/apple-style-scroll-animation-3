@@ -10,40 +10,49 @@ import {
   listAllOrdersAction,
   listMyOrdersAction,
   updateOrderStatusAction,
-} from "../actions/orders"
-import { refundOrderAction } from "../actions/refunds"
-import type { Carrier } from "../domain/tracking"
-import type { CreateOrderInput, Order, OrderStatus, OrdersAdapter } from "../domain/types"
+} from "../actions/orders";
+import { refundOrderAction } from "../actions/refunds";
+import type { Carrier } from "../domain/tracking";
+import type {
+  CreateOrderInput,
+  Order,
+  OrderStatus,
+  OrdersAdapter,
+} from "../domain/types";
 
 export function createDbOrdersAdapter(): OrdersAdapter {
   return {
     // `userId` is part of the port for the local adapter; the server ignores it
     // and scopes to the session user, so it can't be used to read another's data.
-    async list(_userId: string): Promise<Order[]> {
-      return listMyOrdersAction()
+    async list(): Promise<Order[]> {
+      return listMyOrdersAction();
     },
 
     async listAll(): Promise<Order[]> {
-      return listAllOrdersAction()
+      return listAllOrdersAction();
     },
 
     async create(input: CreateOrderInput): Promise<Order> {
-      return createOrderAction(input)
+      return createOrderAction(input);
     },
 
     async updateStatus(orderId: string, status: OrderStatus): Promise<Order> {
-      return updateOrderStatusAction(orderId, status)
+      return updateOrderStatusAction(orderId, status);
     },
 
-    async refund(orderId: string, amount?: number, reason?: string): Promise<Order> {
-      return refundOrderAction(orderId, amount, reason)
+    async refund(
+      orderId: string,
+      amount?: number,
+      reason?: string,
+    ): Promise<Order> {
+      return refundOrderAction(orderId, amount, reason);
     },
 
     async addTracking(
       orderId: string,
       input: { carrier: Carrier; trackingNumber: string; trackingUrl?: string },
     ): Promise<Order> {
-      return addTrackingAction(orderId, input)
+      return addTrackingAction(orderId, input);
     },
-  }
+  };
 }

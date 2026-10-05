@@ -1,8 +1,15 @@
-import { Info, TriangleAlert, CheckCircle2, Lightbulb, NotebookPen } from "lucide-react"
-import type { DocBlock } from "../lib/domain/schema"
-import { slugifyHeading } from "../lib/domain/doc"
-import { MermaidDiagram } from "@/components/docs/mermaid-diagram"
-import { DocChart } from "@/components/docs/doc-chart"
+import Image from "next/image";
+import {
+  Info,
+  TriangleAlert,
+  CheckCircle2,
+  Lightbulb,
+  NotebookPen,
+} from "lucide-react";
+import type { DocBlock } from "../lib/domain/schema";
+import { slugifyHeading } from "../lib/domain/doc";
+import { MermaidDiagram } from "@/components/docs/mermaid-diagram";
+import { DocChart } from "@/components/docs/doc-chart";
 
 /**
  * Server-side renderer for the doc block union. Everything here is an RSC;
@@ -11,12 +18,32 @@ import { DocChart } from "@/components/docs/doc-chart"
  */
 
 const calloutConfig = {
-  info: { Icon: Info, className: "border-foreground/15 bg-foreground/[0.03]", iconClass: "text-foreground/50" },
-  note: { Icon: NotebookPen, className: "border-foreground/15 bg-foreground/[0.03]", iconClass: "text-foreground/50" },
-  tip: { Icon: Lightbulb, className: "border-accent-teal/30 bg-accent-teal/[0.06]", iconClass: "text-accent-teal" },
-  success: { Icon: CheckCircle2, className: "border-accent-teal/30 bg-accent-teal/[0.06]", iconClass: "text-accent-teal" },
-  warning: { Icon: TriangleAlert, className: "border-destructive/30 bg-destructive/[0.06]", iconClass: "text-destructive" },
-} as const
+  info: {
+    Icon: Info,
+    className: "border-foreground/15 bg-foreground/[0.03]",
+    iconClass: "text-foreground/50",
+  },
+  note: {
+    Icon: NotebookPen,
+    className: "border-foreground/15 bg-foreground/[0.03]",
+    iconClass: "text-foreground/50",
+  },
+  tip: {
+    Icon: Lightbulb,
+    className: "border-accent-teal/30 bg-accent-teal/[0.06]",
+    iconClass: "text-accent-teal",
+  },
+  success: {
+    Icon: CheckCircle2,
+    className: "border-accent-teal/30 bg-accent-teal/[0.06]",
+    iconClass: "text-accent-teal",
+  },
+  warning: {
+    Icon: TriangleAlert,
+    className: "border-destructive/30 bg-destructive/[0.06]",
+    iconClass: "text-destructive",
+  },
+} as const;
 
 function Block({ block }: { block: DocBlock }) {
   switch (block.type) {
@@ -28,32 +55,49 @@ function Block({ block }: { block: DocBlock }) {
         >
           {block.text}
         </h2>
-      )
+      );
 
     case "paragraph":
-      return <p className="mt-6 text-base leading-relaxed text-foreground/70 md:text-lg">{block.text}</p>
+      return (
+        <p className="mt-6 text-base leading-relaxed text-foreground/70 md:text-lg">
+          {block.text}
+        </p>
+      );
 
     case "quote":
       return (
         <blockquote className="my-10 border-l-2 border-accent-teal/50 pl-6">
-          <p className="text-lg font-medium leading-snug text-foreground md:text-xl">{block.text}</p>
+          <p className="text-lg font-medium leading-snug text-foreground md:text-xl">
+            {block.text}
+          </p>
           {block.attribution && (
-            <cite className="mt-3 block text-sm not-italic text-foreground/40">— {block.attribution}</cite>
+            <cite className="mt-3 block text-sm not-italic text-foreground/40">
+              — {block.attribution}
+            </cite>
           )}
         </blockquote>
-      )
+      );
 
     case "callout": {
-      const { Icon, className, iconClass } = calloutConfig[block.variant]
+      const { Icon, className, iconClass } = calloutConfig[block.variant];
       return (
         <div className={`my-8 flex gap-4 rounded-2xl border p-5 ${className}`}>
-          <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${iconClass}`} strokeWidth={1.5} />
+          <Icon
+            className={`mt-0.5 h-5 w-5 shrink-0 ${iconClass}`}
+            strokeWidth={1.5}
+          />
           <div>
-            {block.title && <p className="mb-1 text-sm font-semibold text-foreground">{block.title}</p>}
-            <p className="text-sm leading-relaxed text-foreground/70">{block.text}</p>
+            {block.title && (
+              <p className="mb-1 text-sm font-semibold text-foreground">
+                {block.title}
+              </p>
+            )}
+            <p className="text-sm leading-relaxed text-foreground/70">
+              {block.text}
+            </p>
           </div>
         </div>
-      )
+      );
     }
 
     case "code":
@@ -63,13 +107,15 @@ function Block({ block }: { block: DocBlock }) {
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
               {block.title ?? block.language}
             </span>
-            <span className="font-mono text-[10px] text-foreground/30">{block.language}</span>
+            <span className="font-mono text-[10px] text-foreground/30">
+              {block.language}
+            </span>
           </div>
           <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
             <code className="font-mono text-foreground/80">{block.code}</code>
           </pre>
         </div>
-      )
+      );
 
     case "list":
       return block.ordered ? (
@@ -89,7 +135,7 @@ function Block({ block }: { block: DocBlock }) {
             </li>
           ))}
         </ul>
-      )
+      );
 
     case "steps":
       return (
@@ -101,12 +147,14 @@ function Block({ block }: { block: DocBlock }) {
               </span>
               <div className="pt-0.5">
                 <p className="font-medium text-foreground">{item.title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-foreground/60">{item.text}</p>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/60">
+                  {item.text}
+                </p>
               </div>
             </li>
           ))}
         </ol>
-      )
+      );
 
     case "table":
       return (
@@ -120,7 +168,10 @@ function Block({ block }: { block: DocBlock }) {
             <thead>
               <tr className="border-b border-foreground/10 bg-foreground/[0.02]">
                 {block.headers.map((header) => (
-                  <th key={header} className="px-4 py-3 text-left font-semibold text-foreground">
+                  <th
+                    key={header}
+                    className="px-4 py-3 text-left font-semibold text-foreground"
+                  >
                     {header}
                   </th>
                 ))}
@@ -128,9 +179,15 @@ function Block({ block }: { block: DocBlock }) {
             </thead>
             <tbody>
               {block.rows.map((row, i) => (
-                <tr key={i} className="border-b border-foreground/[0.06] last:border-0">
+                <tr
+                  key={i}
+                  className="border-b border-foreground/[0.06] last:border-0"
+                >
                   {row.map((cell, j) => (
-                    <td key={j} className="px-4 py-3 align-top text-foreground/70">
+                    <td
+                      key={j}
+                      className="px-4 py-3 align-top text-foreground/70"
+                    >
                       {cell}
                     </td>
                   ))}
@@ -139,19 +196,18 @@ function Block({ block }: { block: DocBlock }) {
             </tbody>
           </table>
         </div>
-      )
+      );
 
     case "image":
       return (
         <figure className="my-10">
           <div className="overflow-hidden rounded-2xl border border-foreground/10 bg-card/60">
-            {/* eslint-disable-next-line @next/next/no-img-element -- doc figures are local static assets sized via intrinsic width/height */}
-            <img
+            <Image
               src={block.src || "/placeholder.svg"}
               alt={block.alt}
-              width={block.width}
-              height={block.height}
-              loading="lazy"
+              width={block.width ?? 1280}
+              height={block.height ?? 720}
+              unoptimized
               className="h-auto w-full"
             />
           </div>
@@ -161,7 +217,7 @@ function Block({ block }: { block: DocBlock }) {
             </figcaption>
           )}
         </figure>
-      )
+      );
 
     case "video":
       return (
@@ -185,13 +241,19 @@ function Block({ block }: { block: DocBlock }) {
             <span className="sr-only">{block.description}</span>
           </figcaption>
         </figure>
-      )
+      );
 
     case "divider":
-      return <hr className="my-12 border-foreground/10" />
+      return <hr className="my-12 border-foreground/10" />;
 
     case "mermaid":
-      return <MermaidDiagram diagram={block.diagram} title={block.title} caption={block.caption} />
+      return (
+        <MermaidDiagram
+          diagram={block.diagram}
+          title={block.title}
+          caption={block.caption}
+        />
+      );
 
     case "chart":
       return (
@@ -204,10 +266,10 @@ function Block({ block }: { block: DocBlock }) {
           caption={block.caption}
           unit={block.unit}
         />
-      )
+      );
 
     default:
-      return null
+      return null;
   }
 }
 
@@ -218,5 +280,5 @@ export function DocBlocks({ blocks }: { blocks: DocBlock[] }) {
         <Block key={index} block={block} />
       ))}
     </div>
-  )
+  );
 }

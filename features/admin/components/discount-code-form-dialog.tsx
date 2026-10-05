@@ -1,21 +1,37 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { DiscountCode, DiscountCodeInput, DiscountCodeKind } from "@/features/discount-codes"
+import { useState } from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type {
+  DiscountCode,
+  DiscountCodeInput,
+  DiscountCodeKind,
+} from "@/features/discount-codes";
 
 interface FormState {
-  code: string
-  label: string
-  kind: DiscountCodeKind
-  value: string
-  expiresAt: string
-  minSubtotal: string
-  maxRedemptions: string
+  code: string;
+  label: string;
+  kind: DiscountCodeKind;
+  value: string;
+  expiresAt: string;
+  minSubtotal: string;
+  maxRedemptions: string;
 }
 
 function toForm(discountCode?: DiscountCode): FormState {
@@ -24,10 +40,16 @@ function toForm(discountCode?: DiscountCode): FormState {
     label: discountCode?.label ?? "",
     kind: discountCode?.kind ?? "percent",
     value: discountCode?.value != null ? String(discountCode.value) : "",
-    expiresAt: discountCode?.expiresAt ? discountCode.expiresAt.slice(0, 10) : "",
-    minSubtotal: discountCode?.minSubtotal != null ? String(discountCode.minSubtotal) : "",
-    maxRedemptions: discountCode?.maxRedemptions != null ? String(discountCode.maxRedemptions) : "",
-  }
+    expiresAt: discountCode?.expiresAt
+      ? discountCode.expiresAt.slice(0, 10)
+      : "",
+    minSubtotal:
+      discountCode?.minSubtotal != null ? String(discountCode.minSubtotal) : "",
+    maxRedemptions:
+      discountCode?.maxRedemptions != null
+        ? String(discountCode.maxRedemptions)
+        : "",
+  };
 }
 
 export function DiscountCodeFormDialog({
@@ -37,49 +59,79 @@ export function DiscountCodeFormDialog({
   onCreate,
   onUpdate,
 }: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   /** Provided when editing; omit to create. */
-  discountCode?: DiscountCode
-  onCreate: (input: DiscountCodeInput) => Promise<void>
-  onUpdate: (id: string, input: DiscountCodeInput) => Promise<void>
+  discountCode?: DiscountCode;
+  onCreate: (input: DiscountCodeInput) => Promise<void>;
+  onUpdate: (id: string, input: DiscountCodeInput) => Promise<void>;
 }) {
-  const editing = Boolean(discountCode)
-  const [form, setForm] = useState<FormState>(() => toForm(discountCode))
-  const [error, setError] = useState<string | null>(null)
-  const [saving, setSaving] = useState(false)
+  return (
+    <DiscountCodeFormDialogBody
+      key={`${open ? "open" : "closed"}:${discountCode?.id ?? "new"}`}
+      open={open}
+      onOpenChange={onOpenChange}
+      discountCode={discountCode}
+      onCreate={onCreate}
+      onUpdate={onUpdate}
+    />
+  );
+}
 
-  useEffect(() => {
-    if (open) {
-      setForm(toForm(discountCode))
-      setError(null)
-    }
-  }, [open, discountCode])
+function DiscountCodeFormDialogBody({
+  open,
+  onOpenChange,
+  discountCode,
+  onCreate,
+  onUpdate,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  discountCode?: DiscountCode;
+  onCreate: (input: DiscountCodeInput) => Promise<void>;
+  onUpdate: (id: string, input: DiscountCodeInput) => Promise<void>;
+}) {
+  const editing = Boolean(discountCode);
+  const [form, setForm] = useState<FormState>(() => toForm(discountCode));
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   function set<K extends keyof FormState>(key: K, val: FormState[K]) {
-    setForm((prev) => ({ ...prev, [key]: val }))
+    setForm((prev) => ({ ...prev, [key]: val }));
   }
 
   async function submit() {
-    if (!form.code.trim()) return setError("Enter a code.")
-    if (!form.label.trim()) return setError("Enter a label.")
+    if (!form.code.trim()) return setError("Enter a code.");
+    if (!form.label.trim()) return setError("Enter a label.");
 
-    let value: number | undefined
+    let value: number | undefined;
     if (form.kind === "percent") {
-      value = Number(form.value)
+      value = Number(form.value);
       if (!Number.isFinite(value) || value <= 0 || value > 100) {
-        return setError("Percent must be between 1 and 100.")
+        return setError("Percent must be between 1 and 100.");
       }
     }
 
-    const minSubtotal = form.minSubtotal.trim() ? Number(form.minSubtotal) : undefined
-    if (minSubtotal !== undefined && (!Number.isFinite(minSubtotal) || minSubtotal < 0)) {
-      return setError("Minimum spend must be a valid amount.")
+    const minSubtotal = form.minSubtotal.trim()
+      ? Number(form.minSubtotal)
+      : undefined;
+    if (
+      minSubtotal !== undefined &&
+      (!Number.isFinite(minSubtotal) || minSubtotal < 0)
+    ) {
+      return setError("Minimum spend must be a valid amount.");
     }
 
-    const maxRedemptions = form.maxRedemptions.trim() ? Number(form.maxRedemptions) : undefined
-    if (maxRedemptions !== undefined && (!Number.isInteger(maxRedemptions) || maxRedemptions <= 0)) {
-      return setError("Redemption limit must be a whole number greater than 0.")
+    const maxRedemptions = form.maxRedemptions.trim()
+      ? Number(form.maxRedemptions)
+      : undefined;
+    if (
+      maxRedemptions !== undefined &&
+      (!Number.isInteger(maxRedemptions) || maxRedemptions <= 0)
+    ) {
+      return setError(
+        "Redemption limit must be a whole number greater than 0.",
+      );
     }
 
     const payload: DiscountCodeInput = {
@@ -87,31 +139,38 @@ export function DiscountCodeFormDialog({
       label: form.label.trim(),
       kind: form.kind,
       value,
-      expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : undefined,
+      expiresAt: form.expiresAt
+        ? new Date(form.expiresAt).toISOString()
+        : undefined,
       minSubtotal,
       maxRedemptions,
-    }
+    };
 
-    setSaving(true)
+    setSaving(true);
     try {
       if (editing && discountCode) {
-        await onUpdate(discountCode.id, payload)
+        await onUpdate(discountCode.id, payload);
       } else {
-        await onCreate(payload)
+        await onCreate(payload);
       }
-      onOpenChange(false)
+      onOpenChange(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.")
+      setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
+      <SheetContent
+        side="right"
+        className="flex w-full flex-col gap-0 p-0 sm:max-w-md"
+      >
         <SheetHeader className="border-b border-border px-6 py-5">
-          <SheetTitle>{editing ? "Edit discount code" : "New discount code"}</SheetTitle>
+          <SheetTitle>
+            {editing ? "Edit discount code" : "New discount code"}
+          </SheetTitle>
           <SheetDescription>
             {editing
               ? "Update this code. Changes apply to checkouts started after saving."
@@ -139,13 +198,18 @@ export function DiscountCodeFormDialog({
               onChange={(e) => set("label", e.target.value)}
               placeholder="Summer sale — 20% off"
             />
-            <p className="text-xs text-muted-foreground">Shown to the customer at checkout and on the order.</p>
+            <p className="text-xs text-muted-foreground">
+              Shown to the customer at checkout and on the order.
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="dc-kind">Type</Label>
-              <Select value={form.kind} onValueChange={(v) => set("kind", v as DiscountCodeKind)}>
+              <Select
+                value={form.kind}
+                onValueChange={(v) => set("kind", v as DiscountCodeKind)}
+              >
                 <SelectTrigger id="dc-kind">
                   <SelectValue />
                 </SelectTrigger>
@@ -200,14 +264,20 @@ export function DiscountCodeFormDialog({
               value={form.expiresAt}
               onChange={(e) => set("expiresAt", e.target.value)}
             />
-            <p className="text-xs text-muted-foreground">Leave blank for a code that never expires.</p>
+            <p className="text-xs text-muted-foreground">
+              Leave blank for a code that never expires.
+            </p>
           </div>
 
           {error ? <p className="text-sm text-red-500">{error}</p> : null}
         </div>
 
         <div className="flex items-center justify-end gap-2 border-t border-border px-6 py-4">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={saving}>
+          <Button
+            variant="ghost"
+            onClick={() => onOpenChange(false)}
+            disabled={saving}
+          >
             Cancel
           </Button>
           <Button onClick={submit} disabled={saving}>
@@ -216,5 +286,5 @@ export function DiscountCodeFormDialog({
         </div>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

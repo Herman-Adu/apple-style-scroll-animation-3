@@ -13,7 +13,7 @@ function* walk(dir) {
       else if (/\.(ts|tsx)$/.test(entry.name) && !entry.name.endsWith(".d.ts"))
         yield full;
     }
-  } catch (e) {
+  } catch {
     /* ignore */
   }
 }

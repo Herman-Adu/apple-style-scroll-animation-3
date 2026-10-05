@@ -1,19 +1,33 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { ArrowUpRight, Bell, ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen, Menu, X } from "lucide-react"
-import { Toaster } from "@/components/ui/sonner"
-import { cn } from "@/lib/utils"
-import { useAuth } from "@/lib/auth/adapters/auth-context"
-import { useCatalog } from "@/features/catalog"
-import { inventorySummary } from "@/features/orders"
-import { UserAvatar } from "@/components/account/user-avatar"
-import { adminNav, isActive, isChildActive, type AdminNavItem } from "../lib/domain/nav"
-import { AdminAccountMenu } from "./admin-account-menu"
-import { AdminOnboarding } from "./admin-onboarding"
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowUpRight,
+  Bell,
+  ChevronDown,
+  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Menu,
+  X,
+} from "lucide-react";
+import { Toaster } from "@/components/ui/sonner";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth/adapters/auth-context";
+import { useCatalog } from "@/features/catalog";
+import { inventorySummary } from "@/features/orders";
+import { UserAvatar } from "@/components/account/user-avatar";
+import {
+  adminNav,
+  isActive,
+  isChildActive,
+  type AdminNavItem,
+} from "../lib/domain/nav";
+import { AdminAccountMenu } from "./admin-account-menu";
+import { AdminOnboarding } from "./admin-onboarding";
 
 /** Quick fade/slide used for labels that appear as the sidebar expands. */
 const labelMotion = {
@@ -21,9 +35,9 @@ const labelMotion = {
   animate: { opacity: 1, x: 0 },
   exit: { opacity: 0, x: -6 },
   transition: { duration: 0.15, ease: "easeOut" as const },
-}
+};
 
-type NavSize = "default" | "large"
+type NavSize = "default" | "large";
 
 /** A single (childless) nav link. */
 function NavLeaf({
@@ -33,13 +47,13 @@ function NavLeaf({
   onNavigate,
   size,
 }: {
-  item: AdminNavItem
-  active: boolean
-  collapsed?: boolean
-  onNavigate?: () => void
-  size: NavSize
+  item: AdminNavItem;
+  active: boolean;
+  collapsed?: boolean;
+  onNavigate?: () => void;
+  size: NavSize;
 }) {
-  const Icon = item.icon
+  const Icon = item.icon;
   return (
     <Link
       href={item.href}
@@ -49,7 +63,11 @@ function NavLeaf({
       className={cn(
         "group relative flex items-center gap-3 overflow-hidden rounded-lg font-medium transition-colors",
         size === "large" ? "px-3 py-3 text-base" : "text-sm",
-        collapsed ? "justify-center px-0 py-2.5" : size === "large" ? "" : "px-3 py-2",
+        collapsed
+          ? "justify-center px-0 py-2.5"
+          : size === "large"
+            ? ""
+            : "px-3 py-2",
         active
           ? "bg-accent-teal/12 text-accent-teal"
           : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
@@ -61,7 +79,10 @@ function NavLeaf({
           aria-hidden
         />
       ) : null}
-      <Icon className={cn("shrink-0", size === "large" ? "size-5" : "size-4")} aria-hidden />
+      <Icon
+        className={cn("shrink-0", size === "large" ? "size-5" : "size-4")}
+        aria-hidden
+      />
       <AnimatePresence initial={false}>
         {!collapsed && (
           <motion.span {...labelMotion} className="whitespace-nowrap">
@@ -70,7 +91,7 @@ function NavLeaf({
         )}
       </AnimatePresence>
     </Link>
-  )
+  );
 }
 
 /** An expandable nav group with children (e.g. Customers). */
@@ -82,23 +103,19 @@ function NavGroup({
   onNavigate,
   size,
 }: {
-  item: AdminNavItem
-  pathname: string
-  activeSegment: string | null
-  collapsed?: boolean
-  onNavigate?: () => void
-  size: NavSize
+  item: AdminNavItem;
+  pathname: string;
+  activeSegment: string | null;
+  collapsed?: boolean;
+  onNavigate?: () => void;
+  size: NavSize;
 }) {
-  const parentActive = isActive(pathname, item)
-  const [open, setOpen] = useState(parentActive)
-  const Icon = item.icon
-  const children = item.children ?? []
-  const groupId = `nav-group-${item.href.replace(/\W+/g, "-")}`
-
-  // Auto-expand whenever a child route becomes active.
-  useEffect(() => {
-    if (parentActive) setOpen(true)
-  }, [parentActive])
+  const parentActive = isActive(pathname, item);
+  const [open, setOpen] = useState(parentActive);
+  const isOpen = parentActive || open;
+  const Icon = item.icon;
+  const children = item.children ?? [];
+  const groupId = `nav-group-${item.href.replace(/\W+/g, "-")}`;
 
   // Collapsed icon-rail: parent icon links to the base route, children appear in
   // a hover flyout so the section stays reachable without expanding the rail.
@@ -111,7 +128,12 @@ function NavGroup({
             {item.label}
           </p>
           {children.map((child) => {
-            const childActive = isChildActive(pathname, activeSegment, item.href, child)
+            const childActive = isChildActive(
+              pathname,
+              activeSegment,
+              item.href,
+              child,
+            );
             return (
               <Link
                 key={child.href}
@@ -127,11 +149,11 @@ function NavGroup({
               >
                 {child.label}
               </Link>
-            )
+            );
           })}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -139,7 +161,7 @@ function NavGroup({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
+        aria-expanded={isOpen}
         aria-controls={groupId}
         className={cn(
           "group relative flex w-full items-center gap-3 rounded-lg font-medium transition-colors",
@@ -155,15 +177,21 @@ function NavGroup({
             aria-hidden
           />
         ) : null}
-        <Icon className={cn("shrink-0", size === "large" ? "size-5" : "size-4")} aria-hidden />
+        <Icon
+          className={cn("shrink-0", size === "large" ? "size-5" : "size-4")}
+          aria-hidden
+        />
         <span className="flex-1 whitespace-nowrap text-left">{item.label}</span>
         <ChevronDown
-          className={cn("size-4 shrink-0 transition-transform duration-200", open && "rotate-180")}
+          className={cn(
+            "size-4 shrink-0 transition-transform duration-200",
+            isOpen && "rotate-180",
+          )}
           aria-hidden
         />
       </button>
       <AnimatePresence initial={false}>
-        {open && (
+        {isOpen && (
           <motion.ul
             id={groupId}
             initial={{ height: 0, opacity: 0 }}
@@ -174,7 +202,12 @@ function NavGroup({
           >
             <div className="ml-[19px] mt-1 flex flex-col gap-0.5 border-l border-border pl-3">
               {children.map((child) => {
-                const childActive = isChildActive(pathname, activeSegment, item.href, child)
+                const childActive = isChildActive(
+                  pathname,
+                  activeSegment,
+                  item.href,
+                  child,
+                );
                 return (
                   <li key={child.href}>
                     <Link
@@ -192,14 +225,14 @@ function NavGroup({
                       {child.label}
                     </Link>
                   </li>
-                )
+                );
               })}
             </div>
           </motion.ul>
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 function NavLinks({
@@ -208,13 +241,13 @@ function NavLinks({
   onNavigate,
   size = "default",
 }: {
-  pathname: string
-  collapsed?: boolean
-  onNavigate?: () => void
-  size?: NavSize
+  pathname: string;
+  collapsed?: boolean;
+  onNavigate?: () => void;
+  size?: NavSize;
 }) {
-  const searchParams = useSearchParams()
-  const activeSegment = searchParams.get("segment")
+  const searchParams = useSearchParams();
+  const activeSegment = searchParams.get("segment");
   return (
     <nav className="flex flex-col gap-1" aria-label="Admin sections">
       {adminNav.map((item) =>
@@ -240,7 +273,7 @@ function NavLinks({
         ),
       )}
     </nav>
-  )
+  );
 }
 
 /** Desktop sidebar contents. */
@@ -249,17 +282,27 @@ function SidebarBody({
   collapsed,
   onToggleCollapse,
 }: {
-  pathname: string
-  collapsed: boolean
-  onToggleCollapse: () => void
+  pathname: string;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
 }) {
-  const { user } = useAuth()
-  const displayName = user?.profile.displayName || user?.name || "Admin"
+  const { user } = useAuth();
+  const displayName = user?.profile.displayName || user?.name || "Admin";
 
   return (
-    <div className={cn("flex h-full flex-col gap-6 py-4", collapsed ? "px-2" : "px-4")}>
+    <div
+      className={cn(
+        "flex h-full flex-col gap-6 py-4",
+        collapsed ? "px-2" : "px-4",
+      )}
+    >
       {/* Brand */}
-      <div className={cn("flex h-9 items-center pt-1", collapsed ? "justify-center" : "justify-between px-2")}>
+      <div
+        className={cn(
+          "flex h-9 items-center pt-1",
+          collapsed ? "justify-center" : "justify-between px-2",
+        )}
+      >
         {collapsed ? (
           <Link
             href="/admin"
@@ -283,7 +326,12 @@ function SidebarBody({
       <NavLinks pathname={pathname} collapsed={collapsed} />
 
       {/* Footer */}
-      <div className={cn("mt-auto flex flex-col gap-2 border-t border-border pt-4", collapsed && "items-center")}>
+      <div
+        className={cn(
+          "mt-auto flex flex-col gap-2 border-t border-border pt-4",
+          collapsed && "items-center",
+        )}
+      >
         <button
           type="button"
           onClick={onToggleCollapse}
@@ -305,7 +353,10 @@ function SidebarBody({
         </button>
 
         {/* Account — opens a guarded menu so sign-out is never a stray tap. */}
-        <AdminAccountMenu align={collapsed ? "start" : "center"} side={collapsed ? "right" : "top"}>
+        <AdminAccountMenu
+          align={collapsed ? "start" : "center"}
+          side={collapsed ? "right" : "top"}
+        >
           {collapsed ? (
             <button
               type="button"
@@ -313,7 +364,11 @@ function SidebarBody({
               aria-label="Account menu"
               className="rounded-full ring-1 ring-transparent transition hover:ring-accent-teal/40"
             >
-              <UserAvatar name={displayName} src={user?.profile.avatarUrl} size={36} />
+              <UserAvatar
+                name={displayName}
+                src={user?.profile.avatarUrl}
+                size={36}
+              />
             </button>
           ) : (
             <button
@@ -321,18 +376,29 @@ function SidebarBody({
               aria-label="Account menu"
               className="flex w-full items-center gap-3 rounded-lg bg-foreground/5 px-3 py-2 text-left transition-colors hover:bg-foreground/10"
             >
-              <UserAvatar name={displayName} src={user?.profile.avatarUrl} size={32} />
+              <UserAvatar
+                name={displayName}
+                src={user?.profile.avatarUrl}
+                size={32}
+              />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-xs font-medium text-foreground">{displayName}</span>
-                <span className="block truncate text-[11px] text-muted-foreground">{user?.email}</span>
+                <span className="block truncate text-xs font-medium text-foreground">
+                  {displayName}
+                </span>
+                <span className="block truncate text-[11px] text-muted-foreground">
+                  {user?.email}
+                </span>
               </span>
-              <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+              <ChevronRight
+                className="size-4 shrink-0 text-muted-foreground"
+                aria-hidden
+              />
             </button>
           )}
         </AdminAccountMenu>
       </div>
     </div>
-  )
+  );
 }
 
 /** Mobile slide-in drawer — mirrors the storefront MobileNav feel. */
@@ -341,21 +407,21 @@ function AdminMobileNav({
   onClose,
   pathname,
 }: {
-  open: boolean
-  onClose: () => void
-  pathname: string
+  open: boolean;
+  onClose: () => void;
+  pathname: string;
 }) {
-  const { user } = useAuth()
-  const displayName = user?.profile.displayName || user?.name || "Admin"
+  const { user } = useAuth();
+  const displayName = user?.profile.displayName || user?.name || "Admin";
 
   useEffect(() => {
-    if (!open) return
-    const previous = document.body.style.overflow
-    document.body.style.overflow = "hidden"
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = previous
-    }
-  }, [open])
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
 
   return (
     <AnimatePresence>
@@ -380,7 +446,11 @@ function AdminMobileNav({
           >
             <div className="flex items-center justify-between border-b border-foreground/10 px-5 py-5">
               <span className="flex items-center gap-2.5">
-                <Link href="/admin" onClick={onClose} className="text-sm font-bold tracking-[0.35em]">
+                <Link
+                  href="/admin"
+                  onClick={onClose}
+                  className="text-sm font-bold tracking-[0.35em]"
+                >
                   MOMO
                 </Link>
                 <span className="rounded-sm border border-accent-teal/30 bg-accent-teal/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-accent-teal">
@@ -408,12 +478,23 @@ function AdminMobileNav({
                   aria-label="Account menu"
                   className="flex w-full items-center gap-3 rounded-2xl border border-foreground/10 bg-foreground/[0.03] px-4 py-3 text-left transition-colors hover:bg-foreground/[0.06]"
                 >
-                  <UserAvatar name={displayName} src={user?.profile.avatarUrl} size={40} />
+                  <UserAvatar
+                    name={displayName}
+                    src={user?.profile.avatarUrl}
+                    size={40}
+                  />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[11px] uppercase tracking-[0.15em] text-foreground/40">Signed in</span>
-                    <span className="block truncate text-sm font-medium text-foreground">{displayName}</span>
+                    <span className="block text-[11px] uppercase tracking-[0.15em] text-foreground/40">
+                      Signed in
+                    </span>
+                    <span className="block truncate text-sm font-medium text-foreground">
+                      {displayName}
+                    </span>
                   </span>
-                  <ChevronRight className="size-4 shrink-0 text-foreground/40" aria-hidden />
+                  <ChevronRight
+                    className="size-4 shrink-0 text-foreground/40"
+                    aria-hidden
+                  />
                 </button>
               </AdminAccountMenu>
             </div>
@@ -421,27 +502,35 @@ function AdminMobileNav({
         </>
       )}
     </AnimatePresence>
-  )
+  );
 }
 
-export function AdminShell({ title, children }: { title: string; children: React.ReactNode }) {
-  const pathname = usePathname()
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [collapsed, setCollapsed] = useState(false)
-  const { user } = useAuth()
-  const { products } = useCatalog()
-  const inventory = inventorySummary(products)
-  const alerts = inventory.lowStockCount + inventory.outOfStockCount
+export function AdminShell({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("admin:sidebar-collapsed") === "1";
+  });
+  const { user } = useAuth();
+  const { products } = useCatalog();
+  const inventory = inventorySummary(products);
+  const alerts = inventory.lowStockCount + inventory.outOfStockCount;
 
-  // Persist the collapse preference across sessions.
   useEffect(() => {
-    setCollapsed(window.localStorage.getItem("admin:sidebar-collapsed") === "1")
-  }, [])
-  useEffect(() => {
-    window.localStorage.setItem("admin:sidebar-collapsed", collapsed ? "1" : "0")
-  }, [collapsed])
+    window.localStorage.setItem(
+      "admin:sidebar-collapsed",
+      collapsed ? "1" : "0",
+    );
+  }, [collapsed]);
 
-  const displayName = user?.profile.displayName || user?.name || "Admin"
+  const displayName = user?.profile.displayName || user?.name || "Admin";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -452,13 +541,26 @@ export function AdminShell({ title, children }: { title: string; children: React
           collapsed ? "w-[72px]" : "w-60",
         )}
       >
-        <SidebarBody pathname={pathname} collapsed={collapsed} onToggleCollapse={() => setCollapsed((v) => !v)} />
+        <SidebarBody
+          pathname={pathname}
+          collapsed={collapsed}
+          onToggleCollapse={() => setCollapsed((v) => !v)}
+        />
       </aside>
 
-      <AdminMobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} pathname={pathname} />
+      <AdminMobileNav
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        pathname={pathname}
+      />
 
       {/* Content — padding eases in sync with the sidebar width. */}
-      <div className={cn("transition-[padding] duration-300 ease-out", collapsed ? "lg:pl-[72px]" : "lg:pl-60")}>
+      <div
+        className={cn(
+          "transition-[padding] duration-300 ease-out",
+          collapsed ? "lg:pl-[72px]" : "lg:pl-60",
+        )}
+      >
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/70 bg-background/70 px-4 backdrop-blur-xl backdrop-saturate-150 sm:px-6">
           <button
             type="button"
@@ -473,7 +575,9 @@ export function AdminShell({ title, children }: { title: string; children: React
             <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-muted-foreground">
               Welcome back, {displayName.split(" ")[0]}
             </p>
-            <h1 className="truncate text-lg font-semibold tracking-tight text-balance sm:text-xl">{title}</h1>
+            <h1 className="truncate text-lg font-semibold tracking-tight text-balance sm:text-xl">
+              {title}
+            </h1>
           </div>
 
           <Link
@@ -486,7 +590,9 @@ export function AdminShell({ title, children }: { title: string; children: React
 
           <Link
             href="/admin/products"
-            aria-label={alerts > 0 ? `${alerts} restock alerts` : "No restock alerts"}
+            aria-label={
+              alerts > 0 ? `${alerts} restock alerts` : "No restock alerts"
+            }
             className="relative flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-accent-teal/40 hover:text-foreground"
           >
             <Bell className="size-4" aria-hidden />
@@ -504,7 +610,11 @@ export function AdminShell({ title, children }: { title: string; children: React
               aria-label="Account menu"
               className="rounded-full ring-1 ring-transparent transition hover:ring-accent-teal/40"
             >
-              <UserAvatar name={displayName} src={user?.profile.avatarUrl} size={36} />
+              <UserAvatar
+                name={displayName}
+                src={user?.profile.avatarUrl}
+                size={36}
+              />
             </button>
           </AdminAccountMenu>
         </header>
@@ -517,5 +627,5 @@ export function AdminShell({ title, children }: { title: string; children: React
 
       <Toaster position="top-right" />
     </div>
-  )
+  );
 }

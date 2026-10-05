@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-import { cn } from "@/lib/utils"
+import { useSyncExternalStore } from "react";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 export function ThemeToggle({
   chromeText = "text-foreground",
   chromeHover = "hover:bg-foreground/10",
 }: {
-  chromeText?: string
-  chromeHover?: string
+  chromeText?: string;
+  chromeHover?: string;
 }) {
-  const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const { resolvedTheme, setTheme } = useTheme();
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
-  // Theme is only known on the client, so defer rendering the icon until mounted
-  // to avoid a hydration mismatch.
-  useEffect(() => setMounted(true), [])
-
-  const isDark = resolvedTheme === "dark"
+  const isDark = resolvedTheme === "dark";
 
   return (
     <button
@@ -30,7 +30,11 @@ export function ThemeToggle({
         chromeText,
         chromeHover,
       )}
-      aria-label={mounted ? `Switch to ${isDark ? "light" : "dark"} theme` : "Toggle theme"}
+      aria-label={
+        mounted
+          ? `Switch to ${isDark ? "light" : "dark"} theme`
+          : "Toggle theme"
+      }
     >
       {mounted ? (
         isDark ? (
@@ -43,5 +47,5 @@ export function ThemeToggle({
         <span className="h-5 w-5" />
       )}
     </button>
-  )
+  );
 }

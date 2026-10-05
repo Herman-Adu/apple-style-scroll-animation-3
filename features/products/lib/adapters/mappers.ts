@@ -1,6 +1,6 @@
-import "server-only"
+import "server-only";
 
-import { strapiMedia } from "@/lib/strapi/media"
+import { strapiMedia } from "@/lib/strapi/media";
 
 /**
  * Anti-corruption layer: Strapi raw entry -> pre-validation product shape.
@@ -17,9 +17,17 @@ import { strapiMedia } from "@/lib/strapi/media"
  * `entry` is typed `any` deliberately: it is untrusted external input whose
  * real guarantees come from the zod parse that runs immediately after.
  */
-export function mapStrapiProduct(entry: any): unknown {
+function asRecord(value: unknown): Record<string, unknown> {
+  return typeof value === "object" && value !== null
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+export function mapStrapiProduct(entry: unknown): unknown {
   // Tolerate both Strapi v5 (flat) and v4 (`{ id, attributes }`) shapes.
-  const a = entry?.attributes ?? entry ?? {}
+  const source = asRecord(entry);
+  const a = asRecord(source.attributes ?? source);
+  const price = asRecord(a.price);
 
   return {
     slug: a.slug,
@@ -27,8 +35,8 @@ export function mapStrapiProduct(entry: any): unknown {
     tagline: a.tagline,
     category: a.category,
     price: {
-      amount: a.price?.amount ?? a.priceAmount,
-      currency: a.price?.currency ?? a.priceCurrency,
+      amount: price.amount ?? a.priceAmount,
+      currency: price.currency ?? a.priceCurrency,
     },
     summary: a.summary,
     description: a.description,
@@ -37,37 +45,53 @@ export function mapStrapiProduct(entry: any): unknown {
     featured: Boolean(a.featured),
     releaseStatus: a.releaseStatus,
     hero: mapProductHero(a.hero),
-    features: (a.features ?? []).map((f: any) => ({
-      title: f.title,
-      description: f.description,
-      stat: f.stat,
-      statUnit: f.statUnit,
-    })),
-    specs: (a.specs ?? []).map((s: any) => ({
-      label: s.label,
-      value: s.value,
-      unit: s.unit ?? undefined,
-    })),
+    features: Array.isArray(a.features)
+      ? a.features.map((f) => {
+          const feature = asRecord(f);
+          return {
+            title: feature.title,
+            description: feature.description,
+            stat: feature.stat,
+            statUnit: feature.statUnit,
+          };
+        })
+      : [],
+    specs: Array.isArray(a.specs)
+      ? a.specs.map((s) => {
+          const spec = asRecord(s);
+          return {
+            label: spec.label,
+            value: spec.value,
+            unit: spec.unit ?? undefined,
+          };
+        })
+      : [],
     colors: a.colors ?? [],
-  }
+  };
 }
 
 /**
  * The hero is a polymorphic component in Strapi. Normalize media paths inside
  * each variant; the discriminated-union schema validates `kind` downstream.
  */
-function mapProductHero(hero: any): unknown {
-  if (!hero) return hero
-  switch (hero.kind) {
+function mapProductHero(hero: unknown): unknown {
+  const heroRecord = asRecord(hero);
+  if (!hero) return hero;
+  switch (heroRecord.kind) {
     case "parallax":
-      return { ...hero, image: strapiMedia(hero.image) }
+      return { ...heroRecord, image: strapiMedia(heroRecord.image) };
     case "exploded":
       return {
-        ...hero,
-        layers: (hero.layers ?? []).map((l: any) => ({ ...l, image: strapiMedia(l.image) })),
-      }
+        ...heroRecord,
+        layers: Array.isArray(heroRecord.layers)
+          ? heroRecord.layers.map((l) => {
+              const layer = asRecord(l);
+              return { ...layer, image: strapiMedia(layer.image) };
+            })
+          : [],
+      };
     case "frames":
     default:
-      return hero
+      return heroRecord;
   }
 }

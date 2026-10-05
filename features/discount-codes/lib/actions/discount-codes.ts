@@ -4,7 +4,7 @@
 // requireAdmin (identity + role read from the Better Auth session, mirroring
 // every other db-actions file in this codebase — hiding admin UI is not
 // access control, this is the boundary). `resolveDiscountCode` is the one
-// public export: any signed-in customer at checkout may call it, and it turns
+// public export available to signed-in customers at checkout, and it turns
 // a validated code into a synthetic OfferTag that flows through the exact
 // same pricing engine (features/checkout/lib/domain/pricing.ts) personal offers use,
 // so a code can never stack with a percent offer to exceed 100%.

@@ -1,24 +1,31 @@
-import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
-import type { LegalBlock, LegalPageContent } from "@/lib/data/legal"
-import { siteConfig } from "@/lib/data/site"
-import { SectionHeading } from "@/components/primitives/section-heading"
-import { PageToc } from "@/components/layout/page-toc"
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import type { LegalBlock, LegalPageContent } from "@/lib/data/legal";
+import { SectionHeading } from "@/components/primitives/section-heading";
+import { PageToc } from "@/components/layout/page-toc";
 
 function Block({ block }: { block: LegalBlock }) {
   if (typeof block === "string") {
-    return <p className="text-base leading-relaxed text-foreground/60">{block}</p>
+    return (
+      <p className="text-base leading-relaxed text-foreground/60">{block}</p>
+    );
   }
   return (
     <ul className="flex flex-col gap-3">
       {block.items.map((item) => (
-        <li key={item} className="flex gap-3 text-base leading-relaxed text-foreground/60">
-          <span aria-hidden className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-foreground/40" />
+        <li
+          key={item}
+          className="flex gap-3 text-base leading-relaxed text-foreground/60"
+        >
+          <span
+            aria-hidden
+            className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-foreground/40"
+          />
           <span>{item}</span>
         </li>
       ))}
     </ul>
-  )
+  );
 }
 
 export function LegalPageLayout({ content }: { content: LegalPageContent }) {
@@ -27,13 +34,17 @@ export function LegalPageLayout({ content }: { content: LegalPageContent }) {
       {/* Header */}
       <section className="border-b border-foreground/10 px-6 pt-32 pb-16 md:px-12 md:pt-40 md:pb-20">
         <div className="mx-auto max-w-5xl">
-          <p className="mb-6 font-mono text-[10px] uppercase tracking-[0.4em] text-foreground/40">{content.eyebrow}</p>
+          <p className="mb-6 font-mono text-[10px] uppercase tracking-[0.4em] text-foreground/40">
+            {content.eyebrow}
+          </p>
           <SectionHeading
             as="h1"
             className="text-balance text-4xl font-bold leading-[1.1] tracking-tight text-foreground md:text-6xl"
             title={content.title}
           />
-          <p className="mt-8 max-w-2xl text-pretty text-xl leading-relaxed text-foreground/60">{content.intro}</p>
+          <p className="mt-8 max-w-2xl text-pretty text-xl leading-relaxed text-foreground/60">
+            {content.intro}
+          </p>
           <p className="mt-8 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/30">
             Last updated · {content.updated}
           </p>
@@ -45,21 +56,34 @@ export function LegalPageLayout({ content }: { content: LegalPageContent }) {
         <div className="mx-auto grid max-w-5xl gap-16 lg:grid-cols-[220px_1fr]">
           {/* TOC */}
           <div className="hidden lg:block">
-            <PageToc items={content.sections.map((section) => ({ id: section.id, label: section.heading }))} />
+            <PageToc
+              items={content.sections.map((section) => ({
+                id: section.id,
+                label: section.heading,
+              }))}
+            />
           </div>
 
           {/* Sections */}
           <div className="min-w-0">
             {content.disclaimer ? (
               <div className="mb-12 rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6">
-                <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">Please note</p>
-                <p className="mt-3 text-sm leading-relaxed text-foreground/60">{content.disclaimer}</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">
+                  Please note
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-foreground/60">
+                  {content.disclaimer}
+                </p>
               </div>
             ) : null}
 
             <div className="flex flex-col gap-14">
               {content.sections.map((section) => (
-                <section key={section.id} id={section.id} className="scroll-mt-28">
+                <section
+                  key={section.id}
+                  id={section.id}
+                  className="scroll-mt-28"
+                >
                   <SectionHeading
                     className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl"
                     title={section.heading}
@@ -76,7 +100,9 @@ export function LegalPageLayout({ content }: { content: LegalPageContent }) {
 
             {/* Contact CTA */}
             <div className="mt-16 flex flex-col gap-4 border-t border-foreground/10 pt-10 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-base text-foreground/60">Still have a question? Our team is happy to help.</p>
+              <p className="text-base text-foreground/60">
+                Still have a question? Our team is happy to help.
+              </p>
               <Link
                 href="/contact"
                 className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
@@ -89,5 +115,5 @@ export function LegalPageLayout({ content }: { content: LegalPageContent }) {
         </div>
       </section>
     </main>
-  )
+  );
 }

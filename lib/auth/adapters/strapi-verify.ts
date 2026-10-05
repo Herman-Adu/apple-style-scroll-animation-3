@@ -1,6 +1,6 @@
-import "server-only"
-import { authConfig, resolveRole } from "../domain/config"
-import type { UserRole } from "../domain/types"
+import "server-only";
+import { authConfig, resolveRole } from "../domain/config";
+import type { UserRole } from "../domain/types";
 
 // Server-side verification of a Strapi session. The browser hands us the JWT it
 // received from /api/auth/local; we do NOT trust it. Instead we call Strapi's
@@ -10,10 +10,10 @@ import type { UserRole } from "../domain/types"
 // present a token, but it cannot fabricate a valid /api/users/me response.
 
 export interface VerifiedStrapiIdentity {
-  id: string
-  email: string
-  name: string
-  role: UserRole
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
 }
 
 /**
@@ -23,27 +23,37 @@ export interface VerifiedStrapiIdentity {
  * local admin allowlist so admin bootstrapping keeps working before Strapi
  * roles are configured (mirrors the adapter's toUser mapping).
  */
-export async function verifyStrapiToken(jwt: string | undefined | null): Promise<VerifiedStrapiIdentity | null> {
-  if (!jwt || !authConfig.apiUrl) return null
+export async function verifyStrapiToken(
+  jwt: string | undefined | null,
+): Promise<VerifiedStrapiIdentity | null> {
+  if (!jwt || !authConfig.apiUrl) return null;
   try {
     const res = await fetch(`${authConfig.apiUrl}/api/users/me?populate=role`, {
       headers: { Authorization: `Bearer ${jwt}` },
       cache: "no-store",
-    })
-    if (!res.ok) return null
-    const raw = (await res.json()) as any
-    if (!raw?.email) return null
+    });
+    if (!res.ok) return null;
+    const raw = (await res.json()) as Record<string, unknown>;
+    const roleRaw =
+      typeof raw.role === "object" && raw.role !== null
+        ? (raw.role as Record<string, unknown>)
+        : undefined;
+    const email = typeof raw.email === "string" ? raw.email : "";
+    if (!email) return null;
 
-    const strapiRole = String(raw.role?.name ?? raw.role?.type ?? "").toLowerCase()
-    const role: UserRole = strapiRole === "admin" ? "admin" : resolveRole(raw.email)
+    const strapiRole = String(
+      roleRaw?.name ?? roleRaw?.type ?? "",
+    ).toLowerCase();
+    const role: UserRole =
+      strapiRole === "admin" ? "admin" : resolveRole(email);
 
     return {
-      id: String(raw.id),
-      email: raw.email,
-      name: raw.name ?? raw.username ?? raw.email,
+      id: String(raw.id ?? ""),
+      email,
+      name: String(raw.name ?? raw.username ?? email),
       role,
-    }
+    };
   } catch {
-    return null
+    return null;
   }
 }

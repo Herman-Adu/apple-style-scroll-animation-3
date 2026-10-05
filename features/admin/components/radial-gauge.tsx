@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useReducedMotion } from "framer-motion"
+import { useEffect, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 
 /**
  * 270° radial gauge (gap centered at the bottom). Pure SVG. The value arc
@@ -12,33 +12,35 @@ export function RadialGauge({
   max = 100,
   caption,
 }: {
-  value: number
-  max?: number
-  caption?: string
+  value: number;
+  max?: number;
+  caption?: string;
 }) {
-  const reduce = useReducedMotion()
-  const [shown, setShown] = useState(reduce ? value : 0)
+  const reduce = useReducedMotion();
+  const [shown, setShown] = useState(reduce ? value : 0);
 
   useEffect(() => {
-    if (reduce) {
-      setShown(value)
-      return
-    }
-    const t = window.setTimeout(() => setShown(value), 80)
-    return () => window.clearTimeout(t)
-  }, [value, reduce])
+    if (reduce) return;
+    const t = window.setTimeout(() => setShown(value), 80);
+    return () => window.clearTimeout(t);
+  }, [value, reduce]);
 
-  const size = 168
-  const strokeWidth = 13
-  const radius = (size - strokeWidth) / 2
-  const center = size / 2
-  const circumference = 2 * Math.PI * radius
-  const arc = 0.75 // 270° of the full circle
-  const fraction = Math.max(0, Math.min(1, shown / max))
+  const size = 168;
+  const strokeWidth = 13;
+  const radius = (size - strokeWidth) / 2;
+  const center = size / 2;
+  const circumference = 2 * Math.PI * radius;
+  const arc = 0.75; // 270° of the full circle
+  const fraction = Math.max(0, Math.min(1, shown / max));
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[135deg]">
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="rotate-[135deg]"
+      >
         <circle
           cx={center}
           cy={center}
@@ -61,11 +63,15 @@ export function RadialGauge({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-mono text-3xl font-semibold tabular-nums">{Math.round(value)}</span>
+        <span className="font-mono text-3xl font-semibold tabular-nums">
+          {Math.round(value)}
+        </span>
         {caption ? (
-          <span className="mt-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">{caption}</span>
+          <span className="mt-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
+            {caption}
+          </span>
         ) : null}
       </div>
     </div>
-  )
+  );
 }

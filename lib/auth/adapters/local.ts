@@ -1,10 +1,7 @@
 // Infrastructure adapter: browser-only reference backend.
-// Persists users + session in localStorage so the full flow is usable in preview
-// with zero backend. Mirrors the exact AuthAdapter contract the Strapi adapter uses,
-// so the application layer cannot tell them apart.
 
-import { authConfig, resolveRole } from "../domain/config"
-import { clearSession, establishSession } from "../actions"
+import { authConfig, resolveRole } from "../domain/config";
+import { clearSession, establishSession } from "../actions";
 import {
   AuthAdapter,
   AuthError,
@@ -17,112 +14,118 @@ import {
   UserProfile,
   UserRole,
   UserStatus,
-} from "../domain/types"
+} from "../domain/types";
 
-const USERS_KEY = "momo.auth.users"
+const USERS_KEY = "momo.auth.users";
 
 interface StoredUser extends User {
-  password: string
+  password: string;
 }
 
 function readUsers(): StoredUser[] {
-  if (typeof window === "undefined") return []
+  if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(window.localStorage.getItem(USERS_KEY) || "[]")
+    return JSON.parse(window.localStorage.getItem(USERS_KEY) || "[]");
   } catch {
-    return []
+    return [];
   }
 }
 
 function writeUsers(users: StoredUser[]) {
-  window.localStorage.setItem(USERS_KEY, JSON.stringify(users))
+  window.localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
 
 function readToken(): string | null {
-  if (typeof window === "undefined") return null
-  return window.localStorage.getItem(authConfig.storageKey)
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(authConfig.storageKey);
 }
 
 function writeToken(token: string | null) {
-  if (token) window.localStorage.setItem(authConfig.storageKey, token)
-  else window.localStorage.removeItem(authConfig.storageKey)
+  if (token) window.localStorage.setItem(authConfig.storageKey, token);
+  else window.localStorage.removeItem(authConfig.storageKey);
 }
 
-// Coerces persisted profiles to the current shape. Notably migrates the legacy
-// single `goal` string to the `goals` array so accounts created before the
-// multi-select change keep their selection.
 function normalizeProfile(profile: Record<string, unknown>): UserProfile {
-  const legacyGoal = typeof profile.goal === "string" ? profile.goal : undefined
+  const legacyGoal =
+    typeof profile.goal === "string" ? profile.goal : undefined;
   const goals = Array.isArray(profile.goals)
     ? (profile.goals as string[])
     : legacyGoal
       ? [legacyGoal]
-      : []
+      : [];
   return {
     displayName: profile.displayName as string | undefined,
     avatarUrl: profile.avatarUrl as string | undefined,
     goals,
-    interests: Array.isArray(profile.interests) ? (profile.interests as string[]) : [],
+    interests: Array.isArray(profile.interests)
+      ? (profile.interests as string[])
+      : [],
     newsletter: Boolean(profile.newsletter),
     bio: profile.bio as string | undefined,
-  }
+  };
 }
 
 function stripPassword(user: StoredUser): User {
-  const { password: _password, ...safe } = user
-  // An explicit admin override wins; otherwise the role is derived from the
-  // current allowlist, so promoting/demoting an email still works out of the box.
+  const { password: _password, ...safe } = user;
+  void _password;
   const role: UserRole =
     safe.roleOverride === "admin" || safe.roleOverride === "customer"
       ? safe.roleOverride
-      : resolveRole(safe.email)
+      : resolveRole(safe.email);
   return {
     ...safe,
     role,
     status: safe.status ?? "active",
     offers: Array.isArray(safe.offers) ? safe.offers : [],
-    profile: normalizeProfile(safe.profile as unknown as Record<string, unknown>),
-  }
+    profile: normalizeProfile(
+      safe.profile as unknown as Record<string, unknown>,
+    ),
+  };
 }
 
 function emptyProfile(): UserProfile {
-  return { goals: [], interests: [], newsletter: false }
+  return { goals: [], interests: [], newsletter: false };
 }
 
-/** Simulated latency so loading states behave like a real network. */
-const tick = () => new Promise((r) => setTimeout(r, 400))
+const tick = () => new Promise((r) => setTimeout(r, 400));
 
 export function createLocalAdapter(): AuthAdapter {
   return {
     async getSession() {
-      const token = readToken()
+      const token = readToken();
       if (!token) {
-        await clearSession()
-        return null
+        await clearSession();
+        return null;
       }
-      const user = readUsers().find((u) => u.id === token)
+      const user = readUsers().find((u) => u.id === token);
       if (!user) {
-        await clearSession()
-        return null
+        await clearSession();
+        return null;
       }
-      // A live session for an account blocked after sign-in is ejected on reload.
       if (user.status === "blocked") {
-        writeToken(null)
-        await clearSession()
-        return null
+        writeToken(null);
+        await clearSession();
+        return null;
       }
-      const safe = stripPassword(user)
-      // Re-mint the httpOnly session cookie on every load so accounts created
-      // before it existed self-heal, and so the server-trusted role stays fresh.
-      await establishSession({ id: safe.id, email: safe.email, name: safe.name })
-      return { user: safe, token }
+      const safe = stripPassword(user);
+      await establishSession({
+        id: safe.id,
+        email: safe.email,
+        name: safe.name,
+      });
+      return { user: safe, token };
     },
 
     async signUp(input: SignUpInput): Promise<Session> {
-      await tick()
-      const users = readUsers()
-      if (users.some((u) => u.email.toLowerCase() === input.email.toLowerCase())) {
-        throw new AuthError("An account with this email already exists.", "email_taken")
+      await tick();
+      const users = readUsers();
+      if (
+        users.some((u) => u.email.toLowerCase() === input.email.toLowerCase())
+      ) {
+        throw new AuthError(
+          "An account with this email already exists.",
+          "email_taken",
+        );
       }
       const user: StoredUser = {
         id: crypto.randomUUID(),
@@ -133,135 +136,156 @@ export function createLocalAdapter(): AuthAdapter {
         profile: emptyProfile(),
         onboardingStatus: "pending",
         createdAt: new Date().toISOString(),
-      }
-      users.push(user)
-      writeUsers(users)
-      writeToken(user.id)
-      const safe = stripPassword(user)
-      await establishSession({ id: safe.id, email: safe.email, name: safe.name })
-      return { user: safe, token: user.id }
+      };
+      users.push(user);
+      writeUsers(users);
+      writeToken(user.id);
+      const safe = stripPassword(user);
+      await establishSession({
+        id: safe.id,
+        email: safe.email,
+        name: safe.name,
+      });
+      return { user: safe, token: user.id };
     },
 
     async signIn(input: SignInInput): Promise<Session> {
-      await tick()
+      await tick();
       const user = readUsers().find(
         (u) => u.email.toLowerCase() === input.email.toLowerCase(),
-      )
+      );
       if (!user || user.password !== input.password) {
-        throw new AuthError("Incorrect email or password.", "invalid_credentials")
+        throw new AuthError(
+          "Incorrect email or password.",
+          "invalid_credentials",
+        );
       }
       if (user.status === "blocked") {
-        throw new AuthError("This account has been suspended.", "invalid_credentials")
+        throw new AuthError(
+          "This account has been suspended.",
+          "invalid_credentials",
+        );
       }
-      writeToken(user.id)
-      const safe = stripPassword(user)
-      await establishSession({ id: safe.id, email: safe.email, name: safe.name })
-      return { user: safe, token: user.id }
+      writeToken(user.id);
+      const safe = stripPassword(user);
+      await establishSession({
+        id: safe.id,
+        email: safe.email,
+        name: safe.name,
+      });
+      return { user: safe, token: user.id };
     },
 
     async signOut() {
-      writeToken(null)
-      await clearSession()
+      writeToken(null);
+      await clearSession();
     },
 
     async updateProfile(update: ProfileUpdate): Promise<User> {
-      const token = readToken()
-      const users = readUsers()
-      const idx = users.findIndex((u) => u.id === token)
-      if (idx === -1) throw new AuthError("Not signed in.", "unauthenticated")
+      const token = readToken();
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === token);
+      if (idx === -1) throw new AuthError("Not signed in.", "unauthenticated");
       users[idx] = {
         ...users[idx],
         profile: { ...users[idx].profile, ...update },
-      }
-      writeUsers(users)
-      return stripPassword(users[idx])
+      };
+      writeUsers(users);
+      return stripPassword(users[idx]);
     },
 
     async completeOnboarding(update: ProfileUpdate): Promise<User> {
-      const token = readToken()
-      const users = readUsers()
-      const idx = users.findIndex((u) => u.id === token)
-      if (idx === -1) throw new AuthError("Not signed in.", "unauthenticated")
+      const token = readToken();
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === token);
+      if (idx === -1) throw new AuthError("Not signed in.", "unauthenticated");
       users[idx] = {
         ...users[idx],
         profile: { ...users[idx].profile, ...update },
         onboardingStatus: "complete",
-      }
-      writeUsers(users)
-      return stripPassword(users[idx])
+      };
+      writeUsers(users);
+      return stripPassword(users[idx]);
     },
 
     async listUsers(): Promise<User[]> {
-      await tick()
-      return readUsers().map(stripPassword)
+      await tick();
+      return readUsers().map(stripPassword);
     },
 
     async setUserStatus(id: string, status: UserStatus): Promise<User> {
-      const users = readUsers()
-      const idx = users.findIndex((u) => u.id === id)
-      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
-      users[idx] = { ...users[idx], status }
-      writeUsers(users)
-      return stripPassword(users[idx])
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === id);
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown");
+      users[idx] = { ...users[idx], status };
+      writeUsers(users);
+      return stripPassword(users[idx]);
     },
 
     async setUserRole(id: string, role: UserRole): Promise<User> {
-      const users = readUsers()
-      const idx = users.findIndex((u) => u.id === id)
-      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
-      users[idx] = { ...users[idx], roleOverride: role }
-      writeUsers(users)
-      return stripPassword(users[idx])
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === id);
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown");
+      users[idx] = { ...users[idx], roleOverride: role };
+      writeUsers(users);
+      return stripPassword(users[idx]);
     },
 
     async setUserNewsletter(id: string, newsletter: boolean): Promise<User> {
-      const users = readUsers()
-      const idx = users.findIndex((u) => u.id === id)
-      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === id);
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown");
       users[idx] = {
         ...users[idx],
         profile: { ...users[idx].profile, newsletter },
-      }
-      writeUsers(users)
-      return stripPassword(users[idx])
+      };
+      writeUsers(users);
+      return stripPassword(users[idx]);
     },
 
     async setUserOffers(id: string, offers: OfferTag[]): Promise<User> {
-      const users = readUsers()
-      const idx = users.findIndex((u) => u.id === id)
-      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
-      users[idx] = { ...users[idx], offers }
-      writeUsers(users)
-      return stripPassword(users[idx])
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === id);
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown");
+      users[idx] = { ...users[idx], offers };
+      writeUsers(users);
+      return stripPassword(users[idx]);
     },
 
-    async markOffersRedeemed(userId: string, offerIds: string[]): Promise<User> {
-      const users = readUsers()
-      const idx = users.findIndex((u) => u.id === userId)
-      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
-      const target = new Set(offerIds)
-      const now = new Date().toISOString()
+    async markOffersRedeemed(
+      userId: string,
+      offerIds: string[],
+    ): Promise<User> {
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === userId);
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown");
+      const target = new Set(offerIds);
+      const now = new Date().toISOString();
       const offers = (users[idx].offers ?? []).map((offer) =>
         target.has(offer.id)
-          ? { ...offer, redeemedAt: now, redemptionCount: (offer.redemptionCount ?? 0) + 1 }
+          ? {
+              ...offer,
+              redeemedAt: now,
+              redemptionCount: (offer.redemptionCount ?? 0) + 1,
+            }
           : offer,
-      )
-      users[idx] = { ...users[idx], offers }
-      writeUsers(users)
-      return stripPassword(users[idx])
+      );
+      users[idx] = { ...users[idx], offers };
+      writeUsers(users);
+      return stripPassword(users[idx]);
     },
 
     async dismissOffer(userId: string, offerId: string): Promise<User> {
-      const users = readUsers()
-      const idx = users.findIndex((u) => u.id === userId)
-      if (idx === -1) throw new AuthError("Customer not found.", "unknown")
-      const now = new Date().toISOString()
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === userId);
+      if (idx === -1) throw new AuthError("Customer not found.", "unknown");
+      const now = new Date().toISOString();
       const offers = (users[idx].offers ?? []).map((offer) =>
         offer.id === offerId ? { ...offer, dismissedAt: now } : offer,
-      )
-      users[idx] = { ...users[idx], offers }
-      writeUsers(users)
-      return stripPassword(users[idx])
+      );
+      users[idx] = { ...users[idx], offers };
+      writeUsers(users);
+      return stripPassword(users[idx]);
     },
-  }
+  };
 }

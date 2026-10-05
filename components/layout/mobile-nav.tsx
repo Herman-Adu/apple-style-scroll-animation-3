@@ -1,60 +1,63 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { ArrowUpRight, ChevronLeft, ChevronRight, LayoutDashboard, LogOut, MapPin, Mail, Package, Tag, User, UserRound, X } from "lucide-react"
-import type { NavLink } from "@/lib/types"
-import { siteConfig } from "@/lib/data/site"
-import { mainNav } from "@/components/layout/main-nav"
-import { isSectionActive, isTopLevelActive } from "@/lib/nav"
-import { useAuth } from "@/lib/auth/adapters/auth-context"
-import { UserAvatar } from "@/components/account/user-avatar"
-import { SignOutConfirmDialog } from "@/components/account/sign-out-confirm"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  LayoutDashboard,
+  LogOut,
+  MapPin,
+  Mail,
+  Package,
+  Tag,
+  User,
+  UserRound,
+  X,
+} from "lucide-react";
+import type { NavLink } from "@/lib/types";
+import { siteConfig } from "@/lib/data/site";
+import { mainNav } from "@/components/layout/main-nav";
+import { isSectionActive, isTopLevelActive } from "@/lib/nav";
+import { useAuth } from "@/lib/auth/adapters/auth-context";
+import { UserAvatar } from "@/components/account/user-avatar";
+import { SignOutConfirmDialog } from "@/components/account/sign-out-confirm";
+import { cn } from "@/lib/utils";
 
 interface MobileNavProps {
-  open: boolean
-  onClose: () => void
-  activeId: string | null
-  category: string | null
+  open: boolean;
+  onClose: () => void;
+  activeId: string | null;
+  category: string | null;
   /** Which panel to reveal when the sheet opens. */
-  initialPanel?: "root" | "account"
+  initialPanel?: "root" | "account";
 }
 
-export function MobileNav({ open, onClose, activeId, category, initialPanel = "root" }: MobileNavProps) {
-  const pathname = usePathname()
-  const { status, user, signOut } = useAuth()
-  const [submenu, setSubmenu] = useState<NavLink | null>(null)
-  const [accountOpen, setAccountOpen] = useState(false)
-  const [signOutOpen, setSignOutOpen] = useState(false)
+export function MobileNav({
+  open,
+  onClose,
+  activeId,
+  category,
+  initialPanel = "root",
+}: MobileNavProps) {
+  const pathname = usePathname();
+  const { status, user } = useAuth();
+  const [submenu, setSubmenu] = useState<NavLink | null>(null);
+  const [accountOpen, setAccountOpen] = useState(initialPanel === "account");
+  const [signOutOpen, setSignOutOpen] = useState(false);
 
-  async function handleSignOut() {
-    setSignOutOpen(false)
-    onClose()
-    await signOut()
-    // Hard navigation home so a guarded page's RouteGuard can't intercept the
-    // now-unauthenticated session and bounce us to /sign-in mid-transition.
-    window.location.replace("/")
-  }
-
-  // Reset to the root panel whenever the sheet closes, and lock body scroll.
+  // Lock body scroll while the sheet is open.
   useEffect(() => {
-    if (!open) {
-      setSubmenu(null)
-      setAccountOpen(false)
-      return
-    }
-    // Reveal whichever panel the trigger requested (avatar → account).
-    setSubmenu(null)
-    setAccountOpen(initialPanel === "account")
-    const previous = document.body.style.overflow
-    document.body.style.overflow = "hidden"
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = previous
-    }
-  }, [open, initialPanel])
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
 
   return (
     <AnimatePresence>
@@ -117,17 +120,28 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                         onClick={onClose}
                         className="flex items-center justify-between rounded-xl px-4 py-4 transition-colors hover:bg-foreground/5"
                       >
-                        <span className="text-lg font-semibold text-foreground">{submenu.label}</span>
+                        <span className="text-lg font-semibold text-foreground">
+                          {submenu.label}
+                        </span>
                         <span className="flex items-center gap-1 text-xs uppercase tracking-[0.15em] text-foreground/40">
-                          View <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} />
+                          View{" "}
+                          <ArrowUpRight
+                            className="h-3.5 w-3.5"
+                            strokeWidth={1.5}
+                          />
                         </span>
                       </Link>
 
                       <div className="my-2 h-px bg-foreground/10" />
 
                       {submenu.sections?.map((section) => {
-                        const active = isSectionActive(section.href, pathname, category, activeId)
-                        const SectionIcon = section.icon
+                        const active = isSectionActive(
+                          section.href,
+                          pathname,
+                          category,
+                          activeId,
+                        );
+                        const SectionIcon = section.icon;
                         return (
                           <Link
                             key={section.href}
@@ -135,14 +149,18 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                             onClick={onClose}
                             className={cn(
                               "group/row flex items-start gap-3 rounded-xl px-4 py-3.5 transition-colors",
-                              active ? "bg-accent-teal/10" : "hover:bg-accent-teal/10",
+                              active
+                                ? "bg-accent-teal/10"
+                                : "hover:bg-accent-teal/10",
                             )}
                           >
                             {SectionIcon ? (
                               <SectionIcon
                                 className={cn(
                                   "mt-0.5 size-5 shrink-0 transition-colors",
-                                  active ? "text-accent-teal" : "text-foreground/40 group-hover/row:text-accent-teal",
+                                  active
+                                    ? "text-accent-teal"
+                                    : "text-foreground/40 group-hover/row:text-accent-teal",
                                 )}
                                 strokeWidth={1.5}
                                 aria-hidden
@@ -151,7 +169,9 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                               <span
                                 className={cn(
                                   "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
-                                  active ? "bg-accent-teal" : "bg-foreground/25 group-hover/row:bg-accent-teal",
+                                  active
+                                    ? "bg-accent-teal"
+                                    : "bg-foreground/25 group-hover/row:bg-accent-teal",
                                 )}
                                 aria-hidden
                               />
@@ -160,17 +180,21 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                               <span
                                 className={cn(
                                   "block text-base font-medium transition-colors",
-                                  active ? "text-accent-teal" : "text-foreground/80 group-hover/row:text-accent-teal",
+                                  active
+                                    ? "text-accent-teal"
+                                    : "text-foreground/80 group-hover/row:text-accent-teal",
                                 )}
                               >
                                 {section.label}
                               </span>
                               {section.hint && (
-                                <span className="block text-sm text-foreground/40">{section.hint}</span>
+                                <span className="block text-sm text-foreground/40">
+                                  {section.hint}
+                                </span>
                               )}
                             </span>
                           </Link>
-                        )
+                        );
                       })}
                     </div>
                   </motion.div>
@@ -213,7 +237,9 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                           <span className="block truncate text-base font-semibold text-foreground">
                             {user.profile.displayName || user.name}
                           </span>
-                          <span className="block truncate text-sm text-foreground/40">{user.email}</span>
+                          <span className="block truncate text-sm text-foreground/40">
+                            {user.email}
+                          </span>
                         </span>
                       </div>
 
@@ -224,24 +250,39 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                         onClick={onClose}
                         className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
                       >
-                        <UserRound className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
-                        <span className="text-base font-medium text-foreground/80">Profile</span>
+                        <UserRound
+                          className="h-5 w-5 shrink-0 text-foreground/50"
+                          strokeWidth={1.5}
+                        />
+                        <span className="text-base font-medium text-foreground/80">
+                          Profile
+                        </span>
                       </Link>
                       <Link
                         href="/account?tab=orders"
                         onClick={onClose}
                         className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
                       >
-                        <Package className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
-                        <span className="text-base font-medium text-foreground/80">Orders &amp; invoices</span>
+                        <Package
+                          className="h-5 w-5 shrink-0 text-foreground/50"
+                          strokeWidth={1.5}
+                        />
+                        <span className="text-base font-medium text-foreground/80">
+                          Orders &amp; invoices
+                        </span>
                       </Link>
                       <Link
                         href="/account?tab=offers"
                         onClick={onClose}
                         className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
                       >
-                        <Tag className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
-                        <span className="text-base font-medium text-foreground/80">Offers</span>
+                        <Tag
+                          className="h-5 w-5 shrink-0 text-foreground/50"
+                          strokeWidth={1.5}
+                        />
+                        <span className="text-base font-medium text-foreground/80">
+                          Offers
+                        </span>
                       </Link>
                       {user.role === "admin" && (
                         <Link
@@ -249,8 +290,13 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                           onClick={onClose}
                           className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
                         >
-                          <LayoutDashboard className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
-                          <span className="text-base font-medium text-foreground/80">Admin dashboard</span>
+                          <LayoutDashboard
+                            className="h-5 w-5 shrink-0 text-foreground/50"
+                            strokeWidth={1.5}
+                          />
+                          <span className="text-base font-medium text-foreground/80">
+                            Admin dashboard
+                          </span>
                         </Link>
                       )}
                       <button
@@ -258,8 +304,13 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                         onClick={() => setSignOutOpen(true)}
                         className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-colors hover:bg-foreground/5"
                       >
-                        <LogOut className="h-5 w-5 shrink-0 text-foreground/50" strokeWidth={1.5} />
-                        <span className="text-base font-medium text-foreground/80">Sign out</span>
+                        <LogOut
+                          className="h-5 w-5 shrink-0 text-foreground/50"
+                          strokeWidth={1.5}
+                        />
+                        <span className="text-base font-medium text-foreground/80">
+                          Sign out
+                        </span>
                       </button>
                     </div>
                   </motion.div>
@@ -274,8 +325,8 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                   >
                     <nav className="flex-1 overflow-y-auto px-4 py-4">
                       {mainNav.map((link) => {
-                        const active = isTopLevelActive(link.href, pathname)
-                        const Icon = link.icon
+                        const active = isTopLevelActive(link.href, pathname);
+                        const Icon = link.icon;
                         if (link.sections?.length) {
                           return (
                             <button
@@ -284,7 +335,9 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                               onClick={() => setSubmenu(link)}
                               className={cn(
                                 "group flex w-full items-center justify-between rounded-xl px-4 py-4 text-left transition-colors",
-                                active ? "bg-accent-teal/10" : "hover:bg-accent-teal/10",
+                                active
+                                  ? "bg-accent-teal/10"
+                                  : "hover:bg-accent-teal/10",
                               )}
                             >
                               <span className="flex items-center gap-3">
@@ -292,7 +345,9 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                                   <Icon
                                     className={cn(
                                       "size-5 shrink-0 transition-colors",
-                                      active ? "text-accent-teal" : "text-foreground/50 group-hover:text-accent-teal",
+                                      active
+                                        ? "text-accent-teal"
+                                        : "text-foreground/50 group-hover:text-accent-teal",
                                     )}
                                     strokeWidth={1.5}
                                     aria-hidden
@@ -301,15 +356,20 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                                 <span
                                   className={cn(
                                     "text-lg font-medium transition-colors",
-                                    active ? "text-accent-teal" : "text-foreground/70 group-hover:text-accent-teal",
+                                    active
+                                      ? "text-accent-teal"
+                                      : "text-foreground/70 group-hover:text-accent-teal",
                                   )}
                                 >
                                   {link.label}
                                 </span>
                               </span>
-                              <ChevronRight className="h-5 w-5 text-foreground/40" strokeWidth={1.5} />
+                              <ChevronRight
+                                className="h-5 w-5 text-foreground/40"
+                                strokeWidth={1.5}
+                              />
                             </button>
-                          )
+                          );
                         }
                         return (
                           <Link
@@ -318,14 +378,18 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                             onClick={onClose}
                             className={cn(
                               "group flex items-center gap-3 rounded-xl px-4 py-4 transition-colors",
-                              active ? "bg-accent-teal/10" : "hover:bg-accent-teal/10",
+                              active
+                                ? "bg-accent-teal/10"
+                                : "hover:bg-accent-teal/10",
                             )}
                           >
                             {Icon ? (
                               <Icon
                                 className={cn(
                                   "size-5 shrink-0 transition-colors",
-                                  active ? "text-accent-teal" : "text-foreground/50 group-hover:text-accent-teal",
+                                  active
+                                    ? "text-accent-teal"
+                                    : "text-foreground/50 group-hover:text-accent-teal",
                                 )}
                                 strokeWidth={1.5}
                                 aria-hidden
@@ -334,13 +398,15 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                             <span
                               className={cn(
                                 "text-lg font-medium transition-colors",
-                                active ? "text-accent-teal" : "text-foreground/70 group-hover:text-accent-teal",
+                                active
+                                  ? "text-accent-teal"
+                                  : "text-foreground/70 group-hover:text-accent-teal",
                               )}
                             >
                               {link.label}
                             </span>
                           </Link>
-                        )
+                        );
                       })}
                     </nav>
 
@@ -365,7 +431,10 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                               {user.profile.displayName || user.name}
                             </span>
                           </span>
-                          <ChevronRight className="ml-auto h-4 w-4 shrink-0 text-foreground/40" strokeWidth={1.5} />
+                          <ChevronRight
+                            className="ml-auto h-4 w-4 shrink-0 text-foreground/40"
+                            strokeWidth={1.5}
+                          />
                         </button>
                       ) : (
                         <Link
@@ -377,10 +446,17 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                             <User className="h-4 w-4" strokeWidth={1.5} />
                           </span>
                           <span className="min-w-0">
-                            <span className="block text-sm font-medium text-foreground">Sign in</span>
-                            <span className="block text-xs text-foreground/40">Access your account</span>
+                            <span className="block text-sm font-medium text-foreground">
+                              Sign in
+                            </span>
+                            <span className="block text-xs text-foreground/40">
+                              Access your account
+                            </span>
                           </span>
-                          <ChevronRight className="ml-auto h-4 w-4 shrink-0 text-foreground/40" strokeWidth={1.5} />
+                          <ChevronRight
+                            className="ml-auto h-4 w-4 shrink-0 text-foreground/40"
+                            strokeWidth={1.5}
+                          />
                         </Link>
                       )}
 
@@ -389,11 +465,17 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
                           href={`mailto:${siteConfig.email}`}
                           className="flex items-center gap-2.5 text-sm text-foreground/60 transition-colors hover:text-foreground"
                         >
-                          <Mail className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                          <Mail
+                            className="h-4 w-4 shrink-0"
+                            strokeWidth={1.5}
+                          />
                           {siteConfig.email}
                         </a>
                         <p className="flex items-center gap-2.5 text-sm text-foreground/40">
-                          <MapPin className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                          <MapPin
+                            className="h-4 w-4 shrink-0"
+                            strokeWidth={1.5}
+                          />
                           {siteConfig.location}
                         </p>
                       </div>
@@ -407,5 +489,5 @@ export function MobileNav({ open, onClose, activeId, category, initialPanel = "r
       )}
       <SignOutConfirmDialog open={signOutOpen} onOpenChange={setSignOutOpen} />
     </AnimatePresence>
-  )
+  );
 }

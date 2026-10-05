@@ -1,51 +1,63 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
-import Link from "next/link"
-import { Bell, Monitor, Moon, Palette, ShieldCheck, Store, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { cn } from "@/lib/utils"
-import { useStoreSettings } from "@/features/admin/hooks/use-settings"
-import type { Currency } from "@/features/settings"
+import { useState, useSyncExternalStore } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import {
+  Bell,
+  Monitor,
+  Moon,
+  Palette,
+  ShieldCheck,
+  Store,
+  Sun,
+} from "lucide-react";
+import { useTheme } from "next-themes";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
+import { useStoreSettings } from "@/features/admin/hooks/use-settings";
+import type { Currency } from "@/features/settings";
 
 const currencies: { value: Currency; label: string; symbol: string }[] = [
   { value: "GBP", label: "GBP", symbol: "£" },
   { value: "USD", label: "USD", symbol: "$" },
   { value: "EUR", label: "EUR", symbol: "€" },
-]
+];
 
 const themeOptions = [
   { value: "light", label: "Light", icon: Sun },
   { value: "dark", label: "Dark", icon: Moon },
   { value: "system", label: "System", icon: Monitor },
-] as const
+] as const;
 
 const fade = {
   initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0 },
-}
+};
 
 export function AdminSettings() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme();
   // Store settings persist to Neon (singleton row) via the settings provider —
   // no localStorage. Writes are optimistic and reconciled with the DB row.
-  const { settings, update } = useStoreSettings()
-  const [mounted, setMounted] = useState(false)
+  const { settings, update } = useStoreSettings();
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   // Local draft for the store-details form, committed on submit. Seeded from
   // the authoritative settings, which are SSR-seeded so correct on first render.
-  const [storeName, setStoreName] = useState(settings.storeName)
-  const [supportEmail, setSupportEmail] = useState(settings.supportEmail)
-  const [currency, setCurrency] = useState<Currency>(settings.currency)
-  const [lowStockThreshold, setLowStockThreshold] = useState(settings.lowStockThreshold)
-
-  useEffect(() => setMounted(true), [])
+  const [storeName, setStoreName] = useState(settings.storeName);
+  const [supportEmail, setSupportEmail] = useState(settings.supportEmail);
+  const [currency, setCurrency] = useState<Currency>(settings.currency);
+  const [lowStockThreshold, setLowStockThreshold] = useState(
+    settings.lowStockThreshold,
+  );
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
@@ -62,8 +74,8 @@ export function AdminSettings() {
         />
         <div className="mt-5 grid grid-cols-3 gap-2">
           {themeOptions.map((option) => {
-            const Icon = option.icon
-            const active = mounted && theme === option.value
+            const Icon = option.icon;
+            const active = mounted && theme === option.value;
             return (
               <button
                 key={option.value}
@@ -80,7 +92,7 @@ export function AdminSettings() {
                 <Icon className="size-5" strokeWidth={1.5} aria-hidden />
                 {option.label}
               </button>
-            )
+            );
           })}
         </div>
       </motion.section>
@@ -99,14 +111,18 @@ export function AdminSettings() {
         <form
           className="mt-5 flex flex-col gap-5"
           onSubmit={(e) => {
-            e.preventDefault()
-            update({ storeName, supportEmail, currency })
-            toast.success("Store details saved")
+            e.preventDefault();
+            update({ storeName, supportEmail, currency });
+            toast.success("Store details saved");
           }}
         >
           <div className="grid gap-2">
             <Label htmlFor="storeName">Store name</Label>
-            <Input id="storeName" value={storeName} onChange={(e) => setStoreName(e.target.value)} />
+            <Input
+              id="storeName"
+              value={storeName}
+              onChange={(e) => setStoreName(e.target.value)}
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="supportEmail">Support email</Label>
@@ -121,7 +137,7 @@ export function AdminSettings() {
             <Label>Currency</Label>
             <div className="grid grid-cols-3 gap-2">
               {currencies.map((c) => {
-                const active = currency === c.value
+                const active = currency === c.value;
                 return (
                   <button
                     key={c.value}
@@ -138,12 +154,15 @@ export function AdminSettings() {
                     <span className="text-base">{c.symbol}</span>
                     {c.label}
                   </button>
-                )
+                );
               })}
             </div>
           </div>
           <div className="flex justify-end">
-            <Button type="submit" className="bg-accent-teal text-background hover:bg-accent-teal/90">
+            <Button
+              type="submit"
+              className="bg-accent-teal text-background hover:bg-accent-teal/90"
+            >
               Save changes
             </Button>
           </div>
@@ -164,14 +183,18 @@ export function AdminSettings() {
         <div className="mt-5 flex flex-col gap-5">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-sm font-medium text-foreground">Email me restock alerts</p>
-              <p className="text-xs text-muted-foreground">Send a summary when products drop below the threshold.</p>
+              <p className="text-sm font-medium text-foreground">
+                Email me restock alerts
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Send a summary when products drop below the threshold.
+              </p>
             </div>
             <Switch
               checked={settings.emailAlerts}
               onCheckedChange={(checked) => {
-                update({ emailAlerts: checked })
-                toast.success("Notification preference saved")
+                update({ emailAlerts: checked });
+                toast.success("Notification preference saved");
               }}
             />
           </div>
@@ -183,18 +206,22 @@ export function AdminSettings() {
                 type="number"
                 min={0}
                 value={lowStockThreshold}
-                onChange={(e) => setLowStockThreshold(Math.max(0, Number(e.target.value) || 0))}
+                onChange={(e) =>
+                  setLowStockThreshold(Math.max(0, Number(e.target.value) || 0))
+                }
                 className="w-28"
               />
-              <span className="text-sm text-muted-foreground">units or fewer flags a product</span>
+              <span className="text-sm text-muted-foreground">
+                units or fewer flags a product
+              </span>
             </div>
           </div>
           <div className="flex justify-end">
             <Button
               type="button"
               onClick={() => {
-                update({ lowStockThreshold })
-                toast.success("Notification settings saved")
+                update({ lowStockThreshold });
+                toast.success("Notification settings saved");
               }}
               className="bg-accent-teal text-background hover:bg-accent-teal/90"
             >
@@ -220,7 +247,7 @@ export function AdminSettings() {
         </Button>
       </motion.section>
     </div>
-  )
+  );
 }
 
 function SectionHeader({
@@ -228,9 +255,9 @@ function SectionHeader({
   title,
   description,
 }: {
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
-  title: string
-  description: string
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  title: string;
+  description: string;
 }) {
   return (
     <div className="flex items-start gap-3">
@@ -239,8 +266,10 @@ function SectionHeader({
       </span>
       <div>
         <h2 className="text-base font-semibold text-foreground">{title}</h2>
-        <p className="text-sm text-muted-foreground text-pretty">{description}</p>
+        <p className="text-sm text-muted-foreground text-pretty">
+          {description}
+        </p>
       </div>
     </div>
-  )
+  );
 }

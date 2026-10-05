@@ -1,66 +1,63 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
-import { Suspense, useState } from "react"
-import type { Order } from "@/features/orders"
-import { Spinner } from "@/components/ui/spinner"
-import { motion } from "framer-motion"
-import { LayoutDashboard, LogOut, ShoppingBag } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ProfileForm } from "@/components/account/profile-form"
-import { OrderHistory } from "@/components/account/order-history"
-import { OfferList } from "@/components/account/offer-list"
-import { UserAvatar } from "@/components/account/user-avatar"
-import { SignOutConfirmDialog } from "@/components/account/sign-out-confirm"
-import { onboardingSteps } from "@/lib/data/onboarding"
-import { useAuth } from "@/lib/auth/adapters/auth-context"
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import type { Order } from "@/features/orders";
+import { Spinner } from "@/components/ui/spinner";
+import { motion } from "framer-motion";
+import { LayoutDashboard, LogOut, ShoppingBag } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProfileForm } from "@/components/account/profile-form";
+import { OrderHistory } from "@/components/account/order-history";
+import { OfferList } from "@/components/account/offer-list";
+import { UserAvatar } from "@/components/account/user-avatar";
+import { SignOutConfirmDialog } from "@/components/account/sign-out-confirm";
+import { onboardingSteps } from "@/lib/data/onboarding";
+import { useAuth } from "@/lib/auth/adapters/auth-context";
 
-type AccountTab = "profile" | "orders" | "offers"
+type AccountTab = "profile" | "orders" | "offers";
 
 /** Deep-link tab resolution: /account?tab=orders|offers, defaulting to profile. */
 function resolveTab(param: string | null): AccountTab {
-  return param === "orders" || param === "offers" ? param : "profile"
+  return param === "orders" || param === "offers" ? param : "profile";
 }
 
 /** Resolves the human-readable label for a stored option value from the data file. */
 function optionLabel(fieldKey: string, value?: string) {
-  if (!value) return undefined
+  if (!value) return undefined;
   for (const step of onboardingSteps) {
-    const field = step.fields.find((f) => f.key === fieldKey)
-    const option = field?.options?.find((o) => o.value === value)
-    if (option) return option.label
+    const field = step.fields.find((f) => f.key === fieldKey);
+    const option = field?.options?.find((o) => o.value === value);
+    if (option) return option.label;
   }
-  return value
+  return value;
 }
 
-export function AccountView({ ordersPromise }: { ordersPromise: Promise<Order[]> }) {
-  const { user, signOut } = useAuth()
-  const searchParams = useSearchParams()
-  const [signingOut, setSigningOut] = useState(false)
-  const [signOutOpen, setSignOutOpen] = useState(false)
+export function AccountView({
+  ordersPromise,
+}: {
+  ordersPromise: Promise<Order[]>;
+}) {
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const [signOutOpen, setSignOutOpen] = useState(false);
 
   // Deep-link support: /account?tab=orders opens the Orders tab. A local pick
   // wins until the URL's tab changes again (header dropdown, mobile submenu).
-  const urlTab = resolveTab(searchParams.get("tab"))
-  const [picked, setPicked] = useState<{ from: AccountTab; tab: AccountTab } | null>(null)
-  const tab = picked && picked.from === urlTab ? picked.tab : urlTab
-  const setTab = (next: AccountTab) => setPicked({ from: urlTab, tab: next })
+  const urlTab = resolveTab(searchParams.get("tab"));
+  const [picked, setPicked] = useState<{
+    from: AccountTab;
+    tab: AccountTab;
+  } | null>(null);
+  const tab = picked && picked.from === urlTab ? picked.tab : urlTab;
+  const setTab = (next: AccountTab) => setPicked({ from: urlTab, tab: next });
 
-  if (!user) return null
+  if (!user) return null;
 
-  async function handleSignOut() {
-    setSignOutOpen(false)
-    setSigningOut(true)
-    await signOut()
-    // Hard navigation home so the page's RouteGuard can't intercept the now-
-    // unauthenticated session and bounce us to /sign-in mid-transition.
-    window.location.replace("/")
-  }
-
-  const displayName = user.profile.displayName || user.name
-  const goals = user.profile.goals ?? []
+  const displayName = user.profile.displayName || user.name;
+  const goals = user.profile.goals ?? [];
 
   return (
     <main className="min-h-screen bg-background px-5 pb-24 pt-32 md:px-10">
@@ -72,9 +69,15 @@ export function AccountView({ ordersPromise }: { ordersPromise: Promise<Order[]>
           className="flex flex-col gap-6 border-b border-foreground/10 pb-10 sm:flex-row sm:items-center sm:justify-between"
         >
           <div className="flex items-center gap-4">
-            <UserAvatar name={displayName} src={user.profile.avatarUrl} size={64} />
+            <UserAvatar
+              name={displayName}
+              src={user.profile.avatarUrl}
+              size={64}
+            />
             <div>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-foreground/40">Account</p>
+              <p className="text-[11px] uppercase tracking-[0.3em] text-foreground/40">
+                Account
+              </p>
               <h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
                 {displayName}
               </h1>
@@ -110,7 +113,6 @@ export function AccountView({ ordersPromise }: { ordersPromise: Promise<Order[]>
               type="button"
               variant="outline"
               onClick={() => setSignOutOpen(true)}
-              disabled={signingOut}
               className="border-foreground/15 bg-transparent text-foreground hover:bg-foreground/5"
             >
               <LogOut className="mr-2 h-4 w-4" />
@@ -125,7 +127,10 @@ export function AccountView({ ordersPromise }: { ordersPromise: Promise<Order[]>
           transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
           className="pt-10"
         >
-          <Tabs value={tab} onValueChange={(value) => setTab(value as AccountTab)}>
+          <Tabs
+            value={tab}
+            onValueChange={(value) => setTab(value as AccountTab)}
+          >
             <TabsList className="mb-8 bg-foreground/[0.04]">
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="orders">Orders &amp; invoices</TabsTrigger>
@@ -147,24 +152,33 @@ export function AccountView({ ordersPromise }: { ordersPromise: Promise<Order[]>
                   label="Interests"
                   value={
                     user.profile.interests.length
-                      ? user.profile.interests.map((i) => optionLabel("interests", i)).join(", ")
+                      ? user.profile.interests
+                          .map((i) => optionLabel("interests", i))
+                          .join(", ")
                       : "—"
                   }
                 />
                 <SummaryCard
                   label="Newsletter"
-                  value={user.profile.newsletter ? "Subscribed" : "Not subscribed"}
+                  value={
+                    user.profile.newsletter ? "Subscribed" : "Not subscribed"
+                  }
                 />
                 <SummaryCard
                   label="Member since"
-                  value={new Date(user.createdAt).toLocaleDateString(undefined, {
-                    year: "numeric",
-                    month: "long",
-                  })}
+                  value={new Date(user.createdAt).toLocaleDateString(
+                    undefined,
+                    {
+                      year: "numeric",
+                      month: "long",
+                    },
+                  )}
                 />
               </section>
 
-              <h2 className="text-sm uppercase tracking-[0.25em] text-foreground/50">Edit profile</h2>
+              <h2 className="text-sm uppercase tracking-[0.25em] text-foreground/50">
+                Edit profile
+              </h2>
               <div className="mt-6">
                 <ProfileForm />
               </div>
@@ -194,14 +208,16 @@ export function AccountView({ ordersPromise }: { ordersPromise: Promise<Order[]>
 
       <SignOutConfirmDialog open={signOutOpen} onOpenChange={setSignOutOpen} />
     </main>
-  )
+  );
 }
 
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-foreground/10 bg-foreground/[0.02] px-5 py-4">
-      <p className="text-[11px] uppercase tracking-[0.25em] text-foreground/40">{label}</p>
+      <p className="text-[11px] uppercase tracking-[0.25em] text-foreground/40">
+        {label}
+      </p>
       <p className="mt-2 text-sm text-foreground/80">{value}</p>
     </div>
-  )
+  );
 }

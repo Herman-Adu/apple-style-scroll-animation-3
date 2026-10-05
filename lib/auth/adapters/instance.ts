@@ -1,12 +1,13 @@
-import "server-only"
+import "server-only";
 
-import { betterAuth } from "better-auth"
-import { prismaAdapter } from "better-auth/adapters/prisma"
-import { nextCookies } from "better-auth/next-js"
-import { dash } from "@better-auth/infra"
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { nextCookies } from "better-auth/next-js";
+import { dash } from "@better-auth/infra";
 
-import { prisma } from "@/lib/db/prisma"
-import { resolveRole } from "@/lib/auth/domain/config"
+import { prisma } from "@/lib/db/prisma";
+import { resolveRole } from "@/lib/auth/domain/config";
+import { getBaseUrl } from "@/lib/seo/site";
 
 /**
  * Better Auth server — the permanent owner of identity and sessions.
@@ -21,18 +22,64 @@ import { resolveRole } from "@/lib/auth/domain/config"
  * allowlist (see config.ts). Everyone else is a customer. After creation the
  * role lives on the row and is managed from the admin UI via roleOverride.
  */
-const isDev = process.env.NODE_ENV === "development"
+const isDev = process.env.NODE_ENV === "development";
+
+function normalizeOrigin(
+  value: string | undefined,
+  mode: "url" | "host" = "url",
+): string | null {
+  if (!value) return null;
+
+  try {
+    if (mode === "host") return new URL(`https://${value}`).origin;
+    return new URL(value).origin;
+  } catch {
+    return null;
+  }
+}
+
+function buildTrustedOrigins(): string[] {
+  const origins = new Set<string>();
+
+  const canonicalOrigin = getBaseUrl();
+  origins.add(canonicalOrigin);
+
+  const configuredAuthOrigin = normalizeOrigin(process.env.BETTER_AUTH_URL);
+  if (configuredAuthOrigin) origins.add(configuredAuthOrigin);
+
+  const productionHostOrigin = normalizeOrigin(
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    "host",
+  );
+  if (productionHostOrigin) origins.add(productionHostOrigin);
+
+  const vercelPreviewOrigin = normalizeOrigin(process.env.VERCEL_URL, "host");
+  if (vercelPreviewOrigin) origins.add(vercelPreviewOrigin);
+
+  if (isDev) {
+    origins.add("http://localhost:3000");
+    const devOrigins = [
+      process.env.V0_RUNTIME_URL,
+      process.env.V0_DEV_APP_URL,
+      process.env.V0_BUILD_URL,
+      process.env.V0_SANDBOX_URL,
+    ];
+    for (const candidate of devOrigins) {
+      const origin = normalizeOrigin(candidate);
+      if (origin) origins.add(origin);
+    }
+  }
+
+  return [...origins];
+}
+
+const canonicalOrigin = getBaseUrl();
+const configuredAuthOrigin = normalizeOrigin(process.env.BETTER_AUTH_URL);
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
 
-  baseURL:
-    process.env.BETTER_AUTH_URL ??
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : process.env.V0_RUNTIME_URL),
+  baseURL: configuredAuthOrigin ?? canonicalOrigin,
 
   emailAndPassword: {
     enabled: true,
@@ -41,8 +88,18 @@ export const auth = betterAuth({
 
   user: {
     additionalFields: {
-      role: { type: "string", required: false, defaultValue: "customer", input: false },
-      status: { type: "string", required: false, defaultValue: "active", input: false },
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "customer",
+        input: false,
+      },
+      status: {
+        type: "string",
+        required: false,
+        defaultValue: "active",
+        input: false,
+      },
       onboardingStatus: {
         type: "string",
         required: false,
@@ -59,38 +116,20 @@ export const auth = betterAuth({
         before: async (user) => {
           // Role is resolved on the server from the trusted email allowlist —
           // never accepted from the client.
-          const role = resolveRole(user.email)
+          const role = resolveRole(user.email);
           return {
             data: {
               ...user,
               role,
               roleOverride: role === "admin" ? "admin" : null,
             },
-          }
+          };
         },
       },
     },
   },
 
-  trustedOrigins: [
-    ...(isDev
-      ? [
-          "http://localhost:3000",
-          ...(process.env.V0_RUNTIME_URL ? [process.env.V0_RUNTIME_URL] : []),
-          ...(process.env.V0_DEV_APP_URL ? [process.env.V0_DEV_APP_URL] : []),
-          ...(process.env.V0_BUILD_URL ? [process.env.V0_BUILD_URL] : []),
-          ...(process.env.V0_SANDBOX_URL ? [process.env.V0_SANDBOX_URL] : []),
-        ]
-      : []),
-    ...(!isDev
-      ? [
-          ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-          ...(process.env.VERCEL_PROJECT_PRODUCTION_URL
-            ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`]
-            : []),
-        ]
-      : []),
-  ],
+  trustedOrigins: buildTrustedOrigins(),
 
   session: {
     expiresIn: 60 * 60 * 24 * 30, // 30 days (matches the legacy cookie lifetime)
@@ -119,4 +158,4 @@ export const auth = betterAuth({
       : []),
     nextCookies(),
   ],
-})
+});

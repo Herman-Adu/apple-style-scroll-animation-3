@@ -6,7 +6,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 ## Current state (synced)
 
 - `main` includes S5 delivery and closeout: PR #129 (`027b39a`) and PR #130 (`0951aec`).
-- `main` includes S6 cleanup: PR #131 (`0d9ba3b`) for ledger sync and next-chat startup hygiene.
+- `main` includes S6 cleanup: PR #131 (`0d9ba3b`) and PR #132 (`2edb520`) for ledger sync and stale-section pruning.
 - Template handover is the active posture (`docs/template-handover.md`), not in-repo production go-live.
 - All required gates were run green for S5 before merge (`tsc`, lint, test, arch, build, smoke, axe).
 
@@ -46,6 +46,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | S5     | #129     | `027b39a`            | Template handover: `docs/template-handover.md`, README template note, and final architecture-gap closeout                                |
 | S5a    | #130     | `0951aec`            | Closeout sync: finalized S5 ledger metadata and stamped final `pnpm arch` baseline-vs-now metrics                                        |
 | S6     | #131     | `0d9ba3b`            | Ledger cleanup: removed stale placeholders/duplication and aligned next-chat kickoff with template posture                                 |
+| S6a    | #132     | `2edb520`            | PR cleanup: removed stale `next-steps` sections and replaced them with concise template-mode kickoff/open-work/backlog blocks             |
 | S0     | archived | archived             | Historical placeholder for initial ledger/protocol setup; retained for chronology                                                        |
 | SEC1   | #122     | `c6e8b40`            | Guard admin transactional actions; move server-only email/discount exports out of `"use server"` endpoints                               |
 | SEC2   | #124     | `3d32053`            | Stabilized auth/session origin handling: Better Auth trusted canonical/proxy host set and checkout return URL pinned to canonical origin |

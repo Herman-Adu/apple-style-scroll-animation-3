@@ -33,6 +33,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | D5     | #88       | `8213218` | Social launch kit, public case study, demo script                 |
 | D6     | #89       | `a8bb019` | Docs freshness tests, shared palette labels                       |
 | S0     | _this PR_ | _pending_ | This ledger and the sprint protocol                               |
+| SEC1   | #122      | _pending_ | Guard admin transactional actions; move server-only email/discount exports out of `"use server"` endpoints |
 
 ## Upcoming sprints
 

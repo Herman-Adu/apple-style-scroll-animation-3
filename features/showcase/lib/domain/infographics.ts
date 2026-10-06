@@ -9,12 +9,14 @@ type Base = {
   summary: string
   /** Typed chart values are only allowed on slides that print "Illustrative". */
   illustrative?: true
+  /** Typed values that mirror the seeded demo store; the slide prints "Demo data" and a test binds them to the seed. */
+  demoData?: true
   /** Set on slides written for one audience pack, so catalogue guards can tell them from the core set. */
-  pack?: "recruiter"
+  pack?: "recruiter" | "buyer"
 }
 
 export type ChartValue = number | FactRef
-export type TableCell = string | FactRef
+export type TableCell = string | number | FactRef
 export type SequenceStep = { from: string; to: string; label: string }
 
 export type StackSource = { pkg: string; major?: number } | { file: string }
@@ -77,8 +79,8 @@ const labelProblems = (labels: string[]) =>
     .filter((label) => label.length > SLIDE_LIMITS.chartLabelChars)
     .map((label) => `label "${label}" is over ${SLIDE_LIMITS.chartLabelChars} characters`)
 
-const typedValueProblems = (infographic: Infographic, values: ChartValue[]) =>
-  !infographic.illustrative && values.some((v) => typeof v === "number")
+const typedValueProblems = (infographic: Infographic, values: (ChartValue | TableCell)[]) =>
+  !infographic.illustrative && !infographic.demoData && values.some((v) => typeof v === "number")
     ? ["typed values: read them from facts or mark the slide illustrative"]
     : []
 
@@ -126,6 +128,7 @@ export function infographicProblems(infographic: Infographic): string[] {
         ...infographic.rows
           .filter((row) => row.cells.length !== infographic.columns.length - 1)
           .map((row) => `row "${row.label}": needs ${infographic.columns.length - 1} cells, has ${row.cells.length}`),
+        ...typedValueProblems(infographic, infographic.rows.flatMap((row) => row.cells)),
       ]
     default:
       return []

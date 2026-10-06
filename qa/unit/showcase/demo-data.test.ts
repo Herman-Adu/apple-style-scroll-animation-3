@@ -293,6 +293,40 @@ describe("buildDemoData: email, campaigns and messages", () => {
   })
 })
 
+describe("buildDemoData: waiting stock alerts", () => {
+  const alerts = buildDemoData(NOW).stockAlerts as Array<{
+    email: string
+    productSlug: string
+    token: string
+    createdAt: Date
+    notifiedAt: Date | null
+  }>
+
+  it("seeds people waiting on more than one real product, still waiting", () => {
+    expect(new Set(alerts.map((a) => a.productSlug)).size).toBeGreaterThanOrEqual(2)
+    for (const alert of alerts) {
+      expect(PRODUCT_SLUGS).toContain(alert.productSlug)
+      expect(alert.notifiedAt).toBeNull()
+      expect(alert.createdAt.getTime()).toBeLessThanOrEqual(NOW.getTime())
+    }
+  })
+
+  it("only waits on demo addresses, one alert per email and product, with tagged unique tokens", () => {
+    const pairs = alerts.map((a) => `${a.email}|${a.productSlug}`)
+    expect(new Set(pairs).size).toBe(pairs.length)
+    expect(new Set(alerts.map((a) => a.token)).size).toBe(alerts.length)
+    for (const alert of alerts) {
+      expect(alert.email.endsWith(`@${DEMO_EMAIL_DOMAIN}`)).toBe(true)
+      expect(alert.token.startsWith(DEMO_ID_PREFIX)).toBe(true)
+    }
+  })
+
+  it("cleanup removes the waiting alerts by their demo email", () => {
+    const step = buildCleanupPlan().find((s: { model: string }) => s.model === "stockAlert")
+    expect(step?.where).toEqual({ email: { endsWith: `@${DEMO_EMAIL_DOMAIN}` } })
+  })
+})
+
 describe("assertSeedTarget", () => {
   const url = "postgres://u:p@ep-live-123-pooler.us-east-1.aws.neon.tech/neondb"
 

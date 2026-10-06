@@ -54,9 +54,9 @@ export function InfographicSlide({ infographic, facts }: SlideProps) {
       <header className="flex items-center justify-between text-xl font-medium uppercase tracking-widest text-muted-foreground">
         <span>{siteConfig.name}</span>
         <span className="flex items-center gap-4">
-          {infographic.illustrative ? (
+          {infographic.illustrative || infographic.demoData ? (
             <span className="rounded-full border border-border px-4 py-1 font-mono text-lg normal-case tracking-normal text-foreground">
-              Illustrative
+              {infographic.illustrative ? "Illustrative" : "Demo data"}
             </span>
           ) : null}
           <span className="font-mono text-accent-teal">{infographic.eyebrow}</span>

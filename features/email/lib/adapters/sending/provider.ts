@@ -1,5 +1,7 @@
 import "server-only"
 
+import { deliverableRecipients } from "../../domain/reserved-recipients"
+
 /**
  * Dependency-free Resend transport. Calls the Resend REST API directly via
  * fetch so there is no SDK to install or keep in sync. Reads RESEND_API_KEY
@@ -55,8 +57,13 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   const apiKey = process.env.RESEND_API_KEY
   const from = resolveFrom()
 
+  const to = deliverableRecipients(input.to)
+  if (to.length === 0) {
+    return { ok: true, id: null, skipped: true, reason: "Only reserved test addresses" }
+  }
+
   if (!apiKey) {
-    console.log("[v0] Email skipped (RESEND_API_KEY not set):", input.subject, "->", input.to)
+    console.log("[v0] Email skipped (RESEND_API_KEY not set):", input.subject, "->", to)
     return { ok: true, id: null, skipped: true, reason: "RESEND_API_KEY not set" }
   }
 
@@ -69,7 +76,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
       },
       body: JSON.stringify({
         from,
-        to: Array.isArray(input.to) ? input.to : [input.to],
+        to,
         subject: input.subject,
         html: input.html,
         ...(input.text ? { text: input.text } : {}),

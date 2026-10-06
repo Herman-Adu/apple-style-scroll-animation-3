@@ -63,7 +63,10 @@ export function findHardCodedNumbers(value: unknown, path = "", illustrative = f
   }
   if (value && typeof value === "object") {
     if ("fact" in value) return isFactKey(value.fact) ? [] : [join(path, "fact")]
-    const inside = illustrative || ("illustrative" in value && value.illustrative === true)
+    const inside =
+      illustrative ||
+      ("illustrative" in value && value.illustrative === true) ||
+      ("demoData" in value && value.demoData === true)
     return Object.entries(value).flatMap(([k, v]) => findHardCodedNumbers(v, join(path, k), inside))
   }
   return []

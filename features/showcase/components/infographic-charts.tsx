@@ -27,7 +27,8 @@ export function TableBody({
   rows: { label: string; cells: TableCell[] }[]
   facts: Facts | null
 }) {
-  const cellText = (cell: TableCell) => (typeof cell === "string" ? cell : formatValue(resolveFact(facts, cell.fact)))
+  const cellText = (cell: TableCell) =>
+    typeof cell === "string" ? cell : formatValue(typeof cell === "number" ? cell : resolveFact(facts, cell.fact))
 
   return (
     <div className="flex flex-1 flex-col justify-center">

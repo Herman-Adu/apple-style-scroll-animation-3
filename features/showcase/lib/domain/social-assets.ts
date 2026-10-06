@@ -4,6 +4,7 @@ import { infographics } from "./infographics"
 export const SOCIAL_FORMATS = {
   carousel: { width: 1080, height: 1350 },
   square: { width: 1080, height: 1080 },
+  story: { width: 1080, height: 1920 },
 } as const
 
 export type SocialFormat = keyof typeof SOCIAL_FORMATS

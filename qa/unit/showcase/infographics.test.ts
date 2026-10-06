@@ -19,7 +19,7 @@ const pkg = JSON.parse(read("package.json")) as {
 }
 const installed = { ...pkg.dependencies, ...pkg.devDependencies }
 
-const NON_COPY_KEYS = new Set(["id", "kind", "format", "source", "path", "version", "before", "after"])
+const NON_COPY_KEYS = new Set(["id", "kind", "format", "source", "path", "version", "before", "after", "alt"])
 
 function visibleCopy(value: unknown, key = ""): string[] {
   if (NON_COPY_KEYS.has(key)) return []
@@ -48,7 +48,19 @@ describe("infographic catalogue", () => {
 
   it("covers every planned kind exactly once", () => {
     expect([...INFOGRAPHIC_KINDS].sort()).toEqual(
-      ["before-after", "flow", "gates", "layers", "offer", "site-map", "stack"].sort(),
+      [
+        "before-after",
+        "flow",
+        "gates",
+        "layers",
+        "offer",
+        "site-map",
+        "stack",
+        "table",
+        "bar-chart",
+        "line-chart",
+        "sequence",
+      ].sort(),
     )
     for (const kind of INFOGRAPHIC_KINDS) {
       expect(ofKind(kind), kind).toHaveLength(1)

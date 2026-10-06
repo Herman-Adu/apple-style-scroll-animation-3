@@ -49,15 +49,22 @@ const SOURCED_STRING_KEYS = new Set(["version", "path", "pkg", "file"])
 const SOURCED_NUMBER_KEYS = new Set(["before", "major"])
 const isFactKey = (value: unknown): value is FactKey => (FACT_KEYS as readonly unknown[]).includes(value)
 
-/** Paths of every number on a slide that is typed in rather than read from facts. */
-export function findHardCodedNumbers(value: unknown, path = ""): string[] {
+/**
+ * Paths of every number on a slide that is typed in rather than read from facts.
+ * Inside an object marked `illustrative: true`, raw numeric values are allowed
+ * (the slide prints "Illustrative"), but digits in copy are still refused.
+ */
+export function findHardCodedNumbers(value: unknown, path = "", illustrative = false): string[] {
   const key = path.split(".").at(-1) ?? ""
   if (typeof value === "string") return /\d/.test(value) && !SOURCED_STRING_KEYS.has(key) ? [path] : []
-  if (typeof value === "number") return SOURCED_NUMBER_KEYS.has(key) ? [] : [path]
-  if (Array.isArray(value)) return value.flatMap((item, index) => findHardCodedNumbers(item, join(path, index)))
+  if (typeof value === "number") return illustrative || SOURCED_NUMBER_KEYS.has(key) ? [] : [path]
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => findHardCodedNumbers(item, join(path, index), illustrative))
+  }
   if (value && typeof value === "object") {
     if ("fact" in value) return isFactKey(value.fact) ? [] : [join(path, "fact")]
-    return Object.entries(value).flatMap(([k, v]) => findHardCodedNumbers(v, join(path, k)))
+    const inside = illustrative || ("illustrative" in value && value.illustrative === true)
+    return Object.entries(value).flatMap(([k, v]) => findHardCodedNumbers(v, join(path, k), inside))
   }
   return []
 }

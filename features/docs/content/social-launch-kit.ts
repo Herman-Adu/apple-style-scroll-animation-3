@@ -10,7 +10,7 @@ export const socialLaunchKit: Doc = {
     "Ready-to-post copy for LinkedIn, a Facebook business page, Telegram and X covering the email builder, seasonal campaigns, defence-in-depth permissions and the documentation programme. Each post is paired with an image already in the repo and a link that previews well when shared.",
   readingMinutes: 8,
   order: 3,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-06",
   tags: ["social", "linkedin", "facebook", "telegram", "launch", "recruitment", "marketing"],
   body: [
     {
@@ -56,7 +56,7 @@ export const socialLaunchKit: Doc = {
     { type: "heading", text: "Infographics" },
     {
       type: "paragraph",
-      text: "Seven developer and CTO-minded infographics, rendered from the same tokens as the slides. Four are 1080×1350 and three are 1080×1080. Every number comes from the repo's own architecture audit, so they cannot drift from the docs. Re-export with pnpm showcase:assets.",
+      text: "Eleven developer and CTO-minded infographics, rendered from the same tokens as the slides: portrait 1080×1350, square 1080×1080 and one 1080×1920 story. Measured numbers are read from .generated/facts.json when the slide renders, so they cannot drift from the code. A chart with typed numbers must be marked illustrative, and the slide prints that word. Re-export with pnpm showcase:assets.",
     },
     {
       type: "image",
@@ -111,6 +111,38 @@ export const socialLaunchKit: Doc = {
       src: "/showcase/social/infographic-offer.png",
       alt: "Infographic of what is included, what can be customised and how handover works.",
       caption: "The client offer. Post with a call to action.",
+      width: 1080,
+      height: 1350,
+    },
+    {
+      type: "image",
+      src: "/showcase/social/infographic-table.png",
+      alt: "Table of the five test layers, the tool each uses and what each one proves.",
+      caption: "Testing table. Explains how every layer is tested.",
+      width: 1080,
+      height: 1350,
+    },
+    {
+      type: "image",
+      src: "/showcase/social/infographic-bar-chart.png",
+      alt: "Vertical story image with a bar chart of automated test counts by layer: unit, integration, smoke, accessibility and SEO.",
+      caption: "Test counts. A 1080×1920 story for Instagram, Facebook and LinkedIn stories.",
+      width: 1080,
+      height: 1920,
+    },
+    {
+      type: "image",
+      src: "/showcase/social/infographic-line-chart.png",
+      alt: "Illustrative line chart: total cost from scratch climbs steeply over three years, while a tested template starts lower and rises gently.",
+      caption: "Build versus template. Illustrative, for client posts.",
+      width: 1080,
+      height: 1080,
+    },
+    {
+      type: "image",
+      src: "/showcase/social/infographic-sequence.png",
+      alt: "Sequence diagram of the back-in-stock flow between the customer, the store, the database and Resend.",
+      caption: "Back in stock, end to end. Shows a real flow across services.",
       width: 1080,
       height: 1350,
     },

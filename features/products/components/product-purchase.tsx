@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { Minus, Plus } from "lucide-react"
 import type { Product } from "../lib/domain/schema"
 import { formatMoney } from "@/lib/format"
@@ -17,7 +17,8 @@ const stockTone: Record<ReturnType<typeof stockLevel>, string> = {
   "coming-soon": "text-foreground/50",
 }
 
-export function ProductPurchase({ product: seed }: { product: Product }) {
+/** `soldOutSlot` is composed by the page so this slice never depends on the one that fills it. */
+export function ProductPurchase({ product: seed, soldOutSlot }: { product: Product; soldOutSlot?: ReactNode }) {
   const product = useProduct(seed.slug, seed) ?? seed
   const [color, setColor] = useState(product.colors[0])
   const [quantity, setQuantity] = useState(1)
@@ -109,6 +110,8 @@ export function ProductPurchase({ product: seed }: { product: Product }) {
 
         <AddToCartButton product={product} color={color} quantity={quantity} showPrice={false} />
       </div>
+
+      {level === "out-of-stock" && soldOutSlot}
     </div>
   )
 }

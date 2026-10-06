@@ -387,6 +387,22 @@ model Subscriber {
   @@map("subscribers")
 }
 
+// A guest's one-shot request to be emailed when a sold-out product returns.
+// Separate from Subscriber: this is consent for one transactional email, not
+// for marketing. `token` powers the one-click unsubscribe link.
+model StockAlert {
+  id          Int       @id @default(autoincrement())
+  email       String
+  productSlug String    @map("product_slug")
+  token       String    @unique
+  createdAt   DateTime  @default(now()) @map("created_at")
+  notifiedAt  DateTime? @map("notified_at")
+
+  @@unique([email, productSlug])
+  @@index([productSlug])
+  @@map("stock_alerts")
+}
+
 /// Unified record of every send (transactional, campaign, customer message)
 /// powering the Overview dashboard.
 model EmailLog {

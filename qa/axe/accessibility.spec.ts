@@ -6,7 +6,14 @@ import { expect, test } from "@playwright/test"
  * disabled via reduced-motion + a CSS override so transient states don't cause
  * flaky contrast/visibility readings.
  */
-const routes = ["/", "/products", "/articles", "/about", "/contact"]
+const routes = [
+  "/",
+  "/products",
+  "/articles",
+  "/about",
+  "/contact",
+  "/stock-alerts/unsubscribe?token=axe-check",
+]
 
 test.use({ colorScheme: "dark" })
 

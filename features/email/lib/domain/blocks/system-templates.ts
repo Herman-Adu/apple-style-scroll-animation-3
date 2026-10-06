@@ -195,6 +195,35 @@ const SYSTEM_TEMPLATE_DRAFTS: SystemTemplateDraft[] = [
     ],
   },
   {
+    key: "back_in_stock",
+    name: "Back in stock",
+    category: "transactional",
+    subject: "{{product_name}} is back in stock",
+    previewText: "The product you asked about is available again.",
+    description: "Sent once to each customer who asked to be told when a sold-out product returns.",
+    blocks: [
+      {
+        type: "hero",
+        eyebrow: "Back in stock",
+        heading: "{{product_name}} is back",
+        subheading: "You asked us to tell you. It's available *right now*, while stock lasts.",
+        imageUrl: "",
+        align: "left",
+      },
+      {
+        type: "text",
+        text: "Stock is limited and can sell out again, so don't wait too long.",
+        align: "left",
+      },
+      { type: "button", label: "View {{product_name}}", href: "{{product_url}}", align: "left" },
+      {
+        type: "text",
+        text: "You're getting this once because you asked for an alert. To stop it, unsubscribe here: {{unsubscribe_url}}",
+        align: "left",
+      },
+    ],
+  },
+  {
     key: "welcome",
     name: "Welcome / newsletter",
     category: "marketing",

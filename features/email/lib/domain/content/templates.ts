@@ -282,6 +282,43 @@ export function businessOrderNotificationEmail(params: {
  * as static block text; admins can still restyle the surrounding layout and
  * add/remove blocks.
  */
+export function backInStockEmail(params: {
+  productName: string;
+  productSlug: string;
+  productUrl: string;
+  unsubscribeUrl: string;
+  branding?: Partial<EmailBranding>;
+  blocks?: EmailBlock[];
+  baseUrl?: string;
+  products?: ProductImageMap;
+}): Rendered {
+  const b = brand(params.branding);
+  // The hero image is linked to the product so it always shows its current picture.
+  const blocks = (
+    params.blocks ?? getSystemTemplate("back_in_stock")!.blocks
+  ).map((block) =>
+    block.type === "hero"
+      ? { ...block, productSlug: params.productSlug }
+      : block,
+  );
+  const vars: Record<string, string> = {
+    brand_name: b.brandName,
+    product_name: params.productName,
+    product_url: params.productUrl,
+    unsubscribe_url: params.unsubscribeUrl,
+  };
+  const ctx: RenderContext = {
+    vars,
+    baseUrl: params.baseUrl,
+    products: params.products,
+  };
+  return {
+    subject: `${params.productName} is back in stock`,
+    html: renderEmail(blocks, b, ctx),
+    text: renderText(blocks, b, ctx),
+  };
+}
+
 export function refundConfirmationEmail(params: {
   name: string;
   order: Order;

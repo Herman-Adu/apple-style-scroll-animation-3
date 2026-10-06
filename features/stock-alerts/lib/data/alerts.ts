@@ -13,3 +13,37 @@ export async function requestStockAlert(input: { email: string; productSlug: str
     update: { notifiedAt: null },
   })
 }
+
+export type WaitingAlert = { id: number; email: string; token: string }
+
+/**
+ * Takes ownership of every waiting alert for a product. Each row is claimed
+ * with a conditional update, so when two restock paths race only one of them
+ * wins a given row and nobody is emailed twice.
+ */
+export async function claimWaitingAlerts(productSlug: string): Promise<WaitingAlert[]> {
+  const waiting = await prisma.stockAlert.findMany({
+    where: { productSlug, notifiedAt: null },
+    select: { id: true, email: true, token: true },
+  })
+  const claimed: WaitingAlert[] = []
+  for (const alert of waiting) {
+    const { count } = await prisma.stockAlert.updateMany({
+      where: { id: alert.id, notifiedAt: null },
+      data: { notifiedAt: new Date() },
+    })
+    if (count === 1) claimed.push(alert)
+  }
+  return claimed
+}
+
+/** Hands a claim back after a failed send so the next restock retries it. */
+export async function releaseAlertClaim(id: number): Promise<void> {
+  await prisma.stockAlert.update({ where: { id }, data: { notifiedAt: null } })
+}
+
+/** The unsubscribe token is a random secret, so deleting by it is the whole authorisation. */
+export async function removeAlertByToken(token: string): Promise<boolean> {
+  const { count } = await prisma.stockAlert.deleteMany({ where: { token } })
+  return count > 0
+}

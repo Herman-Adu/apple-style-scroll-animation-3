@@ -20,6 +20,11 @@ export function isInStock(product: Pick<Product, "stock" | "reserved">): boolean
   return effectiveStock(product) > 0
 }
 
+/** True when availability moves from sold out to available (before/after are `effectiveStock` values). */
+export function crossedBackInStock(before: number, after: number): boolean {
+  return before <= 0 && after > 0
+}
+
 export function isLowStock(product: Pick<Product, "stock" | "reserved" | "lowStockThreshold">): boolean {
   const available = effectiveStock(product)
   return available > 0 && available <= product.lowStockThreshold

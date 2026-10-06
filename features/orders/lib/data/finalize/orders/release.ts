@@ -7,7 +7,13 @@ import { prisma } from "@/lib/db/prisma";
 import { revalidateCatalog } from "@/features/catalog/server";
 import type { Order } from "../../../domain/types";
 import { orderSelect, toOrder } from "../../../domain/order-row";
-import { restoreStock, toReserved, type ReservedLine } from "../stock";
+import type { RestockedProduct } from "@/features/stock-alerts/server";
+import {
+  announceRestock,
+  restoreStock,
+  toReserved,
+  type ReservedLine,
+} from "../stock";
 
 export async function releaseCheckout(
   session: Stripe.Checkout.Session,
@@ -54,6 +60,7 @@ export async function reconcileRefund(
   const isFullRefund = nextRefundedAmount >= existing.total - 0.001;
 
   const restocked = isFullRefund && existing.status !== "refunded";
+  let restockedProducts: RestockedProduct[] = [];
   const updated = await prisma.$transaction(async (tx) => {
     const priorRefunds = Array.isArray(existing.refunds)
       ? (existing.refunds as unknown as object[])
@@ -64,7 +71,7 @@ export async function reconcileRefund(
           ? (existing.items as unknown as ReservedLine[])
           : []
       ).map((item) => ({ slug: item.slug, quantity: item.quantity }));
-      await restoreStock(tx, lines);
+      restockedProducts = await restoreStock(tx, lines);
     }
     return tx.order.update({
       where: { id: existing.id },
@@ -81,6 +88,7 @@ export async function reconcileRefund(
   });
 
   if (restocked) revalidateCatalog();
+  await announceRestock(restockedProducts);
   return toOrder(updated);
 }
 
@@ -89,13 +97,15 @@ export async function releaseReservationById(pendingId: string): Promise<void> {
     const pending = await tx.pendingCheckout.findUnique({
       where: { id: pendingId },
     });
-    if (!pending || pending.status !== "reserved") return false;
-    await restoreStock(tx, toReserved(pending.reservedStock));
+    if (!pending || pending.status !== "reserved") return null;
+    const restocked = await restoreStock(tx, toReserved(pending.reservedStock));
     await tx.pendingCheckout.update({
       where: { id: pendingId },
       data: { status: "released" },
     });
-    return true;
+    return restocked;
   });
-  if (released) revalidateCatalog();
+  if (!released) return;
+  revalidateCatalog();
+  await announceRestock(released);
 }

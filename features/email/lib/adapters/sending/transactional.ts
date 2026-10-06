@@ -3,6 +3,7 @@ import {
   orderConfirmationEmail,
   businessOrderNotificationEmail,
   lowStockAlertEmail,
+  backInStockEmail,
   refundConfirmationEmail,
   shippingConfirmationEmail,
   type LowStockEmailItem,
@@ -86,6 +87,45 @@ export async function sendLowStockAlert(params: {
     to: params.to,
     subject,
     templateKey: "low_stock",
+    type: "transactional",
+    resendId: result.ok && result.id ? result.id : "",
+    status: result.ok ? (result.skipped ? "skipped" : "sent") : "failed",
+  });
+  return result;
+}
+
+/**
+ * One customer's back-in-stock alert. Every attempt lands in the email log,
+ * a failure included, and the result is returned rather than thrown so the
+ * restock that triggered it is never blocked.
+ */
+export async function sendBackInStockEmail(params: {
+  to: string;
+  productName: string;
+  productSlug: string;
+  unsubscribeUrl: string;
+}) {
+  const baseUrl = getBaseUrl();
+  const [branding, blocks, products] = await Promise.all([
+    getBranding(),
+    getTemplateBlocksByKey("back_in_stock"),
+    fetchProductImageMap(),
+  ]);
+  const { subject, html, text } = backInStockEmail({
+    productName: params.productName,
+    productSlug: params.productSlug,
+    productUrl: `${baseUrl}/products/${params.productSlug}`,
+    unsubscribeUrl: params.unsubscribeUrl,
+    branding,
+    blocks: blocks ?? undefined,
+    baseUrl,
+    products,
+  });
+  const result = await sendEmail({ to: params.to, subject, html, text });
+  await recordLog({
+    to: params.to,
+    subject,
+    templateKey: "back_in_stock",
     type: "transactional",
     resendId: result.ok && result.id ? result.id : "",
     status: result.ok ? (result.skipped ? "skipped" : "sent") : "failed",

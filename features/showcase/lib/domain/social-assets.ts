@@ -13,6 +13,8 @@ export type SocialAsset = {
   id: string
   format: SocialFormat
   role?: "cover" | "cta"
+  /** Slides that belong to an audience pack stay out of the email case-study carousel. */
+  pack?: "recruiter"
   eyebrow: string
   title: string
   body: string
@@ -152,6 +154,20 @@ export const socialAssets: SocialAsset[] = [
     },
   },
   {
+    id: "recruiter-cta",
+    format: "carousel",
+    role: "cta",
+    pack: "recruiter",
+    eyebrow: "Let's talk",
+    title: "Hiring for a build like this?",
+    body: "The case study walks through the architecture, the tests and the trade-offs behind every decision.",
+    cta: {
+      ask: "Open to roles and contract work. Scan the code or email me.",
+      link: CASE_STUDY_LINK,
+      email: ADUDEV.email,
+    },
+  },
+  {
     id: "square-starters",
     format: "square",
     eyebrow: "Seasonal campaigns",
@@ -182,7 +198,7 @@ export function getSocialAsset(id: string): SocialAsset | undefined {
 }
 
 export function carouselSlides(): SocialAsset[] {
-  return socialAssets.filter((a) => a.format === "carousel")
+  return socialAssets.filter((a) => a.format === "carousel" && !a.pack)
 }
 
 export type ExportItem = {

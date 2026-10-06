@@ -9,6 +9,8 @@ type Base = {
   summary: string
   /** Typed chart values are only allowed on slides that print "Illustrative". */
   illustrative?: true
+  /** Set on slides written for one audience pack, so catalogue guards can tell them from the core set. */
+  pack?: "recruiter"
 }
 
 export type ChartValue = number | FactRef

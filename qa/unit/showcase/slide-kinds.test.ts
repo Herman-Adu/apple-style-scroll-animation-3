@@ -50,8 +50,10 @@ describe("registry validation", () => {
     expect(infographicProblems(infographic)).toEqual([])
   })
 
-  it("has one example of each new kind", () => {
-    for (const kind of NEW_KINDS) expect(infographics.filter((i) => i.kind === kind), kind).toHaveLength(1)
+  it("has one core example of each new kind", () => {
+    for (const kind of NEW_KINDS) {
+      expect(infographics.filter((i) => i.kind === kind && !i.pack), kind).toHaveLength(1)
+    }
   })
 
   it("refuses a sequence with more than four actors", () => {

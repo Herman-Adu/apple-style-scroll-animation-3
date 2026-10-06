@@ -1,4 +1,4 @@
-import type { FactRef } from "./facts"
+import { resolveFact, type FactRef, type Facts } from "./facts"
 import type { SocialFormat } from "./social-assets"
 
 type Base = {
@@ -7,7 +7,13 @@ type Base = {
   eyebrow: string
   title: string
   summary: string
+  /** Typed chart values are only allowed on slides that print "Illustrative". */
+  illustrative?: true
 }
+
+export type ChartValue = number | FactRef
+export type TableCell = string | FactRef
+export type SequenceStep = { from: string; to: string; label: string }
 
 export type StackSource = { pkg: string; major?: number } | { file: string }
 export type StackItem = { name: string; version?: string; source: StackSource }
@@ -20,182 +26,108 @@ export type Infographic =
   | (Base & { kind: "flow"; steps: { title: string; detail: string }[] })
   | (Base & { kind: "gates"; steps: { name: string; detail: string }[] })
   | (Base & { kind: "offer"; columns: { heading: string; items: string[] }[] })
+  | (Base & { kind: "table"; columns: string[]; rows: { label: string; cells: TableCell[] }[] })
+  | (Base & { kind: "bar-chart"; alt: string; bars: { label: string; value: ChartValue }[] })
+  | (Base & { kind: "line-chart"; alt: string; xLabels: string[]; series: { name: string; values: ChartValue[] }[] })
+  | (Base & { kind: "sequence"; actors: string[]; steps: SequenceStep[] })
 
-export const INFOGRAPHIC_KINDS = ["stack", "layers", "before-after", "site-map", "flow", "gates", "offer"] as const
+export const INFOGRAPHIC_KINDS = [
+  "stack",
+  "layers",
+  "before-after",
+  "site-map",
+  "flow",
+  "gates",
+  "offer",
+  "table",
+  "bar-chart",
+  "line-chart",
+  "sequence",
+] as const
 
-export const infographics: Infographic[] = [
-  {
-    id: "infographic-stack",
-    kind: "stack",
-    format: "carousel",
-    eyebrow: "The stack",
-    title: "A modern stack, chosen for the long run.",
-    summary: "Typed end to end, server first, every piece swappable.",
-    groups: [
-      {
-        label: "Framework",
-        items: [
-          { name: "Next.js", version: "16", source: { pkg: "next", major: 16 } },
-          { name: "React", version: "19", source: { pkg: "react", major: 19 } },
-          { name: "TypeScript", source: { pkg: "typescript" } },
-          { name: "Tailwind CSS", version: "4", source: { pkg: "tailwindcss", major: 4 } },
-        ],
-      },
-      {
-        label: "Data and auth",
-        items: [
-          { name: "Prisma", version: "6", source: { pkg: "prisma", major: 6 } },
-          { name: "Neon", source: { file: "prisma/schema.prisma" } },
-          { name: "Better Auth", source: { pkg: "better-auth" } },
-          { name: "Zod", version: "4", source: { pkg: "zod", major: 4 } },
-        ],
-      },
-      {
-        label: "Payments and email",
-        items: [
-          { name: "Stripe", source: { pkg: "stripe" } },
-          { name: "Resend", source: { file: "features/email/lib/adapters/sending/provider.ts" } },
-        ],
-      },
-      {
-        label: "Quality",
-        items: [
-          { name: "Vitest", source: { pkg: "vitest" } },
-          { name: "Playwright", source: { pkg: "@playwright/test" } },
-        ],
-      },
-    ],
-  },
-  {
-    id: "infographic-layers",
-    kind: "layers",
-    format: "square",
-    eyebrow: "Architecture",
-    title: "Dependencies flow one way.",
-    summary: "Each layer knows only the one beneath it. CI enforces it.",
-    layers: [
-      { name: "app", detail: "Routes, layouts and error boundaries" },
-      { name: "features", detail: "One slice per domain, one public entry each" },
-      { name: "features/*/lib", detail: "actions, data, domain, adapters" },
-      { name: "lib", detail: "Shared code. Never imports a feature" },
-    ],
-  },
-  {
-    id: "infographic-before-after",
-    kind: "before-after",
-    format: "square",
-    eyebrow: "Engineering health",
-    title: "Measured, then fixed.",
-    summary: "Four architecture numbers tracked in CI, before and after.",
-    rows: [
-      { label: "Deep imports across features", before: 116, after: { fact: "arch.deepImports" }, note: "One public entry per slice" },
-      { label: "Shared code depending on features", before: 16, after: { fact: "arch.libToFeatures" }, note: "Dependencies point one way" },
-      { label: "any types", before: 28, after: { fact: "arch.anyTypes" }, note: "Validated at every boundary" },
-      { label: "useEffect calls", before: 55, after: { fact: "arch.useEffect" }, note: "Data loading moved to the server" },
-    ],
-  },
-  {
-    id: "infographic-site-map",
-    kind: "site-map",
-    format: "carousel",
-    eyebrow: "What is in the box",
-    title: "Storefront, admin and docs in one repo.",
-    summary: "Customers shop, owners run the business, teams learn the system.",
-    areas: [
-      {
-        name: "Storefront",
-        routes: [
-          { path: "/", label: "Home" },
-          { path: "/products", label: "Product catalog" },
-          { path: "/checkout", label: "Checkout" },
-          { path: "/account", label: "Customer account" },
-          { path: "/articles", label: "Articles" },
-        ],
-      },
-      {
-        name: "Admin",
-        routes: [
-          { path: "/admin", label: "Overview" },
-          { path: "/admin/orders", label: "Orders" },
-          { path: "/admin/customers", label: "Customers" },
-          { path: "/admin/email", label: "Email campaigns" },
-          { path: "/admin/discounts", label: "Discount codes" },
-          { path: "/admin/analytics", label: "Analytics" },
-        ],
-      },
-      {
-        name: "Docs",
-        routes: [
-          { path: "/docs", label: "Documentation home" },
-          { path: "/docs/[slug]", label: "Guides, ADRs and case studies" },
-          { path: "/admin/docs", label: "In-admin help" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "infographic-flow",
-    kind: "flow",
-    format: "carousel",
-    eyebrow: "End to end",
-    title: "From cart to confirmation email.",
-    summary: "One flow, six steps, every one covered by tests.",
-    steps: [
-      { title: "Cart", detail: "Prices and quantities re-checked on the server" },
-      { title: "Discount code", detail: "Validated and applied before payment" },
-      { title: "Stripe payment", detail: "Hosted, secure and idempotent" },
-      { title: "Webhook confirms", detail: "The order is finalised once, never twice" },
-      { title: "Order saved", detail: "Stock updated and visible in the admin" },
-      { title: "Confirmation email", detail: "Sent from an editable template" },
-    ],
-  },
-  {
-    id: "infographic-gates",
-    kind: "gates",
-    format: "square",
-    eyebrow: "Quality gates",
-    title: "Nothing merges unless all seven pass.",
-    summary: "Every pull request runs the same pipeline, then a real preview build.",
-    steps: [
-      { name: "Typecheck", detail: "Strict TypeScript" },
-      { name: "Lint", detail: "Boundary rules included" },
-      { name: "Arch", detail: "Architecture ratchet" },
-      { name: "Unit", detail: "Pure logic and docs guards" },
-      { name: "Integration", detail: "Database-backed flows" },
-      { name: "Smoke", detail: "Real browser journeys" },
-      { name: "Axe", detail: "Accessibility checks" },
-    ],
-  },
-  {
-    id: "infographic-offer",
-    kind: "offer",
-    format: "carousel",
-    eyebrow: "Work with me",
-    title: "A working store, made yours.",
-    summary: "Start from a tested template, spend time on what sets you apart.",
-    columns: [
-      {
-        heading: "Included",
-        items: [
-          "Storefront with product pages",
-          "Checkout with Stripe test mode",
-          "Admin for orders and customers",
-          "Email campaigns and templates",
-          "Discount codes and offers",
-        ],
-      },
-      {
-        heading: "Customised for you",
-        items: ["Your brand, theme and fonts", "Your products and catalog", "Your domain and email sender", "Your Stripe and Resend accounts"],
-      },
-      {
-        heading: "Handover",
-        items: ["Written handover guide", "Local runbook and environment guide", "Tests and CI left green", "Docs site your team can extend"],
-      },
-    ],
-  },
-]
+export const SLIDE_LIMITS = {
+  sequenceActors: 4,
+  sequenceSteps: 6,
+  stepLabelChars: 32,
+  chartItems: 6,
+  lineSeries: 2,
+  chartLabelChars: 14,
+  tableColumns: 4,
+  tableRows: 6,
+  altMinChars: 30,
+} as const
 
-export function getInfographic(id: string): Infographic | undefined {
-  return infographics.find((i) => i.id === id)
+export const CHART_LABEL_MIN_PX = 24
+export const CHART_LABEL_PX = 28
+
+export function resolveChartValue(facts: Facts | null, value: ChartValue): number | null {
+  return typeof value === "number" ? value : resolveFact(facts, value.fact)
 }
+
+const between = (name: string, length: number, min: number, max: number) =>
+  length < min || length > max ? [`${name}: needs ${min} to ${max}, has ${length}`] : []
+
+const altProblems = (alt: string) =>
+  alt.trim().length < SLIDE_LIMITS.altMinChars ? [`alt: describe the chart in at least ${SLIDE_LIMITS.altMinChars} characters`] : []
+
+const labelProblems = (labels: string[]) =>
+  labels
+    .filter((label) => label.length > SLIDE_LIMITS.chartLabelChars)
+    .map((label) => `label "${label}" is over ${SLIDE_LIMITS.chartLabelChars} characters`)
+
+const typedValueProblems = (infographic: Infographic, values: ChartValue[]) =>
+  !infographic.illustrative && values.some((v) => typeof v === "number")
+    ? ["typed values: read them from facts or mark the slide illustrative"]
+    : []
+
+function sequenceProblems(actors: string[], steps: SequenceStep[]): string[] {
+  const known = new Set(actors)
+  return [
+    ...between("actors", actors.length, 2, SLIDE_LIMITS.sequenceActors),
+    ...(known.size === actors.length ? [] : ["actors: names must be unique"]),
+    ...between("steps", steps.length, 1, SLIDE_LIMITS.sequenceSteps),
+    ...steps.flatMap((step) => [
+      ...[step.from, step.to].filter((name) => !known.has(name)).map((name) => `step "${step.label}": unknown actor ${name}`),
+      ...(step.from === step.to ? [`step "${step.label}": an actor cannot message itself`] : []),
+      ...(step.label.length > SLIDE_LIMITS.stepLabelChars ? [`step "${step.label}": label is too long`] : []),
+    ]),
+  ]
+}
+
+/** Every reason a slide would not fit or would not read well. Empty means it is within the limits. */
+export function infographicProblems(infographic: Infographic): string[] {
+  switch (infographic.kind) {
+    case "sequence":
+      return sequenceProblems(infographic.actors, infographic.steps)
+    case "bar-chart":
+      return [
+        ...altProblems(infographic.alt),
+        ...between("bars", infographic.bars.length, 2, SLIDE_LIMITS.chartItems),
+        ...labelProblems(infographic.bars.map((b) => b.label)),
+        ...typedValueProblems(infographic, infographic.bars.map((b) => b.value)),
+      ]
+    case "line-chart":
+      return [
+        ...altProblems(infographic.alt),
+        ...between("series", infographic.series.length, 1, SLIDE_LIMITS.lineSeries),
+        ...between("x labels", infographic.xLabels.length, 2, SLIDE_LIMITS.chartItems),
+        ...labelProblems(infographic.xLabels),
+        ...infographic.series
+          .filter((s) => s.values.length !== infographic.xLabels.length)
+          .map((s) => `series "${s.name}": values must match the x labels`),
+        ...typedValueProblems(infographic, infographic.series.flatMap((s) => s.values)),
+      ]
+    case "table":
+      return [
+        ...between("columns", infographic.columns.length, 2, SLIDE_LIMITS.tableColumns),
+        ...between("rows", infographic.rows.length, 1, SLIDE_LIMITS.tableRows),
+        ...infographic.rows
+          .filter((row) => row.cells.length !== infographic.columns.length - 1)
+          .map((row) => `row "${row.label}": needs ${infographic.columns.length - 1} cells, has ${row.cells.length}`),
+      ]
+    default:
+      return []
+  }
+}
+
+export { getInfographic, infographics } from "./infographic-registry"

@@ -13,6 +13,10 @@ const routes = [
   "/about",
   "/contact",
   "/stock-alerts/unsubscribe?token=axe-check",
+  "/showcase-render/infographic-table",
+  "/showcase-render/infographic-bar-chart",
+  "/showcase-render/infographic-line-chart",
+  "/showcase-render/infographic-sequence",
 ]
 
 test.use({ colorScheme: "dark" })

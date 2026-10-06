@@ -11,6 +11,7 @@ import {
   SiteMapBody,
   StackBody,
 } from "./infographic-parts"
+import { BarChartBody, LineChartBody, SequenceBody, TableBody } from "./infographic-charts"
 
 type SlideProps = { infographic: Infographic; facts: Facts | null }
 
@@ -30,6 +31,14 @@ function Body({ infographic, facts }: SlideProps) {
       return <GatesBody steps={infographic.steps} />
     case "offer":
       return <OfferBody columns={infographic.columns} />
+    case "table":
+      return <TableBody columns={infographic.columns} rows={infographic.rows} facts={facts} />
+    case "bar-chart":
+      return <BarChartBody alt={infographic.alt} bars={infographic.bars} facts={facts} />
+    case "line-chart":
+      return <LineChartBody alt={infographic.alt} xLabels={infographic.xLabels} series={infographic.series} facts={facts} />
+    case "sequence":
+      return <SequenceBody actors={infographic.actors} steps={infographic.steps} />
   }
 }
 
@@ -44,7 +53,14 @@ export function InfographicSlide({ infographic, facts }: SlideProps) {
     >
       <header className="flex items-center justify-between text-xl font-medium uppercase tracking-widest text-muted-foreground">
         <span>{siteConfig.name}</span>
-        <span className="font-mono text-accent-teal">{infographic.eyebrow}</span>
+        <span className="flex items-center gap-4">
+          {infographic.illustrative ? (
+            <span className="rounded-full border border-border px-4 py-1 font-mono text-lg normal-case tracking-normal text-foreground">
+              Illustrative
+            </span>
+          ) : null}
+          <span className="font-mono text-accent-teal">{infographic.eyebrow}</span>
+        </span>
       </header>
 
       <div className="flex flex-col gap-5">

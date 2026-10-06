@@ -28,6 +28,8 @@ for (const item of exportPlan()) {
     await page.goto(`/showcase-render/${item.asset}`, { waitUntil: "networkidle" })
     await expect(page.locator("[data-social-asset]").first()).toBeVisible()
     await waitForAssets(page)
+    // The export runs against `next dev`, whose dev-tools badge would otherwise be baked into the PNG.
+    await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" })
 
     if (item.kind === "png") {
       await page.screenshot({ path: publicPath(item.file), clip: { x: 0, y: 0, width: item.width, height: item.height } })

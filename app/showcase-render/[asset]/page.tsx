@@ -1,7 +1,15 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { CAROUSEL_ID, carouselSlides, getSocialAsset, socialAssets } from "@/features/showcase"
-import { SocialSlide } from "@/features/showcase"
+import {
+  CAROUSEL_ID,
+  InfographicSlide,
+  SocialSlide,
+  carouselSlides,
+  getInfographic,
+  getSocialAsset,
+  infographics,
+  socialAssets,
+} from "@/features/showcase"
 
 export const metadata: Metadata = {
   title: "Showcase render",
@@ -9,7 +17,11 @@ export const metadata: Metadata = {
 }
 
 export function generateStaticParams() {
-  return [{ asset: CAROUSEL_ID }, ...socialAssets.map((a) => ({ asset: a.id }))]
+  return [
+    { asset: CAROUSEL_ID },
+    ...socialAssets.map((a) => ({ asset: a.id })),
+    ...infographics.map((i) => ({ asset: i.id })),
+  ]
 }
 
 export const dynamicParams = false
@@ -24,6 +36,15 @@ export default async function ShowcaseRenderPage({ params }: { params: Promise<{
         {slides.map((slide, index) => (
           <SocialSlide key={slide.id} asset={slide} position={{ index, total: slides.length }} />
         ))}
+      </main>
+    )
+  }
+
+  const infographic = getInfographic(asset)
+  if (infographic) {
+    return (
+      <main>
+        <InfographicSlide infographic={infographic} />
       </main>
     )
   }

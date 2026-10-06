@@ -13,7 +13,7 @@ Re-run Orient. Confirm the sprint branch still exists and `git diff --stat origi
 Add it to `pnpm.onlyBuiltDependencies` in `package.json`, then `pnpm rebuild <pkg>`. Verify: `node -e "console.log(require('ffmpeg-static'))"`.
 
 ## Playwright: no browser / `libnspr4.so` missing
-`pnpm exec playwright install chromium`, then one attempt at `pnpm exec playwright install-deps chromium`. If it still fails, report the check as blocked; don't loop.
+`pnpm exec playwright install chromium`. The sandbox is Amazon Linux 2023 (`dnf`, no `apt-get`), so `playwright install-deps` cannot work. Install the libraries with `sudo -n dnf install -y nspr nss nss-util atk at-spi2-atk cups-libs libdrm libxkbcommon libXcomposite libXdamage libXfixes libXrandr mesa-libgbm alsa-lib pango cairo`, then confirm with a one-line `chromium.launch()`. If that fails, report the check as blocked; don't loop.
 
 ## Video poster is a blank frame
 The page was still loading at grab time. `scripts/showcase-video.mjs` grabs at 8s; a jpg of a few KB means blank.

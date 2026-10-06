@@ -2,9 +2,9 @@
   "deepImports": 0,
   "libToFeatures": 0,
   "routePropDrilling": 0,
-  "useEffect": 45,
-  "anyTypes": 28,
+  "useEffect": 32,
+  "anyTypes": 0,
   "incrementers": 3,
-  "clientComponents": 151,
+  "clientComponents": 152,
   "largeFiles": 21
 }

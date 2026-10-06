@@ -1,10 +1,14 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { ADUDEV } from "@/features/showcase/lib/domain/brand";
 import {
   CAROUSEL_PDF,
+  CASE_STUDY_LINK,
+  LAYER_STEPS,
   SOCIAL_FORMATS,
   carouselSlides,
+  caseStudyUrl,
   exportPlan,
   getSocialAsset,
   socialAssets,
@@ -56,6 +60,70 @@ describe("social asset catalogue", () => {
   it("looks assets up by id", () => {
     expect(getSocialAsset(socialAssets[0].id)).toBe(socialAssets[0]);
     expect(getSocialAsset("nope")).toBeUndefined();
+  });
+});
+
+describe("closing call to action", () => {
+  const cta = carouselSlides().at(-1)!;
+
+  it("offers both asks: read the case study, and get in touch", () => {
+    expect(cta.cta?.link).toBe(CASE_STUDY_LINK);
+    expect(cta.cta?.email).toBe(ADUDEV.email);
+    expect(cta.cta?.ask.length).toBeGreaterThan(10);
+  });
+
+  it("points at a case study that exists", () => {
+    const slug = CASE_STUDY_LINK.split("/docs/")[1];
+    expect(docs.some((d) => d.slug === slug)).toBe(true);
+  });
+
+  it("builds the QR code from the https case study address", () => {
+    expect(caseStudyUrl()).toBe(`https://${CASE_STUDY_LINK}`);
+  });
+
+  it("no longer relies on a bare link line to fill the slide", () => {
+    expect(cta.points ?? []).toEqual([]);
+  });
+});
+
+describe("diagram slides", () => {
+  const flow = getSocialAsset("carousel-flow");
+  const layers = getSocialAsset("carousel-layers");
+
+  it("puts the checkout-to-email flow just before the permissions slide", () => {
+    const ids = carouselSlides().map((s) => s.id);
+    expect(ids.indexOf("carousel-flow")).toBeGreaterThan(-1);
+    expect(ids.indexOf("carousel-flow")).toBe(ids.indexOf("carousel-layers") - 1);
+  });
+
+  it("draws permissions as a request passing three gates", () => {
+    expect(layers?.diagram?.source.startsWith("flowchart")).toBe(true);
+    for (const step of LAYER_STEPS) {
+      expect(layers?.diagram?.source, step.name).toContain(step.name);
+    }
+    expect(layers?.diagram?.alt.length).toBeGreaterThan(20);
+  });
+
+  it("uses names the permissions doc also uses", () => {
+    const text = JSON.stringify(docs.find((d) => d.slug === "authentication-and-access-control")!.body);
+    for (const term of ["proxy.ts", "requireAdmin"]) {
+      expect(text, term).toContain(term);
+      expect(layers?.diagram?.source, term).toContain(term);
+    }
+  });
+
+  it("draws checkout through to the delivered email", () => {
+    expect(flow?.diagram?.source.startsWith("flowchart")).toBe(true);
+    for (const term of ["Stripe", "Resend", "webhook"]) {
+      expect(flow?.diagram?.source.toLowerCase(), term).toContain(term.toLowerCase());
+    }
+  });
+
+  it("gives the square a compact graphic of its own, not a copy of the carousel", () => {
+    const square = getSocialAsset("square-layers");
+    expect(square?.visual).toBe("layers");
+    expect(square?.points ?? []).toEqual([]);
+    expect(square?.diagram).toBeUndefined();
   });
 });
 

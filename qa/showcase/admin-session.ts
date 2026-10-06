@@ -1,6 +1,14 @@
+import { existsSync, readFileSync } from "node:fs"
+import path from "node:path"
 import type { BrowserContext, Page } from "@playwright/test"
+import {
+  ADMIN_CREDENTIALS_FILE,
+  DEMO_ADMIN,
+  isDemoAdminEmail,
+  parseAdminCredentials,
+} from "../../scripts/lib/showcase-admin.mjs"
 
-const MASKED_EMAIL = "admin@demo.momo-audio.test"
+const MASKED_EMAIL = DEMO_ADMIN.email
 
 export interface AdminCredentials {
   email: string
@@ -12,6 +20,27 @@ export function adminCredentialsFromEnv(env: NodeJS.ProcessEnv = process.env): A
   const email = env.QA_ADMIN_EMAIL
   const password = env.QA_ADMIN_PASSWORD
   return email && password ? { email, password } : null
+}
+
+function readSeededCredentialsFile(): string | null {
+  const file = path.join(process.cwd(), ADMIN_CREDENTIALS_FILE)
+  return existsSync(file) ? readFileSync(file, "utf8") : null
+}
+
+/** Env first, then the demo admin written by `pnpm showcase:seed` (git-ignored), else null. */
+export function adminCredentials(
+  env: NodeJS.ProcessEnv = process.env,
+  readFile: () => string | null = readSeededCredentialsFile,
+): AdminCredentials | null {
+  const fromEnv = adminCredentialsFromEnv(env)
+  if (fromEnv) return fromEnv
+  const text = readFile()
+  return text ? parseAdminCredentials(text) : null
+}
+
+/** Only the throwaway demo admin may be typed into the sign-in form on camera. */
+export function canSignInOnCamera(credentials: AdminCredentials | null): boolean {
+  return credentials !== null && isDemoAdminEmail(credentials.email)
 }
 
 /**

@@ -12,6 +12,9 @@ export interface ClipPlan {
 /** A seeded, never-expiring, uncapped percent code, so the checkout clip works on every take. */
 export const CHECKOUT_DISCOUNT_CODE = "LAUNCH20"
 
+/** The demo seed puts demo shoppers on this product's waiting list, so the restock clip emails nobody real. */
+export const RESTOCK_PRODUCT_SLUG = "momo-beat"
+
 export const CLIPS: ClipPlan[] = [
   {
     slug: "storefront",
@@ -84,6 +87,35 @@ export const CLIPS: ClipPlan[] = [
       "Documented like a product, not a prototype",
       "Architecture rules enforced on every pull request",
       "116 deep imports down to 0, 28 any down to 0",
+    ],
+  },
+  {
+    slug: "restock",
+    audience: "client",
+    title: "Back in stock, end to end",
+    spec: "restock.spec.ts",
+    routes: [`/products/${RESTOCK_PRODUCT_SLUG}`, "/admin/products", "/admin/email/templates"],
+    captions: [
+      "Sold out? Shoppers ask to hear when it is back",
+      "One tap joins the waiting list",
+      "The admin shows how many people are waiting",
+      "Restock in one click",
+      "Everyone waiting gets one email, sent once",
+    ],
+  },
+  {
+    slug: "journey",
+    audience: "both",
+    title: "From scroll story to admin",
+    spec: "journey.spec.ts",
+    routes: ["/", "/sign-in", "/admin", "/admin/products", "/admin/theme", "/docs"],
+    captions: [
+      "A product story told by scrolling",
+      "Sign in as the store owner",
+      "A dashboard for sales, stock and demand",
+      "Products, stock and waiting lists in one table",
+      "Rebrand the store from the admin, no deploy",
+      "Every decision written up in the docs",
     ],
   },
 ]

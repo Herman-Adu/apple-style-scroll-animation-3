@@ -1,5 +1,5 @@
 import { test } from "@playwright/test"
-import { adminCredentialsFromEnv, openSignedInAdminPage } from "./admin-session"
+import { adminCredentials, openSignedInAdminPage } from "./admin-session"
 import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
 import { getClip } from "./shot-list"
 
@@ -7,10 +7,10 @@ import { getClip } from "./shot-list"
  * Clip 3, email campaigns: the campaign list, then one campaign opened. Needs the
  * seeded demo data (pnpm showcase:seed) and an admin account supplied through env.
  */
-const credentials = adminCredentialsFromEnv()
+const credentials = adminCredentials()
 
 test("clip: email campaigns", async ({ context }) => {
-  test.skip(!credentials, "Set QA_ADMIN_EMAIL and QA_ADMIN_PASSWORD to record the admin clips")
+  test.skip(!credentials, "Run pnpm showcase:seed -- --confirm (or set QA_ADMIN_EMAIL/QA_ADMIN_PASSWORD) to record admin clips")
   const [introCaption, openCaption, statsCaption] = getClip("campaigns").captions
 
   const page = await openSignedInAdminPage(context, credentials!, "/admin/email/campaigns")

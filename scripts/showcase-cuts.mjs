@@ -1,0 +1,90 @@
+// @ts-check
+/**
+ * Records every showcase clip in the 4:5 and 9:16 formats, then stitches the
+ * recruiter, buyer and engineer cuts and publishes the calendar clips on their own,
+ * each as an .mp4 plus a .jpg poster in public/showcase/video/.
+ *
+ *   pnpm showcase:cuts              record both formats, then build
+ *   pnpm showcase:cuts --no-record  build from the raw clips already recorded
+ */
+import { execFileSync } from "node:child_process"
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs"
+import path from "node:path"
+import ffmpegPath from "ffmpeg-static"
+import {
+  CALENDAR_CLIPS,
+  CUTS,
+  CUT_FORMATS,
+  buildConcatArgs,
+  buildConcatList,
+  cutOutputName,
+  missingRawClips,
+} from "./lib/showcase-cuts.mjs"
+import { slugForFormat } from "./lib/showcase-formats.mjs"
+import { buildPosterArgs, buildTranscodeArgs, clipFileNames } from "./lib/video-args.mjs"
+
+const root = process.cwd()
+const rawDir = path.join(root, "test-results", "showcase", "raw")
+const listDir = path.join(root, "test-results", "showcase", "lists")
+const outDir = path.join(root, "public", "showcase", "video")
+
+const ffmpeg = /** @type {string | null} */ (/** @type {unknown} */ (ffmpegPath))
+if (!ffmpeg || !existsSync(ffmpeg)) {
+  console.error("ffmpeg-static binary missing. Run `pnpm rebuild ffmpeg-static`.")
+  process.exit(1)
+}
+
+if (!process.argv.includes("--no-record")) {
+  for (const format of CUT_FORMATS) {
+    execFileSync("pnpm", ["exec", "playwright", "test", "--config", "qa/config/playwright.showcase.config.mts"], {
+      stdio: "inherit",
+      env: { ...process.env, SHOWCASE_FORMAT: format },
+    })
+  }
+}
+
+const available = existsSync(rawDir)
+  ? readdirSync(rawDir).filter((file) => file.endsWith(".webm")).map((file) => file.replace(/\.webm$/, ""))
+  : []
+
+const missing = CUT_FORMATS.flatMap((format) => [
+  ...CUTS.flatMap((cut) => missingRawClips(cut.clips, format, available)),
+  ...missingRawClips(CALENDAR_CLIPS, format, available),
+])
+if (missing.length > 0) {
+  console.error(`Missing raw clips: ${[...new Set(missing)].join(", ")}. Seed, then record again.`)
+  process.exit(1)
+}
+
+mkdirSync(outDir, { recursive: true })
+mkdirSync(listDir, { recursive: true })
+
+/** @param {string} input @param {string} name */
+function writePoster(input, name) {
+  execFileSync(ffmpeg, buildPosterArgs({ input, output: path.join(outDir, clipFileNames(name).poster), atSeconds: 3 }), {
+    stdio: "ignore",
+  })
+}
+
+for (const format of CUT_FORMATS) {
+  for (const cut of CUTS) {
+    const name = cutOutputName(cut.slug, format)
+    const listFile = path.join(listDir, `${name}.txt`)
+    const inputs = cut.clips.map((clip) => path.join(rawDir, `${slugForFormat(clip, format)}.webm`))
+    writeFileSync(listFile, buildConcatList(inputs))
+    const output = path.join(outDir, clipFileNames(name).video)
+    execFileSync(ffmpeg, buildConcatArgs({ listFile, output }), { stdio: "ignore" })
+    writePoster(output, name)
+    console.log(`✓ ${name}.mp4 (${cut.clips.join(" + ")})`)
+  }
+
+  for (const clip of CALENDAR_CLIPS) {
+    const name = slugForFormat(clip, format)
+    const input = path.join(rawDir, `${name}.webm`)
+    execFileSync(ffmpeg, buildTranscodeArgs({ input, output: path.join(outDir, clipFileNames(name).video) }), {
+      stdio: "ignore",
+    })
+    writePoster(input, name)
+    console.log(`✓ ${name}.mp4`)
+  }
+}

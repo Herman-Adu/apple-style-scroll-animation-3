@@ -1,3 +1,5 @@
+import { infographics } from "./infographics"
+
 export const SOCIAL_FORMATS = {
   carousel: { width: 1080, height: 1350 },
   square: { width: 1080, height: 1080 },
@@ -148,7 +150,7 @@ export type ExportItem = {
 
 export function exportPlan(): ExportItem[] {
   return [
-    ...socialAssets.map((a) => ({
+    ...[...socialAssets, ...infographics].map((a) => ({
       kind: "png" as const,
       asset: a.id,
       file: `/showcase/social/${a.id}.png`,

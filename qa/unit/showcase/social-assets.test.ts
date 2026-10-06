@@ -9,6 +9,7 @@ import {
   getSocialAsset,
   socialAssets,
 } from "@/features/showcase/lib/domain/social-assets";
+import { getInfographic, infographics } from "@/features/showcase/lib/domain/infographics";
 import { docs } from "@/features/docs/content";
 import { REPO_ROOT } from "@/qa/config/repo-root";
 
@@ -62,9 +63,9 @@ describe("export plan", () => {
   it("writes one PNG per asset at its format size, plus the carousel PDF", () => {
     const plan = exportPlan();
     const pngs = plan.filter((p) => p.kind === "png");
-    expect(pngs).toHaveLength(socialAssets.length);
+    expect(pngs).toHaveLength(socialAssets.length + infographics.length);
     for (const p of pngs) {
-      const asset = getSocialAsset(p.asset)!;
+      const asset = getSocialAsset(p.asset) ?? getInfographic(p.asset)!;
       expect(p.file).toBe(`/showcase/social/${asset.id}.png`);
       expect({ width: p.width, height: p.height }).toEqual(
         SOCIAL_FORMATS[asset.format],

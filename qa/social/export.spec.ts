@@ -6,6 +6,8 @@ import { exportPlan } from "../../features/showcase/lib/domain/social-assets"
 const publicPath = (file: string) => path.join(process.cwd(), "public", file)
 
 async function waitForAssets(page: Page) {
+  await page.waitForFunction(() => document.querySelectorAll('[data-slide-diagram="pending"]').length === 0)
+  await expect(page.locator('[data-slide-diagram="error"]')).toHaveCount(0)
   await page.evaluate(async () => {
     await document.fonts.ready
     await Promise.all(

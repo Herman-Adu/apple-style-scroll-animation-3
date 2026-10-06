@@ -35,13 +35,21 @@ export const socialLaunchKit: Doc = {
     { type: "heading", text: "Carousel and square images" },
     {
       type: "paragraph",
-      text: "A 7-slide LinkedIn carousel (1080×1350) and three 1080×1080 squares, rendered from the site's own tokens and the email screenshots. Each slide also ships as a PNG for channels without document posts. Re-export after copy or design changes with pnpm showcase:assets.",
+      text: "An 8-slide LinkedIn carousel (1080×1350) and three 1080×1080 squares in the AduDev brand, with the Momo Audio screenshots kept in their own branding. The closing slide carries a QR code to the case study. Each slide also ships as a PNG for channels without document posts. Re-export after copy or design changes with pnpm showcase:assets.",
     },
     {
       type: "image",
       src: "/showcase/social/carousel-cover.png",
       alt: "Carousel cover slide: 'Email built into the store, not bolted on.' above the Christmas campaign email.",
       caption: "Carousel cover slide.",
+      width: 1080,
+      height: 1350,
+    },
+    {
+      type: "image",
+      src: "/showcase/social/carousel-flow.png",
+      alt: "Carousel slide showing the flow from the checkout action to a Stripe payment, a signed webhook, the saved order and the Resend order email.",
+      caption: "Checkout to inbox. The new flow slide.",
       width: 1080,
       height: 1350,
     },
@@ -123,7 +131,7 @@ export const socialLaunchKit: Doc = {
         ],
         [
           "Telegram",
-          "/showcase/social/carousel-cover.png, /showcase/social/carousel-products.png, /showcase/social/carousel-starters.png, /showcase/social/carousel-locks.png, /showcase/social/carousel-history.png, /showcase/social/carousel-layers.png, /showcase/social/carousel-cta.png as one album",
+          "/showcase/social/carousel-cover.png, /showcase/social/carousel-products.png, /showcase/social/carousel-starters.png, /showcase/social/carousel-locks.png, /showcase/social/carousel-history.png, /showcase/social/carousel-flow.png, /showcase/social/carousel-layers.png, /showcase/social/carousel-cta.png as one album",
           "Albums show the slides in order, like the LinkedIn carousel.",
         ],
         [

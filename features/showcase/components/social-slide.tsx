@@ -1,24 +1,75 @@
+import type { CSSProperties } from "react"
 import Image from "next/image"
 import { siteConfig } from "@/lib/data/site"
-import { SOCIAL_FORMATS, type SocialAsset } from "../lib/domain/social-assets"
+import { ADUDEV } from "../lib/domain/brand"
+import { SOCIAL_FORMATS, caseStudyUrl, type SocialAsset } from "../lib/domain/social-assets"
+import { LayersGraphic } from "./layers-graphic"
+import { QrCode } from "./qr-code"
+import { SlideDiagram } from "./slide-diagram"
+
+const { colors } = ADUDEV
+
+// Local overrides so every slide uses the AduDev palette whatever store theme is active.
+const brandTokens = {
+  "--background": colors.base,
+  "--foreground": colors.text,
+  "--card": colors.surface,
+  "--card-foreground": colors.text,
+  "--border": colors.border,
+  "--muted-foreground": colors.muted,
+  "--primary": colors.orange,
+} as CSSProperties
 
 type Props = {
   asset: SocialAsset
   position?: { index: number; total: number }
 }
 
+function CtaPanel({ cta }: { cta: NonNullable<SocialAsset["cta"]> }) {
+  const [host, ...path] = cta.link.split("/")
+
+  return (
+    <div className="mt-auto flex items-stretch gap-12 rounded-3xl border border-border bg-card p-12">
+      <div className="flex shrink-0 flex-col gap-4">
+        <QrCode text={caseStudyUrl()} label={`QR code linking to ${cta.link}`} size={320} />
+        <span className="text-center text-2xl text-muted-foreground">Scan to read</span>
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col justify-between gap-8">
+        <div className="flex flex-col gap-2">
+          <p className="text-2xl font-semibold uppercase tracking-widest" style={{ color: colors.orange }}>
+            Case study
+          </p>
+          <p className="text-3xl font-semibold leading-snug">{host}</p>
+          <p className="break-words text-2xl leading-snug text-muted-foreground">/{path.join("/")}</p>
+        </div>
+        <div className="flex flex-col gap-4">
+          <p className="text-pretty text-3xl font-semibold leading-snug">{cta.ask}</p>
+          <p
+            className="w-fit rounded-xl px-6 py-4 text-3xl font-bold"
+            style={{ backgroundColor: colors.orange, color: colors.onOrange }}
+          >
+            {cta.email}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function SocialSlide({ asset, position }: Props) {
   const { width, height } = SOCIAL_FORMATS[asset.format]
   const isSquare = asset.format === "square"
+  const isSideBySide = isSquare && Boolean(asset.image || asset.visual)
+  const hasDiagram = Boolean(asset.diagram)
 
   return (
     <section
       data-social-asset={asset.id}
-      style={{ width, height }}
-      className="dark flex shrink-0 flex-col gap-12 overflow-hidden bg-background p-20 font-sans text-foreground break-after-page"
+      style={{ width, height, ...brandTokens }}
+      className="dark flex shrink-0 flex-col gap-10 overflow-hidden bg-background p-20 font-sans text-foreground break-after-page"
     >
       <header className="flex items-center justify-between text-2xl font-medium uppercase tracking-widest text-muted-foreground">
-        <span>{siteConfig.name}</span>
+        <Image src={ADUDEV.logos.wordmarkLight} alt={ADUDEV.name} width={988} height={333} className="h-14 w-auto" priority />
         {position ? (
           <span className="tabular-nums">
             {String(position.index + 1).padStart(2, "0")} / {String(position.total).padStart(2, "0")}
@@ -26,14 +77,19 @@ export function SocialSlide({ asset, position }: Props) {
         ) : null}
       </header>
 
-      <div className={isSquare && asset.image ? "flex min-h-0 flex-1 gap-12" : "flex min-h-0 flex-1 flex-col gap-12"}>
-        <div className={isSquare && asset.image ? "flex w-1/2 flex-col justify-center gap-8" : "flex flex-col gap-8"}>
-          <p className="text-2xl font-medium uppercase tracking-widest text-muted-foreground">{asset.eyebrow}</p>
+      <div className={isSideBySide ? "flex min-h-0 flex-1 gap-12" : "flex min-h-0 flex-1 flex-col gap-10"}>
+        <div className={isSideBySide ? "flex w-1/2 flex-col justify-center gap-8" : "flex flex-col gap-6"}>
+          <p className="flex items-center gap-4 text-2xl font-semibold uppercase tracking-widest" style={{ color: colors.orange }}>
+            <span aria-hidden className="h-0.5 w-12" style={{ backgroundColor: colors.orange }} />
+            {asset.eyebrow}
+          </p>
           <h1
             className={
               asset.role === "cover"
-                ? "text-balance text-8xl font-semibold leading-none tracking-tight"
-                : "text-balance text-7xl font-semibold leading-tight tracking-tight"
+                ? "text-balance text-8xl font-extrabold leading-none tracking-tight"
+                : hasDiagram
+                  ? "text-balance text-6xl font-extrabold leading-tight tracking-tight"
+                  : "text-balance text-7xl font-extrabold leading-tight tracking-tight"
             }
           >
             {asset.title}
@@ -60,6 +116,18 @@ export function SocialSlide({ asset, position }: Props) {
           </div>
         ) : null}
 
+        {asset.diagram ? (
+          <div className="min-h-0 flex-1 rounded-3xl border border-border bg-card p-6">
+            <SlideDiagram source={asset.diagram.source} alt={asset.diagram.alt} />
+          </div>
+        ) : null}
+
+        {asset.visual === "layers" ? (
+          <div className="w-1/2">
+            <LayersGraphic />
+          </div>
+        ) : null}
+
         {asset.points ? (
           <ul className="mt-auto flex flex-col border-t border-border">
             {asset.points.map((point) => (
@@ -76,7 +144,16 @@ export function SocialSlide({ asset, position }: Props) {
             ))}
           </ul>
         ) : null}
+
+        {asset.cta ? <CtaPanel cta={asset.cta} /> : null}
       </div>
+
+      <footer className="flex items-center gap-4 text-2xl text-muted-foreground">
+        <Image src={ADUDEV.logos.monogramLight} alt="" width={257} height={257} className="size-10" />
+        <span>
+          {ADUDEV.name} · Case study: {siteConfig.name}
+        </span>
+      </footer>
     </section>
   )
 }

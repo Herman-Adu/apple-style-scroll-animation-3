@@ -24,6 +24,8 @@ export default defineConfig({
     root: projectRoot,
     environment: "node",
     globals: true,
+    // The first test in some email action files cold-imports a large module graph, which can take over the 5s default on slower machines.
+    testTimeout: 20_000,
     setupFiles: [path.join(projectRoot, "qa/config/setup/vitest.setup.ts")],
     include: ["qa/unit/**/*.test.ts", "qa/integration/**/*.test.ts"],
     coverage: {

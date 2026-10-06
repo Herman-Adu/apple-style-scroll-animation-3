@@ -102,7 +102,7 @@ export const architectureDecisionRecords: Doc = {
       title: "Figure 1 — Where each check lives",
       diagram: [
         "flowchart TB",
-        "  R[lib/auth/permissions.ts<br/>pure rules, unit tested]",
+        "  R[lib/auth/domain/permissions.ts<br/>pure rules, unit tested]",
         "  P[proxy.ts<br/>admin gate for /admin]",
         "  S[Server actions<br/>requireAdmin + canLock + lockViolations]",
         "  U[Editor UI<br/>hides lock toggle]",

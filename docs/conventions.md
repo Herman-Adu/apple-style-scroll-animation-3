@@ -9,11 +9,12 @@ Patterns to follow when extending the app so new code matches the existing archi
 - Never fetch in `useEffect`. Fetch on the server in a page or Server Component and pass data down as props.
 - Keep client islands small and low in the tree so they don't pull their subtree into the client bundle.
 
-## Data access goes through the feature `api` layer
+## Data access goes through the slice's `lib/data` folder
 
-- UI and pages import from a feature's public barrel (`features/products`), never from its internals.
-- All data reads go through `fetch*` functions in `features/*/api/index.ts`. These are marked `server-only`.
-- Never call `fetchStrapi` or touch `lib/data/*` directly from a component. The feature `api` layer is the only thing that decides the source.
+- UI and pages import from a slice's public entry (`features/products` for client-safe code, `features/products/server` for server-only code), never from its internals. Deep imports are blocked by lint and counted by `pnpm arch`.
+- Every slice's `lib/` has exactly four folders: `actions` (mutations), `data` (reads, server-only), `domain` (pure types and rules) and `adapters` (outside systems). `scripts/check-feature-lib-structure.mjs` fails the build if a fifth appears.
+- Never call `fetchStrapi` or touch `lib/data/*` directly from a component. The slice's `lib/data` folder is the only thing that decides the source.
+- `lib/` (root) never imports from `features/`; dependencies point one way: app, then features, then lib.
 
 ## Zod is the trust boundary
 

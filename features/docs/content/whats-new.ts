@@ -7,10 +7,10 @@ export const whatsNew: Doc = {
   audience: "cto",
   access: "public",
   summary:
-    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92). Each entry says what changed and why it matters.",
+    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), plus the architecture and engineering-quality refactors through PR #146. Each entry says what changed and why it matters.",
   readingMinutes: 5,
   order: 1,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-06",
   tags: ["changelog", "release notes", "email builder", "security", "documentation"],
   body: [
     {
@@ -57,6 +57,25 @@ export const whatsNew: Doc = {
         ["#84", "Security posture rewrite, permissions matrix and email architecture diagrams", "CTOs, security reviewers, developers"],
         ["#85", "Engineering quality, decision records and contributing workflow", "CTOs, recruiters, contributors"],
         ["#86", "Seasonal campaign walkthrough with real screenshots, and a platform glossary", "Content managers, clients, everyone"],
+      ],
+    },
+    { type: "heading", text: "Architecture and engineering quality" },
+    {
+      type: "paragraph",
+      text: "A run of behaviour-preserving refactor sprints moved the codebase to a strict feature-sliced layout. Every slice now has one public entry and a lib folder with exactly four roles: actions, data, domain and adapters. Each step was guarded by a ratchet so it cannot slide back.",
+    },
+    {
+      type: "table",
+      headers: ["PR", "What shipped", "Why it matters"],
+      rows: [
+        ["#101", "Shared fake-data test kit (qa/fakes)", "Tests build on one set of fakes instead of copy-pasting setup, so new tests are cheaper to write."],
+        ["#103", "Slice boundaries: 0 deep imports, 0 lib-to-features inversions, plus a lint rule", "Features can only be reached through their public entry, so a slice can be changed or replaced without ripple effects."],
+        ["#106", "Auth split into actions, data, domain and adapters", "The most security-sensitive code now follows the same predictable shape as every other slice."],
+        ["#114", "Four-folder lib split across 11 slices, finished in #115 to #119", "Anyone can find where a rule, a query or an outside call lives without searching."],
+        ["#121", "Hardened guards for inversions and prop drilling", "The architecture scorecard fails the build if the layering regresses."],
+        ["#122", "Public server actions guarded; server-only exports moved out of use-server endpoints", "Admin mutations cannot be called by an unauthorised visitor, and secrets-adjacent helpers are no longer exposed as endpoints."],
+        ["#124", "Auth and checkout origin resolution stabilised", "Sign-in and Stripe return URLs always land on the canonical site, including behind a proxy."],
+        ["#146", "Checkout hydration and local-image origin fixes", "Checkout renders without hydration warnings and product images load from the correct origin."],
       ],
     },
     {

@@ -67,7 +67,7 @@ export const emailPlatformArchitecture: Doc = {
           "Server-only send used by both Send now and the scheduler",
         ],
         [
-          "lib/auth/permissions.ts",
+          "lib/auth/domain/permissions.ts",
           "canLockBlocks, assertAdmin and the proxy gate decision",
         ],
       ],

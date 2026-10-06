@@ -49,6 +49,7 @@ import { architectureDecisionRecords } from "./architecture-decision-records"
 import { contributingAndWorkflow } from "./contributing-and-workflow"
 import { whatsNew } from "./whats-new"
 import { socialLaunchKit } from "./social-launch-kit"
+import { socialLaunchPack } from "./social-launch-pack"
 import { caseStudyEmailPlatform } from "./case-study-email-platform"
 
 /**
@@ -111,6 +112,7 @@ export const docs: Doc[] = [
   emailSellingPoints,
   showcaseAndPortfolio,
   socialAndRecruitmentMarketing,
+  socialLaunchPack,
   salesDemoAndObjections,
   productRoadmap,
 ]

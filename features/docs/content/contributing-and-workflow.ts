@@ -91,7 +91,7 @@ export const contributingAndWorkflow: Doc = {
         "flowchart TD",
         "  Q{What are you adding?}",
         "  Q -- A rule or calculation --> A[Pure module in features/*/ or lib/<br/>+ unit test in qa/unit]",
-        "  Q -- A permission --> B[lib/auth/permissions.ts<br/>+ enforce in server action]",
+        "  Q -- A permission --> B[lib/auth/domain/permissions.ts<br/>+ enforce in server action]",
         "  Q -- A database read/write --> C[features/*/repo.ts]",
         "  Q -- An admin mutation --> D[features/*/admin-actions.ts<br/>requireAdmin first line<br/>+ integration test]",
         "  Q -- UI --> E[features/admin/components<br/>Server Component by default]",

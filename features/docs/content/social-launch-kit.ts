@@ -95,7 +95,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "paragraph",
-      text: "Post 3 (process): Over 18 PRs I shipped an email builder, a permissions model and a documentation library for five audiences: customers, content managers, developers, CTOs and the owner. Every sprint followed the same loop: failing test, smallest change to pass, type-check, squash-merge, docs updated in the same week. The full changelog is public: [live URL]/docs/whats-new",
+      text: "Post 3 (process): Across 140+ small reviewed PRs I shipped an email builder, a permissions model and a documentation library for five audiences: customers, content managers, developers, CTOs and the owner. Every sprint followed the same loop: failing test, smallest change to pass, type-check, squash-merge, docs updated in the same week. The full changelog is public: [live URL]/docs/whats-new",
     },
     { type: "heading", text: "Facebook business page (clients and store owners)" },
     {

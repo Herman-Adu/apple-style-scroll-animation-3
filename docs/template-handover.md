@@ -78,6 +78,9 @@ If optional providers stay enabled (Strapi/analytics/extra auth), replace those 
 
 ### Narrative/source docs for social content
 
+- `features/docs/content/social-launch-pack.ts` (ready-to-post pack: how to use it, channel plan, Telegram and checklist)
+- `features/docs/content/social-launch-pack-recruiter.ts` (LinkedIn, X and Telegram posts for the recruitment audience)
+- `features/docs/content/social-launch-pack-client.ts` (LinkedIn, X and Telegram posts for the client and template-sales audience)
 - `features/docs/content/social-launch-kit.ts`
 - `features/docs/content/showcase-and-portfolio.ts`
 - `features/docs/content/social-and-recruitment-marketing.ts`

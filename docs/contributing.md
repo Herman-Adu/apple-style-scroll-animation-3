@@ -11,7 +11,7 @@ The full guide with diagrams is in the app at `/docs/contributing-and-workflow`.
 1. Branch from the **real** `main`. Run `git fetch origin +refs/heads/main:refs/remotes/origin/main`, check the SHA matches GitHub, then `git checkout -B v0/<short-name> origin/main`. Never commit to `main` directly. (A plain `git fetch origin main` doesn't move `origin/main`; see `docs/next-steps.md`.)
 2. Write the failing test first. Put rules in a small pure module and test them in `qa/unit`.
 3. Implement the rule, then wire it into server actions and the UI.
-4. Every admin server action calls `await requireAdmin()` on its first line, and permission checks live in `lib/auth/permissions.ts`. The proxy is defence in depth, not a replacement.
+4. Every admin server action calls `await requireAdmin()` on its first line, and permission checks live in `lib/auth/domain/permissions.ts`. The proxy is defence in depth, not a replacement.
 5. Run the checks:
    ```bash
    pnpm exec tsc --noEmit

@@ -29,7 +29,7 @@ A component is marked `"use client"` **only** when it needs the browser: state, 
 - `components/primitives/reveal.tsx` — a small entrance-animation wrapper (respects `prefers-reduced-motion`).
 - `components/primitives/search-field.tsx` — a debounced input that syncs a `q` URL param.
 - `components/layout/page-hero.tsx` — mount-driven entrance animation.
-- `lib/cart-context.tsx`, `lib/auth/auth-context.tsx` — client context providers.
+- `features/checkout/components/cart-context.tsx`, `lib/auth/adapters/auth-context.tsx` — client context providers.
 
 **Rule of thumb:** presentational content (cards, statements, specs) stays on the server. If such a component only needs an entrance animation, it wraps its markup in `<Reveal>` rather than becoming a client component itself. This keeps the client bundle small and pushes interactivity to the leaves. See [`conventions.md`](conventions.md).
 
@@ -43,7 +43,7 @@ app/                     App Router routes, layouts, boundaries, API routes
     revalidate/          Strapi publish webhook -> revalidateTag
     preview/             Enter draft mode (inert until STRAPI_PREVIEW_SECRET set)
     exit-preview/        Leave draft mode
-    auth/[...all]/       Better Auth's catch-all handler (lib/auth/instance.ts)
+    auth/[...all]/       Better Auth's catch-all handler (lib/auth/adapters/instance.ts)
     stripe/webhook/      Stripe Checkout webhook -> finalizeCheckout (see below)
   (admin)/admin/         Admin dashboard: analytics, customers, orders, products,
                          email (campaigns/templates/messages/settings), theme,
@@ -55,29 +55,25 @@ app/                     App Router routes, layouts, boundaries, API routes
                           products, sign-in, sign-up
   sitemap.ts robots.ts opengraph-image.tsx   SEO surfaces
 
-features/                Self-contained domain modules
-  products/ articles/ timeline/
-    api/                 Data access — THE SEAM (local data vs Strapi)
-    schema/              Zod schemas + inferred domain types
-    mappers.ts           Strapi raw shape -> pre-validation domain shape
-    lib/                 Pure helpers (selectors, filters) — unit tested
-    components/          Feature UI (mostly Server Components + skeletons)
-    index.ts             Public barrel — the only import surface
-  admin/                 Admin-only hooks and nav (customers/orders/company profile)
-  checkout/              Stripe pricing, line items, and the checkout server action
-  customers/ orders/     Admin-facing analytics/types over the Neon-backed data
-  email/                 Email templates/blocks, provider (Resend), admin actions
-  docs/                  In-app docs content (the /docs and /admin/docs pages)
+features/                One folder per domain slice (100% feature-sliced)
+  admin/ articles/ catalog/ checkout/ contact/ customers/ discount-codes/
+  docs/ email/ orders/ products/ reviews/ settings/ showcase/ timeline/
+    components/          Slice UI (mostly Server Components + skeletons)
+    lib/                 Four folders only: actions / data / domain / adapters
+      actions/           Server actions (mutations); admin ones start with requireAdmin()
+      data/              Reads and queries (server-only), the seam to the database or CMS
+      domain/            Pure types, zod schemas and rules, unit tested
+      adapters/          Talks to outside systems (Resend, Stripe, Strapi, Prisma)
+    index.ts             The one public entry for client-safe imports
+    server.ts            The one public entry for server-only imports
 
-lib/                     Cross-cutting concerns
+lib/                     Cross-cutting concerns only, never imports from features/
+  auth/                  Better Auth, split into actions / data / domain / adapters
   strapi/                client.ts (transport), tags.ts (cache tags), media.ts
   data/                  Local in-repo content (fallback source)
-  auth.ts auth/          Better Auth server config + adapters (db/local/strapi),
-                         session cookie/token helpers, role allowlists
-  db/prisma.ts           Prisma client (Neon Postgres) — the `db` provider backend
-  orders/                Order types, checkout finalization, invoices, notifications
+  db/prisma.ts           Prisma client (Neon Postgres)
   stripe/                Stripe server + client helpers for embedded Checkout
-  cart-context.tsx contact/ reviews/ settings/ seo/ env.ts format.ts nav.ts
+  seo/ env.ts format.ts nav.ts utils.ts types.ts
 
 components/              Shared UI (layout, home, contact, checkout, primitives, ui/*)
 hooks/                   Shared React hooks
@@ -165,7 +161,7 @@ Templates are stored as JSON block arrays in Postgres (Prisma) and rendered to H
 
 ### Authorization: defence in depth
 
-Email admin access and block locking are enforced at three independent layers. Every layer calls the same **pure rules** in `lib/auth/permissions.ts` (`adminGateDecision`, `assertAdmin`, `canLockBlocks`, unit-tested once), so a bug or bypass in one layer is caught by the next.
+Email admin access and block locking are enforced at three independent layers. Every layer calls the same **pure rules** in `lib/auth/domain/permissions.ts` (`adminGateDecision`, `assertAdmin`, `canLockBlocks`, unit-tested once), so a bug or bypass in one layer is caught by the next.
 
 | Layer | Where | What it enforces |
 | --- | --- | --- |
@@ -173,7 +169,7 @@ Email admin access and block locking are enforced at three independent layers. E
 | 2. Server actions (authoritative) | `features/email/lib/actions/admin.ts` | Every exported action starts with `await requireAdmin()`. `saveTemplate`, `resetTemplate` and `restoreVersion` also call `lockViolations(before, after)` and refuse the change unless `getServerCanLockBlocks()` is true. |
 | 3. UI | `template-editor.tsx` via `canLock` prop from the server page | Non-lockers see a **Locked** badge instead of the toggle; `toggleLock` is a no-op. This is presentation only — never trusted. |
 
-**Who can lock:** owners (`NEXT_PUBLIC_OWNER_EMAILS`, default `herman@adudev.co.uk`) plus any admin the owner grants rights to in **Admin → Settings → Permissions** (`/admin/settings/permissions`). Grants are stored in the `EmailLockRight` table and every grant or revoke writes a `PermissionAudit` row (`lib/auth/lock-rights-repo.ts`, `features/admin/lib/actions/permissions.ts`). The server-only `EMAIL_BLOCK_LOCKERS` variable is still honoured as a read-only fallback seed. The lookup is cached per request with React `cache()` and is never shipped to the browser. See ADR-011.
+**Who can lock:** owners (`NEXT_PUBLIC_OWNER_EMAILS`, default `herman@adudev.co.uk`) plus any admin the owner grants rights to in **Admin → Settings → Permissions** (`/admin/settings/permissions`). Grants are stored in the `EmailLockRight` table and every grant or revoke writes a `PermissionAudit` row (`lib/auth/data/lock-rights-repo.ts`, `features/admin/lib/actions/permissions.ts`). The server-only `EMAIL_BLOCK_LOCKERS` variable is still honoured as a read-only fallback seed. The lookup is cached per request with React `cache()` and is never shipped to the browser. See ADR-011.
 
 **Scheduled sends:** the cron route has no session, so the campaign-send logic lives in `features/email/lib/adapters/sending/campaign-send.ts` (`sendCampaign`). The cron route calls it directly; the admin action is a thin `requireAdmin()` wrapper around it.
 
@@ -245,7 +241,7 @@ Next.js 16 with Cache Components (`cacheComponents: true`, see `next.config.mjs`
 | **ISR (time-based revalidation)** | `export const revalidate = <seconds>` on a route, or `next: { revalidate }` on a `fetch`. `app/docs/[slug]/page.tsx` sets `revalidate = 300` with `dynamicParams = true` (statically known slugs prerender, new ones render on-demand and get cached). | `docs/[slug]`. Product/article/timeline pages get the same effect through cache-tagged fetches in the data seam (see [Caching & revalidation](#caching--revalidation)) rather than a page-level `revalidate` export. |
 | **On-demand revalidation** | `revalidateTag()` from the Strapi publish webhook (`app/api/revalidate`), scoped by the tag taxonomy in `lib/strapi/tags.ts`. | Any CMS-backed content the instant an editor publishes, without waiting for the ISR window. |
 | **SSR (force-dynamic)** | `export const dynamic = "force-dynamic"`. Used where the response must never be cached: it depends on the session/role, is a webhook, or reflects just-mutated state. | All `(admin)/admin/**` pages (session + role gated), `app/checkout/return` (reads a just-completed Checkout session), `app/api/stripe/webhook` (must run fresh every call, never cached). |
-| **Client-side rendering** | `"use client"` islands only — never a whole route. | `lib/cart-context.tsx`, `lib/auth/auth-context.tsx`, animation/interaction leaves in `components/primitives`. |
+| **Client-side rendering** | `"use client"` islands only — never a whole route. | `features/checkout/components/cart-context.tsx`, `lib/auth/adapters/auth-context.tsx`, animation/interaction leaves in `components/primitives`. |
 
 **Picking a strategy for a new route:**
 

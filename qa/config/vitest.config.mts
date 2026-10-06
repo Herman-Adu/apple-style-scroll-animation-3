@@ -31,7 +31,9 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reportsDirectory: path.join(projectRoot, "qa/.coverage"),
-      include: ["features/**/mappers.ts", "features/**/api/**", "lib/strapi/**", "lib/seo/**"],
+      include: ["features/**/lib/**/*.{ts,tsx}", "features/**/api/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+      exclude: ["**/*.d.ts"],
+      reporter: ["text-summary", "json-summary"],
     },
   },
 })

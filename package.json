@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "arch": "node scripts/arch-audit.mjs",
+    "facts": "node scripts/facts.mjs",
     "check": "pnpm typecheck && pnpm lint && pnpm arch && pnpm test",
     "test": "vitest run --config qa/config/vitest.config.mts",
     "test:watch": "vitest --config qa/config/vitest.config.mts",
@@ -26,7 +27,7 @@
     "showcase:video": "node scripts/showcase-video.mjs",
     "showcase:seed": "node --env-file-if-exists=.env.local --env-file-if-exists=.env.development.local scripts/showcase-seed.mjs",
     "showcase:unseed": "node --env-file-if-exists=.env.local --env-file-if-exists=.env.development.local scripts/showcase-seed.mjs --clean",
-    "showcase:assets": "playwright test --config qa/config/playwright.social.config.mts",
+    "showcase:assets": "pnpm facts && playwright test --config qa/config/playwright.social.config.mts",
     "check:feature-lib": "node ./scripts/check-feature-lib-structure.mjs"
   },
   "dependencies": {

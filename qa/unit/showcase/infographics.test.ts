@@ -9,6 +9,8 @@ import {
 } from "@/features/showcase/lib/domain/infographics"
 import { SOCIAL_FORMATS, exportPlan, socialAssets } from "@/features/showcase/lib/domain/social-assets"
 import { REPO_ROOT } from "@/qa/config/repo-root"
+import { measure } from "@/scripts/lib/arch-audit-metrics.mjs"
+import { collectSources } from "@/scripts/lib/source-files.mjs"
 
 const read = (file: string) => readFileSync(join(REPO_ROOT, file), "utf8")
 const pkg = JSON.parse(read("package.json")) as {
@@ -142,10 +144,15 @@ describe("before and after infographic", () => {
     for (const row of beforeAfter.rows) expect(health, row.label).toMatch(new RegExp(`\\|\\s*${row.before}\\s*\\|`))
   })
 
-  it("matches the numbers already approved in the launch pack", () => {
+  it("states the same baseline as the launch pack", () => {
+    for (const row of beforeAfter.rows) expect(pack, row.label).toContain(`from ${row.before}`)
+  })
+
+  it("reads each after value from an architecture fact the live code still beats", () => {
+    const now: Record<string, number> = measure(collectSources(REPO_ROOT))
     for (const row of beforeAfter.rows) {
-      expect(pack, row.label).toContain(`${row.before} to ${row.after}`)
-      expect(row.after, row.label).toBeLessThan(row.before)
+      expect(row.after.fact, row.label).toMatch(/^arch\./)
+      expect(now[row.after.fact.replace(/^arch\./, "")], row.label).toBeLessThan(row.before)
     }
   })
 })

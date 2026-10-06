@@ -32,3 +32,6 @@ next-env.d.ts
 
 # coverage output
 qa/.coverage/
+
+# pnpm facts output (slide numbers are read from here)
+/.generated/

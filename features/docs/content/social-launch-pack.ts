@@ -110,7 +110,7 @@ export const socialLaunchPack: Doc = {
       title: "Infographic brief - architecture guardrails",
       code: `Title: Architecture you can measure
 Layout: four large before and after rows, one per metric, with a thin arrow between the numbers.
-Rows: Deep imports 116 to 0. Shared code depending on features 16 to 0. any types 28 to 0. useEffect calls 55 to 31.
+Rows: Deep imports, from 116. Shared code depending on features, from 16. any types, from 28. useEffect calls, from 55. The after numbers are read from .generated/facts.json when the slide renders, so run pnpm facts first.
 Footer strip: Four folders per feature: actions, data, domain, adapters. CI fails the build if any number gets worse.
 Style: the site's own design tokens, high contrast, one accent colour, large numerals, no decorative shapes.
 Export: 1080 by 1350 PNG plus a 1080 by 1080 crop.`,

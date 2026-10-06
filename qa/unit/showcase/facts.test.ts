@@ -105,6 +105,12 @@ describe("facts wiring", () => {
     expect(pkg.scripts["showcase:assets"]).toMatch(/^pnpm facts && /)
   })
 
+  it("runs facts in CI and keeps the generated file as an artifact", () => {
+    const ci = readFileSync(join(REPO_ROOT, ".github/workflows/ci.yml"), "utf8")
+    expect(ci).toContain("run: pnpm facts")
+    expect(ci).toContain("path: .generated/facts.json")
+  })
+
   it("never commits the generated file", () => {
     expect(readFileSync(join(REPO_ROOT, ".gitignore"), "utf8")).toMatch(/^\/\.generated\/$/m)
   })

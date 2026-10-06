@@ -11,7 +11,7 @@ It's a working commerce system: a storefront with Stripe checkout, an admin area
 ## Highlights
 
 - **Email builder:** block-based templates with Product picks from the live catalog, undo/redo, version history (last 50 saves, original always kept), a placeholder picker with typo warnings, saved sections, a starter gallery with seasonal campaigns (Black Friday, Bank Holiday, Christmas), and locked blocks.
-- **Defence-in-depth permissions:** admin access and lock permission are checked in the request proxy, again in every server action, and again in the UI. Business rules live in small, pure, tested modules (`lib/auth/permissions.ts`, `features/email/lib/domain/content/locks.ts`).
+- **Defence-in-depth permissions:** admin access and lock permission are checked in the request proxy, again in every server action, and again in the UI. Business rules live in small, pure, tested modules (`lib/auth/domain/permissions.ts`, `features/email/lib/domain/content/locks.ts`).
 - **Test-driven:** every feature sprint started with failing tests. The Vitest unit and integration suites run in seconds without a database or network, and Playwright covers smoke, SEO and accessibility.
 - **Docs for every audience:** customer guides, content-manager guides, developer architecture with ER, sequence and flow diagrams, CTO pages (engineering quality, decision records, security posture) and a changelog, all served at `/docs`.
 

@@ -40,7 +40,7 @@ export const securityAndCompliancePosture: Doc = {
     },
     {
       type: "paragraph",
-      text: "Permission rules live in one pure, unit-tested module (lib/auth/permissions.ts). Three separate layers apply those same rules. If one layer has a bug or a misconfiguration, the next one still refuses the request. The interface is the last line and exists only for clarity: it hides controls a user can't use, but nothing depends on it for security.",
+      text: "Permission rules live in one pure, unit-tested module (lib/auth/domain/permissions.ts). Three separate layers apply those same rules. If one layer has a bug or a misconfiguration, the next one still refuses the request. The interface is the last line and exists only for clarity: it hides controls a user can't use, but nothing depends on it for security.",
     },
     {
       type: "mermaid",
@@ -59,7 +59,7 @@ export const securityAndCompliancePosture: Doc = {
         "  L -- Yes --> C{canLockBlocks?}",
         "  C -- No --> D3[Refused: block is locked]",
         "  C -- Yes --> W",
-        "  RULES[[lib/auth/permissions.ts]] -.-> P",
+        "  RULES[[lib/auth/domain/permissions.ts]] -.-> P",
         "  RULES -.-> A",
         "  RULES -.-> C",
       ].join("\n"),

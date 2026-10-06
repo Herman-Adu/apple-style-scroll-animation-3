@@ -31,12 +31,12 @@ export const authenticationAndAccess: Doc = {
       type: "table",
       headers: ["Piece", "Lives in", "Responsibility"],
       rows: [
-        ["Auth instance", "lib/auth/instance.ts", "Better Auth config: email + password, sessions, autoSignIn, Neon adapter."],
-        ["Role derivation", "lib/auth/config.ts", "effectiveRole() resolves admin from an email allowlist or a persisted roleOverride."],
-        ["Owner tier", "lib/auth/config.ts", "isOwner() marks the single platform owner (super-admin) — unlocks owner-only docs that even other admins can't read, and drives the Owner badge."],
+        ["Auth instance", "lib/auth/adapters/instance.ts", "Better Auth config: email + password, sessions, autoSignIn, Neon adapter."],
+        ["Role derivation", "lib/auth/domain/config.ts", "effectiveRole() resolves admin from an email allowlist or a persisted roleOverride."],
+        ["Owner tier", "lib/auth/domain/config.ts", "isOwner() marks the single platform owner (super-admin) — unlocks owner-only docs that even other admins can't read, and drives the Owner badge."],
         ["Client hook", "the auth client", "Exposes session/status and sign-in/out to client islands."],
         ["Proxy", "proxy.ts", "First gate for /admin: redirects page visits, refuses action POSTs with 401/403."],
-        ["Permission rules", "lib/auth/permissions.ts", "Pure, unit-tested rules (adminGateDecision, assertAdmin, canLockBlocks) shared by every layer."],
+        ["Permission rules", "lib/auth/domain/permissions.ts", "Pure, unit-tested rules (adminGateDecision, assertAdmin, canLockBlocks) shared by every layer."],
         ["Route guard", "account layout", "Redirects unauthenticated visitors to sign-in."],
         ["Admin guard", "admin route-group layout", "Additionally requires the admin role, server-verified."],
         ["Server actions", "features/*/*-actions.ts", "Re-check the role server-side before any privileged write."],
@@ -78,7 +78,7 @@ export const authenticationAndAccess: Doc = {
     {
       type: "code",
       language: "typescript",
-      title: "lib/auth/config.ts — role derivation (shape)",
+      title: "lib/auth/domain/config.ts — role derivation (shape)",
       code: [
         "// Admin is resolved server-side, never trusted from the client.",
         "export function effectiveRole(user: {",
@@ -115,7 +115,7 @@ export const authenticationAndAccess: Doc = {
       type: "callout",
       variant: "info",
       title: "Three enforcement layers",
-      text: "proxy.ts refuses signed-out and non-admin requests to /admin before page code runs (redirect for page visits, 401/403 for form POSTs). Every admin server action then calls requireAdmin() itself. Lock rules are checked a third time inside save, reset and restore with canLockBlocks and lockViolations. All three read their rules from lib/auth/permissions.ts, which is unit-tested on its own.",
+      text: "proxy.ts refuses signed-out and non-admin requests to /admin before page code runs (redirect for page visits, 401/403 for form POSTs). Every admin server action then calls requireAdmin() itself. Lock rules are checked a third time inside save, reset and restore with canLockBlocks and lockViolations. All three read their rules from lib/auth/domain/permissions.ts, which is unit-tested on its own.",
     },
     {
       type: "heading",

@@ -77,7 +77,7 @@ export const commerceCartCheckout: Doc = {
     {
       type: "code",
       language: "typescript",
-      title: "app/checkout/actions.ts — the trust boundary",
+      title: "features/checkout/lib/actions/checkout.ts — the trust boundary",
       code: `"use server"
 
 const CheckoutSchema = z.object({

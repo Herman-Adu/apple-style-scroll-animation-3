@@ -46,7 +46,7 @@ describe("infographic catalogue", () => {
     }
   })
 
-  it("covers every planned kind exactly once", () => {
+  it("covers every planned kind exactly once in the core catalogue (audience packs reuse kinds)", () => {
     expect([...INFOGRAPHIC_KINDS].sort()).toEqual(
       [
         "before-after",
@@ -63,7 +63,7 @@ describe("infographic catalogue", () => {
       ].sort(),
     )
     for (const kind of INFOGRAPHIC_KINDS) {
-      expect(ofKind(kind), kind).toHaveLength(1)
+      expect(ofKind(kind).filter((i) => !i.pack), kind).toHaveLength(1)
     }
   })
 

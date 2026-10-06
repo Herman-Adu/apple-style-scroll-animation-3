@@ -1,7 +1,16 @@
 import { getInfographic, type Infographic } from "./infographics"
 import { getSocialAsset, type SocialAsset } from "./social-assets"
 
-export type PackRole = "outcome" | "proof" | "judgement" | "example" | "technology" | "close"
+export type PackRole =
+  | "outcome"
+  | "proof"
+  | "judgement"
+  | "example"
+  | "technology"
+  | "cost"
+  | "control"
+  | "offer"
+  | "close"
 export type Pack = { id: string; audience: string; slides: { id: string; role: PackRole }[] }
 
 export const packs: Pack[] = [
@@ -15,6 +24,18 @@ export const packs: Pack[] = [
       { id: "infographic-sequence", role: "example" },
       { id: "infographic-stack", role: "technology" },
       { id: "recruiter-cta", role: "close" },
+    ],
+  },
+  {
+    id: "buyer",
+    audience: "Business owners and buyers",
+    slides: [
+      { id: "infographic-buyer-cost-table", role: "cost" },
+      { id: "infographic-buyer-cost-line", role: "cost" },
+      { id: "infographic-buyer-self-serve", role: "control" },
+      { id: "infographic-buyer-stock-alerts", role: "example" },
+      { id: "infographic-offer", role: "offer" },
+      { id: "carousel-cta", role: "close" },
     ],
   },
 ]

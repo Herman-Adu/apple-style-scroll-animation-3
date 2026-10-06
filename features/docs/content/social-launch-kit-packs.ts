@@ -1,0 +1,103 @@
+import type { DocBlock } from "../lib/domain/schema"
+
+/** Audience packs for the launch kit: the order to post each set and its committed PNGs. */
+export const launchKitPackBlocks: DocBlock[] = [
+  { type: "heading", text: "Recruiter pack" },
+  {
+    type: "paragraph",
+    text: "Six slides for recruiters and hiring managers. Proof comes before technology, and the proof numbers are read from the latest test run. Post them in this order as one carousel or album.",
+  },
+  {
+    type: "table",
+    headers: ["Order", "Slide", "Job"],
+    rows: [
+      ["1", "/showcase/social/infographic-recruiter-built.png", "What was built and why it matters"],
+      ["2", "/showcase/social/infographic-recruiter-proof.png", "Tests, coverage ratchet and merge gates"],
+      ["3", "/showcase/social/infographic-recruiter-judgement.png", "The one-way dependency rule, enforced by CI"],
+      ["4", "/showcase/social/infographic-sequence.png", "Back in stock as a worked example"],
+      ["5", "/showcase/social/infographic-stack.png", "The technology, last"],
+      ["6", "/showcase/social/recruiter-cta.png", "QR code and contact"],
+    ],
+  },
+  {
+    type: "image",
+    src: "/showcase/social/infographic-recruiter-built.png",
+    alt: "Table of what was built and why each part matters: storefront and checkout, admin, email platform, back-in-stock alerts and docs.",
+    caption: "Recruiter 1. Outcomes first.",
+    width: 1080,
+    height: 1350,
+  },
+  {
+    type: "image",
+    src: "/showcase/social/infographic-recruiter-proof.png",
+    alt: "Table of measured proof: automated test count, line and branch coverage, deep imports and merge gates, with what keeps each honest.",
+    caption: "Recruiter 2. Proof, read from the latest test run.",
+    width: 1080,
+    height: 1350,
+  },
+  {
+    type: "image",
+    src: "/showcase/social/infographic-recruiter-judgement.png",
+    alt: "Layer diagram showing dependencies flow one way: app, features, feature internals, then shared lib.",
+    caption: "Recruiter 3. One engineering judgement, enforced by CI.",
+    width: 1080,
+    height: 1350,
+  },
+  {
+    type: "image",
+    src: "/showcase/social/recruiter-cta.png",
+    alt: "Closing slide asking 'Hiring for a build like this?' with a QR code to the case study and a contact email.",
+    caption: "Recruiter 6. The close, with QR and contact.",
+    width: 1080,
+    height: 1350,
+  },
+  { type: "heading", text: "Buyer pack" },
+  {
+    type: "paragraph",
+    text: "Six slides for business owners and buyers. Cost leads, then control, then a worked example. Cost slides are marked Illustrative; the stock-alert chart is marked Demo data and matches the seeded demo store exactly. Seeded addresses use the reserved .test domain, so they can never receive a real email.",
+  },
+  {
+    type: "table",
+    headers: ["Order", "Slide", "Job"],
+    rows: [
+      ["1", "/showcase/social/infographic-buyer-cost-table.png", "Three-year cost, side by side"],
+      ["2", "/showcase/social/infographic-buyer-cost-line.png", "The cost gap over time"],
+      ["3", "/showcase/social/infographic-buyer-self-serve.png", "What the team changes without a developer"],
+      ["4", "/showcase/social/infographic-buyer-stock-alerts.png", "Back in stock, from the demo store"],
+      ["5", "/showcase/social/infographic-offer.png", "What is included and how handover works"],
+      ["6", "/showcase/social/carousel-cta.png", "QR code and contact"],
+    ],
+  },
+  {
+    type: "image",
+    src: "/showcase/social/infographic-buyer-cost-table.png",
+    alt: "Illustrative table of relative cost over launch and three years: building from scratch runs 6 to 12 units, the tested template 2 to 5.",
+    caption: "Buyer 1. Cost first. Illustrative.",
+    width: 1080,
+    height: 1350,
+  },
+  {
+    type: "image",
+    src: "/showcase/social/infographic-buyer-cost-line.png",
+    alt: "Illustrative line chart of cumulative cost over three years: building from scratch climbs steeply, while the tested template starts lower and rises gently.",
+    caption: "Buyer 2. The gap widens. Illustrative.",
+    width: 1080,
+    height: 1350,
+  },
+  {
+    type: "image",
+    src: "/showcase/social/infographic-buyer-self-serve.png",
+    alt: "Table of everyday changes before and with this store: theme, discounts, email and restock move from developer work to admin pages.",
+    caption: "Buyer 3. Your team stays in control.",
+    width: 1080,
+    height: 1350,
+  },
+  {
+    type: "image",
+    src: "/showcase/social/infographic-buyer-stock-alerts.png",
+    alt: "Bar chart from the demo store showing how many people are waiting for each sold-out product, with MOMO Studio the most wanted.",
+    caption: "Buyer 4. Sold out, still selling. Demo data.",
+    width: 1080,
+    height: 1350,
+  },
+]

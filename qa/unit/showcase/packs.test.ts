@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { findHardCodedNumbers } from "@/features/showcase/lib/domain/facts"
-import { getInfographic } from "@/features/showcase/lib/domain/infographics"
+import { getInfographic, infographicProblems, type Infographic } from "@/features/showcase/lib/domain/infographics"
+import { buildDemoData } from "../../../scripts/lib/showcase-demo-data.mjs"
 import { getPack, packProblems, packSlides, packs, type Pack } from "@/features/showcase/lib/domain/packs"
 import { carouselSlides, getSocialAsset } from "@/features/showcase/lib/domain/social-assets"
 
@@ -51,6 +52,81 @@ describe("audience packs", () => {
 
   it("keeps pack-only slides out of the email case-study carousel", () => {
     expect(carouselSlides().map((s) => s.id)).not.toContain(recruiter.slides.at(-1)!.id)
+  })
+})
+
+describe("buyer pack", () => {
+  const buyer = getPack("buyer")!
+  const slideFor = (role: string, nth = 0) => getInfographic(buyer.slides.filter((s) => s.role === role)[nth].id)!
+
+  it("leads with cost, then control, the stock-alert story, the offer and a contact close", () => {
+    expect(buyer.slides.map((s) => s.role)).toEqual(["cost", "cost", "control", "example", "offer", "close"])
+  })
+
+  it("shows three-year cost as a table and a cumulative line, both marked illustrative", () => {
+    const table = slideFor("cost", 0)
+    const line = slideFor("cost", 1)
+    expect(table.kind).toBe("table")
+    expect(line.kind).toBe("line-chart")
+    expect(table.illustrative).toBe(true)
+    expect(line.illustrative).toBe(true)
+  })
+
+  it("the cost table and the cost line show the same numbers", () => {
+    const table = slideFor("cost", 0)
+    const line = slideFor("cost", 1)
+    if (table.kind !== "table" || line.kind !== "line-chart") throw new Error("wrong kinds")
+    expect(table.rows.map((r) => r.label)).toEqual(line.xLabels)
+    line.series.forEach((series, column) => {
+      expect(table.columns[column + 1]).toBe(series.name)
+      expect(table.rows.map((r) => r.cells[column])).toEqual(series.values)
+    })
+  })
+
+  it("shows editors self-serving as a before and after", () => {
+    const slide = slideFor("control")
+    if (slide.kind !== "table") throw new Error("expected a table")
+    expect(slide.columns.slice(1)).toEqual(["Before", "With this store"])
+  })
+
+  it("the stock-alert chart matches the waiting alerts the demo seed writes", () => {
+    const slide = slideFor("example")
+    if (slide.kind !== "bar-chart") throw new Error("expected a bar chart")
+    expect(slide.demoData).toBe(true)
+    const names: Record<string, string> = { "momo-studio": "MOMO Studio", "momo-x": "MOMO X", "momo-beat": "MOMO Beat", "momo-air": "MOMO Air" }
+    const seeded = buildDemoData(new Date("2026-10-06T09:00:00.000Z")).stockAlerts.reduce<Record<string, number>>(
+      (counts, alert: { productSlug: string }) => ({ ...counts, [names[alert.productSlug]]: (counts[names[alert.productSlug]] ?? 0) + 1 }),
+      {},
+    )
+    expect(Object.fromEntries(slide.bars.map((b) => [b.label, b.value]))).toEqual(seeded)
+  })
+
+  it("ends with the offer and hand-over, then the build-vs-buy contact slide", () => {
+    expect(buyer.slides.slice(-2).map((s) => s.id)).toEqual(["infographic-offer", "carousel-cta"])
+  })
+
+  it("keeps buyer-only slides out of the email case-study carousel", () => {
+    expect(carouselSlides().map((s) => s.id)).not.toContain(buyer.slides[0].id)
+  })
+})
+
+describe("demo-data and typed table values", () => {
+  const base = getInfographic("infographic-buyer-stock-alerts")!
+
+  it("allows typed chart values on a slide marked as demo data", () => {
+    expect(infographicProblems(base)).toEqual([])
+    expect(findHardCodedNumbers(base)).toEqual([])
+  })
+
+  it("still rejects typed chart values with neither flag", () => {
+    const { demoData: _demoData, ...plain } = base as Infographic & { demoData?: true }
+    expect(infographicProblems(plain as Infographic)).toContain("typed values: read them from facts or mark the slide illustrative")
+  })
+
+  it("rejects typed numbers in a table that is not illustrative", () => {
+    const table = getInfographic("infographic-buyer-cost-table")!
+    const { illustrative: _illustrative, ...plain } = table
+    expect(infographicProblems(plain as Infographic)).toContain("typed values: read them from facts or mark the slide illustrative")
   })
 })
 

@@ -73,13 +73,14 @@ async function insertDemoRows(tx) {
   await tx.messagePreset.createMany({ data: data.messagePresets })
   await tx.customerMessage.createMany({ data: data.customerMessages })
   await tx.emailLog.createMany({ data: data.emailLogs })
+  await tx.stockAlert.createMany({ data: data.stockAlerts })
   for (const { templateKey, ...campaign } of data.campaigns) {
     await tx.campaign.create({ data: { ...campaign, templateId: templateId(templateKey) } })
   }
 }
 
 const counts = Object.fromEntries(
-  ["users", "orders", "discountCodes", "reviews", "subscribers", "campaigns", "messagePresets", "customerMessages", "emailLogs"].map(
+  ["users", "orders", "discountCodes", "reviews", "subscribers", "campaigns", "messagePresets", "customerMessages", "emailLogs", "stockAlerts"].map(
     (key) => [key, data[key].length],
   ),
 )

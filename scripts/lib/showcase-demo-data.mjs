@@ -17,6 +17,14 @@ export const SEEDED_MODELS = [
   "campaign",
   "subscriber",
   "emailLog",
+  "stockAlert",
+]
+
+/** People waiting per product. The buyer pack's stock-alert slide shows these exact counts. */
+const WAITING_ALERTS = [
+  ["momo-studio", 12],
+  ["momo-x", 7],
+  ["momo-beat", 4],
 ]
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -79,6 +87,7 @@ export function buildCleanupPlan() {
     { model: "emailLog", where: { to: demoEmail } },
     { model: "campaign", where: { stats: { path: ["demo"], equals: true } } },
     { model: "subscriber", where: { email: demoEmail } },
+    { model: "stockAlert", where: { email: demoEmail } },
     { model: "messagePreset", where: { category: DEMO_PRESET_CATEGORY } },
     { model: "discountCode", where: { id: demoId } },
     { model: "user", where: { id: demoId, email: demoEmail } },
@@ -306,6 +315,18 @@ function buildMessages(now, users) {
   return { messagePresets, customerMessages }
 }
 
+function buildStockAlerts(now) {
+  return WAITING_ALERTS.flatMap(([slug, count]) =>
+    Array.from({ length: count }, (_, index) => ({
+      email: email(`waiting-${slug}-${index + 1}`),
+      productSlug: slug,
+      token: `${DEMO_ID_PREFIX}alert_${slug}_${index + 1}`,
+      createdAt: ageBefore(now, index % 14, index),
+      notifiedAt: null,
+    })),
+  )
+}
+
 export function buildDemoData(now = new Date()) {
   const users = buildUsers(now)
   const rawCodes = buildDiscountCodes(now)
@@ -321,5 +342,6 @@ export function buildDemoData(now = new Date()) {
     reviews: buildReviews(now, users),
     ...buildEmail(now, users, orders),
     ...buildMessages(now, users),
+    stockAlerts: buildStockAlerts(now),
   }
 }

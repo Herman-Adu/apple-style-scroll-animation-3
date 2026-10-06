@@ -25,7 +25,7 @@ const NEW_KINDS = ["table", "bar-chart", "line-chart", "sequence"] as const
 type NewKind = (typeof NEW_KINDS)[number]
 
 function sample<K extends NewKind>(kind: K): Extract<Infographic, { kind: K }> {
-  const found = infographics.find((i): i is Extract<Infographic, { kind: K }> => i.kind === kind)
+  const found = infographics.find((i): i is Extract<Infographic, { kind: K }> => i.kind === kind && !i.pack)
   if (!found) throw new Error(`no ${kind} infographic in the registry`)
   return found
 }

@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
+import { getClip } from "./shot-list"
 
 /**
  * Clip 1, storefront tour: the home page scrolled all the way to the footer,
@@ -7,20 +8,22 @@ import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./cli
  * the clip follows the live catalogue.
  */
 test("clip: storefront journey", async ({ page, request }) => {
+  const [homeCaption, productCaption, checkoutCaption] = getClip("storefront").captions
+
   const sitemap = await (await request.get("/sitemap.xml")).text()
   const productUrl = sitemap.match(/<loc>([^<]*\/products\/[^<]+)<\/loc>/)?.[1]
   expect(productUrl, "a product URL in sitemap").toBeTruthy()
 
   await page.goto("/", { waitUntil: "networkidle" })
   await beat(page, 1500)
-  await showCaption(page, "A scroll-driven storefront, built on Next.js 16")
+  await showCaption(page, homeCaption)
   await beat(page, 1800)
   await clearCaption(page)
   await scrollToBottom(page)
   await beat(page, 1500)
 
   await page.goto(new URL(productUrl!).pathname, { waitUntil: "networkidle" })
-  await showCaption(page, "Real product pages, ready to sell")
+  await showCaption(page, productCaption)
   await beat(page, 2200)
 
   const addToCart = page.getByRole("button", { name: /add to cart|pre-order/i }).first()
@@ -30,7 +33,7 @@ test("clip: storefront journey", async ({ page, request }) => {
   }
 
   await page.goto("/checkout", { waitUntil: "networkidle" })
-  await showCaption(page, "Secure Stripe checkout, in test mode")
+  await showCaption(page, checkoutCaption)
   await beat(page, 2800)
 
   await saveClip(page, "storefront")

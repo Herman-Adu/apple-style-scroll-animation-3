@@ -10,15 +10,20 @@ import { execFileSync } from "node:child_process"
 import { existsSync, mkdirSync, readdirSync } from "node:fs"
 import path from "node:path"
 import ffmpegPath from "ffmpeg-static"
+import { formatFromEnv } from "./lib/showcase-formats.mjs"
 import { buildPosterArgs, buildTranscodeArgs, clipFileNames } from "./lib/video-args.mjs"
 
 const root = process.cwd()
 const rawDir = path.join(root, "test-results", "showcase", "raw")
 const outDir = path.join(root, "public", "showcase", "video")
 
+const formatFlag = process.argv.find((arg) => arg.startsWith("--format="))?.slice("--format=".length)
+const format = formatFromEnv(formatFlag ?? process.env.SHOWCASE_FORMAT)
+
 if (!process.argv.includes("--no-record")) {
   execFileSync("pnpm", ["exec", "playwright", "test", "--config", "qa/config/playwright.showcase.config.mts"], {
     stdio: "inherit",
+    env: { ...process.env, SHOWCASE_FORMAT: format },
   })
 }
 

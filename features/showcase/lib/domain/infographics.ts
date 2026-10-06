@@ -1,3 +1,4 @@
+import type { FactRef } from "./facts"
 import type { SocialFormat } from "./social-assets"
 
 type Base = {
@@ -14,7 +15,7 @@ export type StackItem = { name: string; version?: string; source: StackSource }
 export type Infographic =
   | (Base & { kind: "stack"; groups: { label: string; items: StackItem[] }[] })
   | (Base & { kind: "layers"; layers: { name: string; detail: string }[] })
-  | (Base & { kind: "before-after"; rows: { label: string; before: number; after: number; note: string }[] })
+  | (Base & { kind: "before-after"; rows: { label: string; before: number; after: FactRef; note: string }[] })
   | (Base & { kind: "site-map"; areas: { name: string; routes: { path: string; label: string }[] }[] })
   | (Base & { kind: "flow"; steps: { title: string; detail: string }[] })
   | (Base & { kind: "gates"; steps: { name: string; detail: string }[] })
@@ -87,10 +88,10 @@ export const infographics: Infographic[] = [
     title: "Measured, then fixed.",
     summary: "Four architecture numbers tracked in CI, before and after.",
     rows: [
-      { label: "Deep imports across features", before: 116, after: 0, note: "One public entry per slice" },
-      { label: "Shared code depending on features", before: 16, after: 0, note: "Dependencies point one way" },
-      { label: "any types", before: 28, after: 0, note: "Validated at every boundary" },
-      { label: "useEffect calls", before: 55, after: 31, note: "Data loading moved to the server" },
+      { label: "Deep imports across features", before: 116, after: { fact: "arch.deepImports" }, note: "One public entry per slice" },
+      { label: "Shared code depending on features", before: 16, after: { fact: "arch.libToFeatures" }, note: "Dependencies point one way" },
+      { label: "any types", before: 28, after: { fact: "arch.anyTypes" }, note: "Validated at every boundary" },
+      { label: "useEffect calls", before: 55, after: { fact: "arch.useEffect" }, note: "Data loading moved to the server" },
     ],
   },
   {

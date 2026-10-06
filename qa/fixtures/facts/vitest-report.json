@@ -1,0 +1,25 @@
+{
+  "numTotalTests": 6,
+  "success": true,
+  "testResults": [
+    {
+      "name": "/repo/qa/unit/cart/totals.test.ts",
+      "assertionResults": [
+        { "title": "adds lines", "status": "passed" },
+        { "title": "rounds pence", "status": "passed" },
+        { "title": "later", "status": "skipped" }
+      ]
+    },
+    {
+      "name": "/repo/qa/unit/meta/skills.test.ts",
+      "assertionResults": [{ "title": "routes every skill", "status": "passed" }]
+    },
+    {
+      "name": "C:\\repo\\qa\\integration\\orders\\finalize.test.ts",
+      "assertionResults": [
+        { "title": "finalises once", "status": "passed" },
+        { "title": "restores stock", "status": "passed" }
+      ]
+    }
+  ]
+}

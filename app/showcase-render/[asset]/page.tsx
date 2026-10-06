@@ -10,6 +10,7 @@ import {
   infographics,
   socialAssets,
 } from "@/features/showcase"
+import { loadFacts } from "@/features/showcase/server"
 
 export const metadata: Metadata = {
   title: "Showcase render",
@@ -42,9 +43,10 @@ export default async function ShowcaseRenderPage({ params }: { params: Promise<{
 
   const infographic = getInfographic(asset)
   if (infographic) {
+    const facts = await loadFacts()
     return (
       <main>
-        <InfographicSlide infographic={infographic} />
+        <InfographicSlide infographic={infographic} facts={facts} />
       </main>
     )
   }

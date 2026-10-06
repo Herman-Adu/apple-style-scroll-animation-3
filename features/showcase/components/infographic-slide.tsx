@@ -1,5 +1,6 @@
 import { siteConfig } from "@/lib/data/site"
 import { SOCIAL_FORMATS } from "../lib/domain/social-assets"
+import type { Facts } from "../lib/domain/facts"
 import type { Infographic } from "../lib/domain/infographics"
 import {
   BeforeAfterBody,
@@ -11,14 +12,16 @@ import {
   StackBody,
 } from "./infographic-parts"
 
-function Body({ infographic }: { infographic: Infographic }) {
+type SlideProps = { infographic: Infographic; facts: Facts | null }
+
+function Body({ infographic, facts }: SlideProps) {
   switch (infographic.kind) {
     case "stack":
       return <StackBody groups={infographic.groups} />
     case "layers":
       return <LayersBody layers={infographic.layers} />
     case "before-after":
-      return <BeforeAfterBody rows={infographic.rows} />
+      return <BeforeAfterBody rows={infographic.rows} facts={facts} />
     case "site-map":
       return <SiteMapBody areas={infographic.areas} />
     case "flow":
@@ -30,7 +33,7 @@ function Body({ infographic }: { infographic: Infographic }) {
   }
 }
 
-export function InfographicSlide({ infographic }: { infographic: Infographic }) {
+export function InfographicSlide({ infographic, facts }: SlideProps) {
   const { width, height } = SOCIAL_FORMATS[infographic.format]
 
   return (
@@ -50,7 +53,7 @@ export function InfographicSlide({ infographic }: { infographic: Infographic }) 
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col">
-        <Body infographic={infographic} />
+        <Body infographic={infographic} facts={facts} />
       </div>
     </section>
   )

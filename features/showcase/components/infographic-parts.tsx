@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowRight, Check } from "lucide-react"
+import { resolveFact, type Facts } from "../lib/domain/facts"
 import type { Infographic } from "../lib/domain/infographics"
 
 type Kind<K extends Infographic["kind"]> = Extract<Infographic, { kind: K }>
@@ -46,7 +47,7 @@ export function LayersBody({ layers }: Pick<Kind<"layers">, "layers">) {
   )
 }
 
-export function BeforeAfterBody({ rows }: Pick<Kind<"before-after">, "rows">) {
+export function BeforeAfterBody({ rows, facts }: Pick<Kind<"before-after">, "rows"> & { facts: Facts | null }) {
   return (
     <ul className="flex flex-1 flex-col">
       {rows.map((row) => (
@@ -58,7 +59,7 @@ export function BeforeAfterBody({ rows }: Pick<Kind<"before-after">, "rows">) {
           <div className="flex shrink-0 items-center gap-5 font-mono">
             <span className="text-4xl text-muted-foreground line-through decoration-2">{row.before}</span>
             <ArrowRight aria-hidden className="size-7 text-muted-foreground" />
-            <span className="w-24 text-right text-6xl font-semibold text-accent-teal">{row.after}</span>
+            <span className="w-24 text-right text-6xl font-semibold text-accent-teal">{resolveFact(facts, row.after.fact) ?? "–"}</span>
           </div>
         </li>
       ))}

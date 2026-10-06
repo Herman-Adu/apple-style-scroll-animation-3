@@ -3,4 +3,5 @@
 export * from "./lib/domain/social-assets"
 export * from "./components/social-slide"
 export * from "./lib/domain/infographics"
+export * from "./lib/domain/facts"
 export * from "./components/infographic-slide"

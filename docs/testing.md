@@ -44,6 +44,12 @@ pnpm test:all          # unit/integration + e2e
 - **Integration / email** and **integration / checkout-finalize** run against the database and verify reset-to-original and the post-checkout email/order flow.
 - **Smoke / SEO / axe** are Playwright suites that run against the dev server for real-browser guarantees.
 
+## Facts and the coverage ratchet
+
+`pnpm facts` runs unit + integration with coverage, lists the Playwright tests, measures the architecture and writes `.generated/facts.json` (git-ignored). Every number on a showcase slide is read from that file; a unit test fails if a slide types a number in instead of using `{ fact: "..." }`.
+
+Coverage only goes up: the run fails if lines or branches drop below `qa/baselines/coverage.json`. After raising coverage, run `pnpm facts --update-baseline` and commit the new baseline. CI runs `pnpm facts` and uploads the file as an artifact; `pnpm showcase:assets` runs it before rendering.
+
 ## Notes
 
 - The unit/integration tests mock `fetch` inline. A future improvement is an MSW-based mock Strapi so the whole app can run in the browser against a simulated CMS before the real instance exists.

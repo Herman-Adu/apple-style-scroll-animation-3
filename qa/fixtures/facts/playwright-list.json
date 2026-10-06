@@ -1,0 +1,28 @@
+{
+  "suites": [
+    {
+      "file": "smoke/routes.spec.ts",
+      "specs": [
+        { "file": "smoke/routes.spec.ts", "tests": [{ "projectName": "chromium" }] },
+        { "file": "smoke/routes.spec.ts", "tests": [{ "projectName": "chromium" }] }
+      ],
+      "suites": [
+        {
+          "file": "smoke/routes.spec.ts",
+          "specs": [{ "file": "smoke/routes.spec.ts", "tests": [{ "projectName": "chromium" }] }]
+        }
+      ]
+    },
+    {
+      "file": "axe/accessibility.spec.ts",
+      "specs": [{ "file": "axe/accessibility.spec.ts", "tests": [{ "projectName": "chromium" }] }]
+    },
+    {
+      "file": "seo/seo-surfaces.spec.ts",
+      "specs": [
+        { "file": "seo/seo-surfaces.spec.ts", "tests": [{ "projectName": "chromium" }] },
+        { "file": "seo/seo-surfaces.spec.ts", "tests": [{ "projectName": "chromium" }] }
+      ]
+    }
+  ]
+}

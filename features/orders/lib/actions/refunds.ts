@@ -13,7 +13,12 @@ import { auth } from "@/lib/auth/adapters/instance";
 import { prisma } from "@/lib/db/prisma";
 import { effectiveRole } from "@/lib/auth/domain/config";
 import { getStripe } from "@/lib/stripe/server";
-import { restoreStock, type ReservedLine } from "../data/finalize/stock";
+import type { RestockedProduct } from "@/features/stock-alerts/server";
+import {
+  announceRestock,
+  restoreStock,
+  type ReservedLine,
+} from "../data/finalize/stock";
 import { dispatchRefundEmail } from "../adapters/notifications";
 import { revalidateCatalog } from "@/features/catalog/server";
 import type { Order, OrderStatus, RefundEntry } from "../domain/types";
@@ -196,6 +201,7 @@ export async function refundOrderAction(
   const isFullRefund =
     existing.refundedAmount + requested >= existing.total - 0.001;
 
+  let restockedProducts: RestockedProduct[] = [];
   const updated = await prisma.$transaction(async (tx) => {
     const priorRefunds = Array.isArray(existing.refunds)
       ? (existing.refunds as unknown as RefundEntry[])
@@ -209,7 +215,7 @@ export async function refundOrderAction(
           ? (existing.items as unknown as Order["items"])
           : []
       ).map((item) => ({ slug: item.slug, quantity: item.quantity }));
-      await restoreStock(tx, lines);
+      restockedProducts = await restoreStock(tx, lines);
     }
 
     return tx.order.update({
@@ -224,6 +230,7 @@ export async function refundOrderAction(
   });
 
   if (isFullRefund) revalidateCatalog();
+  await announceRestock(restockedProducts);
 
   const order = toOrder(updated);
   void dispatchRefundEmail(order, entry, isFullRefund).catch(() => {});

@@ -17,8 +17,14 @@ import type { Prisma } from "@prisma/client"
 import { auth } from "@/lib/auth/adapters/instance"
 import { prisma } from "@/lib/db/prisma"
 import { effectiveRole } from "@/lib/auth/domain/config"
-import { getAllProducts } from "@/features/products"
-import { productSchema, type Product } from "@/features/products"
+import {
+  crossedBackInStock,
+  effectiveStock,
+  getAllProducts,
+  productSchema,
+  type Product,
+} from "@/features/products"
+import { notifyBackInStock } from "@/features/stock-alerts/server"
 import { toMap, type ProductMap } from "../domain/store"
 import { revalidateCatalog } from "../adapters/revalidate"
 
@@ -69,12 +75,33 @@ export async function saveProductOverlayAction(product: Product): Promise<void> 
   await requireAdmin()
   const parsed = productSchema.parse(product)
   const data = parsed as unknown as Prisma.InputJsonValue
+  const previous = await currentProduct(parsed.slug)
   await prisma.productOverlay.upsert({
     where: { slug: parsed.slug },
     create: { slug: parsed.slug, data, deleted: false },
     update: { data, deleted: false },
   })
   revalidateCatalog()
+  if (previous && crossedBackInStock(effectiveStock(previous), effectiveStock(parsed))) {
+    try {
+      await notifyBackInStock([{ slug: parsed.slug, name: parsed.name }])
+    } catch {
+      // The save already succeeded; alerts are retried on the next restock.
+    }
+  }
+}
+
+/** The product as customers see it right now: overlay if present, otherwise the code seed. */
+async function currentProduct(slug: string): Promise<Product | null> {
+  const row = await prisma.productOverlay.findUnique({
+    where: { slug },
+    select: { data: true, deleted: true },
+  })
+  if (row && !row.deleted) {
+    const parsed = productSchema.safeParse(row.data)
+    if (parsed.success) return parsed.data
+  }
+  return getAllProducts().find((p) => p.slug === slug) ?? null
 }
 
 /** Remove a product (admin). Seed products are tombstoned so they stay removed

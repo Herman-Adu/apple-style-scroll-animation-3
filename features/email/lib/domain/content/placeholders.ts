@@ -4,7 +4,7 @@
  * Real sends still fill values from the order/customer/campaign context.
  */
 
-export type PlaceholderGroup = "Customer" | "Order" | "Offer" | "Refund" | "Links" | "Brand"
+export type PlaceholderGroup = "Customer" | "Order" | "Product" | "Offer" | "Refund" | "Links" | "Brand"
 
 export type Placeholder = {
   key: string
@@ -13,7 +13,7 @@ export type Placeholder = {
   sample: string
 }
 
-export const PLACEHOLDER_GROUPS: PlaceholderGroup[] = ["Customer", "Order", "Offer", "Refund", "Links", "Brand"]
+export const PLACEHOLDER_GROUPS: PlaceholderGroup[] = ["Customer", "Order", "Product", "Offer", "Refund", "Links", "Brand"]
 
 export const PLACEHOLDERS: Placeholder[] = [
   { key: "customer_name", label: "Customer name", group: "Customer", sample: "Ada Lovelace" },
@@ -33,6 +33,9 @@ export const PLACEHOLDERS: Placeholder[] = [
   { key: "order_url", label: "Order link", group: "Links", sample: "/account?tab=orders" },
   { key: "admin_url", label: "Admin link", group: "Links", sample: "/admin/orders" },
   { key: "brand_name", label: "Brand name", group: "Brand", sample: "MOMO" },
+  { key: "product_name", label: "Product name", group: "Product", sample: "Momo X" },
+  { key: "product_url", label: "Product link", group: "Links", sample: "/products/momo-x" },
+  { key: "unsubscribe_url", label: "Unsubscribe link", group: "Links", sample: "/stock-alerts/unsubscribe?token=abc" },
 ]
 
 const KNOWN = new Set(PLACEHOLDERS.map((p) => p.key))

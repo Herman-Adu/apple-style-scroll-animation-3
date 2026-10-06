@@ -62,7 +62,7 @@ export const managingTheProductCatalog: Doc = {
       rows: [
         ["In stock", "Add to cart is available and checkout proceeds normally."],
         ["Low stock", "Add to cart still works, with a low-stock note to create urgency."],
-        ["Out of stock", "Add to cart is disabled; the product shows as sold out but stays visible, with a \"Notify me\" form for a back-in-stock email."],
+        ["Out of stock", "Add to cart is disabled; the product shows as sold out but stays visible, with a \"Notify me\" form. When stock goes from zero back above zero (an admin edit, an expired checkout releasing its hold, or a full refund), everyone waiting gets one back-in-stock email with a one-click unsubscribe link."],
       ],
     },
     {

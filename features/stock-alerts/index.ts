@@ -2,4 +2,5 @@
 // Server actions are exported here too ("use server" files are RPC boundaries).
 export * from "./lib/domain/alert"
 export * from "./lib/actions/subscribe"
+export * from "./lib/actions/unsubscribe"
 export * from "./components/notify-me-form"

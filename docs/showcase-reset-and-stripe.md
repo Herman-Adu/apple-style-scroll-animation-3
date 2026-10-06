@@ -188,3 +188,24 @@ Nothing is obviously abandoned, but a few things are worth knowing:
   ```
 
   That will report genuinely unreferenced files, exports, and dependencies far more reliably than a manual pass.
+
+---
+
+## 4. Demo data for recording (seed and cleanup)
+
+Recording the showcase clips needs a believable admin: orders, discount codes, reviews, subscribers, campaigns and message templates. `scripts/showcase-seed.mjs` writes that into the database your `DATABASE_URL` points at, using the pure builder in `scripts/lib/showcase-demo-data.mjs`.
+
+```bash
+pnpm showcase:seed                 # dry run: prints the target host and any collisions, writes nothing
+pnpm showcase:seed -- --confirm    # replaces any earlier demo rows, then writes the demo set
+pnpm showcase:unseed -- --confirm  # removes only the demo rows
+```
+
+How it keeps real data safe:
+
+- Every demo row is tagged: ids start with `demo_`, order numbers with `DEMO-`, and every address uses the reserved `demo.momo-audio.test` domain, which cannot receive mail.
+- Campaigns use manual audiences of demo addresses only, and the scheduled one is dated well in the future, so nothing can email a real subscriber.
+- Stripe ids on demo orders are empty, so a demo order can never be refunded for real.
+- Writing needs `--confirm`. Re-running replaces the demo rows and never duplicates them. Cleanup deletes only rows matching the tags above.
+
+Real customers and orders are not hidden by the seed. If the database holds real orders, they appear in the admin lists next to the demo rows, so clean those views up (or record from an empty database) before you film.

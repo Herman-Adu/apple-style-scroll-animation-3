@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test"
-import { beat, saveClip, smoothScroll } from "./clip"
+import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
 
 /**
- * Clip A, storefront: scroll animation, product page, add to cart, checkout.
- * Product slug comes from the sitemap so the clip follows the live catalogue.
+ * Clip 1, storefront tour: the home page scrolled all the way to the footer,
+ * then a product page and the checkout. Product slug comes from the sitemap so
+ * the clip follows the live catalogue.
  */
 test("clip: storefront journey", async ({ page, request }) => {
   const sitemap = await (await request.get("/sitemap.xml")).text()
@@ -12,11 +13,15 @@ test("clip: storefront journey", async ({ page, request }) => {
 
   await page.goto("/", { waitUntil: "networkidle" })
   await beat(page, 1500)
-  await smoothScroll(page, 2400)
-  await beat(page)
+  await showCaption(page, "A scroll-driven storefront, built on Next.js 16")
+  await beat(page, 1800)
+  await clearCaption(page)
+  await scrollToBottom(page)
+  await beat(page, 1500)
 
   await page.goto(new URL(productUrl!).pathname, { waitUntil: "networkidle" })
-  await beat(page)
+  await showCaption(page, "Real product pages, ready to sell")
+  await beat(page, 2200)
 
   const addToCart = page.getByRole("button", { name: /add to cart|pre-order/i }).first()
   if (await addToCart.isEnabled()) {
@@ -25,7 +30,8 @@ test("clip: storefront journey", async ({ page, request }) => {
   }
 
   await page.goto("/checkout", { waitUntil: "networkidle" })
-  await beat(page, 2500)
+  await showCaption(page, "Secure Stripe checkout, in test mode")
+  await beat(page, 2800)
 
   await saveClip(page, "storefront")
 })

@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
+import { SHOWCASE_FORMATS, formatFromEnv } from "../../scripts/lib/showcase-formats.mjs";
 
 /**
  * Recording harness for the showcase demo clips. Kept out of the default
@@ -10,7 +11,7 @@ import { defineConfig, devices } from "@playwright/test";
 const projectRoot = fileURLToPath(new URL("../..", import.meta.url));
 const PORT = Number(process.env.PORT ?? 3000);
 const baseURL = process.env.QA_BASE_URL ?? `http://localhost:${PORT}`;
-const size = { width: 1280, height: 720 };
+const size = SHOWCASE_FORMATS[formatFromEnv(process.env.SHOWCASE_FORMAT)];
 
 export default defineConfig({
   testDir: path.join(projectRoot, "qa"),

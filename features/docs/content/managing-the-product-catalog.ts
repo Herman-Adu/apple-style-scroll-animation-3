@@ -10,7 +10,7 @@ export const managingTheProductCatalog: Doc = {
     "Add, edit, and retire products from the admin dashboard, and understand how stock controls what customers can buy.",
   readingMinutes: 7,
   order: 1,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-06",
   tags: ["admin", "products", "stock", "inventory", "catalog"],
   body: [
     {
@@ -62,8 +62,13 @@ export const managingTheProductCatalog: Doc = {
       rows: [
         ["In stock", "Add to cart is available and checkout proceeds normally."],
         ["Low stock", "Add to cart still works, with a low-stock note to create urgency."],
-        ["Out of stock", "Add to cart is disabled; the product shows as sold out but stays visible."],
+        ["Out of stock", "Add to cart is disabled; the product shows as sold out but stays visible, with a \"Notify me\" form for a back-in-stock email."],
       ],
+    },
+    {
+      type: "callout",
+      variant: "note",
+      text: "Back-in-stock requests are stored (one per email and product, so repeats never double up) and rate limited per visitor. Pre-orders never show the form, because there is no stock to wait for. The alert emails themselves are the next sprint; until then requests are collected, not sent.",
     },
     {
       type: "callout",

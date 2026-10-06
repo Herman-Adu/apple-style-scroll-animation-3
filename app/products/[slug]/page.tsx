@@ -14,6 +14,7 @@ import {
   ProductReviews,
 } from "@/features/products"
 import { fetchProduct, fetchProductSlugs, fetchRelatedProducts } from "@/features/products/server"
+import { NotifyMeForm } from "@/features/stock-alerts"
 import { JsonLd } from "@/components/seo/json-ld"
 import { productLd } from "@/features/products"
 import { breadcrumbLd } from "@/lib/seo/structured-data"
@@ -98,7 +99,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               className="object-cover"
             />
           </div>
-          <ProductPurchase product={product} />
+          <ProductPurchase product={product} soldOutSlot={<NotifyMeForm productSlug={product.slug} />} />
         </div>
       </section>
 

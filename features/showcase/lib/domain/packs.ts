@@ -10,6 +10,9 @@ export type PackRole =
   | "cost"
   | "control"
   | "offer"
+  | "architecture"
+  | "sequence"
+  | "testing"
   | "close"
 export type Pack = { id: string; audience: string; slides: { id: string; role: PackRole }[] }
 
@@ -36,6 +39,19 @@ export const packs: Pack[] = [
       { id: "infographic-buyer-stock-alerts", role: "example" },
       { id: "infographic-offer", role: "offer" },
       { id: "carousel-cta", role: "close" },
+    ],
+  },
+  {
+    id: "engineer",
+    audience: "Engineers and technical leads",
+    slides: [
+      { id: "infographic-engineer-architecture", role: "architecture" },
+      { id: "infographic-engineer-checkout", role: "sequence" },
+      { id: "infographic-engineer-restock", role: "sequence" },
+      { id: "infographic-engineer-theme", role: "sequence" },
+      { id: "infographic-engineer-tests", role: "testing" },
+      { id: "infographic-engineer-coverage", role: "testing" },
+      { id: "recruiter-cta", role: "close" },
     ],
   },
 ]

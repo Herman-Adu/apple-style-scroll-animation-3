@@ -76,7 +76,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec prisma db push --skip-generate
-      - run: pnpm test:integration
+      - name: Facts (unit + integration with coverage, coverage ratchet)
+        run: pnpm facts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: facts
+          path: .generated/facts.json
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:smoke

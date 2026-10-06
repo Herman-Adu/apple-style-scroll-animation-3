@@ -24,5 +24,11 @@ The page was still loading at grab time. `scripts/showcase-video.mjs` grabs at 8
 ## Vitest can't resolve `@/...`
 `vitest` ran without `--config qa/config/vitest.config.mts`. Use the `pnpm test:*` scripts.
 
+## Preview: "Expected export to be in eval context" after pulling main
+Turbopack is serving a cached copy of the named file from before the pull; the code is fine (the error's export list is the old one). A restart or `touch` does not clear it. Add a harmless line to that file, wait for `/` to load, then remove it. Don't delete `.next` without asking.
+
+## Push rejected: "refusing to allow a GitHub App to create or update workflow"
+The v0 GitHub app lacks the `workflows` permission. The user accepts it in GitHub (Settings > Applications > Vercel > Review request). Until then, keep `.github/workflows/*` out of the sprint commit and hand the user the exact YAML.
+
 ## Headless tooling hits `/admin` and gets 307 to `/sign-in`
 Admin routes are gated by the proxy. Render public-safe material from a noindex route outside `/admin` (as `/showcase-render/[asset]` does), or ask the user to add `QA_ADMIN_EMAIL` / `QA_ADMIN_PASSWORD` under Vars.

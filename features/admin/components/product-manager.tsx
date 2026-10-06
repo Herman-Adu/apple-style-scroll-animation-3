@@ -1,7 +1,7 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { Minus, Pencil, Plus, PlusCircle, Search, Trash2 } from "lucide-react"
+import { use, useMemo, useState } from "react"
+import { ArrowDown, ArrowUp, ArrowUpDown, Minus, Pencil, Plus, PlusCircle, Search, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,6 +18,7 @@ import {
 import { useCatalog } from "@/features/catalog"
 import type { Product } from "@/features/products"
 import { effectiveStock } from "@/features/products"
+import { sortByWaiting, waitingFor, type WaitingByProduct } from "@/features/stock-alerts"
 import { formatMoney } from "@/lib/format"
 import { StockBadge } from "./status-badges"
 import { ProductFormDialog } from "./product-form-dialog"
@@ -25,8 +26,15 @@ import { ColumnsMenu, type ColumnOption } from "./columns-menu"
 
 const PRODUCT_COLUMNS: ColumnOption[] = [{ key: "category", label: "Category" }]
 
-export function ProductManager() {
+type WaitingSort = "none" | "desc" | "asc"
+
+const NEXT_WAITING_SORT: Record<WaitingSort, WaitingSort> = { none: "desc", desc: "asc", asc: "none" }
+const WAITING_ARIA_SORT = { none: "none", desc: "descending", asc: "ascending" } as const
+
+export function ProductManager({ demandPromise }: { demandPromise: Promise<WaitingByProduct> }) {
   const { products, createProduct, updateProduct, deleteProduct, adjustStock } = useCatalog()
+  const waiting = use(demandPromise)
+  const [waitingSort, setWaitingSort] = useState<WaitingSort>("none")
   const [query, setQuery] = useState("")
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Product | undefined>(undefined)
@@ -44,9 +52,9 @@ export function ProductManager() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return products
-    return products.filter((p) => [p.name, p.category].some((f) => f.toLowerCase().includes(q)))
-  }, [products, query])
+    const matching = q ? products.filter((p) => [p.name, p.category].some((f) => f.toLowerCase().includes(q))) : products
+    return waitingSort === "none" ? matching : sortByWaiting(matching, waiting, waitingSort)
+  }, [products, query, waiting, waitingSort])
 
   function openCreate() {
     setEditing(undefined)
@@ -97,13 +105,29 @@ export function ProductManager() {
                 <th className="px-4 py-3 font-medium">Price</th>
                 <th className="px-4 py-3 font-medium">Stock</th>
                 <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium" aria-sort={WAITING_ARIA_SORT[waitingSort]}>
+                  <button
+                    type="button"
+                    onClick={() => setWaitingSort(NEXT_WAITING_SORT[waitingSort])}
+                    className="inline-flex items-center gap-1 uppercase tracking-widest transition-colors hover:text-foreground"
+                  >
+                    Waiting
+                    {waitingSort === "desc" ? (
+                      <ArrowDown className="size-3" aria-hidden />
+                    ) : waitingSort === "asc" ? (
+                      <ArrowUp className="size-3" aria-hidden />
+                    ) : (
+                      <ArrowUpDown className="size-3" aria-hidden />
+                    )}
+                  </button>
+                </th>
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-4 py-10 text-center text-muted-foreground">
                     No products found.
                   </td>
                 </tr>
@@ -151,6 +175,17 @@ export function ProductManager() {
                     </td>
                     <td className="px-4 py-3">
                       <StockBadge product={product} />
+                    </td>
+                    <td className="px-4 py-3 font-mono tabular-nums">
+                      {waitingFor(waiting, product.slug) > 0 ? (
+                        <span aria-label={`${waitingFor(waiting, product.slug)} waiting for ${product.name}`}>
+                          {waitingFor(waiting, product.slug)}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground" aria-label={`Nobody waiting for ${product.name}`}>
+                          0
+                        </span>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">

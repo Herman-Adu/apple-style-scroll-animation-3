@@ -3,4 +3,6 @@
 export * from "./lib/domain/alert"
 export * from "./lib/actions/subscribe"
 export * from "./lib/actions/unsubscribe"
+export * from "./lib/actions/demand"
+export * from "./lib/domain/demand"
 export * from "./components/notify-me-form"

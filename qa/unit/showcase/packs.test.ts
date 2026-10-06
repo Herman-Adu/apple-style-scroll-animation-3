@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
 import { describe, expect, it } from "vitest"
+import { REPO_ROOT } from "@/qa/config/repo-root"
 import { findHardCodedNumbers } from "@/features/showcase/lib/domain/facts"
 import { getInfographic, infographicProblems, type Infographic } from "@/features/showcase/lib/domain/infographics"
 import { buildDemoData } from "../../../scripts/lib/showcase-demo-data.mjs"
@@ -107,6 +110,78 @@ describe("buyer pack", () => {
 
   it("keeps buyer-only slides out of the email case-study carousel", () => {
     expect(carouselSlides().map((s) => s.id)).not.toContain(buyer.slides[0].id)
+  })
+})
+
+describe("engineer pack", () => {
+  const engineer = getPack("engineer")!
+  const slideFor = (role: string, nth = 0) => getInfographic(engineer.slides.filter((s) => s.role === role)[nth].id)!
+  const sequences = () => engineer.slides.filter((s) => s.role === "sequence").map((s) => getInfographic(s.id)!)
+
+  it("runs architecture, three sequences, the test pyramid, the coverage ratchet, then contact", () => {
+    expect(engineer.slides.map((s) => s.role)).toEqual([
+      "architecture",
+      "sequence",
+      "sequence",
+      "sequence",
+      "testing",
+      "testing",
+      "close",
+    ])
+  })
+
+  it("redraws the architecture as four blocks", () => {
+    const slide = slideFor("architecture")
+    if (slide.kind !== "layers") throw new Error("expected layers")
+    expect(slide.layers).toHaveLength(4)
+  })
+
+  it("has checkout, restock and theme sequences that fit the slide limits", () => {
+    expect(sequences().map((s) => s.id)).toEqual([
+      "infographic-engineer-checkout",
+      "infographic-engineer-restock",
+      "infographic-engineer-theme",
+    ])
+    for (const slide of sequences()) {
+      expect(slide.kind, slide.id).toBe("sequence")
+      expect(infographicProblems(slide), slide.id).toEqual([])
+    }
+  })
+
+  it("rejects a fifth actor or a seventh step on an engineer sequence", () => {
+    const slide = sequences()[0]
+    if (slide.kind !== "sequence") throw new Error("expected a sequence")
+    const step = slide.steps[0]
+    expect(infographicProblems({ ...slide, actors: [...slide.actors, "Extra"] })).toContain("actors: needs 2 to 4, has 5")
+    expect(infographicProblems({ ...slide, steps: Array.from({ length: 7 }, () => step) })).toContain("steps: needs 1 to 6, has 7")
+  })
+
+  it("draws the test pyramid from facts, widest layer first", () => {
+    const slide = slideFor("testing", 0)
+    if (slide.kind !== "bar-chart") throw new Error("expected a bar chart")
+    expect(slide.bars.map((b) => (typeof b.value === "number" ? b.value : b.value.fact))).toEqual([
+      "tests.unit",
+      "tests.integration",
+      "tests.smoke",
+      "tests.axe",
+      "tests.seo",
+    ])
+    expect(findHardCodedNumbers(slide)).toEqual([])
+  })
+
+  it("shows the coverage ratchet from the committed baseline to the live coverage facts", () => {
+    const slide = slideFor("testing", 1)
+    if (slide.kind !== "before-after") throw new Error("expected before-after")
+    const baseline = JSON.parse(readFileSync(join(REPO_ROOT, "qa/baselines/coverage.json"), "utf8"))
+    expect(slide.rows.map((r) => [r.before, r.after.fact])).toEqual([
+      [baseline.lines, "coverage.lines"],
+      [baseline.branches, "coverage.branches"],
+    ])
+  })
+
+  it("closes on the contact slide and stays out of the email case-study carousel", () => {
+    expect(engineer.slides.at(-1)!.id).toBe("recruiter-cta")
+    expect(carouselSlides().map((s) => s.id)).not.toContain(engineer.slides[0].id)
   })
 })
 

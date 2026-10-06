@@ -47,6 +47,9 @@ export function LayersBody({ layers }: Pick<Kind<"layers">, "layers">) {
   )
 }
 
+const formatMeasured = (value: number | null): string =>
+  value === null ? "–" : Number.isInteger(value) ? String(value) : value.toFixed(1)
+
 export function BeforeAfterBody({ rows, facts }: Pick<Kind<"before-after">, "rows"> & { facts: Facts | null }) {
   return (
     <ul className="flex flex-1 flex-col">
@@ -59,7 +62,9 @@ export function BeforeAfterBody({ rows, facts }: Pick<Kind<"before-after">, "row
           <div className="flex shrink-0 items-center gap-5 font-mono">
             <span className="text-4xl text-muted-foreground line-through decoration-2">{row.before}</span>
             <ArrowRight aria-hidden className="size-7 text-muted-foreground" />
-            <span className="w-24 text-right text-6xl font-semibold text-accent-teal">{resolveFact(facts, row.after.fact) ?? "–"}</span>
+            <span className="min-w-24 text-right text-6xl font-semibold text-accent-teal">
+              {formatMeasured(resolveFact(facts, row.after.fact))}
+            </span>
           </div>
         </li>
       ))}

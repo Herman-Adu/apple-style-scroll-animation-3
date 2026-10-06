@@ -147,7 +147,7 @@ describe("site map infographic", () => {
 })
 
 describe("before and after infographic", () => {
-  const [beforeAfter] = ofKind("before-after")
+  const [beforeAfter] = ofKind("before-after").filter((i) => !i.pack)
   const health = read("docs/architecture-health.md")
   const pack = read("features/docs/content/social-launch-pack.ts")
 

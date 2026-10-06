@@ -22,6 +22,7 @@ import { platformGlossary } from "./platform-glossary"
 import { emailCampaignWalkthrough } from "./email-campaign-walkthrough"
 import { emailCustomerMessages } from "./email-customer-messages"
 import { systemArchitecture } from "./system-architecture"
+import { architectureInDiagrams } from "./architecture-in-diagrams"
 import { dataLayerAndDatabase } from "./data-layer-and-database"
 import { emailPlatformArchitecture } from "./email-platform-architecture"
 import { theThemeSystem } from "./the-theme-system"
@@ -87,6 +88,7 @@ export const docs: Doc[] = [
   emailCustomerMessages,
   // Developer (public)
   systemArchitecture,
+  architectureInDiagrams,
   emailPlatformArchitecture,
   architectureDecisionRecords,
   contributingAndWorkflow,

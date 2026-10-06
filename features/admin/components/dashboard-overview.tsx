@@ -8,6 +8,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { AlertTriangle, ArrowUpRight, BarChart3, DollarSign, Package, Receipt, Sparkles, TrendingUp } from "lucide-react"
 import { useCatalog } from "@/features/catalog"
 import { inventorySummary, revenueByDay, salesSummary, topProducts, type Order } from "@/features/orders"
+import { topWaiting, totalWaiting, type WaitingByProduct } from "@/features/stock-alerts"
 import { formatMoney } from "@/lib/format"
 import { StatCard } from "./stat-card"
 import { StockBadge } from "./status-badges"
@@ -39,10 +40,19 @@ const QUICK_ACTIONS = [
   { href: "/admin/analytics", icon: BarChart3, label: "Analytics" },
 ]
 
-export function DashboardOverview({ ordersPromise }: { ordersPromise: Promise<Order[]> }) {
+export function DashboardOverview({
+  ordersPromise,
+  demandPromise,
+}: {
+  ordersPromise: Promise<Order[]>
+  demandPromise: Promise<WaitingByProduct>
+}) {
   const reduce = useReducedMotion()
   const { products } = useCatalog()
   const { orders } = useAdminOrders(use(ordersPromise))
+  const waiting = use(demandPromise)
+  const mostWanted = topWaiting(waiting)
+  const productName = (slug: string) => products.find((p) => p.slug === slug)?.name ?? slug
 
   const sales = salesSummary(orders)
   const inventory = inventorySummary(products)
@@ -168,7 +178,7 @@ export function DashboardOverview({ ordersPromise }: { ordersPromise: Promise<Or
       </div>
 
       {/* Gauge + restock + top sellers */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-4">
         <Reveal>
           <section className="flex h-full flex-col items-center rounded-2xl border border-border/70 bg-card p-5">
             <div className="flex w-full items-center justify-between">
@@ -209,6 +219,37 @@ export function DashboardOverview({ ordersPromise }: { ordersPromise: Promise<Or
                 ))
               )}
             </div>
+          </section>
+        </Reveal>
+
+        <Reveal delay={0.09}>
+          <section className="h-full rounded-2xl border border-border/70 bg-card" aria-labelledby="most-wanted-heading">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div>
+                <h2 id="most-wanted-heading" className="text-sm font-semibold">
+                  Most wanted
+                </h2>
+                <p className="text-xs text-muted-foreground">Shoppers waiting for a restock</p>
+              </div>
+              <Link href="/admin/products" className="text-xs text-muted-foreground hover:text-foreground">
+                Manage
+              </Link>
+            </div>
+            <div className="divide-y divide-border">
+              {mostWanted.length === 0 ? (
+                <p className="px-5 py-8 text-center text-sm text-muted-foreground">Nobody is waiting for a restock.</p>
+              ) : (
+                mostWanted.map(({ slug, count }) => (
+                  <div key={slug} className="flex items-center justify-between gap-3 px-5 py-3">
+                    <p className="min-w-0 truncate text-sm font-medium">{productName(slug)}</p>
+                    <p className="shrink-0 font-mono text-sm tabular-nums">{count} waiting</p>
+                  </div>
+                ))
+              )}
+            </div>
+            <p className="border-t border-border px-5 py-3 text-xs text-muted-foreground">
+              {totalWaiting(waiting)} waiting in total
+            </p>
           </section>
         </Reveal>
 

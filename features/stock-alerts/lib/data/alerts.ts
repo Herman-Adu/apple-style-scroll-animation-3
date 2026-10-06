@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto"
 import { prisma } from "@/lib/db/prisma"
+import type { WaitingByProduct } from "../domain/demand"
 
 /**
  * Stores one waiting alert per (email, product). A repeat request changes
@@ -12,6 +13,25 @@ export async function requestStockAlert(input: { email: string; productSlug: str
     create: { email: input.email, productSlug: input.productSlug, token: randomBytes(24).toString("base64url") },
     update: { notifiedAt: null },
   })
+}
+
+/**
+ * How many people are still waiting for each product. Sent alerts are skipped
+ * by the `notifiedAt: null` filter and unsubscribed rows no longer exist, so
+ * neither inflates the number.
+ */
+export async function countWaitingByProduct(): Promise<WaitingByProduct> {
+  const groups = await prisma.stockAlert.groupBy({
+    by: ["productSlug"],
+    where: { notifiedAt: null },
+    _count: { _all: true },
+  })
+  return Object.fromEntries(groups.map((group) => [group.productSlug, group._count._all]))
+}
+
+export async function deleteAlertById(id: number): Promise<boolean> {
+  const { count } = await prisma.stockAlert.deleteMany({ where: { id } })
+  return count > 0
 }
 
 export type WaitingAlert = { id: number; email: string; token: string }

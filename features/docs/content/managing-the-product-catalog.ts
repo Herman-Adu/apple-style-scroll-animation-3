@@ -68,7 +68,12 @@ export const managingTheProductCatalog: Doc = {
     {
       type: "callout",
       variant: "note",
-      text: "Back-in-stock requests are stored (one per email and product, so repeats never double up) and rate limited per visitor. Pre-orders never show the form, because there is no stock to wait for. The alert emails themselves are the next sprint; until then requests are collected, not sent.",
+      text: "Back-in-stock requests are stored (one per email and product, so repeats never double up) and rate limited per visitor. Pre-orders never show the form, because there is no stock to wait for.",
+    },
+    {
+      type: "callout",
+      variant: "tip",
+      text: "See demand before you restock: the Products table has a sortable Waiting column (click its header to sort most-wanted first), and the Overview shows a Most wanted card with the top three products and the total number of shoppers waiting. Counts only include people who asked while the product was sold out, and they drop to zero once the restock email has gone out.",
     },
     {
       type: "callout",

@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs"
 import path from "node:path"
 import { expect, test, type Page } from "@playwright/test"
+import { packExportPlan } from "../../features/showcase/lib/domain/packs"
 import { exportPlan } from "../../features/showcase/lib/domain/social-assets"
 
 const publicPath = (file: string) => path.join(process.cwd(), "public", file)
@@ -10,10 +11,16 @@ async function waitForAssets(page: Page) {
   await expect(page.locator('[data-slide-diagram="error"]')).toHaveCount(0)
   await page.evaluate(async () => {
     await document.fonts.ready
+    // Multi-page PDFs stack slides below the one-slide viewport, so lazy images there would never load.
     await Promise.all(
-      Array.from(document.images).map((img) =>
-        img.complete ? Promise.resolve() : new Promise((done) => img.addEventListener("load", done, { once: true })),
-      ),
+      Array.from(document.images).map((img) => {
+        img.loading = "eager"
+        if (img.complete) return Promise.resolve()
+        return new Promise((done) => {
+          img.addEventListener("load", done, { once: true })
+          img.addEventListener("error", done, { once: true })
+        })
+      }),
     )
   })
 }
@@ -22,7 +29,7 @@ test.beforeAll(() => {
   mkdirSync(publicPath("/showcase/social"), { recursive: true })
 })
 
-for (const item of exportPlan()) {
+for (const item of [...exportPlan(), ...packExportPlan()]) {
   test(`export ${item.file}`, async ({ page }) => {
     await page.setViewportSize({ width: item.width, height: item.height })
     await page.goto(`/showcase-render/${item.asset}`, { waitUntil: "networkidle" })
@@ -37,7 +44,10 @@ for (const item of exportPlan()) {
     }
 
     await page.emulateMedia({ media: "screen" })
+    // Sub-pixel overflow can spill into a blank trailing page, so print exactly one page per slide.
+    const slideCount = await page.locator("[data-social-asset]").count()
     await page.pdf({
+      pageRanges: `1-${slideCount}`,
       path: publicPath(item.file),
       width: `${item.width}px`,
       height: `${item.height}px`,

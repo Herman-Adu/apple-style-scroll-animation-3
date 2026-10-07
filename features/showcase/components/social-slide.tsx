@@ -6,6 +6,7 @@ import { SOCIAL_FORMATS, caseStudyUrl, type SocialAsset } from "../lib/domain/so
 import { LayersGraphic } from "./layers-graphic"
 import { QrCode } from "./qr-code"
 import { SlideDiagram } from "./slide-diagram"
+import { StepTrack } from "./step-track"
 
 const { colors } = ADUDEV
 
@@ -144,6 +145,8 @@ export function SocialSlide({ asset, position }: Props) {
             ))}
           </ul>
         ) : null}
+
+        {asset.progress ? <StepTrack steps={asset.progress.steps} current={asset.progress.current} /> : null}
 
         {asset.cta ? <CtaPanel cta={asset.cta} /> : null}
       </div>

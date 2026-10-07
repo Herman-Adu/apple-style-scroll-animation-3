@@ -1,7 +1,10 @@
 import { getInfographic, type Infographic } from "./infographics"
-import { getSocialAsset, type SocialAsset } from "./social-assets"
+import { CHECKOUT_STEPS } from "./sequence-slides"
+import { SOCIAL_FORMATS, getSocialAsset, type ExportItem, type SocialAsset } from "./social-assets"
 
 export type PackRole =
+  | "cover"
+  | "step"
   | "outcome"
   | "proof"
   | "judgement"
@@ -54,10 +57,36 @@ export const packs: Pack[] = [
       { id: "recruiter-cta", role: "close" },
     ],
   },
+  {
+    id: "checkout-sequence",
+    audience: "Everyone: one flow, one step per swipe",
+    slides: [
+      { id: "sequence-checkout-cover", role: "cover" },
+      ...CHECKOUT_STEPS.map((_, i) => ({ id: `sequence-checkout-${i + 1}`, role: "step" as const })),
+      { id: "recruiter-cta", role: "close" },
+    ],
+  },
 ]
 
 export function getPack(id: string): Pack | undefined {
   return packs.find((p) => p.id === id)
+}
+
+export const packCarouselId = (packId: string) => `pack-${packId}`
+export const packCarouselPdf = (packId: string) => `/showcase/social/linkedin-${packId}-carousel.pdf`
+
+export function getPackByCarouselId(carouselId: string): Pack | undefined {
+  return packs.find((p) => packCarouselId(p.id) === carouselId)
+}
+
+/** One LinkedIn document PDF per pack, pages in pack order. */
+export function packExportPlan(): ExportItem[] {
+  return packs.map((p) => ({
+    kind: "pdf",
+    asset: packCarouselId(p.id),
+    file: packCarouselPdf(p.id),
+    ...SOCIAL_FORMATS.carousel,
+  }))
 }
 
 const resolveSlide = (id: string): Infographic | SocialAsset | undefined => getInfographic(id) ?? getSocialAsset(id)

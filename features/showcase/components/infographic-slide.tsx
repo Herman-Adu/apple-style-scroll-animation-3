@@ -42,7 +42,11 @@ function Body({ infographic, facts }: SlideProps) {
   }
 }
 
-export function InfographicSlide({ infographic, facts }: SlideProps) {
+export function InfographicSlide({
+  infographic,
+  facts,
+  position,
+}: SlideProps & { position?: { index: number; total: number } }) {
   const { width, height } = SOCIAL_FORMATS[infographic.format]
 
   return (
@@ -60,6 +64,11 @@ export function InfographicSlide({ infographic, facts }: SlideProps) {
             </span>
           ) : null}
           <span className="font-mono text-accent-teal">{infographic.eyebrow}</span>
+          {position ? (
+            <span className="font-mono tabular-nums">
+              {String(position.index + 1).padStart(2, "0")} / {String(position.total).padStart(2, "0")}
+            </span>
+          ) : null}
         </span>
       </header>
 

@@ -7,9 +7,7 @@ import { defineConfig, devices } from "@playwright/test";
  * so `pnpm test:e2e` never writes files into public/. Run via `pnpm showcase:assets`.
  */
 const projectRoot = fileURLToPath(new URL("../..", import.meta.url));
-// Must match the port `dev:local` binds: Playwright polls this one while the
-// command listens on that one, and a mismatch only shows up as a 120s timeout.
-const PORT = Number(process.env.PORT ?? 3001);
+const PORT = Number(process.env.PORT ?? 3000);
 const baseURL = process.env.QA_BASE_URL ?? `http://localhost:${PORT}`;
 
 export default defineConfig({
@@ -30,7 +28,7 @@ export default defineConfig({
   webServer: process.env.QA_BASE_URL
     ? undefined
     : {
-        command: "pnpm run dev:local",
+        command: "pnpm run dev",
         cwd: projectRoot,
         port: PORT,
         reuseExistingServer: true,

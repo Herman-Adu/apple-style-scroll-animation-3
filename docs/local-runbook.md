@@ -6,24 +6,29 @@ Quick reference for running the app on this machine with Stripe webhooks.
 ## Daily start (two terminals)
 
 ```powershell
-# Terminal 1 — app (port 3001)
-pnpm dev:local
+# Terminal 1 — app (port 3000)
+pnpm dev
 
 # Terminal 2 — Stripe webhook forwarder
 pnpm stripe:listen
 ```
 
-App: http://localhost:3001
+App: http://localhost:3000
 
-## Port rule — keep these three in sync
+## Port rule — 3000, everywhere
 
-Port 3000 is sometimes taken by another project's Next server, so we use **3001**.
+The app runs on **3000** and nothing else: the dev server, the Stripe forwarder,
+the Playwright configs, CI and the env files all read the same number. There is
+no second dev script to pick between, and `qa/unit/meta/dev-port.test.ts` fails
+if another port reappears in any of them.
 
-1. App port: `pnpm dev:local` (`next dev -p 3001`)
-2. Forwarder: `stripe:listen` forwards to `localhost:3001/api/stripe/webhook`
-3. Env: `BETTER_AUTH_URL` and `NEXT_PUBLIC_SITE_URL` = `http://localhost:3001`
+1. App: `pnpm dev` (`next dev`, which defaults to 3000)
+2. Forwarder: `stripe:listen` forwards to `localhost:3000/api/stripe/webhook`
+3. Env: `BETTER_AUTH_URL` and `NEXT_PUBLIC_SITE_URL` = `http://localhost:3000`
 
-If you switch to 3000, change all three, then restart the dev server (env is only read at startup).
+Env is only read at startup, so restart the dev server after changing it. If
+3000 is genuinely occupied, set `PORT` for the one command that needs it rather
+than pinning a different port in the repo.
 
 ## Env files
 
@@ -71,7 +76,7 @@ Then re-check the overrides above are still in `.env.development.local`, and res
 
 | Symptom                          | Fix                                                             |
 | -------------------------------- | --------------------------------------------------------------- |
-| `Port 3000 is in use`            | Use `pnpm dev:local` (3001)                                     |
+| `Port 3000 is in use`            | Stop whatever holds it, or run one command with `PORT=3001`     |
 | Signed in but appears signed out | Auth URL / port mismatch — check the port rule; try Chrome/Edge |
 | `stripe` not recognised          | Open a new terminal (PATH refresh)                              |
 | Webhook `[400]`                  | Update `STRIPE_WEBHOOK_SECRET`, restart dev server              |

@@ -32,7 +32,7 @@ export default defineConfig({
   webServer: process.env.QA_BASE_URL
     ? undefined
     : {
-        command: "pnpm run dev:local",
+        command: "pnpm run dev",
         cwd: projectRoot,
         port: PORT,
         reuseExistingServer: true,

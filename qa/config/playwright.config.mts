@@ -14,11 +14,12 @@ import { defineConfig, devices } from "@playwright/test";
  */
 const projectRoot = fileURLToPath(new URL("../..", import.meta.url));
 
-// CI serves the production build on 3001 to match BETTER_AUTH_URL and
-// NEXT_PUBLIC_SITE_URL in the workflow; locally we reuse the dev server on 3000.
+// One port everywhere: CI serves the production build on it and locally we
+// reuse the dev server on it, so BETTER_AUTH_URL and NEXT_PUBLIC_SITE_URL read
+// the same in the workflow and in .env.local.
 // The port Playwright waits on MUST be the port the command listens on.
 const isCI = !!process.env.CI;
-const PORT = Number(process.env.PORT ?? (isCI ? 3001 : 3000));
+const PORT = Number(process.env.PORT ?? 3000);
 const baseURL = process.env.QA_BASE_URL ?? `http://localhost:${PORT}`;
 const serverCommand = isCI
   ? `pnpm exec next start -p ${PORT}`

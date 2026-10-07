@@ -39,7 +39,7 @@ The site-tour stills in `public/showcase/tour/` are frames taken from the buyer 
 - **One export at a time.** Two `showcase:assets` runs write to the same files. Stop one before starting another.
 - **PDF page count.** Each carousel must have exactly one page per slide. A blank trailing page means a slide is taller than its page.
 - **Facts must exist before the render.** `.generated/facts.json` is gitignored, and a slide bound to a fact renders a dash when it is missing. `pnpm showcase:assets` runs `pnpm facts` first for exactly this reason; calling Playwright directly skips it. The five fact-bound slides are the recruiter proof strip, the engineer test pyramid and coverage bars, the before/after strip and the bar chart.
-- **The exporter owns port 3001.** `playwright.social.config.mts` boots `dev:local` there so it never attaches to an everyday dev server on 3000 and writes into `public/` from a stale build.
+- **The exporter reuses your dev server on 3000.** `playwright.social.config.mts` boots `pnpm dev` only when nothing is listening. If a dev server is already up, make sure it is running this branch, because the export screenshots whatever it serves.
 - **Re-render the whole set, not a subset.** Fonts and theme are shared, so a partial render leaves the kit in two different states. The export is deterministic: the same commit on the same machine produces byte-identical files.
 - **Facts drift.** Numbers on slides come from `facts.json`. If a test says a fact is stale, rerun `pnpm facts` and re-export.
 

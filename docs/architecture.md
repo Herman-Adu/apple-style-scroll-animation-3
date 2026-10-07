@@ -57,7 +57,9 @@ app/                     App Router routes, layouts, boundaries, API routes
 
 features/                One folder per domain slice (100% feature-sliced)
   admin/ articles/ catalog/ checkout/ contact/ customers/ discount-codes/
-  docs/ email/ orders/ products/ reviews/ settings/ showcase/ timeline/
+  docs/ email/ orders/ products/ reviews/ settings/ showcase/ stock-alerts/ timeline/
+  # features/stock-alerts: back-in-stock requests, restock emails, unsubscribe
+  # features/showcase: demo seed, slide and carousel definitions for social assets
     components/          Slice UI (mostly Server Components + skeletons)
     lib/                 Four folders only: actions / data / domain / adapters
       actions/           Server actions (mutations); admin ones start with requireAdmin()

@@ -51,6 +51,7 @@ pnpm dev                     # http://localhost:3000
 | [`docs/environment.md`](docs/environment.md)                             | Every environment variable, including the lock-permission allow-list                                                |
 | [`docs/conventions.md`](docs/conventions.md)                             | Coding conventions: server-first, zod boundaries, feature barrels, cache tags                                       |
 | [`docs/strapi-migration.md`](docs/strapi-migration.md)                   | CMS go-live runbook, webhook and preview setup                                                                      |
+| [`docs/showcase-pipeline.md`](docs/showcase-pipeline.md)                 | Seed, record, cut, export carousels and clean up the demo data                  |
 | [`docs/showcase-reset-and-stripe.md`](docs/showcase-reset-and-stripe.md) | Resetting demo data, and going live with your own Stripe test keys                                                  |
 
 ### In-app docs (`/docs`)

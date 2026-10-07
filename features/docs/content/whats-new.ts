@@ -10,7 +10,7 @@ export const whatsNew: Doc = {
     "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), plus the architecture and engineering-quality refactors through PR #146. Each entry says what changed and why it matters.",
   readingMinutes: 5,
   order: 1,
-  updatedAt: "2026-10-06",
+  updatedAt: "2026-10-07",
   tags: ["changelog", "release notes", "email builder", "security", "documentation"],
   body: [
     {
@@ -76,6 +76,21 @@ export const whatsNew: Doc = {
         ["#122", "Public server actions guarded; server-only exports moved out of use-server endpoints", "Admin mutations cannot be called by an unauthorised visitor, and secrets-adjacent helpers are no longer exposed as endpoints."],
         ["#124", "Auth and checkout origin resolution stabilised", "Sign-in and Stripe return URLs always land on the canonical site, including behind a proxy."],
         ["#146", "Checkout hydration and local-image origin fixes", "Checkout renders without hydration warnings and product images load from the correct origin."],
+      ],
+    },
+    { type: "heading", text: "Stock alerts, checkout and showcase" },
+    {
+      type: "table",
+      headers: ["PR", "What shipped", "Why it matters"],
+      rows: [
+        ["#154", "Back-in-stock requests with a Notify me form", "Sold-out products keep collecting interest instead of losing the shopper."],
+        ["#155", "Restocking sends the back-in-stock email once, with unsubscribe", "Everyone waiting hears the moment stock returns, without anyone sending it by hand."],
+        ["#156", "Waiting column and Most wanted card in admin", "You can see demand before you reorder."],
+        ["#157", "Generated facts and a coverage ratchet", "Numbers on slides come from the repo, and test coverage can only go up."],
+        ["#163", "Seeded demo admin and audience video cuts", "Recruiter, buyer and engineer videos are recorded from real screens."],
+        ["#166", "Checkout is sign-in only", "You sign in to check out, so every order is tied to an account and its order history."],
+        ["#168", "Audience packs and a checkout sequence as LinkedIn carousel PDFs", "Each pack is one swipeable post instead of loose images."],
+        ["#169", "Security, how-it-was-built and site-tour carousels", "Three more ready-to-post stories built from the same facts."],
       ],
     },
     {

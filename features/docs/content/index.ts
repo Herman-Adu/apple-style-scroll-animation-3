@@ -1,4 +1,5 @@
 import type { Doc } from "../lib/domain/schema"
+import { backInStockAlerts } from "./back-in-stock-alerts"
 import { gettingStartedWithYourDevice } from "./getting-started-with-your-device"
 import { caringForYourHeadphones } from "./caring-for-your-headphones"
 import { troubleshootingCommonIssues } from "./troubleshooting-common-issues"
@@ -73,6 +74,7 @@ export const docs: Doc[] = [
   apiAndIntegrations,
   // Content management (admin)
   managingTheProductCatalog,
+  backInStockAlerts,
   ordersAndEmailOperations,
   paymentsOperations,
   managingYourTheme,

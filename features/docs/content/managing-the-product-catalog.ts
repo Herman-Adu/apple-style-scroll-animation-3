@@ -73,7 +73,7 @@ export const managingTheProductCatalog: Doc = {
     {
       type: "callout",
       variant: "tip",
-      text: "See demand before you restock: the Products table has a sortable Waiting column (click its header to sort most-wanted first), and the Overview shows a Most wanted card with the top three products and the total number of shoppers waiting. Counts only include people who asked while the product was sold out, and they drop to zero once the restock email has gone out.",
+      text: "See demand before you restock: the Products table has a sortable Waiting column (click its header to sort most-wanted first), and the Overview shows a Most wanted card with the top three products and the total number of shoppers waiting. Counts only include people who asked while the product was sold out, and they drop to zero once the restock email has gone out. The full flow is in /docs/back-in-stock-alerts.",
     },
     {
       type: "callout",

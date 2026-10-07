@@ -88,6 +88,7 @@ export const socialLaunchPack: Doc = {
         ["LinkedIn client 2", "/showcase/video/storefront.mp4", "Upload natively. A 30 second storefront walk-through sells the template."],
         ["LinkedIn client 3", "/showcase/social/carousel-history.png", "Version history is the visible proof of a safe handover."],
         ["LinkedIn and Facebook story", "/showcase/video/journey-4x5.mp4 (feed) or journey-9x16.mp4 (stories)", "One take from scroll story to admin shows the whole product end to end."],
+        ["LinkedIn client story", "/showcase/video/restock-4x5.mp4 (feed) or restock-9x16.mp4 (stories)", "Sold out to back in stock in one take: proof the store turns demand into sales."],
         ["Telegram posts", "/showcase/social/carousel-cover.png", "One clean cover image previews well in chats."],
         ["X posts", "/showcase/social/square-starters.png", "One image per post; reuse the clip as the thread opener."],
       ],

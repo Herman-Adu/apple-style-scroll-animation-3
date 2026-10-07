@@ -32,6 +32,12 @@ describe("showcase video embeds", () => {
     expect(srcs).toContain("/showcase/video/journey-9x16.mp4");
   });
 
+  it("the launch kit embeds the restock calendar clip in both formats", () => {
+    const srcs = videosIn("social-launch-kit").map((v) => v.src);
+    expect(srcs).toContain("/showcase/video/restock-4x5.mp4");
+    expect(srcs).toContain("/showcase/video/restock-9x16.mp4");
+  });
+
   it("every video block points at a committed clip and poster with a text alternative", () => {
     const all = docs.flatMap((d) =>
       d.body.filter((b): b is VideoBlock => b.type === "video"),

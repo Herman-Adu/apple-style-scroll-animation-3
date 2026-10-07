@@ -49,8 +49,17 @@ export function canSignInOnCamera(credentials: AdminCredentials | null): boolean
  * signed in. Everywhere the admin prints the real address, the recording shows a
  * demo address instead.
  */
+/**
+ * Masking rewrites every text node that contains the real address. If the alias still
+ * contains it (the seeded demo admin signs in as the alias itself), each rewrite triggers
+ * another mutation and the page's main thread locks up.
+ */
+export function shouldMaskEmail(real: string, alias: string): boolean {
+  return real !== "" && !alias.includes(real)
+}
+
 export async function openSignedInAdminPage(context: BrowserContext, credentials: AdminCredentials, landing: string): Promise<Page> {
-  await context.addInitScript(
+  if (shouldMaskEmail(credentials.email, MASKED_EMAIL)) await context.addInitScript(
     ({ real, alias }) => {
       const mask = () => {
         const walker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT)

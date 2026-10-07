@@ -7,7 +7,6 @@ import {
   ADMIN_ROUTES,
   CHECKOUT_DISCOUNT_CODE,
   CLIPS,
-  DEFERRED_CLIPS,
   PUBLIC_ROUTES,
   RESTOCK_PRODUCT_SLUG,
   getClip,
@@ -41,18 +40,16 @@ describe("showcase shot list", () => {
       "orders",
       "engineering",
       "journey",
+      "restock",
     ])
     expect(new Set(CLIPS.map((clip) => clip.slug)).size).toBe(CLIPS.length)
   })
 
-  it("defers the restock clip until /admin/products records reliably, without losing its plan", () => {
-    expect(DEFERRED_CLIPS.map((clip) => clip.slug)).toEqual(["restock"])
-    for (const deferred of DEFERRED_CLIPS) {
-      expect(CLIPS.map((clip) => clip.slug)).not.toContain(deferred.slug)
-      expect(getClip(deferred.slug).spec).toBe(deferred.spec)
-    }
+  it("records the restock clip by default, still refusing to run while real people are waiting", () => {
+    expect(getClip("restock").spec).toBe("restock.spec.ts")
     const spec = readFileSync(path.join(root, "qa", "showcase", "restock.spec.ts"), "utf8")
-    expect(spec).toContain("SHOWCASE_INCLUDE_DEFERRED")
+    expect(spec).not.toContain("SHOWCASE_INCLUDE_DEFERRED")
+    expect(spec).toContain("realWaiting > 0")
   })
 
   it("covers both audiences, sharing the storefront, checkout and journey clips", () => {
@@ -61,7 +58,7 @@ describe("showcase shot list", () => {
     expect(bySlug.checkout).toBe("both")
     expect(bySlug.journey).toBe("both")
     expect(bySlug.engineering).toBe("recruiter")
-    for (const slug of ["campaigns", "discounts", "orders"]) expect(bySlug[slug]).toBe("client")
+    for (const slug of ["campaigns", "discounts", "orders", "restock"]) expect(bySlug[slug]).toBe("client")
   })
 
   it("restocks a product the demo seed has people waiting for", () => {
@@ -108,7 +105,7 @@ describe("showcase shot list", () => {
 
   it("keeps admin pages on the admin clips and the public pages on the shared ones", () => {
     const adminSlugs = CLIPS.filter((clip) => clip.routes.some((route) => route.startsWith("/admin"))).map((clip) => clip.slug)
-    expect(adminSlugs).toEqual(["campaigns", "discounts", "orders", "journey"])
+    expect(adminSlugs).toEqual(["campaigns", "discounts", "orders", "journey", "restock"])
   })
 
   it("applies a seeded discount code that any customer can use right now", () => {

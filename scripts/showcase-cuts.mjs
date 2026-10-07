@@ -7,19 +7,20 @@
  *   pnpm showcase:cuts              record both formats, then build
  *   pnpm showcase:cuts --no-record  build from the raw clips already recorded
  *   add --calendar-only             publish the calendar clips and skip the cuts
+ *   add --clip <slug>               publish just that one calendar clip
  */
 import { execFileSync } from "node:child_process"
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs"
 import path from "node:path"
 import ffmpegPath from "ffmpeg-static"
 import {
-  CALENDAR_CLIPS,
   CUTS,
   CUT_FORMATS,
   buildConcatArgs,
   buildConcatList,
   cutOutputName,
   missingRawClips,
+  selectCalendarClips,
 } from "./lib/showcase-cuts.mjs"
 import { slugForFormat } from "./lib/showcase-formats.mjs"
 import { buildPosterArgs, buildTranscodeArgs, clipFileNames } from "./lib/video-args.mjs"
@@ -49,10 +50,11 @@ const available = existsSync(rawDir)
   : []
 
 const cuts = process.argv.includes("--calendar-only") ? [] : CUTS
+const calendarClips = selectCalendarClips(process.argv)
 
 const missing = CUT_FORMATS.flatMap((format) => [
   ...cuts.flatMap((cut) => missingRawClips(cut.clips, format, available)),
-  ...missingRawClips(CALENDAR_CLIPS, format, available),
+  ...missingRawClips(calendarClips, format, available),
 ])
 if (missing.length > 0) {
   console.error(`Missing raw clips: ${[...new Set(missing)].join(", ")}. Seed, then record again.`)
@@ -81,7 +83,7 @@ for (const format of CUT_FORMATS) {
     console.log(`✓ ${name}.mp4 (${cut.clips.join(" + ")})`)
   }
 
-  for (const clip of CALENDAR_CLIPS) {
+  for (const clip of calendarClips) {
     const name = slugForFormat(clip, format)
     const input = path.join(rawDir, `${name}.webm`)
     execFileSync(ffmpeg, buildTranscodeArgs({ input, output: path.join(outDir, clipFileNames(name).video) }), {

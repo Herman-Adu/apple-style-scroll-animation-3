@@ -104,14 +104,6 @@ export const CLIPS: ClipPlan[] = [
       "Every decision written up in the docs",
     ],
   },
-]
-
-/**
- * Planned but not recorded: on the preview, the first build of /admin/products takes
- * longer than a take allows. Kept out of cuts and the calendar until that is fixed;
- * record by hand with SHOWCASE_INCLUDE_DEFERRED=1.
- */
-export const DEFERRED_CLIPS: ClipPlan[] = [
   {
     slug: "restock",
     audience: "client",
@@ -133,7 +125,7 @@ export const ADMIN_ROUTES = allRoutes.filter((route) => route.startsWith("/admin
 export const PUBLIC_ROUTES = allRoutes.filter((route) => !route.startsWith("/admin"))
 
 export function getClip(slug: string): ClipPlan {
-  const clip = [...CLIPS, ...DEFERRED_CLIPS].find((candidate) => candidate.slug === slug)
+  const clip = CLIPS.find((candidate) => candidate.slug === slug)
   if (!clip) throw new Error(`Unknown showcase clip: ${slug}`)
   return clip
 }

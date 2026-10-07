@@ -54,6 +54,27 @@ export const socialLaunchKit: Doc = {
         "The same journey recorded in 9:16 for stories and reels: scroll story, sign-in as the demo admin, then the admin dashboard and its pages.",
       caption: "Journey clip, 9:16 story format.",
     },
+    { type: "heading", text: "Back-in-stock clip" },
+    {
+      type: "paragraph",
+      text: "A sold-out product, a shopper joining the waiting list, the admin seeing the demand, a one-click restock, and the back-in-stock email. Recorded against demo shoppers only: the take refuses to run while any real person is waiting, and demo addresses never reach the email provider.",
+    },
+    {
+      type: "video",
+      src: "/showcase/video/restock-4x5.mp4",
+      poster: "/showcase/video/restock-4x5.jpg",
+      description:
+        "Screen recording in 4:5: a sold-out product page, a shopper enters an email to be notified, the admin products table shows the waiting count, stock is raised by one, and the back-in-stock email template opens.",
+      caption: "Restock clip, 4:5 feed format.",
+    },
+    {
+      type: "video",
+      src: "/showcase/video/restock-9x16.mp4",
+      poster: "/showcase/video/restock-9x16.jpg",
+      description:
+        "The same back-in-stock flow in 9:16 for stories and reels: sold-out page, join the waiting list, admin restock, then the email.",
+      caption: "Restock clip, 9:16 story format.",
+    },
     { type: "heading", text: "Carousel and square images" },
     {
       type: "paragraph",

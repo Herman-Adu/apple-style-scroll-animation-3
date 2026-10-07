@@ -12,13 +12,28 @@ export const CUTS = Object.freeze([
   {
     slug: "buyer",
     title: "Buyer cut",
-    clips: ["storefront", "checkout", "campaigns", "discounts", "orders"],
+    clips: ["storefront", "checkout", "restock", "campaigns", "discounts", "orders"],
   },
   { slug: "engineer", title: "Engineer cut", clips: ["engineering", "checkout"] },
 ])
 
 /** Clips published on their own, to pair with posts on the social calendar. */
-export const CALENDAR_CLIPS = Object.freeze(["journey"])
+export const CALENDAR_CLIPS = Object.freeze(["journey", "restock"])
+
+/**
+ * Calendar clips to publish: all of them, or the one named by `--clip <slug>`.
+ * @param {readonly string[]} argv
+ * @returns {string[]}
+ */
+export function selectCalendarClips(argv) {
+  const flag = argv.indexOf("--clip")
+  if (flag === -1) return [...CALENDAR_CLIPS]
+  const slug = argv[flag + 1]
+  if (!slug || !CALENDAR_CLIPS.includes(slug)) {
+    throw new Error(`--clip needs a calendar clip: ${CALENDAR_CLIPS.join(", ")}`)
+  }
+  return [slug]
+}
 
 /**
  * @param {string} cutSlug

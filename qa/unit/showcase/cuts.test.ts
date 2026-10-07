@@ -7,9 +7,10 @@ import {
   buildConcatList,
   cutOutputName,
   missingRawClips,
+  selectCalendarClips,
 } from "../../../scripts/lib/showcase-cuts.mjs"
 import { clipFileNames } from "../../../scripts/lib/video-args.mjs"
-import { CLIPS, DEFERRED_CLIPS } from "../../showcase/shot-list"
+import { CLIPS } from "../../showcase/shot-list"
 
 const clipSlugs = CLIPS.map((clip) => clip.slug)
 const audienceOf = (slug: string) => CLIPS.find((clip) => clip.slug === slug)?.audience
@@ -46,18 +47,16 @@ describe("showcase audience cuts", () => {
     expect(engineer.clips).toContain("checkout")
   })
 
-  it("never uses a deferred clip in a cut or on the calendar", () => {
-    const deferred = DEFERRED_CLIPS.map((clip) => clip.slug)
-    for (const cut of CUTS) for (const clip of cut.clips) expect(deferred, `${cut.slug} uses ${clip}`).not.toContain(clip)
-    for (const clip of CALENDAR_CLIPS) expect(deferred, clip).not.toContain(clip)
+  it("shows a store owner the back-in-stock flow in the buyer cut", () => {
+    expect(CUTS.find((cut) => cut.slug === "buyer")!.clips).toContain("restock")
   })
 
   it("renders cuts in the two social formats only", () => {
     expect(CUT_FORMATS).toEqual(["4x5", "9x16"])
   })
 
-  it("publishes the journey clip on its own for the calendar", () => {
-    expect(CALENDAR_CLIPS).toEqual(["journey"])
+  it("publishes the journey and restock clips on their own for the calendar", () => {
+    expect(CALENDAR_CLIPS).toEqual(["journey", "restock"])
     for (const clip of CALENDAR_CLIPS) expect(clipSlugs).toContain(clip)
   })
 
@@ -97,6 +96,13 @@ describe("concat helpers", () => {
     expect(args).toContain("+faststart")
     expect(args).toContain("-an")
     expect(args.at(-1)).toBe("/out/cut-buyer-4x5.mp4")
+  })
+
+  it("publishes every calendar clip unless --clip names one", () => {
+    expect(selectCalendarClips([])).toEqual(["journey", "restock"])
+    expect(selectCalendarClips(["--calendar-only", "--clip", "restock"])).toEqual(["restock"])
+    expect(() => selectCalendarClips(["--clip", "storefront"])).toThrow(/calendar clip/)
+    expect(() => selectCalendarClips(["--clip"])).toThrow(/calendar clip/)
   })
 
   it("rejects an output that is not an mp4", () => {

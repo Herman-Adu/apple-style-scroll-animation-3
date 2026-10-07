@@ -11,7 +11,7 @@ export const socialLaunchKit: Doc = {
     "Ready-to-post copy for LinkedIn, a Facebook business page, Telegram and X covering the email builder, seasonal campaigns, defence-in-depth permissions and the documentation programme. Each post is paired with an image already in the repo and a link that previews well when shared.",
   readingMinutes: 8,
   order: 3,
-  updatedAt: "2026-10-06",
+  updatedAt: "2026-10-07",
   tags: ["social", "linkedin", "facebook", "telegram", "launch", "recruitment", "marketing"],
   body: [
     {
@@ -32,6 +32,27 @@ export const socialLaunchKit: Doc = {
       description:
         "Screen recording of the storefront: the home page scroll animation plays, a product is opened from the shop, added to the cart, and the cart drawer shows the item and subtotal.",
       caption: "Storefront journey clip for social posts.",
+    },
+    { type: "heading", text: "End-to-end journey clip" },
+    {
+      type: "paragraph",
+      text: "One take from the scrolling story, through sign-in as the demo admin, into the admin. Use 4:5 in the LinkedIn and Facebook feed and 9:16 for stories and reels. Re-record with pnpm showcase:cuts --calendar-only after UI changes.",
+    },
+    {
+      type: "video",
+      src: "/showcase/video/journey-4x5.mp4",
+      poster: "/showcase/video/journey-4x5.jpg",
+      description:
+        "Screen recording in 4:5: the home page scroll story plays, the visitor signs in as the demo admin, and the admin dashboard and its pages open in turn.",
+      caption: "Journey clip, 4:5 feed format.",
+    },
+    {
+      type: "video",
+      src: "/showcase/video/journey-9x16.mp4",
+      poster: "/showcase/video/journey-9x16.jpg",
+      description:
+        "The same journey recorded in 9:16 for stories and reels: scroll story, sign-in as the demo admin, then the admin dashboard and its pages.",
+      caption: "Journey clip, 9:16 story format.",
     },
     { type: "heading", text: "Carousel and square images" },
     {

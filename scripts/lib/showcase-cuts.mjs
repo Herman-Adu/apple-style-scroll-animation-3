@@ -12,13 +12,13 @@ export const CUTS = Object.freeze([
   {
     slug: "buyer",
     title: "Buyer cut",
-    clips: ["storefront", "restock", "checkout", "campaigns", "discounts", "orders"],
+    clips: ["storefront", "checkout", "campaigns", "discounts", "orders"],
   },
-  { slug: "engineer", title: "Engineer cut", clips: ["engineering", "checkout", "restock"] },
+  { slug: "engineer", title: "Engineer cut", clips: ["engineering", "checkout"] },
 ])
 
 /** Clips published on their own, to pair with posts on the social calendar. */
-export const CALENDAR_CLIPS = Object.freeze(["journey", "restock"])
+export const CALENDAR_CLIPS = Object.freeze(["journey"])
 
 /**
  * @param {string} cutSlug

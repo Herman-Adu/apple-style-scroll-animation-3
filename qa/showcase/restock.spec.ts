@@ -43,6 +43,7 @@ test.afterAll(async () => {
 })
 
 test("clip: back in stock end to end", async ({ context }) => {
+  test.skip(process.env.SHOWCASE_INCLUDE_DEFERRED !== "1", "Deferred clip: set SHOWCASE_INCLUDE_DEFERRED=1 to record it")
   test.skip(!credentials, "Run pnpm showcase:seed -- --confirm (or set QA_ADMIN_EMAIL/QA_ADMIN_PASSWORD) to record admin clips")
   const realWaiting = await prisma.stockAlert.count({
     where: { productSlug: RESTOCK_PRODUCT_SLUG, notifiedAt: null, NOT: { email: { endsWith: `@${DEMO_EMAIL_DOMAIN}` } } },

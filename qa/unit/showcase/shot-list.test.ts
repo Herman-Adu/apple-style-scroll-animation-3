@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import path from "node:path"
 import { describe, expect, it } from "vitest"
 import { REPO_ROOT } from "@/qa/config/repo-root"
@@ -7,6 +7,7 @@ import {
   ADMIN_ROUTES,
   CHECKOUT_DISCOUNT_CODE,
   CLIPS,
+  DEFERRED_CLIPS,
   PUBLIC_ROUTES,
   RESTOCK_PRODUCT_SLUG,
   getClip,
@@ -31,7 +32,7 @@ function publicPageExists(route: string) {
 }
 
 describe("showcase shot list", () => {
-  it("plans the approved clips, plus the restock story and the end-to-end journey, with unique slugs", () => {
+  it("plans the approved clips, plus the end-to-end journey, with unique slugs", () => {
     expect(CLIPS.map((clip) => clip.slug)).toEqual([
       "storefront",
       "checkout",
@@ -39,10 +40,19 @@ describe("showcase shot list", () => {
       "discounts",
       "orders",
       "engineering",
-      "restock",
       "journey",
     ])
     expect(new Set(CLIPS.map((clip) => clip.slug)).size).toBe(CLIPS.length)
+  })
+
+  it("defers the restock clip until /admin/products records reliably, without losing its plan", () => {
+    expect(DEFERRED_CLIPS.map((clip) => clip.slug)).toEqual(["restock"])
+    for (const deferred of DEFERRED_CLIPS) {
+      expect(CLIPS.map((clip) => clip.slug)).not.toContain(deferred.slug)
+      expect(getClip(deferred.slug).spec).toBe(deferred.spec)
+    }
+    const spec = readFileSync(path.join(root, "qa", "showcase", "restock.spec.ts"), "utf8")
+    expect(spec).toContain("SHOWCASE_INCLUDE_DEFERRED")
   })
 
   it("covers both audiences, sharing the storefront, checkout and journey clips", () => {
@@ -51,7 +61,7 @@ describe("showcase shot list", () => {
     expect(bySlug.checkout).toBe("both")
     expect(bySlug.journey).toBe("both")
     expect(bySlug.engineering).toBe("recruiter")
-    for (const slug of ["campaigns", "discounts", "orders", "restock"]) expect(bySlug[slug]).toBe("client")
+    for (const slug of ["campaigns", "discounts", "orders"]) expect(bySlug[slug]).toBe("client")
   })
 
   it("restocks a product the demo seed has people waiting for", () => {
@@ -98,7 +108,7 @@ describe("showcase shot list", () => {
 
   it("keeps admin pages on the admin clips and the public pages on the shared ones", () => {
     const adminSlugs = CLIPS.filter((clip) => clip.routes.some((route) => route.startsWith("/admin"))).map((clip) => clip.slug)
-    expect(adminSlugs).toEqual(["campaigns", "discounts", "orders", "restock", "journey"])
+    expect(adminSlugs).toEqual(["campaigns", "discounts", "orders", "journey"])
   })
 
   it("applies a seeded discount code that any customer can use right now", () => {

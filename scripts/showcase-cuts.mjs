@@ -6,6 +6,7 @@
  *
  *   pnpm showcase:cuts              record both formats, then build
  *   pnpm showcase:cuts --no-record  build from the raw clips already recorded
+ *   add --calendar-only             publish the calendar clips and skip the cuts
  */
 import { execFileSync } from "node:child_process"
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs"
@@ -47,8 +48,10 @@ const available = existsSync(rawDir)
   ? readdirSync(rawDir).filter((file) => file.endsWith(".webm")).map((file) => file.replace(/\.webm$/, ""))
   : []
 
+const cuts = process.argv.includes("--calendar-only") ? [] : CUTS
+
 const missing = CUT_FORMATS.flatMap((format) => [
-  ...CUTS.flatMap((cut) => missingRawClips(cut.clips, format, available)),
+  ...cuts.flatMap((cut) => missingRawClips(cut.clips, format, available)),
   ...missingRawClips(CALENDAR_CLIPS, format, available),
 ])
 if (missing.length > 0) {
@@ -67,7 +70,7 @@ function writePoster(input, name) {
 }
 
 for (const format of CUT_FORMATS) {
-  for (const cut of CUTS) {
+  for (const cut of cuts) {
     const name = cutOutputName(cut.slug, format)
     const listFile = path.join(listDir, `${name}.txt`)
     const inputs = cut.clips.map((clip) => path.join(rawDir, `${slugForFormat(clip, format)}.webm`))

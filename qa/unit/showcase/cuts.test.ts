@@ -9,7 +9,7 @@ import {
   missingRawClips,
 } from "../../../scripts/lib/showcase-cuts.mjs"
 import { clipFileNames } from "../../../scripts/lib/video-args.mjs"
-import { CLIPS } from "../../showcase/shot-list"
+import { CLIPS, DEFERRED_CLIPS } from "../../showcase/shot-list"
 
 const clipSlugs = CLIPS.map((clip) => clip.slug)
 const audienceOf = (slug: string) => CLIPS.find((clip) => clip.slug === slug)?.audience
@@ -33,25 +33,31 @@ describe("showcase audience cuts", () => {
     expect(recruiter.clips).toContain("engineering")
   })
 
-  it("opens the buyer cut on the storefront and shows the restock story", () => {
+  it("opens the buyer cut on the storefront and shows checkout and the admin", () => {
     const buyer = CUTS.find((cut) => cut.slug === "buyer")!
     expect(buyer.clips[0]).toBe("storefront")
-    expect(buyer.clips).toContain("restock")
     expect(buyer.clips).toContain("checkout")
+    expect(buyer.clips).toContain("campaigns")
   })
 
   it("leads the engineer cut with the engineering proof and an end-to-end flow", () => {
     const engineer = CUTS.find((cut) => cut.slug === "engineer")!
     expect(engineer.clips[0]).toBe("engineering")
-    expect(engineer.clips.some((clip) => clip === "checkout" || clip === "restock")).toBe(true)
+    expect(engineer.clips).toContain("checkout")
+  })
+
+  it("never uses a deferred clip in a cut or on the calendar", () => {
+    const deferred = DEFERRED_CLIPS.map((clip) => clip.slug)
+    for (const cut of CUTS) for (const clip of cut.clips) expect(deferred, `${cut.slug} uses ${clip}`).not.toContain(clip)
+    for (const clip of CALENDAR_CLIPS) expect(deferred, clip).not.toContain(clip)
   })
 
   it("renders cuts in the two social formats only", () => {
     expect(CUT_FORMATS).toEqual(["4x5", "9x16"])
   })
 
-  it("publishes the journey and restock clips on their own for the calendar", () => {
-    expect(CALENDAR_CLIPS).toEqual(["journey", "restock"])
+  it("publishes the journey clip on its own for the calendar", () => {
+    expect(CALENDAR_CLIPS).toEqual(["journey"])
     for (const clip of CALENDAR_CLIPS) expect(clipSlugs).toContain(clip)
   })
 

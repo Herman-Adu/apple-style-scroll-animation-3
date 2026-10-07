@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test"
+import { adminCredentials, openSignedInAdminPage } from "./admin-session"
 import { beat, clearCaption, saveClip, showCaption, smoothScroll } from "./clip"
 import { CHECKOUT_DISCOUNT_CODE, getClip } from "./shot-list"
 
@@ -6,14 +7,17 @@ import { CHECKOUT_DISCOUNT_CODE, getClip } from "./shot-list"
  * Clip 2, checkout: add a product, apply a seeded discount code and watch the
  * total drop. It stops at the Stripe payment form, so no order is ever placed.
  */
-test("clip: checkout with a discount code", async ({ page, request }) => {
+const credentials = adminCredentials()
+
+test("clip: checkout with a discount code", async ({ context, request }) => {
+  test.skip(!credentials, "Checkout needs a signed-in shopper. Run pnpm showcase:seed -- --confirm first")
   const [addCaption, codeCaption, savedCaption, stripeCaption] = getClip("checkout").captions
 
   const sitemap = await (await request.get("/sitemap.xml")).text()
   const productUrl = sitemap.match(/<loc>([^<]*\/products\/[^<]+)<\/loc>/)?.[1]
   expect(productUrl, "a product URL in sitemap").toBeTruthy()
 
-  await page.goto(new URL(productUrl!).pathname, { waitUntil: "networkidle" })
+  const page = await openSignedInAdminPage(context, credentials!, new URL(productUrl!).pathname)
   await showCaption(page, addCaption)
   await beat(page, 1800)
 

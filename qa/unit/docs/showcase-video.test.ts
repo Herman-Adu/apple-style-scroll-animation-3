@@ -32,6 +32,12 @@ describe("showcase video embeds", () => {
     expect(srcs).toContain("/showcase/video/journey-9x16.mp4");
   });
 
+  it.each(["recruiter", "buyer", "engineer"])("the launch kit embeds the %s cut in both formats", (cut) => {
+    const srcs = videosIn("social-launch-kit").map((v) => v.src);
+    expect(srcs).toContain(`/showcase/video/cut-${cut}-4x5.mp4`);
+    expect(srcs).toContain(`/showcase/video/cut-${cut}-9x16.mp4`);
+  });
+
   it("the launch kit embeds the restock calendar clip in both formats", () => {
     const srcs = videosIn("social-launch-kit").map((v) => v.src);
     expect(srcs).toContain("/showcase/video/restock-4x5.mp4");

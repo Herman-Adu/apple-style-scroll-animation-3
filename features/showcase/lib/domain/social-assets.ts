@@ -1,6 +1,7 @@
 import { ADUDEV } from "./brand"
 import { infographics } from "./infographics"
 import { sequenceSlides } from "./sequence-slides"
+import { topicSlides } from "./topic-slides"
 
 export const SOCIAL_FORMATS = {
   carousel: { width: 1080, height: 1350 },
@@ -15,7 +16,7 @@ export type SocialAsset = {
   format: SocialFormat
   role?: "cover" | "cta"
   /** Slides that belong to an audience pack stay out of the email case-study carousel. */
-  pack?: "recruiter" | "sequence"
+  pack?: "recruiter" | "sequence" | "topic"
   eyebrow: string
   title: string
   body: string
@@ -195,6 +196,7 @@ export const socialAssets: SocialAsset[] = [
     visual: "layers",
   },
   ...sequenceSlides,
+  ...topicSlides,
 ]
 
 export function getSocialAsset(id: string): SocialAsset | undefined {

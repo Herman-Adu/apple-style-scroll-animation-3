@@ -1,5 +1,6 @@
 import type { Doc } from "../lib/domain/schema"
 import { launchKitPackBlocks } from "./social-launch-kit-packs"
+import { launchKitCutBlocks } from "./social-launch-kit-cuts"
 
 export const socialLaunchKit: Doc = {
   slug: "social-launch-kit",
@@ -75,6 +76,7 @@ export const socialLaunchKit: Doc = {
         "The same back-in-stock flow in 9:16 for stories and reels: sold-out page, join the waiting list, admin restock, then the email.",
       caption: "Restock clip, 9:16 story format.",
     },
+    ...launchKitCutBlocks,
     { type: "heading", text: "Carousel and square images" },
     {
       type: "paragraph",

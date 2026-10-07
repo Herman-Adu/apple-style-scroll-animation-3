@@ -5,7 +5,16 @@
 //   pnpm showcase:unseed -- --confirm        removes demo rows and nothing else
 //
 // Only rows tagged as demo are ever written or deleted (see showcase-demo-data.mjs).
+import { mkdirSync, rmSync, writeFileSync } from "node:fs"
+import path from "node:path"
 import { PrismaClient } from "@prisma/client"
+import { hashPassword } from "better-auth/crypto"
+import {
+  ADMIN_CREDENTIALS_FILE,
+  DEMO_ADMIN,
+  buildCredentialAccount,
+  generateDemoPassword,
+} from "./lib/showcase-admin.mjs"
 import {
   DEMO_ID_PREFIX,
   assertSeedTarget,
@@ -79,6 +88,19 @@ async function insertDemoRows(tx) {
   }
 }
 
+const credentialsPath = path.join(process.cwd(), ADMIN_CREDENTIALS_FILE)
+
+/** The recording admin: random password per seed, saved only to the git-ignored credentials file. */
+async function insertDemoAdmin(tx, passwordHash) {
+  await tx.user.create({ data: { ...DEMO_ADMIN } })
+  await tx.account.create({ data: buildCredentialAccount({ userId: DEMO_ADMIN.id, passwordHash }) })
+}
+
+function saveDemoAdminCredentials(password) {
+  mkdirSync(path.dirname(credentialsPath), { recursive: true })
+  writeFileSync(credentialsPath, JSON.stringify({ email: DEMO_ADMIN.email, password }, null, 2), { mode: 0o600 })
+}
+
 const counts = Object.fromEntries(
   ["users", "orders", "discountCodes", "reviews", "subscribers", "campaigns", "messagePresets", "customerMessages", "emailLogs", "stockAlerts"].map(
     (key) => [key, data[key].length],
@@ -95,15 +117,21 @@ try {
     console.log("Dry run, nothing written. Would seed:", counts)
   } else if (cleanOnly) {
     console.log("Removed demo rows:", await prisma.$transaction(removeDemoRows, { timeout: 60000 }))
+    rmSync(credentialsPath, { force: true })
   } else {
+    const password = generateDemoPassword()
+    const passwordHash = await hashPassword(password)
     await prisma.$transaction(
       async (tx) => {
         await removeDemoRows(tx)
         await insertDemoRows(tx)
+        await insertDemoAdmin(tx, passwordHash)
       },
       { timeout: 60000 },
     )
+    saveDemoAdminCredentials(password)
     console.log("Seeded demo rows:", counts)
+    console.log(`Demo admin ${DEMO_ADMIN.email} seeded; password saved to ${ADMIN_CREDENTIALS_FILE} (git-ignored)`)
   }
 } finally {
   await prisma.$disconnect()

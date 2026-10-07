@@ -1,5 +1,5 @@
 import { test } from "@playwright/test"
-import { adminCredentialsFromEnv, openSignedInAdminPage } from "./admin-session"
+import { adminCredentials, openSignedInAdminPage } from "./admin-session"
 import { beat, saveClip, smoothScroll } from "./clip"
 
 /**
@@ -7,7 +7,7 @@ import { beat, saveClip, smoothScroll } from "./clip"
  * account supplied only through env, so no credentials are committed. Skipped when
  * QA_ADMIN_EMAIL / QA_ADMIN_PASSWORD are not set.
  */
-const credentials = adminCredentialsFromEnv()
+const credentials = adminCredentials()
 
 test("clip: admin email editor", async ({ context }) => {
   test.skip(!credentials, "Set QA_ADMIN_EMAIL and QA_ADMIN_PASSWORD to record the admin clip")

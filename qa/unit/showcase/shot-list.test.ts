@@ -1,9 +1,17 @@
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import path from "node:path"
 import { describe, expect, it } from "vitest"
 import { REPO_ROOT } from "@/qa/config/repo-root"
 import { buildCaptionHtml, MAX_CAPTION_LENGTH } from "../../showcase/caption"
-import { ADMIN_ROUTES, CHECKOUT_DISCOUNT_CODE, CLIPS, PUBLIC_ROUTES } from "../../showcase/shot-list"
+import {
+  ADMIN_ROUTES,
+  CHECKOUT_DISCOUNT_CODE,
+  CLIPS,
+  DEFERRED_CLIPS,
+  PUBLIC_ROUTES,
+  RESTOCK_PRODUCT_SLUG,
+  getClip,
+} from "../../showcase/shot-list"
 import { buildDemoData } from "../../../scripts/lib/showcase-demo-data.mjs"
 
 const root = REPO_ROOT
@@ -19,11 +27,12 @@ function adminPageExists(route: string) {
 function publicPageExists(route: string) {
   if (route === "/") return existsSync(path.join(root, "app", "page.tsx"))
   if (route.startsWith("/docs/")) return existsSync(path.join(root, "app", "docs", "[slug]", "page.tsx"))
+  if (route.startsWith("/products/")) return existsSync(path.join(root, "app", "products", "[slug]", "page.tsx"))
   return existsSync(path.join(root, "app", route.slice(1), "page.tsx"))
 }
 
 describe("showcase shot list", () => {
-  it("plans the six approved clips with unique slugs", () => {
+  it("plans the approved clips, plus the end-to-end journey, with unique slugs", () => {
     expect(CLIPS.map((clip) => clip.slug)).toEqual([
       "storefront",
       "checkout",
@@ -31,16 +40,42 @@ describe("showcase shot list", () => {
       "discounts",
       "orders",
       "engineering",
+      "journey",
     ])
     expect(new Set(CLIPS.map((clip) => clip.slug)).size).toBe(CLIPS.length)
   })
 
-  it("covers both audiences, sharing the storefront and checkout clips", () => {
+  it("defers the restock clip until /admin/products records reliably, without losing its plan", () => {
+    expect(DEFERRED_CLIPS.map((clip) => clip.slug)).toEqual(["restock"])
+    for (const deferred of DEFERRED_CLIPS) {
+      expect(CLIPS.map((clip) => clip.slug)).not.toContain(deferred.slug)
+      expect(getClip(deferred.slug).spec).toBe(deferred.spec)
+    }
+    const spec = readFileSync(path.join(root, "qa", "showcase", "restock.spec.ts"), "utf8")
+    expect(spec).toContain("SHOWCASE_INCLUDE_DEFERRED")
+  })
+
+  it("covers both audiences, sharing the storefront, checkout and journey clips", () => {
     const bySlug = Object.fromEntries(CLIPS.map((clip) => [clip.slug, clip.audience]))
     expect(bySlug.storefront).toBe("both")
     expect(bySlug.checkout).toBe("both")
+    expect(bySlug.journey).toBe("both")
     expect(bySlug.engineering).toBe("recruiter")
     for (const slug of ["campaigns", "discounts", "orders"]) expect(bySlug[slug]).toBe("client")
+  })
+
+  it("restocks a product the demo seed has people waiting for", () => {
+    const waiting = (buildDemoData(new Date("2026-01-15T12:00:00Z")) as unknown as { stockAlerts: { productSlug: string }[] })
+      .stockAlerts.filter((alert) => alert.productSlug === RESTOCK_PRODUCT_SLUG)
+    expect(waiting.length).toBeGreaterThan(0)
+    expect(getClip("restock").routes).toContain(`/products/${RESTOCK_PRODUCT_SLUG}`)
+  })
+
+  it("walks the journey from the scroll story through sign-in into the admin", () => {
+    const routes = getClip("journey").routes
+    expect(routes[0]).toBe("/")
+    expect(routes).toContain("/sign-in")
+    expect(routes.indexOf("/sign-in")).toBeLessThan(routes.indexOf("/admin"))
   })
 
   it("gives every clip a title, a spec file and two to six captions that fit on screen", () => {
@@ -73,7 +108,7 @@ describe("showcase shot list", () => {
 
   it("keeps admin pages on the admin clips and the public pages on the shared ones", () => {
     const adminSlugs = CLIPS.filter((clip) => clip.routes.some((route) => route.startsWith("/admin"))).map((clip) => clip.slug)
-    expect(adminSlugs).toEqual(["campaigns", "discounts", "orders"])
+    expect(adminSlugs).toEqual(["campaigns", "discounts", "orders", "journey"])
   })
 
   it("applies a seeded discount code that any customer can use right now", () => {

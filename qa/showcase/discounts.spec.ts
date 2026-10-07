@@ -1,13 +1,13 @@
 import { test } from "@playwright/test"
-import { adminCredentialsFromEnv, openSignedInAdminPage } from "./admin-session"
+import { adminCredentials, openSignedInAdminPage } from "./admin-session"
 import { beat, saveClip, scrollToBottom, showCaption } from "./clip"
 import { getClip } from "./shot-list"
 
 /** Clip 4, discount codes, offers and saved message templates. Needs the seeded demo data and admin env. */
-const credentials = adminCredentialsFromEnv()
+const credentials = adminCredentials()
 
 test("clip: discounts and message templates", async ({ context }) => {
-  test.skip(!credentials, "Set QA_ADMIN_EMAIL and QA_ADMIN_PASSWORD to record the admin clips")
+  test.skip(!credentials, "Run pnpm showcase:seed -- --confirm (or set QA_ADMIN_EMAIL/QA_ADMIN_PASSWORD) to record admin clips")
   const [codesCaption, kindsCaption, templatesCaption] = getClip("discounts").captions
 
   const page = await openSignedInAdminPage(context, credentials!, "/admin/discounts")

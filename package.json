@@ -25,6 +25,7 @@
     "test:axe": "playwright test --config qa/config/playwright.config.mts axe",
     "test:all": "pnpm test && pnpm test:e2e",
     "showcase:video": "node scripts/showcase-video.mjs",
+    "showcase:cuts": "node --env-file-if-exists=.env.local --env-file-if-exists=.env.development.local scripts/showcase-cuts.mjs",
     "showcase:seed": "node --env-file-if-exists=.env.local --env-file-if-exists=.env.development.local scripts/showcase-seed.mjs",
     "showcase:unseed": "node --env-file-if-exists=.env.local --env-file-if-exists=.env.development.local scripts/showcase-seed.mjs --clean",
     "showcase:assets": "pnpm facts && playwright test --config qa/config/playwright.social.config.mts",

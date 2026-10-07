@@ -12,7 +12,7 @@ export const socialLaunchPack: Doc = {
     "Paste-ready LinkedIn, Telegram and X posts for two audiences: recruiters and hiring managers, and prospective clients who might buy a site or hire you to build one from this template. Every number is taken from the repo, every post respects its channel limit, and every link points at a public docs page.",
   readingMinutes: 12,
   order: 6,
-  updatedAt: "2026-10-06",
+  updatedAt: "2026-10-07",
   tags: ["social", "linkedin", "telegram", "x", "recruitment", "clients", "launch", "template"],
   body: [
     {
@@ -87,6 +87,7 @@ export const socialLaunchPack: Doc = {
         ["LinkedIn client 1", "/showcase/social/carousel-starters.png", "Shows the seasonal email starters the post describes."],
         ["LinkedIn client 2", "/showcase/video/storefront.mp4", "Upload natively. A 30 second storefront walk-through sells the template."],
         ["LinkedIn client 3", "/showcase/social/carousel-history.png", "Version history is the visible proof of a safe handover."],
+        ["LinkedIn and Facebook story", "/showcase/video/journey-4x5.mp4 (feed) or journey-9x16.mp4 (stories)", "One take from scroll story to admin shows the whole product end to end."],
         ["Telegram posts", "/showcase/social/carousel-cover.png", "One clean cover image previews well in chats."],
         ["X posts", "/showcase/social/square-starters.png", "One image per post; reuse the clip as the thread opener."],
       ],

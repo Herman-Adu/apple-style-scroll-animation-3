@@ -144,6 +144,13 @@ Update these early so handoff context and public claims stay coherent:
 4. `docs/testing.md` + `qa/README.md` — keep run commands and coverage policy aligned with your CI.
 5. `docs/showcase-reset-and-stripe.md` — replace demo Stripe/reset assumptions with your live process.
 6. `features/docs/content/*.ts` entries used by `/docs` — especially social/showcase/sales content.
+7. `docs/showcase-pipeline.md` — the seed, record, cut, export and clean-up steps for videos and carousels.
+
+## Features added since the first handover
+
+- **Back-in-stock alerts** (`features/stock-alerts`, additive `StockAlert` table): Notify me form on sold-out products, one email per person on restock, token unsubscribe, Waiting column and Most wanted card in admin.
+- **Sign-in-only checkout**: `/checkout` requires a session; guests are redirected to sign in and returned.
+- **Showcase pipeline** (`features/showcase`, `scripts/showcase-*.mjs`): seeded demo data, recorded clips and cuts, generated facts, and eight LinkedIn carousel PDFs. See `docs/showcase-pipeline.md`.
 
 ## Keep vs delete before production
 
@@ -156,6 +163,7 @@ Keep:
 Replace/delete:
 
 - Demo/social/showcase assets that are not part of your launch narrative
+- Demo database rows: run `pnpm showcase:unseed -- --confirm` (removes only rows tagged as demo)
 - Demo copy/case-study placeholders and fictional assumptions
 - Any legal/compliance text not specific to your business
 

@@ -29,6 +29,10 @@ export const frequentlyAskedQuestions: Doc = {
           text: "Add items to your bag and check out. You'll get an order confirmation email the moment payment is authorised, with your order number for reference.",
         },
         {
+          title: "Why do I need to sign in to check out?",
+          text: "An account keeps your orders, receipts and offers in one place, so you can track a delivery or start a return without digging out emails. Your bag is kept while you sign in or create an account, and you land back at checkout afterwards. You can still ask to hear about a sold-out product without an account.",
+        },
+        {
           title: "Which payment methods do you accept?",
           text: "All major credit and debit cards, processed securely through Stripe. Your card details never touch our servers — Stripe handles them directly under PCI-DSS.",
         },

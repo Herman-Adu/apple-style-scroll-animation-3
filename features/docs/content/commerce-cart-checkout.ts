@@ -18,6 +18,12 @@ export const commerceCartCheckout: Doc = {
       text: "A cart is the hardest thing to keep server-first, because it is inherently interactive and personal. The pattern here: the catalog stays fully server-rendered, the cart is a small client island backed by a single context, and every money-touching decision is re-validated on the server. The client cart is a convenience; the server is the source of truth.",
     },
     {
+      type: "callout",
+      variant: "note",
+      title: "Checkout needs a signed-in account",
+      text: "Shoppers must be signed in to check out. The /checkout route is wrapped in a RouteGuard that requires a session and sends guests to /sign-in?redirect=/checkout. The cart survives the round trip, and every order is tied to a user id. Browsing and back-in-stock requests stay open to guests.",
+    },
+    {
       type: "heading",
       text: "Where cart state lives",
     },

@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
-import { Inter } from "next/font/google"
+import { Geist_Mono, Inter } from "next/font/google"
 import { CartProvider } from "@/features/checkout"
 import { CatalogProvider } from "@/features/catalog"
 import { AuthProvider } from "@/lib/auth/adapters/auth-context"
@@ -22,6 +22,10 @@ import { JsonLd } from "@/components/seo/json-ld"
 import { organizationLd, websiteLd } from "@/lib/seo/structured-data"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+// `--font-mono` named "Geist Mono" without ever loading it, so every monospace
+// element fell through to whatever the machine had (Consolas on Windows, a
+// different face on Linux) and the social exports re-rendered on each move.
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
@@ -95,7 +99,7 @@ export default async function RootLayout({
       data-accent-cards={headingAccent.cards ? "on" : "off"}
       suppressHydrationWarning
     >
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${geistMono.variable} font-sans antialiased`}>
         <BrandThemeStyle theme={activeTheme} />
         <JsonLd data={[organizationLd(), websiteLd()]} />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>

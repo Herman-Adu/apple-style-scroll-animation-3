@@ -66,7 +66,16 @@ describe("buyer pack", () => {
     expect(buyer.slides.map((s) => s.role)).toEqual(["cost", "cost", "control", "example", "offer", "close"])
   })
 
-  it("shows three-year cost as a table and a cumulative line, both marked illustrative", () => {
+  it("describes the cost line as per-stage, because it plots the table's rows and not a running total", () => {
+    const line = slideFor("cost", 1)
+    if (line.kind !== "line-chart") throw new Error("wrong kind")
+    // The series repeat the table's cells, so calling them cumulative tells a
+    // reader the gap compounds when the chart only shows each stage's cost.
+    const copy = [line.summary, line.alt].filter(Boolean).join(" ")
+    expect(copy).not.toMatch(/cumulative/i)
+  })
+
+  it("shows three-year cost as a table and a per-stage line, both marked illustrative", () => {
     const table = slideFor("cost", 0)
     const line = slideFor("cost", 1)
     expect(table.kind).toBe("table")

@@ -17,8 +17,16 @@ import { SOCIAL_FORMATS, carouselSlides, type SocialAsset } from "@/features/sho
 const publicFile = (file: string) => existsSync(join(REPO_ROOT, "public", file))
 
 describe("pack carousels", () => {
-  it("covers the three audiences and the checkout sequence", () => {
-    expect(packs.map((p) => p.id)).toEqual(["recruiter", "buyer", "engineer", "checkout-sequence"])
+  it("covers the three audiences, the checkout sequence and the topic carousels", () => {
+    expect(packs.map((p) => p.id)).toEqual([
+      "recruiter",
+      "buyer",
+      "engineer",
+      "checkout-sequence",
+      "security",
+      "how-it-was-built",
+      "site-tour",
+    ])
   })
 
   it("exports one carousel-size PDF per pack", () => {

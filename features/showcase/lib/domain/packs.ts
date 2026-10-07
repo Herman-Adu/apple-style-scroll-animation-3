@@ -1,5 +1,6 @@
 import { getInfographic, type Infographic } from "./infographics"
 import { CHECKOUT_STEPS } from "./sequence-slides"
+import { BUILD_STEPS, SECURITY_STEPS, TOUR_STOPS } from "./topic-slides"
 import { SOCIAL_FORMATS, getSocialAsset, type ExportItem, type SocialAsset } from "./social-assets"
 
 export type PackRole =
@@ -64,6 +65,34 @@ export const packs: Pack[] = [
       { id: "sequence-checkout-cover", role: "cover" },
       ...CHECKOUT_STEPS.map((_, i) => ({ id: `sequence-checkout-${i + 1}`, role: "step" as const })),
       { id: "recruiter-cta", role: "close" },
+    ],
+  },
+  {
+    id: "security",
+    audience: "Engineers and buyers who ask who can touch the data",
+    slides: [
+      { id: "security-cover", role: "cover" },
+      ...SECURITY_STEPS.map((_, i) => ({ id: `security-${i + 1}`, role: "step" as const })),
+      { id: "recruiter-cta", role: "close" },
+    ],
+  },
+  {
+    id: "how-it-was-built",
+    audience: "Recruiters and engineers: the delivery process",
+    slides: [
+      { id: "build-cover", role: "cover" },
+      ...BUILD_STEPS.map((_, i) => ({ id: `build-${i + 1}`, role: "step" as const })),
+      { id: "infographic-engineer-tests", role: "testing" },
+      { id: "recruiter-cta", role: "close" },
+    ],
+  },
+  {
+    id: "site-tour",
+    audience: "Everyone: what the site looks like, stop by stop",
+    slides: [
+      { id: "infographic-site-map", role: "architecture" },
+      ...TOUR_STOPS.map((s) => ({ id: `tour-${s.id}`, role: "example" as const })),
+      { id: "carousel-cta", role: "close" },
     ],
   },
 ]

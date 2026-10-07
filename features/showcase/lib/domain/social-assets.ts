@@ -1,5 +1,6 @@
 import { ADUDEV } from "./brand"
 import { infographics } from "./infographics"
+import { sequenceSlides } from "./sequence-slides"
 
 export const SOCIAL_FORMATS = {
   carousel: { width: 1080, height: 1350 },
@@ -14,7 +15,7 @@ export type SocialAsset = {
   format: SocialFormat
   role?: "cover" | "cta"
   /** Slides that belong to an audience pack stay out of the email case-study carousel. */
-  pack?: "recruiter"
+  pack?: "recruiter" | "sequence"
   eyebrow: string
   title: string
   body: string
@@ -23,6 +24,8 @@ export type SocialAsset = {
   diagram?: { source: string; alt: string }
   cta?: { ask: string; link: string; email: string }
   visual?: "layers"
+  /** A step-by-step flow with one step lit up. `current` is -1 on an overview slide. */
+  progress?: { steps: string[]; current: number }
 }
 
 export const CAROUSEL_ID = "carousel"
@@ -191,6 +194,7 @@ export const socialAssets: SocialAsset[] = [
     body: "Proxy, server and UI each enforce permissions independently.",
     visual: "layers",
   },
+  ...sequenceSlides,
 ]
 
 export function getSocialAsset(id: string): SocialAsset | undefined {

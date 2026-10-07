@@ -1,6 +1,7 @@
 import type { Doc } from "../lib/domain/schema"
 import { launchKitPackBlocks } from "./social-launch-kit-packs"
 import { launchKitCutBlocks } from "./social-launch-kit-cuts"
+import { launchKitCarouselBlocks } from "./social-launch-kit-carousels"
 
 export const socialLaunchKit: Doc = {
   slug: "social-launch-kit",
@@ -191,6 +192,7 @@ export const socialLaunchKit: Doc = {
       width: 1080,
       height: 1350,
     },
+    ...launchKitCarouselBlocks,
     ...launchKitPackBlocks,
     {
       type: "table",

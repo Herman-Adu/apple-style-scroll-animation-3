@@ -6,8 +6,12 @@ import {
   SocialSlide,
   carouselSlides,
   getInfographic,
+  getPackByCarouselId,
   getSocialAsset,
   infographics,
+  packCarouselId,
+  packSlides,
+  packs,
   socialAssets,
 } from "@/features/showcase"
 import { loadFacts } from "@/features/showcase/server"
@@ -20,6 +24,7 @@ export const metadata: Metadata = {
 export function generateStaticParams() {
   return [
     { asset: CAROUSEL_ID },
+    ...packs.map((p) => ({ asset: packCarouselId(p.id) })),
     ...socialAssets.map((a) => ({ asset: a.id })),
     ...infographics.map((i) => ({ asset: i.id })),
   ]
@@ -37,6 +42,24 @@ export default async function ShowcaseRenderPage({ params }: { params: Promise<{
         {slides.map((slide, index) => (
           <SocialSlide key={slide.id} asset={slide} position={{ index, total: slides.length }} />
         ))}
+      </main>
+    )
+  }
+
+  const pack = getPackByCarouselId(asset)
+  if (pack) {
+    const slides = packSlides(pack)
+    const facts = await loadFacts()
+    return (
+      <main className="flex flex-col">
+        {slides.map((slide, index) => {
+          const position = { index, total: slides.length }
+          return "kind" in slide ? (
+            <InfographicSlide key={slide.id} infographic={slide} facts={facts} position={position} />
+          ) : (
+            <SocialSlide key={slide.id} asset={slide} position={position} />
+          )
+        })}
       </main>
     )
   }

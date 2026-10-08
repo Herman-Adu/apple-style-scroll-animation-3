@@ -15,6 +15,9 @@ Add it to `pnpm.onlyBuiltDependencies` in `package.json`, then `pnpm rebuild <pk
 ## Playwright: no browser / `libnspr4.so` missing
 `pnpm exec playwright install chromium`. The sandbox is Amazon Linux 2023 (`dnf`, no `apt-get`), so `playwright install-deps` cannot work. Install the libraries with `sudo -n dnf install -y nspr nss nss-util atk at-spi2-atk cups-libs libdrm libxkbcommon libXcomposite libXdamage libXfixes libXrandr mesa-libgbm alsa-lib pango cairo`, then confirm with a one-line `chromium.launch()`. If that fails, report the check as blocked; don't loop.
 
+## A recorded clip runs longer than its pacing says
+`page.mouse.wheel` costs about 20ms of its own, on top of whatever you wait. A sleep per step therefore drifts: in S41 a 12-second frame sequence took 16. Drive the steps from the clock — wait until step `i` is *due* (`startedAt + (i + 1) * pause`) rather than sleeping a fixed amount. Measure the real cost before trusting a pacing number; the plan's estimate was out by a third.
+
 ## Video poster is a blank frame
 The page was still loading at grab time. `scripts/showcase-video.mjs` grabs at 8s; a jpg of a few KB means blank.
 

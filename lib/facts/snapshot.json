@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-10-08T09:39:03.200Z",
+  "tests": {
+    "unit": 1310,
+    "integration": 83,
+    "smoke": 15,
+    "axe": 10,
+    "seo": 6,
+    "total": 1424
+  },
+  "coverage": {
+    "lines": 37.61,
+    "branches": 28.96
+  },
+  "arch": {
+    "deepImports": 0,
+    "libToFeatures": 0,
+    "anyTypes": 0,
+    "largeFiles": 21,
+    "useEffect": 32
+  },
+  "docs": {
+    "pages": 55
+  },
+  "routes": {
+    "pages": 45
+  },
+  "repo": {
+    "mergedPrs": 165,
+    "latestPr": 174
+  }
+}

@@ -19,6 +19,7 @@ const facts: Facts = {
   arch: { deepImports: 0, libToFeatures: 0, anyTypes: 0, largeFiles: 3, useEffect: 12 },
   docs: { pages: 60 },
   routes: { pages: 40 },
+  repo: { mergedPrs: 165, latestPr: 174 },
 }
 
 const NEW_KINDS = ["table", "bar-chart", "line-chart", "sequence"] as const

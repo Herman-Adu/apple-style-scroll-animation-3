@@ -46,7 +46,12 @@ pnpm test:all          # unit/integration + e2e
 
 ## Facts and the coverage ratchet
 
-`pnpm facts` runs unit + integration with coverage, lists the Playwright tests, measures the architecture and writes `.generated/facts.json` (git-ignored). Every number on a showcase slide is read from that file; a unit test fails if a slide types a number in instead of using `{ fact: "..." }`.
+`pnpm facts` runs unit + integration with coverage, lists the Playwright tests, measures the architecture and counts the merged pull requests. It writes the result twice:
+
+- `.generated/facts.json` (git-ignored) — read by the showcase render. Every number on a slide comes from it, and a unit test fails if a slide types a number in instead of using `{ fact: "..." }`.
+- `lib/facts/snapshot.json` (committed) — imported as `@/lib/facts` by anything that renders live. A docs page resolves its numbers when it renders, not when an image is exported, so it still needs them after a deploy, where `.generated/` does not exist.
+
+Both come from the same run, so they cannot disagree. The owner's paste-ready posts quote `facts.tests.total` and `facts.repo.mergedPrs` rather than typed-in figures, and `qa/unit/docs/doc-facts.test.ts` fails if a stale count reappears.
 
 Coverage only goes up: the run fails if lines or branches drop below `qa/baselines/coverage.json`. After raising coverage, run `pnpm facts --update-baseline` and commit the new baseline. CI runs `pnpm facts` and uploads the file as an artifact; `pnpm showcase:assets` runs it before rendering.
 

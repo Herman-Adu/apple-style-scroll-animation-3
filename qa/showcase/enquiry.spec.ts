@@ -1,5 +1,5 @@
 import { expect, test } from "./fixtures"
-import { beat, clearCaption, saveClip, showCaption } from "./clip"
+import { beat, clearCaption, jumpTo, saveClip, showCaption, visit } from "./clip"
 import {
   ENQUIRY_CLIP_ANSWERS,
   ENQUIRY_CLIP_SENDER,
@@ -44,9 +44,9 @@ test("clip: the enquiry form", async ({ page }) => {
     await continueButton.click()
   }
 
-  await page.goto("/contact", { waitUntil: "networkidle" })
+  await visit(page, "/contact")
   await beat(page, 1200)
-  await page.locator("#enquiry").scrollIntoViewIfNeeded()
+  await jumpTo(page.locator("#enquiry"))
   await showCaption(page, introCaption)
   await beat(page, 2400)
   await clearCaption(page)

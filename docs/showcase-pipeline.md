@@ -8,7 +8,8 @@ How the demo videos, slides and LinkedIn carousels are made, from an empty datab
 | --- | --- | --- | --- |
 | 1. Seed | `pnpm showcase:seed -- --dry-run` | Dry run: prints the target database host, row counts and any clashes. Writes nothing. Without `--dry-run` or `--confirm` the script refuses to run. | Console only |
 | 1b. Seed for real | `pnpm showcase:seed -- --confirm` | Replaces any earlier demo rows, then writes the demo set (customers, orders, offers, waiting lists, a demo admin). Every row is tagged as demo. | Demo rows in the database |
-| 1c. Check captions | `pnpm showcase:captions` | Renders every caption on its route at all three sizes and writes one screenshot per shot. Two minutes, no recording — run it before a recording pass, not after. | `test-results/preview/captions/` |
+| 1c. Check it is fit to record | `pnpm showcase:check` | Opens every route the clips film, through the same fixture a take uses, and fails if any comes up broken or behind a sign-in. Forty seconds. Run it before every recording pass. | Console only |
+| 1d. Check captions | `pnpm showcase:captions` | Renders every caption on its route at all three sizes and writes one screenshot per shot. Two minutes, no recording — run it before a recording pass, not after. | `test-results/preview/captions/` |
 | 2. Record clips | `pnpm showcase:video` | Records each clip with Playwright, then converts it to H.264 `.mp4` with a `.jpg` poster. `--no-record` converts existing raw clips only. | `public/showcase/video/` |
 | 3. Build cuts | `pnpm showcase:cuts` | Records every clip in 4:5 and 9:16, then stitches the recruiter, buyer and engineer cuts and publishes the calendar clips. `--no-record`, `--calendar-only` and `--clip <slug>` narrow the run. | `public/showcase/video/` |
 | 4. Export slides and carousels | `pnpm showcase:assets` | Runs `pnpm facts`, then renders every slide to PNG and every carousel to a PDF with one page per slide. | `public/showcase/social/` |

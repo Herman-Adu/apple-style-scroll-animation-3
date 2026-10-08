@@ -13,11 +13,19 @@ import { installIdentityMask } from "./real-identities"
  * 2. Nobody real. Installing the mask per clip missed the two that only visit
  *    public pages — and the contact page lists an address that is also a real
  *    account, so those takes published it.
+ * 3. No smooth scrolling. The site sets `scroll-behavior: smooth`, which applies
+ *    to programmatic scrolls, so `scrollIntoViewIfNeeded` crawls the full height
+ *    of a 500vh hero. That cost the restock clip sixteen seconds on one frozen
+ *    frame — over half its length. Wheel-driven scrolling, which is how the
+ *    clips show a page moving, is not affected by this property.
  */
 export const DEV_CHROME_SELECTORS = ["nextjs-portal", "#__next-build-watcher", "[data-nextjs-toast]"]
 
-export function devChromeStyle(): string {
-  return `${DEV_CHROME_SELECTORS.join(",")}{display:none!important}`
+export function recordingStyle(): string {
+  return [
+    `${DEV_CHROME_SELECTORS.join(",")}{display:none!important}`,
+    "html{scroll-behavior:auto!important}",
+  ].join("")
 }
 
 export const test = base.extend({
@@ -32,7 +40,7 @@ export const test = base.extend({
       }
       hide()
       document.addEventListener("DOMContentLoaded", hide)
-    }, devChromeStyle())
+    }, recordingStyle())
     await installIdentityMask(context, { signedInAs: adminCredentials()?.email })
     await use(context)
   },

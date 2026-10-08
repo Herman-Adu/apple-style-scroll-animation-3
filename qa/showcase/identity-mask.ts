@@ -205,8 +205,18 @@ export function identityMaskScript({ aliases }: { aliases: IdentityAlias[] }) {
   const rules = aliases.map(({ pattern, flags, to }) => ({ match: new RegExp(pattern, flags), to }))
   const BROKEN_AVATAR = "data:image/gif;base64,masked"
 
+  // React streams its payload as text inside <script> tags. Rewriting a match in
+  // there corrupts the stream and the page dies with "Connection closed", which
+  // is how /docs came to record an error screen.
+  const OFF_LIMITS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE", "TITLE"])
+
   const maskAll = () => {
-    const walker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT)
+    const walker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node) =>
+        node.parentElement && OFF_LIMITS.has(node.parentElement.tagName)
+          ? NodeFilter.FILTER_REJECT
+          : NodeFilter.FILTER_ACCEPT,
+    })
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       const text = node.nodeValue
       if (!text) continue

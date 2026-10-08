@@ -1,5 +1,5 @@
 import path from "node:path"
-import type { Page } from "@playwright/test"
+import type { Locator, Page } from "@playwright/test"
 import { formatFromEnv, slugForFormat } from "../../scripts/lib/showcase-formats.mjs"
 import {
   CAPTION_BAND_RATIO,
@@ -32,6 +32,46 @@ export async function smoothScroll(page: Page, distance: number, steps = 24) {
     await page.mouse.wheel(0, step)
     await page.waitForTimeout(80)
   }
+}
+
+/** The app's error boundary, and the sign-in wall a gated route redirects to. */
+const BROKEN_PAGE = /something broke|an unexpected error interrupted/i
+const SIGN_IN_WALL = /sign in to your account/i
+
+export interface VisitOptions {
+  /** The journey clip signs in on camera, so for that one shot a sign-in page is the point. */
+  expectSignIn?: boolean
+}
+
+/**
+ * Goes to a route and refuses to film it if it came up broken or gated.
+ *
+ * Both have happened and both were published: /docs recorded the error screen,
+ * and the storefront clip recorded a sign-in wall under a caption promising
+ * checkout. A take that fails costs seconds; a bad clip costs a whole pass.
+ */
+export async function visit(page: Page, route: string, { expectSignIn = false }: VisitOptions = {}) {
+  const response = await page.goto(route, { waitUntil: "networkidle" })
+  const status = response?.status() ?? 0
+  if (status >= 400) throw new Error(`${route} answered ${status}; not filming it`)
+
+  const text = await page.evaluate(() => document.body.innerText)
+  if (BROKEN_PAGE.test(text)) throw new Error(`${route} rendered the error screen; not filming it`)
+  if (!expectSignIn && SIGN_IN_WALL.test(text)) {
+    throw new Error(`${route} asked for a sign-in; not filming it. Seed the demo admin, or sign in first.`)
+  }
+}
+
+/**
+ * Puts an element on screen at once.
+ *
+ * `scrollIntoViewIfNeeded` scrolls and then waits for the element to settle, and
+ * on a page with a 500vh sticky hero that took sixteen seconds — recorded as one
+ * frozen frame, over half the restock clip. This asks the page to do the scroll
+ * and moves on.
+ */
+export async function jumpTo(target: Locator) {
+  await target.evaluate((element) => element.scrollIntoView({ behavior: "instant", block: "center" }))
 }
 
 /** Whole-page measurements, re-read each pass because lazy sections can grow the page while scrolling. */

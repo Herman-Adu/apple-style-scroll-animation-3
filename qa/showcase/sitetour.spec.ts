@@ -1,5 +1,5 @@
 import { expect, test } from "./fixtures"
-import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
+import { beat, clearCaption, jumpTo, saveClip, scrollToBottom, showCaption, visit } from "./clip"
 import { getClip } from "./shot-list"
 
 /**
@@ -10,7 +10,7 @@ import { getClip } from "./shot-list"
 test("clip: the rest of the site", async ({ page }) => {
   const [aboutCaption, articlesCaption, contactCaption] = getClip("sitetour").captions
 
-  await page.goto("/about", { waitUntil: "networkidle" })
+  await visit(page, "/about")
   await beat(page, 1200)
   await showCaption(page, aboutCaption)
   await beat(page, 2000)
@@ -18,14 +18,14 @@ test("clip: the rest of the site", async ({ page }) => {
   await scrollToBottom(page)
   await beat(page, 1000)
 
-  await page.goto("/articles", { waitUntil: "networkidle" })
+  await visit(page, "/articles")
   await showCaption(page, articlesCaption)
   await beat(page, 2000)
   await clearCaption(page)
   await scrollToBottom(page)
   await beat(page, 1000)
 
-  await page.goto("/contact", { waitUntil: "networkidle" })
+  await visit(page, "/contact")
   await showCaption(page, contactCaption)
   await beat(page, 1600)
   await clearCaption(page)
@@ -34,7 +34,7 @@ test("clip: the rest of the site", async ({ page }) => {
   // The map is an embedded iframe, so hold on it until it has actually arrived.
   const map = page.locator("#studios iframe")
   await expect(map).toBeVisible()
-  await map.scrollIntoViewIfNeeded()
+  await jumpTo(map)
   await beat(page, 2600)
 
   await saveClip(page, "sitetour")

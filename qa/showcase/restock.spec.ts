@@ -3,7 +3,7 @@ import type { Locator, Page } from "@playwright/test"
 import { expect, test } from "./fixtures"
 import { DEMO_EMAIL_DOMAIN } from "../../scripts/lib/showcase-demo-data.mjs"
 import { adminCredentials, openSignedInAdminPage } from "./admin-session"
-import { beat, clearCaption, saveClip, showCaption } from "./clip"
+import { beat, clearCaption, jumpTo, saveClip, showCaption, visit } from "./clip"
 import { RESTOCK_PRODUCT_SLUG, getClip } from "./shot-list"
 
 /**
@@ -56,26 +56,34 @@ test("clip: back in stock end to end", async ({ context }) => {
 
   const setup = await openSignedInAdminPage(context, credentials!, `/products/${RESTOCK_PRODUCT_SLUG}`)
   const name = (await setup.locator("h1").first().innerText()).trim()
-  await setup.goto("/admin/products", { waitUntil: "networkidle" })
+  await visit(setup, "/admin/products")
   const original = await readStock(stockRow(setup, name).row)
   await stepStockTo(setup, name, 0)
 
   try {
     const page = await context.newPage()
-    await page.goto(`/products/${RESTOCK_PRODUCT_SLUG}`, { waitUntil: "networkidle" })
+    await visit(page, `/products/${RESTOCK_PRODUCT_SLUG}`)
+
+    // The storefront catalog polls every 20 seconds and refreshes on focus. A
+    // page opened right after the stock change therefore shows "Add to cart"
+    // until the next tick — sixteen seconds of a still hero, on camera. A page
+    // Playwright just opened never fires focus, so the clip asks for it.
+    await page.evaluate(() => window.dispatchEvent(new Event("focus")))
+    await expect(page.locator('input[type="email"]').first()).toBeAttached({ timeout: 30_000 })
+
     await showCaption(page, soldOutCaption)
     await beat(page, 2400)
 
     const email = page.locator('input[type="email"]').first()
-    await email.scrollIntoViewIfNeeded()
+    await jumpTo(email)
     await email.pressSequentially(`you@${DEMO_EMAIL_DOMAIN}`, { delay: 45 })
     await showCaption(page, joinCaption)
     await page.getByRole("button", { name: /notify me/i }).click()
     await beat(page, 2200)
 
-    await page.goto("/admin/products", { waitUntil: "networkidle" })
+    await visit(page, "/admin/products")
     const { row, increase } = stockRow(page, name)
-    await row.scrollIntoViewIfNeeded()
+    await jumpTo(row)
     await showCaption(page, demandCaption)
     await beat(page, 2600)
 
@@ -84,7 +92,7 @@ test("clip: back in stock end to end", async ({ context }) => {
     await expect.poll(() => readStock(row), { timeout: 15_000 }).toBe(1)
     await beat(page, 2000)
 
-    await page.goto("/admin/email/templates", { waitUntil: "networkidle" })
+    await visit(page, "/admin/email/templates")
     const template = page.getByRole("link", { name: /back in stock/i }).first()
     if (await template.count()) {
       await template.click()
@@ -96,7 +104,7 @@ test("clip: back in stock end to end", async ({ context }) => {
 
     await saveClip(page, "restock")
   } finally {
-    await setup.goto("/admin/products", { waitUntil: "networkidle" })
+    await visit(setup, "/admin/products")
     await stepStockTo(setup, name, original)
     expect(await readStock(stockRow(setup, name).row), "stock restored").toBe(original)
   }

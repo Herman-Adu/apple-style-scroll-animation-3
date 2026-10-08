@@ -1,6 +1,6 @@
 import { expect, test } from "./fixtures"
 import { adminCredentials, openSignedInAdminPage } from "./admin-session"
-import { beat, clearCaption, saveClip, showCaption, smoothScroll } from "./clip"
+import { beat, clearCaption, saveClip, showCaption, smoothScroll, visit } from "./clip"
 import { CHECKOUT_DISCOUNT_CODE, getClip } from "./shot-list"
 
 /**
@@ -27,7 +27,7 @@ test("clip: checkout with a discount code", async ({ context, request }) => {
   await beat(page, 1500)
   await clearCaption(page)
 
-  await page.goto("/checkout", { waitUntil: "networkidle" })
+  await visit(page, "/checkout")
   await showCaption(page, codeCaption)
   await beat(page, 1500)
 

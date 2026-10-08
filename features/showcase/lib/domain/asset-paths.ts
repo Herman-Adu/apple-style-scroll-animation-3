@@ -54,6 +54,11 @@ export function socialAssetPath(id: string): string {
   return `${SHOWCASE_ROOT}/social/${match.group}/${id.slice(match.prefix.length)}.png`
 }
 
+/** A group's folder, for channels that post its images rather than its PDF. */
+export function socialGroupPath(group: AssetGroup): string {
+  return `${SHOWCASE_ROOT}/social/${group}`
+}
+
 /** Every carousel is its group's `carousel.pdf`, so one folder holds one swipeable post. */
 export function carouselPdfPath(group: AssetGroup): string {
   return `${SHOWCASE_ROOT}/social/${group}/carousel.pdf`

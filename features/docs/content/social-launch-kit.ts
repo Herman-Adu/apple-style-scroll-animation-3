@@ -1,5 +1,6 @@
 import type { Doc } from "../lib/domain/schema"
 import { facts } from "@/lib/facts"
+import { launchKitCalendarBlocks } from "./social-launch-kit-calendar"
 import { launchKitPackBlocks } from "./social-launch-kit-packs"
 import { launchKitClipBlocks } from "./social-launch-kit-clips"
 import { launchKitCutBlocks } from "./social-launch-kit-cuts"
@@ -12,8 +13,8 @@ export const socialLaunchKit: Doc = {
   audience: "owner",
   access: "owner",
   summary:
-    "Ready-to-post copy for LinkedIn, a Facebook business page, Telegram and X covering the email builder, seasonal campaigns, defence-in-depth permissions and the documentation programme. Each post is paired with an image already in the repo and a link that previews well when shared.",
-  readingMinutes: 8,
+    "Ready-to-post copy for LinkedIn, a Facebook business page, Telegram and X covering the email builder, seasonal campaigns, defence-in-depth permissions and the documentation programme, plus a four-week posting calendar that gives every published cut, clip and carousel a slot. Each post is paired with an image already in the repo and a link that previews well when shared.",
+  readingMinutes: 12,
   order: 3,
   updatedAt: "2026-10-08",
   tags: ["social", "linkedin", "facebook", "telegram", "launch", "recruitment", "marketing"],
@@ -230,15 +231,7 @@ export const socialLaunchKit: Doc = {
         "Email hero images: 7.6 MB down to 1.25 MB with no visible quality loss. Small wins add up.",
       ],
     },
-    { type: "heading", text: "Posting order" },
-    {
-      type: "steps",
-      items: [
-        { title: "Week 1", text: "LinkedIn Post 1 (case study) and the Facebook seasonal post. These lead with outcomes." },
-        { title: "Week 2", text: "LinkedIn Post 2 (security) and the Telegram drop. These lead with engineering depth." },
-        { title: "Week 3", text: "LinkedIn Post 3 (process and changelog) and the X thread. Reply to comments with links to specific docs pages." },
-      ],
-    },
+    ...launchKitCalendarBlocks,
     {
       type: "callout",
       variant: "warning",

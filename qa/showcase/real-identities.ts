@@ -1,7 +1,14 @@
 import { PrismaClient } from "@prisma/client"
 import type { BrowserContext } from "@playwright/test"
 import { DEMO_EMAIL_DOMAIN, DEMO_ID_PREFIX } from "../../scripts/lib/showcase-demo-data.mjs"
-import { buildIdentityAliases, identityMaskScript, type MaskOptions, type RealIdentity } from "./identity-mask"
+import { contactChannels } from "../../features/contact/lib/domain/contact-info"
+import {
+  buildIdentityAliases,
+  identityMaskScript,
+  siteContactAliases,
+  type MaskOptions,
+  type RealIdentity,
+} from "./identity-mask"
 
 /**
  * Everyone in the database who is not part of the demo seed. The seed does not
@@ -49,7 +56,9 @@ let pending: Promise<RealIdentity[]> | null = null
  */
 export async function installIdentityMask(context: BrowserContext, options: MaskOptions = {}) {
   pending ??= fetchRealIdentities()
-  const aliases = buildIdentityAliases(await pending, options)
+  // Site contact details first: the store's own address is also a real account,
+  // and as a person it would get a person's stand-in rather than a company one.
+  const aliases = [...siteContactAliases(contactChannels), ...buildIdentityAliases(await pending, options)]
   await context.addInitScript(identityMaskScript, { aliases })
   return aliases
 }

@@ -41,11 +41,13 @@ describe("showcase audience cuts", () => {
     expect(buyer.clips).toContain("campaigns")
   })
 
-  it("walks a buyer round the rest of the site and its enquiry form", () => {
+  it("keeps the buyer cut to what a store owner is deciding on", () => {
+    // Eight clips ran to 3:15. The site tour and the enquiry form are published
+    // on their own for the calendar instead of padding the pitch.
     const buyer = CUTS.find((cut) => cut.slug === "buyer")!
-    expect(buyer.clips).toContain("sitetour")
-    expect(buyer.clips).toContain("enquiry")
-    expect(buyer.clips.indexOf("sitetour")).toBe(buyer.clips.indexOf("storefront") + 1)
+    expect(buyer.clips).not.toContain("sitetour")
+    expect(buyer.clips).not.toContain("enquiry")
+    for (const slug of ["sitetour", "enquiry"]) expect(CALENDAR_CLIPS).toContain(slug)
   })
 
   it("leads the engineer cut with the engineering proof and an end-to-end flow", () => {

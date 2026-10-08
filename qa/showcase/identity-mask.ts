@@ -66,7 +66,12 @@ function escapeRegExp(value: string) {
  */
 function patternFor(value: string): { pattern: string; flags: string } {
   const escaped = escapeRegExp(value)
-  return value.includes("@") ? { pattern: escaped, flags: "gi" } : { pattern: `\\b${escaped}\\b`, flags: "gi" }
+  if (value.includes("@")) return { pattern: escaped, flags: "gi" }
+  // A word boundary only exists next to a word character, so "+45 32 12 40 08"
+  // would never match with one in front of the plus sign.
+  const open = /^\w/.test(value) ? "\\b" : ""
+  const close = /\w$/.test(value) ? "\\b" : ""
+  return { pattern: `${open}${escaped}${close}`, flags: "gi" }
 }
 
 function alias(from: string, to: string): IdentityAlias {
@@ -91,6 +96,30 @@ function standInName(index: number) {
   const name = STAND_IN_NAMES[index % STAND_IN_NAMES.length]
   const round = Math.floor(index / STAND_IN_NAMES.length)
   return round === 0 ? name : `${name} ${round + 1}`
+}
+
+/**
+ * The store's own published contact details. They are real — the owner's address
+ * and phone — and the recording is a demo of a fictional store, so a clip that
+ * shows a masked customer next to a live phone number is both inconsistent and
+ * an invitation to spam. The phone stand-in is in Ofcom's drama range, which is
+ * never allocated to anyone.
+ */
+const SITE_CONTACT_STAND_INS: Record<string, string> = {
+  email: `hello${demoSuffix}`,
+  phone: "+44 7700 900123",
+}
+
+export interface SiteContact {
+  id: string
+  value: string
+}
+
+/** Aliases for the store's own contact details, applied before anybody's name. */
+export function siteContactAliases(channels: readonly SiteContact[]): IdentityAlias[] {
+  return channels
+    .filter((channel) => SITE_CONTACT_STAND_INS[channel.id] !== undefined && channel.value.trim() !== "")
+    .map((channel) => alias(channel.value, SITE_CONTACT_STAND_INS[channel.id]))
 }
 
 /** Applies the aliases to one piece of text. The page runs exactly these patterns. */

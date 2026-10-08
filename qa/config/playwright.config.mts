@@ -28,6 +28,10 @@ const serverCommand = isCI
 export default defineConfig({
   testDir: path.join(projectRoot, "qa"),
   testMatch: ["smoke/**/*.spec.ts", "seo/**/*.spec.ts", "axe/**/*.spec.ts"],
+  // Playwright empties outputDir before every run, and the default is the whole
+  // of test-results — which is where the showcase recordings live. Without this,
+  // running the browser gates deletes the raw clips a recording pass just made.
+  outputDir: path.join(projectRoot, "test-results", "e2e"),
   fullyParallel: true,
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,

@@ -12,7 +12,10 @@ export const CUTS = Object.freeze([
   {
     slug: "buyer",
     title: "Buyer cut",
-    clips: ["storefront", "sitetour", "checkout", "enquiry", "restock", "campaigns", "discounts", "orders"],
+    // The site tour and the enquiry form are published on their own instead. They
+    // are the two weakest minutes-per-point for someone deciding whether to run a
+    // store on this: marketing pages scrolling past, and a form being filled in.
+    clips: ["storefront", "checkout", "restock", "campaigns", "discounts", "orders"],
   },
   { slug: "engineer", title: "Engineer cut", clips: ["engineering", "checkout"] },
 ])

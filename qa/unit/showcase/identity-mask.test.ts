@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest"
 import { isReservedEmail } from "@/features/email/lib/domain/reserved-recipients"
 import { DEMO_EMAIL_DOMAIN } from "../../../scripts/lib/showcase-demo-data.mjs"
 import { DEMO_ADMIN } from "../../../scripts/lib/showcase-admin.mjs"
-import { applyIdentityMask, buildIdentityAliases, type RealIdentity } from "../../showcase/identity-mask"
+import {
+  applyIdentityMask,
+  buildIdentityAliases,
+  siteContactAliases,
+  type RealIdentity,
+} from "../../showcase/identity-mask"
+import { contactChannels } from "@/features/contact"
 
 const people: RealIdentity[] = [
   { name: "Caroline Mensah", email: "caroline@example.co.uk" },
@@ -137,5 +143,41 @@ describe("applyIdentityMask", () => {
   it("settles after one pass: masking twice changes nothing more", () => {
     const once = mask("Caroline Mensah · caroline@example.co.uk")
     expect(mask(once)).toBe(once)
+  })
+})
+
+describe("siteContactAliases", () => {
+  const aliases = siteContactAliases(contactChannels)
+  const real = (id: string) => contactChannels.find((channel) => channel.id === id)!.value
+
+  it("stands in for the store's own address and phone number", () => {
+    for (const id of ["email", "phone"]) {
+      const alias = aliases.find((candidate) => candidate.from === real(id))
+      expect(alias, id).toBeDefined()
+      expect(alias!.to, id).not.toBe(real(id))
+    }
+  })
+
+  it("gives the store a company address on the demo domain, not a person's", () => {
+    const email = aliases.find((alias) => alias.from === real("email"))!
+    expect(email.to).toBe(`hello@${DEMO_EMAIL_DOMAIN}`)
+    expect(isReservedEmail(email.to)).toBe(true)
+  })
+
+  it("uses a phone number that is never allocated to anyone", () => {
+    // Ofcom reserves 07700 900000-900999 for drama, so it cannot ring a real person.
+    const phone = aliases.find((alias) => alias.from === real("phone"))!
+    expect(phone.to).toMatch(/^\+44 7700 900\d{3}$/)
+  })
+
+  it("leaves the studio address alone, because the store's locations are its own story", () => {
+    expect(aliases.some((alias) => alias.from === real("studio"))).toBe(false)
+  })
+
+  it("replaces the real details wherever they are rendered", () => {
+    const line = `Email ${real("email")} · Phone ${real("phone")}`
+    const masked = applyIdentityMask(line, aliases)
+    expect(masked).not.toContain(real("email"))
+    expect(masked).not.toContain(real("phone"))
   })
 })

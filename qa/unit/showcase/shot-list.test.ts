@@ -86,6 +86,13 @@ describe("showcase shot list", () => {
     expect(routes.indexOf("/sign-in")).toBeLessThan(routes.indexOf("/admin"))
   })
 
+  it("lists every page a clip puts on camera, so the pre-record check opens them all", () => {
+    // These two open a product page before the checkout; the slug is the flagship
+    // because the clips take whatever the sitemap offers first.
+    expect(getClip("storefront").routes).toEqual(["/", "/products/momo-x", "/checkout"])
+    expect(getClip("checkout").routes).toEqual(["/products/momo-x", "/checkout"])
+  })
+
   it("tours the whole site, opening on the homepage story", () => {
     expect(getClip("sitetour").routes).toEqual(["/", "/about", "/articles", "/contact"])
   })

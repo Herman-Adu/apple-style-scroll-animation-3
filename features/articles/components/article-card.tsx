@@ -19,7 +19,7 @@ export function ArticleCard({ article, index = 0 }: { article: Article; index?: 
             />
           </div>
           <div className="flex flex-1 flex-col pt-5">
-            <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+            <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
               <span>{article.category}</span>
               <span className="h-1 w-1 rounded-full bg-foreground/30" />
               <span>{article.readingMinutes} min read</span>
@@ -28,7 +28,7 @@ export function ArticleCard({ article, index = 0 }: { article: Article; index?: 
               {article.title}
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-foreground/50">{article.excerpt}</p>
-            <p className="mt-4 text-xs text-foreground/40">{formatDate(article.publishedAt)}</p>
+            <p className="mt-4 text-xs text-foreground/60">{formatDate(article.publishedAt)}</p>
           </div>
         </Link>
       </article>

@@ -1,6 +1,6 @@
 # S45 — the posting calendar
 
-Branch: `v0/s45-posting-calendar` (from `main` at `9c91736`).
+Branch: `v0/s45-posting-calendar` (from `main` at `9c91736`). PR #185.
 Spec: `v0_plans/s45-posting-calendar-kickoff.md`. Data impact: **none**.
 
 ---
@@ -10,69 +10,69 @@ Spec: `v0_plans/s45-posting-calendar-kickoff.md`. Data impact: **none**.
 | Decision | Answer |
 |---|---|
 | Span | **4 weeks**, week 1 starting **Mon 2026-10-12** |
-| Volume | ~4 posts a week → **16 slots** |
-| Channels | **All four** — LinkedIn, X, Telegram, Facebook |
+| Volume | ~4 posts a week → **16 slots** total (not 16 per channel) |
+| Channels | **All four** — LinkedIn, Telegram, X, Facebook |
 | Cadence | **Alternate, video first** within each week |
 | Demo data | **Not cleared.** Leave the seed and `.generated/showcase-admin.json` alone |
+
+**Why four weeks:** recruitment, and the owner wants recruitment value as soon as
+possible. That reordered the month — see below. The owner also has two live
+client conversations, which are handled **off-calendar**: a known prospect is
+sent the buyer cut and carousel directly, and no feed post improves on that.
 
 ## The arithmetic that makes it fit
 
 16 slots, and exactly 16 assets worth a slot:
 
-- **8 videos** — 3 audience cuts (buyer, recruiter, engineer), 4 standalone clips
-  (journey, restock, sitetour, enquiry), and the original landscape storefront clip.
-- **8 carousels** — buyer, engineer, recruiter, security, how-it-was-built,
-  checkout-sequence, site-tour, email-case-study.
+- **8 videos** — 3 audience cuts (recruiter, engineer, buyer), 4 standalone clips
+  (journey, sitetour, restock, enquiry), and the landscape storefront clip.
+- **8 carousels** — recruiter, how-it-was-built, engineer, security, buyer,
+  email-case-study, checkout-sequence, site-tour.
 
 Video-first alternation gives each week `video, carousel, video, carousel` — 8
-video slots and 8 carousel slots across the month. So every asset is scheduled
-**exactly once**, nothing is double-booked and nothing is orphaned. `sitetour`
-and `enquiry`, which reached no posting plan in S41, get week 3 and week 4.
+video slots and 8 carousel slots. So every asset is scheduled **exactly once**,
+nothing is double-booked and nothing is orphaned. `sitetour` and `enquiry`, which
+reached no posting plan in S41, get week 2 and week 4.
 
-The ~40 infographics and squares stay what they are: support artwork. Each slot
-names an optional `support` asset for channels that want a still instead of a
-PDF, so they are reachable from the calendar without being scheduled as posts.
+The ~40 infographics and squares stay support artwork. Slots that need a still
+name one as `support`.
 
-## The channel rotation
+## Ordered for recruitment
 
-One post per channel per week, four per channel over the month. The format
-order is fixed (video, carousel, video, carousel); the **channel order rotates
-by one each week**, so every channel ends on 2 videos and 2 carousels:
+The first draft spread the assets thematically and put the hiring material in
+week 3. That was wrong for the stated goal, so:
 
-| | Tue — video | Wed — carousel | Thu — video | Fri — carousel |
-|---|---|---|---|---|
-| **W1** 13→16 Oct | LinkedIn | Telegram | X | Facebook |
-| **W2** 20→23 Oct | Telegram | X | Facebook | LinkedIn |
-| **W3** 27→30 Oct | X | Facebook | LinkedIn | Telegram |
-| **W4** 3→6 Nov | Facebook | LinkedIn | Telegram | X |
-
-This is a rule, not a hand-typed table, so a test can assert it rather than
-restate it.
-
-## The weeks tell one story each
+- **Week one is nothing but hiring proof.** `RECRUITMENT_ASSETS` names the four,
+  and a test fails if any of them lands outside week 1.
+- **LinkedIn is weighted, not rotated** — 7 of 16 slots, and at least one post
+  every week, because that is where hiring managers are. X 3, Telegram 3,
+  Facebook 3. An even split would read as fairer and work worse.
+- **Client material sits in week 3**, since the live prospects are handled directly.
 
 | Week | Theme | Tue video | Wed carousel | Thu video | Fri carousel |
 |---|---|---|---|---|---|
-| 1 | The store works | buyer cut | email-case-study | journey | buyer |
-| 2 | Engineering depth | engineer cut | security | restock | engineer |
-| 3 | Process and hiring | recruiter cut | how-it-was-built | sitetour | recruiter |
-| 4 | Breadth and the ask | storefront | checkout-sequence | enquiry | site-tour |
+| 1 | Recruitment proof | LI recruiter cut | LI recruiter | X engineer cut | TG how-it-was-built |
+| 2 | Engineering depth | LI journey | LI engineer | X sitetour | X security |
+| 3 | The store works | LI buyer cut | FB buyer | FB restock | LI email-case-study |
+| 4 | Breadth, and the ask | FB storefront | LI checkout-sequence | TG enquiry | TG site-tour |
 
 ## What gets built
 
 ### 1. Two domain modules
 
-The calendar in the shape the kickoff asked for — **slot → asset → copy → destination**
-— split so the 300-line `largeFiles` ratchet stays put and the rules read apart
-from the month:
+The calendar in the shape the kickoff asked for — **slot → asset → copy →
+destination** — split so the 300-line `largeFiles` ratchet stays put:
 
-- `posting-calendar.ts` — types, constants, every derivation.
-- `posting-schedule.ts` — the sixteen slots: asset, copy, link.
+- `posting-calendar.ts` — types, constants and every derivation.
+- `posting-schedule.ts` — the sixteen slots: channel, asset, copy, link.
 
 ```ts
-export const CHANNELS = ["linkedin", "x", "telegram", "facebook"] as const
+export const CHANNELS = ["linkedin", "telegram", "x", "facebook"] as const
 export const CALENDAR_START = "2026-10-12"   // Monday of week 1
-export const CALENDAR_WEEKS = 4
+export const CHANNEL_POSTS = { linkedin: 7, x: 3, telegram: 3, facebook: 3 }
+export const RECRUITMENT_ASSETS = [
+  "video:recruiter", "carousel:recruiter", "video:engineer", "carousel:how-it-was-built",
+]
 
 export type AssetRef =
   | { kind: "video"; group: string; format: "4x5" | "9x16" | "landscape" }
@@ -86,81 +86,62 @@ export type PostingSlot = {
   asset: AssetRef            // the hero: a video or a carousel
   support?: AssetRef         // a still for channels that cannot take a PDF
   hook: string               // the copy, number-free
-  docSlug: string            // links to a PUBLIC doc, never an owner-gated one
+  docSlug: string            // a PUBLIC doc, never an owner-gated one
 }
 ```
 
 Derived, not typed twice:
 
-- `slotDate(slot)` → ISO date from `CALENDAR_START` + week + day. One constant
-  moves the whole month.
-- `assetRefPath(ref)` → public URL via the **existing** `asset-paths.ts`
-  (`videoPath`, `carouselPdfPath`, `socialAssetPath`). The calendar must not
-  spell a path itself; that is what S43 centralised.
-- `slotFormat(slot)` → `"video" | "carousel"` from the asset kind.
-- `deliveryFor(channel, format)` → how that channel takes it (LinkedIn document
-  post, Telegram album, X opener plus replies, Facebook multi-image). This is the
-  "destination" half, and it is per-channel behaviour rather than 16 repetitions.
+- `slotDate(slot)` / `slotWhen(slot)` → ISO date and "Tue 13 Oct", both from
+  `CALENDAR_START`. One constant moves the whole month.
+- `assetRefPath(ref)` → public URL via the **existing** `asset-paths.ts`. The
+  calendar never spells a path; that is what S43 centralised.
+- `assetRefKey(ref)` → identity, for spotting a double booking.
+- `slotFormat(slot)`, `assetRefLabel(ref)`, `WEEK_THEMES`.
+- `deliveryFor(channel, format)` → how that channel takes it.
 - `takesPdf(channel)` → LinkedIn and Telegram only. X and Facebook cannot post a
   PDF, so their carousel slots carry a support still and the kit points them at
-  the group's folder instead of `carousel.pdf`. A test fails if one of those
-  slots has no still.
-- `docLink(slot)` → `[live URL]/docs/<slug>`, matching the kit's placeholder.
+  the group's folder instead of `carousel.pdf`.
 
 ### 2. `qa/unit/showcase/posting-calendar.test.ts` — written first
 
-Each of these is a real failure mode, not a restatement:
+Nineteen tests. Each was confirmed to fail by breaking the invariant:
 
-1. **16 slots**, 4 weeks × 4, and the dates land on the right weekdays starting
-   2026-10-12.
-2. **Every scheduled asset exists on disk** — resolve `assetRefPath` to
-   `public/` and `existsSync`, the pattern from `asset-layout.test.ts`.
-3. **No asset is double-booked** — no `AssetRef` appears in two slots.
-4. **Nothing worth posting is orphaned** — the 8 videos and 8 carousels the
-   repo publishes are each scheduled exactly once. Derived from `CUTS`,
-   `CALENDAR_CLIPS` and `ASSET_GROUPS`, so adding an asset in a later sprint
-   fails this test until it reaches the calendar. **This is the test that would
-   have caught the S41 gap.**
-5. **Every link resolves to a public doc** — the slug exists in `docs` *and* its
-   `access` is `"public"`. Linking followers to an owner-gated page would 404
-   for them.
-6. **The cadence rule holds** — each week is video, carousel, video, carousel.
-7. **The channel rotation holds** — one post per channel per week; four per
-   channel; two videos and two carousels each.
-8. **The copy quotes no typed numbers** — reuse `findHardCodedNumbers` from
-   `domain/facts.ts` over the hooks, the same guard the slides already pass.
-9. **Every asset reads as words, never a folder name**, since the kit prints the
-   label; and **a carousel on X or Facebook has a support still**.
+1. 16 slots, 4 weeks × 4, days in order.
+2. Dates derived from one start Monday, all on weekdays.
+3. Every scheduled asset exists on disk.
+4. No asset is double-booked.
+5. **No published video is orphaned** — derived from disk.
+6. **No published carousel is orphaned** — derived from disk. These two are what
+   would have caught the S41 gap.
+7. Every link resolves to a doc that exists **and is public**.
+8. The cadence holds, keyed off the day rather than array order.
+9. The channel weights match `CHANNEL_POSTS` and account for every slot.
+10. LinkedIn posts every week.
+11. **Every recruitment asset is in week one**, and week one is only those.
+12. Delivery is defined for every channel and format.
+13. A carousel on X or Facebook has a support still.
+14. No measured number is typed into the copy (`findHardCodedNumbers`).
+15. Every asset reads as words, never a folder name.
+16. Every week has a theme.
 
 ### 3. Render it into the launch kit
 
-Replace the three-week "Posting order" `steps` block in
-`features/docs/content/social-launch-kit.ts` with blocks generated from the
-modules, in a new `social-launch-kit-calendar.ts` alongside the existing
-`-clips` / `-cuts` / `-carousels` modules: a month-at-a-glance table, then one
-step per slot carrying the copy, the file to upload, the delivery note and the
-link. It imports through `@/features/showcase`, not a deep path, because
-`deepImports` is ratcheted at zero.
-
-The existing per-channel download table and the four post bodies stay; the
-calendar says *when* and *what*, they say *how to word it*.
+`features/docs/content/social-launch-kit-calendar.ts` replaces the three-week
+"Posting order" block: a month-at-a-glance table, then one step per slot with the
+copy, the file to upload, the delivery note and the link. It imports through
+`@/features/showcase`, not a deep path, because `deepImports` is ratcheted at zero.
 
 ### 4. Docs
 
-- `docs/showcase-pipeline.md` — a short section on where the calendar lives and
-  what to do when an asset is added.
-- `docs/next-steps.md` — the S45 row rides in its own PR after merge, per convention.
-
-## Order of work
-
-1. Write the test file; watch all eight fail for the right reasons.
-2. Build `posting-calendar.ts` until green.
-3. Wire the launch-kit block module; bump `updatedAt`.
-4. `tsc`, lint, arch, unit, integration, smoke, axe, seo.
-5. PR, green CI, squash-merge, ledger row.
+- `docs/showcase-pipeline.md` — where the calendar lives, the recruitment
+  ordering, and what to do when an asset is added.
+- `docs/next-steps.md` — the S45 row rides in its own PR after merge.
 
 ## Out of scope
 
 No recording, no re-export, no seeding or unseeding. No new assets — the sprint
-schedules what S41-S44 already published. `pnpm showcase:check` and the
-recording scripts are not touched, so none of the 15-minute passes are needed.
+schedules what S41-S44 already published.
+
+`lib/facts/snapshot.json` still reads 1,423 unit tests against 1,449 now.
+Refreshing it re-exports all 67 slides, which is its own sprint (that was S44).

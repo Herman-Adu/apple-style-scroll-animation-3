@@ -8,6 +8,9 @@ import {
   CALENDAR_START,
   CALENDAR_WEEKS,
   CHANNELS,
+  CHANNEL_POSTS,
+  RECRUITMENT_ASSETS,
+  WEEK_THEMES,
   POSTING_DAYS,
   assetRefKey,
   assetRefLabel,
@@ -120,19 +123,33 @@ describe("posting calendar", () => {
     }
   })
 
-  it("gives every channel one post a week", () => {
+  it("weights the channels the way the month intends", () => {
+    for (const channel of CHANNELS) {
+      const posts = POSTING_CALENDAR.filter((slot) => slot.channel === channel)
+      expect(posts, `${channel} slots`).toHaveLength(CHANNEL_POSTS[channel])
+    }
+    // The weights must account for every slot, or something is scheduled nowhere.
+    const total = CHANNELS.reduce((sum, channel) => sum + CHANNEL_POSTS[channel], 0)
+    expect(total).toBe(POSTING_CALENDAR.length)
+  })
+
+  it("posts on LinkedIn every week, because that is where the hiring audience is", () => {
     for (let week = 1; week <= CALENDAR_WEEKS; week += 1) {
-      const used = POSTING_CALENDAR.filter((slot) => slot.week === week).map((slot) => slot.channel)
-      expect([...used].sort(), `week ${week}`).toEqual([...CHANNELS].sort())
+      const linkedin = POSTING_CALENDAR.filter((slot) => slot.week === week && slot.channel === "linkedin")
+      expect(linkedin.length, `week ${week} LinkedIn posts`).toBeGreaterThan(0)
     }
   })
 
-  it("rotates the channel order so each channel carries two videos and two carousels", () => {
-    for (const channel of CHANNELS) {
-      const formats = POSTING_CALENDAR.filter((slot) => slot.channel === channel).map(slotFormat)
-      expect(formats.filter((format) => format === "video"), `${channel} videos`).toHaveLength(2)
-      expect(formats.filter((format) => format === "carousel"), `${channel} carousels`).toHaveLength(2)
-    }
+  it("puts every recruitment asset in week one", () => {
+    // The month exists for recruitment. Burying these behind client material is
+    // what happened in the first draft of this calendar, so it is pinned here.
+    const late = POSTING_CALENDAR.filter(
+      (slot) => RECRUITMENT_ASSETS.includes(assetRefKey(slot.asset)) && slot.week !== 1,
+    ).map((slot) => `${assetRefKey(slot.asset)} is in week ${slot.week}`)
+    expect(late).toEqual([])
+
+    const scheduled = POSTING_CALENDAR.filter((slot) => slot.week === 1).map((slot) => assetRefKey(slot.asset))
+    expect([...scheduled].sort()).toEqual([...RECRUITMENT_ASSETS].sort())
   })
 
   it("tells every channel how to take both formats", () => {
@@ -176,5 +193,10 @@ describe("posting calendar", () => {
 
   it("knows which channels take a PDF at all", () => {
     expect(CHANNELS.filter(takesPdf).sort()).toEqual(["linkedin", "telegram"])
+  })
+  it("names every week, since the kit prints the theme in a heading", () => {
+    for (let week = 1; week <= CALENDAR_WEEKS; week += 1) {
+      expect(WEEK_THEMES[week], `week ${week} theme`).toMatch(/\S/)
+    }
   })
 })

@@ -87,7 +87,11 @@ export const launchKitCalendarBlocks: DocBlock[] = [
   { type: "heading", text: "Posting calendar" },
   {
     type: "paragraph",
-    text: "Four weeks, four posts a week, one post per channel per week. Each week opens with a video and alternates video, carousel, video, carousel, and the channel order shifts one place each week so every channel ends the month with two videos and two carousels. Every cut, clip and carousel the repo publishes is scheduled exactly once, so nothing sits unposted and nothing goes out twice.",
+    text: "Four weeks, four posts a week, Tuesday to Friday. Each week opens with a video and alternates video, carousel, video, carousel. Every cut, clip and carousel the repo publishes is scheduled exactly once, so nothing sits unposted and nothing goes out twice.",
+  },
+  {
+    type: "paragraph",
+    text: "The month is ordered for recruitment. Week one is nothing but hiring proof — the recruiter cut and carousel, the engineer cut, how it was built — because that is the reason to run a launch at all, and material buried in week three may as well not exist. LinkedIn carries a post every week and takes seven of the sixteen slots; the split across channels is deliberately uneven, because an even one would read as fairer and work worse. Client-facing material sits in week three on purpose: a live client is sent the buyer cut and carousel directly, which no feed post improves on.",
   },
   {
     type: "paragraph",

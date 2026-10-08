@@ -73,7 +73,9 @@ The site-tour stills in `public/showcase/social/site-tour/stills/` are frames ta
 
 ## The posting calendar
 
-Four weeks, four posts a week, one post per channel per week across LinkedIn, Telegram, X and Facebook. Each week opens with a video and alternates video, carousel, video, carousel; the channel order shifts one place each week, so every channel ends the month with two videos and two carousels.
+Four weeks, four posts a week, Tuesday to Friday, across LinkedIn, Telegram, X and Facebook. Each week opens with a video and alternates video, carousel, video, carousel.
+
+**The month is ordered for recruitment.** Week one is all hiring proof — recruiter cut, recruiter carousel, engineer cut, how it was built. LinkedIn posts every week and takes 7 of the 16 slots (X 3, Telegram 3, Facebook 3); the split is uneven on purpose, because hiring managers are on LinkedIn. Client material sits in week three, since a live client is sent the buyer cut and carousel directly rather than reached through a feed.
 
 | File | Holds |
 | --- | --- |

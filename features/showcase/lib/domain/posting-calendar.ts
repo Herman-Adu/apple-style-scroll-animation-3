@@ -129,14 +129,29 @@ export function assetRefLabel(ref: AssetRef): string {
 }
 
 /**
- * The channel order shifts one place each week. With the format pattern fixed at
- * video, carousel, video, carousel, that rotation hands every channel one post a
- * week and ends the month with two videos and two carousels each.
+ * How many of the sixteen slots each channel gets.
+ *
+ * Not an even split, deliberately. The month is for recruitment, and hiring
+ * managers are on LinkedIn, so LinkedIn takes nearly half the slots and posts
+ * every week. An even rotation would read as fairer and work worse.
  */
-export function channelsForWeek(week: number): Channel[] {
-  const shift = (week - 1) % CHANNELS.length
-  return [...CHANNELS.slice(shift), ...CHANNELS.slice(0, shift)]
+export const CHANNEL_POSTS: Record<Channel, number> = {
+  linkedin: 7,
+  x: 3,
+  telegram: 3,
+  facebook: 3,
 }
+
+/**
+ * The assets that do the hiring. These go out in week one: they are the reason
+ * the month exists, and burying them behind client material wastes the launch.
+ */
+export const RECRUITMENT_ASSETS: readonly string[] = [
+  "video:recruiter",
+  "carousel:recruiter",
+  "video:engineer",
+  "carousel:how-it-was-built",
+]
 
 /** How a channel takes each format. The "destination" half of a slot. */
 const DELIVERY: Record<Channel, Record<SlotFormat, string>> = {
@@ -175,8 +190,8 @@ export function takesPdf(channel: Channel): boolean {
 
 /** A theme per week, so a week reads as one argument rather than four posts. */
 export const WEEK_THEMES: Record<number, string> = {
-  1: "The store works",
+  1: "Recruitment proof",
   2: "Engineering depth",
-  3: "Process and hiring",
+  3: "The store works",
   4: "Breadth, and the ask",
 }

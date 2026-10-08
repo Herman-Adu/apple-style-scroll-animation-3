@@ -26,8 +26,8 @@ export const buyerInfographics: Infographic[] = [
     illustrative: true,
     eyebrow: "Total cost",
     title: "The gap widens every year.",
-    summary: "Cumulative cost in the same relative units as the table.",
-    alt: "Illustrative line chart of cumulative cost over three years: building from scratch climbs steeply, while the tested template starts lower and rises gently.",
+    summary: "Cost at each stage, in the same relative units as the table.",
+    alt: "Illustrative line chart of cost at each stage over three years: building from scratch climbs steeply, while the tested template starts lower and rises gently.",
     xLabels: COST_STAGES,
     series: [
       { name: "From scratch", values: FROM_SCRATCH },

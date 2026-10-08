@@ -2,10 +2,10 @@
 
 This note explains how to run the project's Playwright tests from the VS Code Test Explorer extension as well as from the terminal. It covers starting the dev server, ensuring the extension targets the correct port, and common troubleshooting steps.
 
-1. Start the dev server (pick a port — default 3000):
+1. Start the dev server (the app always runs on 3000):
 
 ```powershell
-$env:PORT=3000; pnpm run dev:local
+pnpm run dev
 ```
 
 2. Run Playwright from the terminal (no VS Code restart needed):
@@ -20,7 +20,7 @@ pnpm run test:e2e
 
 - Ensure the dev server is running on the port listed in `.vscode/settings.json` (`playwright.serverUrl`).
 - In Test Explorer: refresh (icon), select the Playwright run target (playwright-run), then click Run.
-- If the extension starts the web server itself it will use the `playwright.config.mts` `webServer.command` (repo default: `pnpm run dev:local`) and `webServer.port`.
+- If the extension starts the web server itself it will use the `playwright.config.mts` `webServer.command` (repo default: `pnpm run dev`) and `webServer.port`.
 
 4. Troubleshooting
 

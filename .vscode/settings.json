@@ -5,8 +5,8 @@
 
   // Command Test Explorer / Playwright should use to start the dev server
   // when `webServer` isn't supplied by environment (matches local CLI).
-  "playwright.serverCommand": "pnpm run dev:local",
-  "playwright.serverUrl": "http://localhost:3001",
+  "playwright.serverCommand": "pnpm run dev",
+  "playwright.serverUrl": "http://localhost:3000",
   "playwright.serverReuse": true,
 
   // Keep VS Code test UX helpful when running tests from the editor.

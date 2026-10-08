@@ -54,7 +54,7 @@ This document summarizes the changes made on branch `fix/checkout-finalize-a11y`
 ## How to reproduce locally
 
 1. Install dependencies: `pnpm install`.
-2. Start dev: `pnpm dev:local` (ensure PORT free). For tests:
+2. Start dev: `pnpm dev` (ensure port 3000 is free). For tests:
    - Unit/integration: `pnpm test` (Vitest)
    - Smoke/e2e: `pnpm run test:e2e` (Playwright)
 3. Build production locally: `pnpm exec next build` to view route prerender table.

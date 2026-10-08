@@ -27,6 +27,9 @@ A recording pass costs about fifteen minutes; the check that reproduces its fail
 ## Video poster is a blank frame
 The page was still loading at grab time. `scripts/showcase-video.mjs` grabs at 8s; a jpg of a few KB means blank.
 
+## The browser gates suddenly 500 on pages that work in a browser
+A long-lived `pnpm dev` degrades after heavy use — a recording pass, a 67-slide export — and then answers 500 under the parallel smoke suite while `curl` on the same URL still returns 200. It is the server, not the code. Restart it (`taskkill /F /PID $(netstat -ano | findstr :3000)`, then `pnpm dev`) and re-run; it happened three times in S42-S44 and the re-run was clean every time.
+
 ## An intermittent axe failure is usually real, not flaky
 S43: `/` failed about two runs in three. It was not timing noise — `text-foreground/40` genuinely failed AA on five elements, and axe only saw them once their scroll-reveal animation finished, so catching them depended on how fast the hero frames loaded. Print the offending selectors (`v.nodes[].target`) rather than rerunning until it passes; the spec does this now.
 

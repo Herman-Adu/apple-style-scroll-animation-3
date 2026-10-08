@@ -1,4 +1,4 @@
-import { test } from "@playwright/test"
+import { test } from "./fixtures"
 import { adminCredentials, openSignedInAdminPage } from "./admin-session"
 import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
 import { getClip } from "./shot-list"

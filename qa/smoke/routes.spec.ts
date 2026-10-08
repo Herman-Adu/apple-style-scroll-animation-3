@@ -28,6 +28,16 @@ for (const route of staticRoutes) {
   })
 }
 
+test("the scroll container is not position: static", async ({ page }) => {
+  // Framer Motion measures every scroll-driven hero against the root element and
+  // warns when it is static, because the offsets it reads are then unreliable. In
+  // dev that warning also turns the Next.js indicator into a red "1 Issue" badge,
+  // which was landing in the recorded demo clips.
+  await page.goto("/", { waitUntil: "networkidle" })
+  const position = await page.evaluate(() => getComputedStyle(document.documentElement).position)
+  expect(position).not.toBe("static")
+})
+
 test("a product and an article detail page render", async ({ page, request }) => {
   const sitemap = await (await request.get("/sitemap.xml")).text()
   const productUrl = sitemap.match(/<loc>([^<]*\/products\/[^<]+)<\/loc>/)?.[1]

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
-import { expect, test, type Locator, type Page } from "@playwright/test"
+import type { Locator, Page } from "@playwright/test"
+import { expect, test } from "./fixtures"
 import { DEMO_EMAIL_DOMAIN } from "../../scripts/lib/showcase-demo-data.mjs"
 import { adminCredentials, openSignedInAdminPage } from "./admin-session"
 import { beat, clearCaption, saveClip, showCaption } from "./clip"

@@ -144,6 +144,14 @@ describe("showcase shot list", () => {
     expect(specs.sort()).toEqual(CLIPS.map((clip) => clip.spec).sort())
   })
 
+  it("runs every clip through the fixture, so no take records the dev tools overlay", () => {
+    for (const clip of CLIPS) {
+      const spec = readFileSync(path.join(root, "qa", "showcase", clip.spec), "utf8")
+      expect(spec, clip.spec).toMatch(/import \{[^}]*\btest\b[^}]*\} from "\.\/fixtures"/)
+      expect(spec, clip.spec).not.toMatch(/import \{[^}]*\btest\b[^}]*\} from "@playwright\/test"/)
+    }
+  })
+
   it("gives every clip a title, a spec file and two to six captions that fit on screen", () => {
     for (const clip of CLIPS) {
       expect(clip.title.length, clip.slug).toBeGreaterThan(0)

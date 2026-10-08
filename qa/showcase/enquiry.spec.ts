@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test } from "./fixtures"
 import { beat, clearCaption, saveClip, showCaption } from "./clip"
 import {
   ENQUIRY_CLIP_ANSWERS,

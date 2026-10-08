@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test } from "./fixtures"
 import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
 import { getClip } from "./shot-list"
 

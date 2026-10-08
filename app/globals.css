@@ -321,6 +321,14 @@
 /* Add smooth scrolling and custom scrollbar */
 html {
   scroll-behavior: smooth;
+  /*
+   * The scroll container for every `useScroll` hero is the root element. Framer
+   * Motion measures a target's offset against it, and warns that a static
+   * container makes that measurement unreliable. `relative` on the root does not
+   * move anything — fixed descendants still position against the viewport —
+   * but it gives those measurements a stable origin.
+   */
+  position: relative;
 }
 
 ::-webkit-scrollbar {

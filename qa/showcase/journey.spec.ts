@@ -1,4 +1,4 @@
-import { test } from "@playwright/test"
+import { test } from "./fixtures"
 import { adminCredentials, canSignInOnCamera } from "./admin-session"
 import { installIdentityMask } from "./real-identities"
 import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"

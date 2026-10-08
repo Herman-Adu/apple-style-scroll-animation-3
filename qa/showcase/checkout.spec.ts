@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test } from "./fixtures"
 import { adminCredentials, openSignedInAdminPage } from "./admin-session"
 import { beat, clearCaption, saveClip, showCaption, smoothScroll } from "./clip"
 import { CHECKOUT_DISCOUNT_CODE, getClip } from "./shot-list"

@@ -47,14 +47,14 @@ export const launchKitClipBlocks: DocBlock[] = [
   { type: "heading", text: "Site tour clip" },
   {
     type: "paragraph",
-    text: "About, Articles and Contact — the three pages no other clip visited. The About timeline is scroll-driven, so the recording paces it frame by frame, and the clip holds on the store map once it has loaded.",
+    text: "The whole site in one take: the homepage scroll story, paced frame by frame through the canvas hero exactly as the storefront clip paces it, then About, Articles and Contact. The clip holds on the store map once it has loaded.",
   },
   {
     type: "video",
     src: "/showcase/video/sitetour-4x5.mp4",
     poster: "/showcase/video/sitetour-4x5.jpg",
     description:
-      "Screen recording in 4:5: the About page and its animated timeline, the articles journal with its lead story, then the contact page with opening hours, the studio list and the store map.",
+      "Screen recording in 4:5: the homepage scroll story through the canvas hero, the About page and its animated timeline, the articles journal with its lead story, then the contact page with opening hours, the studio list and the store map.",
     caption: "Site tour clip, 4:5 feed format.",
   },
   {
@@ -62,7 +62,7 @@ export const launchKitClipBlocks: DocBlock[] = [
     src: "/showcase/video/sitetour-9x16.mp4",
     poster: "/showcase/video/sitetour-9x16.jpg",
     description:
-      "The same tour in 9:16 for stories and reels: About with its timeline, the articles journal, then contact with the store map.",
+      "The same tour in 9:16 for stories and reels: the homepage scroll story, About with its timeline, the articles journal, then contact with the store map.",
     caption: "Site tour clip, 9:16 story format.",
   },
   { type: "heading", text: "Enquiry form clip" },

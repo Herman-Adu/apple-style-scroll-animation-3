@@ -86,10 +86,13 @@ describe("showcase shot list", () => {
     expect(routes.indexOf("/sign-in")).toBeLessThan(routes.indexOf("/admin"))
   })
 
+  it("tours the whole site, opening on the homepage story", () => {
+    expect(getClip("sitetour").routes).toEqual(["/", "/about", "/articles", "/contact"])
+  })
+
   it("puts About, Articles and Contact on camera, which no earlier clip did", () => {
-    expect(getClip("sitetour").routes).toEqual(["/about", "/articles", "/contact"])
     const older = CLIPS.filter((clip) => !["sitetour", "enquiry"].includes(clip.slug)).flatMap((clip) => clip.routes)
-    for (const route of getClip("sitetour").routes) expect(older, route).not.toContain(route)
+    for (const route of ["/about", "/articles", "/contact"]) expect(older, route).not.toContain(route)
   })
 
   it("paces the homepage canvas hero frame by frame, and nothing else", () => {

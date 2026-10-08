@@ -161,10 +161,11 @@ export const CLIPS: ClipPlan[] = [
   {
     slug: "sitetour",
     audience: "both",
-    title: "The rest of the site",
+    title: "The site, end to end",
     spec: "sitetour.spec.ts",
-    routes: ["/about", "/articles", "/contact"],
+    routes: ["/", "/about", "/articles", "/contact"],
     captions: [
+      "A scroll-driven storefront, built on Next.js 16",
       "An About page with a timeline that builds as you scroll",
       "A searchable journal, lead story first",
       "Contact: opening hours, three studios and a map",

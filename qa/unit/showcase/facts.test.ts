@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest"
 import {
   buildFacts,
   compareCoverage,
+  countMergedPrs,
   countPlaywrightTests,
   countVitestTests,
   coverageFrom,
@@ -24,12 +25,31 @@ const built = () =>
     arch,
     docsPages: 52,
     routePages: 45,
+    repo: { mergedPrs: 165, latestPr: 174 },
     generatedAt: "2026-10-06T00:00:00.000Z",
   })
 
 describe("facts builder", () => {
   it("counts passed Vitest tests per layer, on any platform", () => {
     expect(countVitestTests(fixture("vitest-report.json"))).toEqual({ unit: 3, integration: 2 })
+  })
+
+  it("counts merged pull requests from both merge styles, without double counting", () => {
+    expect(
+      countMergedPrs([
+        "S39: publish what the template generates (#174)",
+        "Merge pull request #59 from Herman-Adu/v0/low-stock-alert-trigger",
+        "S38: one dev port (#172)",
+        "chore: a commit that merged nothing",
+        // The same PR can appear twice when a branch is re-merged; it is still
+        // one reviewed change.
+        "S38: one dev port (#172)",
+      ]),
+    ).toEqual({ mergedPrs: 3, latestPr: 174 })
+  })
+
+  it("reports no pull requests for a history that has none", () => {
+    expect(countMergedPrs(["initial commit", ""])).toEqual({ mergedPrs: 0, latestPr: 0 })
   })
 
   it("counts listed Playwright tests per layer, including nested describes", () => {
@@ -48,6 +68,7 @@ describe("facts builder", () => {
       arch: { deepImports: 0, libToFeatures: 0, anyTypes: 0, largeFiles: 21, useEffect: 32 },
       docs: { pages: 52 },
       routes: { pages: 45 },
+      repo: { mergedPrs: 165, latestPr: 174 },
     })
   })
 

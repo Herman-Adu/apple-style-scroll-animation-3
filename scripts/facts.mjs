@@ -10,7 +10,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { measure } from "./lib/arch-audit-metrics.mjs";
-import { buildFacts, compareCoverage, floorCoverage } from "./lib/facts.mjs";
+import { buildFacts, compareCoverage, countMergedPrs, floorCoverage } from "./lib/facts.mjs";
 import { collectSources } from "./lib/source-files.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -18,6 +18,8 @@ const OUT = join(ROOT, ".generated/facts.json");
 const REPORT = join(ROOT, "qa/.coverage/vitest-report.json");
 const SUMMARY = join(ROOT, "qa/.coverage/coverage-summary.json");
 const BASELINE = join(ROOT, "qa/baselines/coverage.json");
+// Committed, unlike OUT: pages that render live still need the numbers after a deploy.
+const SNAPSHOT = join(ROOT, "lib/facts/snapshot.json");
 
 const pnpm = (args, options) =>
   spawnSync("pnpm", args, { cwd: ROOT, shell: process.platform === "win32", ...options });
@@ -54,12 +56,17 @@ const facts = buildFacts({
   arch: measure(collectSources(ROOT)),
   docsPages: docsIndex.match(/from\s+["']\.\/[^"']+["']/g)?.length ?? 0,
   routePages,
+  repo: countMergedPrs(
+    spawnSync("git", ["log", "--format=%s"], { cwd: ROOT, maxBuffer: 20e6 }).stdout.toString().split("\n"),
+  ),
   generatedAt: new Date().toISOString(),
 });
 
 mkdirSync(join(ROOT, ".generated"), { recursive: true });
 writeFileSync(OUT, `${JSON.stringify(facts, null, 2)}\n`);
-console.log("Facts written to .generated/facts.json");
+writeFileSync(SNAPSHOT, `${JSON.stringify(facts, null, 2)}
+`);
+console.log("Facts written to .generated/facts.json and lib/facts/snapshot.json");
 console.table({ ...facts.tests, ...facts.coverage, docs: facts.docs.pages, routes: facts.routes.pages });
 
 if (process.argv.includes("--update-baseline")) {

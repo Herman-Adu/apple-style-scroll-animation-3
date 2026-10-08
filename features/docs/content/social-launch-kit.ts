@@ -1,4 +1,5 @@
 import type { Doc } from "../lib/domain/schema"
+import { facts } from "@/lib/facts"
 import { launchKitPackBlocks } from "./social-launch-kit-packs"
 import { launchKitCutBlocks } from "./social-launch-kit-cuts"
 import { launchKitCarouselBlocks } from "./social-launch-kit-carousels"
@@ -244,7 +245,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "paragraph",
-      text: "Post 3 (process): Across 140+ small reviewed PRs I shipped an email builder, a permissions model and a documentation library for five audiences: customers, content managers, developers, CTOs and the owner. Every sprint followed the same loop: failing test, smallest change to pass, type-check, squash-merge, docs updated in the same week. The full changelog is public: [live URL]/docs/whats-new",
+      text: `Post 3 (process): Across ${facts.repo.mergedPrs} small reviewed PRs I shipped an email builder, a permissions model and a documentation library for five audiences: customers, content managers, developers, CTOs and the owner. Every sprint followed the same loop: failing test, smallest change to pass, type-check, squash-merge, docs updated in the same week. The full changelog is public: [live URL]/docs/whats-new`,
     },
     { type: "heading", text: "Facebook business page (clients and store owners)" },
     {

@@ -13,7 +13,10 @@ const LIB_ROOT_FILES = new Set([
   "types.ts",
   "utils.ts",
 ]);
-const LIB_FOLDERS = new Set(["auth", "data", "db", "seo", "strapi", "stripe"]);
+// `facts` holds the measured-numbers schema and the committed snapshot. It
+// lives here, not in a slice, because both showcase and docs read it and
+// shared code may never import a feature.
+const LIB_FOLDERS = new Set(["auth", "data", "db", "facts", "seo", "strapi", "stripe"]);
 
 const entries = (dir: string) =>
   readdirSync(join(ROOT, dir), { withFileTypes: true });

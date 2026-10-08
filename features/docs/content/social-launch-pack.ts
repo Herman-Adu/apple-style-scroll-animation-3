@@ -1,4 +1,5 @@
 import type { Doc } from "../lib/domain/schema"
+import { facts } from "@/lib/facts"
 import { socialLaunchPackClientBlocks } from "./social-launch-pack-client"
 import { socialLaunchPackRecruiterBlocks } from "./social-launch-pack-recruiter"
 
@@ -45,8 +46,8 @@ export const socialLaunchPack: Doc = {
       type: "table",
       headers: ["Claim", "Where it comes from"],
       rows: [
-        ["More than 140 reviewed pull requests, each squash-merged after checks pass", "Merged PRs #1 to #146 on main"],
-        ["758 automated tests, plus 9 browser smoke tests and 5 accessibility (axe) checks", "pnpm test, pnpm test:smoke, pnpm test:axe"],
+        [`${facts.repo.mergedPrs} reviewed pull requests, each squash-merged after checks pass`, `Merged PRs #1 to #${facts.repo.latestPr} on main`],
+        [`${facts.tests.total.toLocaleString("en-GB")} automated tests, plus ${facts.tests.smoke} browser smoke tests and ${facts.tests.axe} accessibility (axe) checks`, "pnpm test, pnpm test:smoke, pnpm test:axe"],
         ["Deep imports across features: 116 down to 0", "Architecture health baseline vs pnpm arch"],
         ["Shared code depending on feature code: 16 down to 0", "Architecture health baseline vs pnpm arch"],
         ["any types: 28 down to 0. useEffect calls: 55 down to 31", "Architecture health baseline vs pnpm arch"],

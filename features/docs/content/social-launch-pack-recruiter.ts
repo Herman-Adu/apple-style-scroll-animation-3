@@ -1,4 +1,10 @@
 import type { DocBlock } from "../lib/domain/schema"
+import { facts } from "@/lib/facts"
+
+// Quoted in posts that get pasted into a feed, so they are read from the last
+// `pnpm facts` run rather than typed in and left to drift.
+const tests = facts.tests.total.toLocaleString("en-GB")
+const prs = facts.repo.mergedPrs
 
 export const socialLaunchPackRecruiterBlocks: DocBlock[] = [
   { type: "heading", text: "For recruiters and hiring managers" },
@@ -14,8 +20,8 @@ export const socialLaunchPackRecruiterBlocks: DocBlock[] = [
 
 I took a Next.js 16 commerce platform (Prisma on Neon, Better Auth, Stripe, Resend) and ran it like a team codebase:
 
-- Every change is a small pull request. More than 140 are merged, each with the failing test written first.
-- 758 automated tests, plus browser smoke tests and accessibility checks, run before anything merges.
+- Every change is a small pull request. ${prs} are merged, each with the failing test written first.
+- ${tests} automated tests, plus browser smoke tests and accessibility checks, run before anything merges.
 - Permissions are checked in three places: the request proxy, every server action and the UI. Admin actions verify the caller themselves instead of trusting the page.
 - Architecture rules are enforced by CI, not by memory. A ratchet fails the build if the codebase gets worse.
 
@@ -62,8 +68,8 @@ How the workflow runs: [live URL]/docs/contributing-and-workflow`,
     title: "Telegram - recruiter 1: build log",
     code: `Build log: a Next.js 16 commerce template (Prisma on Neon, Better Auth, Stripe, Resend) that I run like a team codebase.
 
-- 140+ small PRs, test-first
-- 758 automated tests plus browser smoke and accessibility checks
+- ${prs} small PRs, test-first
+- ${tests} automated tests plus browser smoke and accessibility checks
 - CI ratchet on architecture: deep imports 116 to 0, any types 28 to 0
 - Four folders per feature: actions, data, domain, adapters
 - Permissions checked in proxy, server actions and UI
@@ -86,7 +92,7 @@ Message me here or on LinkedIn.`,
     type: "code",
     language: "text",
     title: "X - recruiter 1",
-    code: "Ran my Next.js 16 commerce project like a team codebase: 140+ reviewed PRs, every one test-first, 758 automated tests plus browser and accessibility checks before merge. [live URL]/docs/engineering-quality",
+    code: `Ran my Next.js 16 commerce project like a team codebase: ${prs} reviewed PRs, every one test-first, ${tests} automated tests plus browser and accessibility checks before merge. [live URL]/docs/engineering-quality`,
   },
   {
     type: "code",

@@ -71,6 +71,22 @@ Each carousel is one swipeable PDF for LinkedIn, published as `carousel.pdf` ins
 
 The site-tour stills in `public/showcase/social/site-tour/stills/` are frames taken from the buyer cut with `ffmpeg-static`. Re-take them after a visible UI change, then rerun `pnpm showcase:assets`.
 
+## The posting calendar
+
+Four weeks, four posts a week, one post per channel per week across LinkedIn, Telegram, X and Facebook. Each week opens with a video and alternates video, carousel, video, carousel; the channel order shifts one place each week, so every channel ends the month with two videos and two carousels.
+
+| File | Holds |
+| --- | --- |
+| `features/showcase/lib/domain/posting-schedule.ts` | The month: which asset, what copy, which doc link |
+| `features/showcase/lib/domain/posting-calendar.ts` | The rules — channel rotation, dates, delivery per channel, asset labels |
+| `features/docs/content/social-launch-kit-calendar.ts` | Renders both into `/docs/social-launch-kit` |
+
+Dates are derived from one start Monday (`CALENDAR_START`), so moving the whole month means changing one line. Paths are never written here: every slot names an `AssetRef` that `asset-paths.ts` resolves, so the calendar cannot drift from where the exporter writes.
+
+**When you add an asset, give it a slot.** `qa/unit/showcase/posting-calendar.test.ts` fails while any published cut, clip or carousel is scheduled nowhere — which is how `sitetour` and `enquiry` went from S41 to S45 without reaching a posting plan. It also fails if a slot names a file that is not on disk, books one asset twice, links to a doc that is missing or owner-gated, breaks the video-first cadence, or types a measured number into the copy.
+
+A carousel only posts as a PDF on LinkedIn and Telegram. X and Facebook take the group's images instead, so those slots carry a support still and the kit tells you to post the folder rather than the PDF.
+
 ## Things that will catch you out
 
 - **Checkout needs an account.** The checkout clip signs in as the seeded demo admin first. Without step 1b it records the sign-in page.
@@ -90,6 +106,7 @@ The site-tour stills in `public/showcase/social/site-tour/stills/` are frames ta
 
 ## Where the text lives
 
-- Launch kit with every caption, clip and carousel: `/docs/social-launch-kit`
+- Launch kit with every caption, clip, carousel and the posting calendar: `/docs/social-launch-kit`
 - Slide copy: `features/showcase/lib/domain/`
+- Post copy and the schedule: `features/showcase/lib/domain/posting-schedule.ts`
 - Resetting the database and Stripe: `docs/showcase-reset-and-stripe.md`

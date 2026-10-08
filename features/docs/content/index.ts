@@ -31,6 +31,7 @@ import { serverFirstPlaybook } from "./server-first-playbook"
 import { strapiMigrationRunbook } from "./strapi-migration-runbook"
 import { strapiContentModeling } from "./strapi-content-modeling"
 import { devopsDeployObservability } from "./devops-deploy-observability"
+import { showcaseLaunchAssets } from "./showcase-launch-assets"
 import { commerceCartCheckout } from "./commerce-cart-checkout"
 import { commerceStripePayments } from "./commerce-stripe-payments"
 import { authenticationAndAccess } from "./authentication-and-access"
@@ -100,6 +101,7 @@ export const docs: Doc[] = [
   strapiMigrationRunbook,
   strapiContentModeling,
   devopsDeployObservability,
+  showcaseLaunchAssets,
   commerceCartCheckout,
   commerceStripePayments,
   authenticationAndAccess,

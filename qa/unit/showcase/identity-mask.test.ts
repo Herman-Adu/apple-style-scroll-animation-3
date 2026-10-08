@@ -63,6 +63,30 @@ describe("buildIdentityAliases", () => {
   it("shows the signed-in admin as the demo admin, as the sign-in on camera already does", () => {
     const aliases = buildIdentityAliases(people, { signedInAs: "caroline@example.co.uk" })
     expect(aliasFor("caroline@example.co.uk", aliases)).toBe(DEMO_ADMIN.email)
+    expect(aliasFor("Caroline Mensah", aliases)).toBe(DEMO_ADMIN.name)
+  })
+
+  it("gives one person one stand-in, so their name and address match on screen", () => {
+    const aliases = buildIdentityAliases(people)
+    for (const person of people) {
+      const name = aliasFor(person.name, aliases)!
+      const address = aliasFor(person.email, aliases)!
+      expect(address, `${name} / ${address}`).toBe(`${name.toLowerCase().replace(/\s+/g, ".")}@${DEMO_EMAIL_DOMAIN}`)
+    }
+  })
+
+  it("treats one person listed under two names as one person", () => {
+    const aliases = buildIdentityAliases([
+      { name: "Caroline Mensah", email: "caroline@example.co.uk" },
+      { name: "C. Mensah", email: "caroline@example.co.uk" },
+    ])
+    expect(aliasFor("C. Mensah", aliases)).toBe(aliasFor("Caroline Mensah", aliases))
+  })
+
+  it("still masks a name that never appears with an address, like a review author", () => {
+    const aliases = buildIdentityAliases([{ name: "Lone Reviewer", email: "" }])
+    expect(aliasFor("Lone Reviewer", aliases)).toBeTruthy()
+    expect(aliasFor("Lone Reviewer", aliases)).not.toBe("Lone Reviewer")
   })
 
   it("keeps going when there are more people than stand-in names", () => {

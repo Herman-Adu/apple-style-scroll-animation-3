@@ -112,19 +112,33 @@ export function buildIdentityAliases(
   identities: readonly RealIdentity[],
   { signedInAs }: MaskOptions = {},
 ): IdentityAlias[] {
-  const names = new Set<string>()
-  const emails = new Map<string, string>()
+  // Someone is their address plus whatever names they are listed under, so the
+  // one stand-in covers both. Aliasing names and addresses separately gives a row
+  // like "Elena Fischer · robin.hale@…", which reads as a mistake on camera.
+  const people = new Map<string, { email: string; names: Set<string> }>()
+  const nameOnly = new Set<string>()
 
   for (const { name, email } of identities) {
     const address = email.trim()
+    const person = name.trim()
+    const realName = person !== "" && !isDemoValue(person)
+
     if (address !== "" && !isDemoValue(address)) {
       if (!address.includes("@")) throw new Error(`"${address}" is not an email address, so it cannot be masked`)
-      emails.set(address.toLowerCase(), address)
+      const key = address.toLowerCase()
+      const record = people.get(key) ?? { email: address, names: new Set<string>() }
+      if (realName) record.names.add(person)
+      people.set(key, record)
+    } else if (realName) {
+      nameOnly.add(person)
     }
-    const person = name.trim()
-    if (person !== "" && !isDemoValue(person)) names.add(person)
   }
 
+  // A name that turns up with an address somewhere is not a separate person.
+  for (const record of people.values()) for (const person of record.names) nameOnly.delete(person)
+
+  const names = new Set([...people.values()].flatMap((record) => [...record.names]).concat([...nameOnly]))
+  const emails = new Map([...people].map(([key, record]) => [key, record.email]))
   const real = [...names, ...emails.values()].map((value) => alias(value, ""))
   // A stand-in that its own patterns would rewrite makes the page mask its own
   // output, and the observer never settles. Skip any such stand-in.
@@ -141,11 +155,14 @@ export function buildIdentityAliases(
     throw new Error("No stand-in is free of the real names being masked")
   }
 
-  for (const person of [...names].sort()) aliases.push(alias(person, take().name))
-  for (const address of [...emails.keys()].sort()) {
-    const original = emails.get(address)!
-    aliases.push(alias(original, signedInAs?.toLowerCase() === address ? DEMO_ADMIN.email : take().address))
+  for (const key of [...people.keys()].sort()) {
+    const { email, names: listedAs } = people.get(key)!
+    const signedIn = signedInAs?.toLowerCase() === key
+    const standIn = signedIn ? { name: DEMO_ADMIN.name, address: DEMO_ADMIN.email } : take()
+    aliases.push(alias(email, standIn.address))
+    for (const person of [...listedAs].sort()) aliases.push(alias(person, standIn.name))
   }
+  for (const person of [...nameOnly].sort()) aliases.push(alias(person, take().name))
 
   return aliases.sort((a, b) => b.from.length - a.from.length || a.from.localeCompare(b.from))
 }

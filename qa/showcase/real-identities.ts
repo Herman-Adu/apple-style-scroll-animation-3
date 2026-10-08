@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import type { BrowserContext } from "@playwright/test"
-import { DEMO_EMAIL_DOMAIN } from "../../scripts/lib/showcase-demo-data.mjs"
+import { DEMO_EMAIL_DOMAIN, DEMO_ID_PREFIX } from "../../scripts/lib/showcase-demo-data.mjs"
 import { buildIdentityAliases, identityMaskScript, type MaskOptions, type RealIdentity } from "./identity-mask"
 
 /**
@@ -24,7 +24,10 @@ export async function fetchRealIdentities(): Promise<RealIdentity[]> {
     }),
     prisma.emailLog.findMany({ where: { NOT: { to: { endsWith: demoSuffix } } }, select: { to: true }, distinct: ["to"] }),
     prisma.subscriber.findMany({ where: { NOT: { email: { endsWith: demoSuffix } } }, select: { email: true }, distinct: ["email"] }),
-    prisma.review.findMany({ select: { author: true } }),
+    // A review has no address to match on, so demo ones are found by their id.
+    // Without this, the seed's own personas get renamed and the demo data reads
+    // inconsistently: "Ava Chen" masked in one table, unmasked in another.
+    prisma.review.findMany({ where: { NOT: { id: { startsWith: DEMO_ID_PREFIX } } }, select: { author: true } }),
   ])
 
   return [

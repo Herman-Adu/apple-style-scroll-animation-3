@@ -45,6 +45,8 @@ The site-tour stills in `public/showcase/tour/` are frames taken from the buyer 
 
 - **Checkout needs an account.** The checkout clip signs in as the seeded demo admin first. Without step 1b it records the sign-in page.
 - **Restock is demo-only in recordings.** The restock clip uses a guarded demo action, so recording never changes real stock.
+- **Real people are not hidden by the seed.** The admin lists real customers, orders and messages next to the demo rows, and product pages carry real review authors. Every clip installs an identity mask (`qa/showcase/identity-mask.ts`) that swaps each real name, address and avatar photo for a stand-in on the demo domain before the page paints. If the identities cannot be read from the database the clip fails rather than recording someone real, so a recording run needs database access even for the storefront.
+- **Restock notifies its waiting list, so re-seed between formats.** Recording the restock clip marks the demo waiters as notified. The second format then finds nobody waiting and skips, which breaks the buyer cut. Run `pnpm showcase:seed -- --confirm` again between the two passes.
 - **The enquiry clip must never press send.** `features/contact/lib/adapters/submit.ts` sends a real email through Resend to `EMAIL_TO`; the reserved-recipient guard covers demo recipients, not that path. `qa/showcase/enquiry.spec.ts` stops on the review step, and a unit test fails if any click in it touches the submit button.
 - **One export at a time.** Two `showcase:assets` runs write to the same files. Stop one before starting another.
 - **PDF page count.** Each carousel must have exactly one page per slide. A blank trailing page means a slide is taller than its page.

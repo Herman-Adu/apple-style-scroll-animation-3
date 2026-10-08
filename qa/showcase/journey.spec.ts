@@ -1,6 +1,6 @@
-import { test } from "@playwright/test"
+import { test } from "./fixtures"
 import { adminCredentials, canSignInOnCamera } from "./admin-session"
-import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
+import { beat, clearCaption, saveClip, scrollToBottom, showCaption, visit } from "./clip"
 import { FRAME_SEQUENCE_SECTIONS, getClip } from "./shot-list"
 
 /**
@@ -16,14 +16,14 @@ test("clip: from scroll story to admin", async ({ page }) => {
   const [storyCaption, signInCaption, dashboardCaption, productsCaption, themeCaption, docsCaption] =
     getClip("journey").captions
 
-  await page.goto("/", { waitUntil: "networkidle" })
+  await visit(page, "/")
   await showCaption(page, storyCaption)
   await beat(page, 1600)
   await clearCaption(page)
   await scrollToBottom(page, { frameSequenceSelectors: FRAME_SEQUENCE_SECTIONS.home })
   await beat(page, 800)
 
-  await page.goto(`/sign-in?redirect=${encodeURIComponent("/admin")}`, { waitUntil: "networkidle" })
+  await visit(page, `/sign-in?redirect=${encodeURIComponent("/admin")}`, { expectSignIn: true })
   await showCaption(page, signInCaption)
   await page.locator('input[type="email"]').pressSequentially(credentials!.email, { delay: 40 })
   await page.locator('input[type="password"]').pressSequentially(credentials!.password, { delay: 15 })
@@ -37,15 +37,15 @@ test("clip: from scroll story to admin", async ({ page }) => {
   await scrollToBottom(page)
   await beat(page, 800)
 
-  await page.goto("/admin/products", { waitUntil: "networkidle" })
+  await visit(page, "/admin/products")
   await showCaption(page, productsCaption)
   await beat(page, 2400)
 
-  await page.goto("/admin/theme", { waitUntil: "networkidle" })
+  await visit(page, "/admin/theme")
   await showCaption(page, themeCaption)
   await beat(page, 2400)
 
-  await page.goto("/docs", { waitUntil: "networkidle" })
+  await visit(page, "/docs")
   await showCaption(page, docsCaption)
   await beat(page, 2400)
   await clearCaption(page)

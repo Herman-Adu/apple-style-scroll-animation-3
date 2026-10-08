@@ -5,7 +5,7 @@ export const launchKitCutBlocks: DocBlock[] = [
   { type: "heading", text: "Audience cuts" },
   {
     type: "paragraph",
-    text: "Each cut joins a few clips into one video for a single audience. The recruiter cut shows the storefront and the engineering proof. The buyer cut shows the store end to end: storefront, checkout, back in stock, campaigns, discounts and orders. The engineer cut shows the engineering proof and checkout.",
+    text: "Each cut joins a few clips into one video for a single audience. The recruiter cut shows the storefront and the engineering proof. The buyer cut shows the store end to end: storefront, checkout, back in stock, campaigns, discounts and orders. The site tour and the enquiry form are published on their own rather than lengthening it. The engineer cut shows the engineering proof and checkout. Every real customer in these recordings is shown as a stand-in on the demo domain.",
   },
   {
     type: "video",

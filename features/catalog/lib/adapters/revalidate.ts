@@ -10,5 +10,9 @@ import { revalidatePath } from "next/cache"
 export function revalidateCatalog(): void {
   revalidatePath("/")
   revalidatePath("/products")
+  // The product's own page is the one that decides between "Add to cart" and the
+  // back-in-stock form. Without this it kept serving a cached "in stock" render
+  // after an admin sold it out, so a shopper could still add a sold-out item.
+  revalidatePath("/products/[slug]", "page")
   revalidatePath("/admin")
 }

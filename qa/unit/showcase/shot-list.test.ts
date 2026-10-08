@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, readFileSync, readdirSync } from "node:fs"
 import path from "node:path"
 import { describe, expect, it } from "vitest"
 import { REPO_ROOT } from "@/qa/config/repo-root"
@@ -86,10 +86,13 @@ describe("showcase shot list", () => {
     expect(routes.indexOf("/sign-in")).toBeLessThan(routes.indexOf("/admin"))
   })
 
+  it("tours the whole site, opening on the homepage story", () => {
+    expect(getClip("sitetour").routes).toEqual(["/", "/about", "/articles", "/contact"])
+  })
+
   it("puts About, Articles and Contact on camera, which no earlier clip did", () => {
-    expect(getClip("sitetour").routes).toEqual(["/about", "/articles", "/contact"])
     const older = CLIPS.filter((clip) => !["sitetour", "enquiry"].includes(clip.slug)).flatMap((clip) => clip.routes)
-    for (const route of getClip("sitetour").routes) expect(older, route).not.toContain(route)
+    for (const route of ["/about", "/articles", "/contact"]) expect(older, route).not.toContain(route)
   })
 
   it("paces the homepage canvas hero frame by frame, and nothing else", () => {
@@ -134,6 +137,21 @@ describe("showcase shot list", () => {
     expect(clicks.length).toBeGreaterThan(0)
     for (const line of clicks) {
       expect(line.trim(), line.trim()).not.toMatch(new RegExp(`${ENQUIRY_SUBMIT_LABEL}|ENQUIRY_SUBMIT_LABEL|submit`, "i"))
+    }
+  })
+
+  it("records nothing that is not on the shot list", () => {
+    // The recorder matches showcase/**/*.spec.ts, so an orphan spec costs a take
+    // in every format and lands in no cut. admin.spec.ts was one for eight sprints.
+    const specs = readdirSync(path.join(root, "qa", "showcase")).filter((file) => file.endsWith(".spec.ts"))
+    expect(specs.sort()).toEqual(CLIPS.map((clip) => clip.spec).sort())
+  })
+
+  it("runs every clip through the fixture, so no take records the dev tools overlay", () => {
+    for (const clip of CLIPS) {
+      const spec = readFileSync(path.join(root, "qa", "showcase", clip.spec), "utf8")
+      expect(spec, clip.spec).toMatch(/import \{[^}]*\btest\b[^}]*\} from "\.\/fixtures"/)
+      expect(spec, clip.spec).not.toMatch(/import \{[^}]*\btest\b[^}]*\} from "@playwright\/test"/)
     }
   })
 

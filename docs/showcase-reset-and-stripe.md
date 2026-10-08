@@ -196,7 +196,7 @@ Nothing is obviously abandoned, but a few things are worth knowing:
 Recording the showcase clips needs a believable admin: orders, discount codes, reviews, subscribers, campaigns and message templates. `scripts/showcase-seed.mjs` writes that into the database your `DATABASE_URL` points at, using the pure builder in `scripts/lib/showcase-demo-data.mjs`.
 
 ```bash
-pnpm showcase:seed                 # dry run: prints the target host and any collisions, writes nothing
+pnpm showcase:seed -- --dry-run    # dry run: prints the target host and any collisions, writes nothing
 pnpm showcase:seed -- --confirm    # replaces any earlier demo rows, then writes the demo set
 pnpm showcase:unseed -- --confirm  # removes only the demo rows
 ```

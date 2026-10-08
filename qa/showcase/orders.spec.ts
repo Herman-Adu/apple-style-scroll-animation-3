@@ -1,6 +1,6 @@
-import { test } from "@playwright/test"
+import { test } from "./fixtures"
 import { adminCredentials, openSignedInAdminPage } from "./admin-session"
-import { beat, saveClip, scrollToBottom, showCaption } from "./clip"
+import { beat, saveClip, scrollToBottom, showCaption, visit } from "./clip"
 import { getClip } from "./shot-list"
 
 /** Clip 5, orders, customers and analytics. Needs the seeded demo data and admin env. */
@@ -16,13 +16,13 @@ test("clip: orders, customers and analytics", async ({ context }) => {
   await scrollToBottom(page)
   await beat(page, 1200)
 
-  await page.goto("/admin/customers", { waitUntil: "networkidle" })
+  await visit(page, "/admin/customers")
   await showCaption(page, customersCaption)
   await beat(page, 2400)
   await scrollToBottom(page)
   await beat(page, 1200)
 
-  await page.goto("/admin/analytics", { waitUntil: "networkidle" })
+  await visit(page, "/admin/analytics")
   await showCaption(page, analyticsCaption)
   await beat(page, 2600)
   await scrollToBottom(page)

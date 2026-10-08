@@ -1,13 +1,18 @@
 import { test as base } from "@playwright/test"
+import { adminCredentials } from "./admin-session"
+import { installIdentityMask } from "./real-identities"
 
 /**
- * Clips record a dev server, which paints its own chrome over the page: the
- * Next.js dev tools indicator sits in the bottom corner and turns into a red
- * "1 Issue" badge the moment anything logs a warning. It is not part of the
- * product, and on camera it reads as a broken site.
+ * Every clip runs through this fixture, so no take can miss either of the two
+ * things that must be true of all of them. A unit test fails if a spec imports
+ * `test` from Playwright directly.
  *
- * Every clip runs through this fixture, so no take can miss it. A unit test
- * fails if a spec imports `test` from Playwright directly.
+ * 1. No dev chrome. Clips record a dev server, which paints the Next.js dev tools
+ *    indicator over the page and turns it into a red "1 Issue" badge the moment
+ *    anything logs a warning. On camera that reads as a broken site.
+ * 2. Nobody real. Installing the mask per clip missed the two that only visit
+ *    public pages — and the contact page lists an address that is also a real
+ *    account, so those takes published it.
  */
 export const DEV_CHROME_SELECTORS = ["nextjs-portal", "#__next-build-watcher", "[data-nextjs-toast]"]
 
@@ -28,6 +33,7 @@ export const test = base.extend({
       hide()
       document.addEventListener("DOMContentLoaded", hide)
     }, devChromeStyle())
+    await installIdentityMask(context, { signedInAs: adminCredentials()?.email })
     await use(context)
   },
 })

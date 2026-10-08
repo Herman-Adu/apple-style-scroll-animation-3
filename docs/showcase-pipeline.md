@@ -8,12 +8,19 @@ How the demo videos, slides and LinkedIn carousels are made, from an empty datab
 | --- | --- | --- | --- |
 | 1. Seed | `pnpm showcase:seed -- --dry-run` | Dry run: prints the target database host, row counts and any clashes. Writes nothing. Without `--dry-run` or `--confirm` the script refuses to run. | Console only |
 | 1b. Seed for real | `pnpm showcase:seed -- --confirm` | Replaces any earlier demo rows, then writes the demo set (customers, orders, offers, waiting lists, a demo admin). Every row is tagged as demo. | Demo rows in the database |
+| 1c. Check captions | `pnpm showcase:captions` | Renders every caption on its route at all three sizes and writes one screenshot per shot. Two minutes, no recording — run it before a recording pass, not after. | `test-results/preview/captions/` |
 | 2. Record clips | `pnpm showcase:video` | Records each clip with Playwright, then converts it to H.264 `.mp4` with a `.jpg` poster. `--no-record` converts existing raw clips only. | `public/showcase/video/` |
 | 3. Build cuts | `pnpm showcase:cuts` | Records every clip in 4:5 and 9:16, then stitches the recruiter, buyer and engineer cuts and publishes the calendar clips. `--no-record`, `--calendar-only` and `--clip <slug>` narrow the run. | `public/showcase/video/` |
 | 4. Export slides and carousels | `pnpm showcase:assets` | Runs `pnpm facts`, then renders every slide to PNG and every carousel to a PDF with one page per slide. | `public/showcase/social/` |
 | 5. Clean up | `pnpm showcase:unseed -- --confirm` | Removes only the rows tagged as demo. Real data is never touched. | Demo rows gone |
 
 Run steps 2 to 4 against a running dev server. Seeding and unseeding use the database in `.env.local` or `.env.development.local`, so always read the dry-run host before adding `--confirm`.
+
+## Where a caption sits
+
+`showCaption` measures the shot before it draws. A caption never sits on headline-sized text — a product name, a page title, a revenue figure — so it takes the top band unless there is a headline up there, and the bottom otherwise. When neither band has a headline it takes whichever covers fewer separate pieces of text, which puts it over empty space rather than over a toolbar. The top band starts below the site header, because content scrolled under a sticky header is invisible but still has a box there.
+
+Check placement with `pnpm showcase:captions` rather than by recording.
 
 ## How a recording scrolls
 

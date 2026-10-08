@@ -1,6 +1,5 @@
 import { expect, test } from "./fixtures"
 import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
-import { installIdentityMask } from "./real-identities"
 import { FRAME_SEQUENCE_SECTIONS, getClip } from "./shot-list"
 
 /**
@@ -10,9 +9,6 @@ import { FRAME_SEQUENCE_SECTIONS, getClip } from "./shot-list"
  */
 test("clip: storefront journey", async ({ page, request }) => {
   const [homeCaption, productCaption, checkoutCaption] = getClip("storefront").captions
-
-  // The product page carries review authors, so real reviewers get a stand-in.
-  await installIdentityMask(page.context())
 
   const sitemap = await (await request.get("/sitemap.xml")).text()
   const productUrl = sitemap.match(/<loc>([^<]*\/products\/[^<]+)<\/loc>/)?.[1]

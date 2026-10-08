@@ -6,7 +6,6 @@ import {
   isDemoAdminEmail,
   parseAdminCredentials,
 } from "../../scripts/lib/showcase-admin.mjs"
-import { installIdentityMask } from "./real-identities"
 
 export interface AdminCredentials {
   email: string
@@ -44,15 +43,10 @@ export function canSignInOnCamera(credentials: AdminCredentials | null): boolean
 /**
  * Signs in on a throwaway page, so the sign-in form (with the real address typed
  * into it) is never part of a saved clip, then returns a fresh page that is already
- * signed in. Every real name, address and avatar in the admin shows as a stand-in,
- * and the signed-in admin shows as the demo admin.
- *
- * The mask this replaced only rewrote the signed-in admin's own address, and
- * disabled itself for the seeded demo admin — so every other customer was on camera.
+ * signed in. The identity mask that turns every real name, address and avatar
+ * into a stand-in is installed for all clips by qa/showcase/fixtures.ts.
  */
 export async function openSignedInAdminPage(context: BrowserContext, credentials: AdminCredentials, landing: string): Promise<Page> {
-  await installIdentityMask(context, { signedInAs: credentials.email })
-
   const signIn = await context.newPage()
   await signIn.goto(`/sign-in?redirect=${encodeURIComponent(landing)}`, { waitUntil: "networkidle" })
   await signIn.locator('input[type="email"]').fill(credentials.email)

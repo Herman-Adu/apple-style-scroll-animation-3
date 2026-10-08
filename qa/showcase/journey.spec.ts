@@ -1,7 +1,7 @@
 import { test } from "@playwright/test"
 import { adminCredentials, canSignInOnCamera } from "./admin-session"
-import { beat, clearCaption, saveClip, scrollToBottom, showCaption, smoothScroll } from "./clip"
-import { getClip } from "./shot-list"
+import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
+import { FRAME_SEQUENCE_SECTIONS, getClip } from "./shot-list"
 
 /**
  * Clip 8, the whole journey in one take: the scroll story, signing in on camera,
@@ -20,7 +20,7 @@ test("clip: from scroll story to admin", async ({ page }) => {
   await showCaption(page, storyCaption)
   await beat(page, 1600)
   await clearCaption(page)
-  await smoothScroll(page, 2400, 40)
+  await scrollToBottom(page, { frameSequenceSelectors: FRAME_SEQUENCE_SECTIONS.home })
   await beat(page, 800)
 
   await page.goto(`/sign-in?redirect=${encodeURIComponent("/admin")}`, { waitUntil: "networkidle" })
@@ -34,7 +34,7 @@ test("clip: from scroll story to admin", async ({ page }) => {
 
   await showCaption(page, dashboardCaption)
   await beat(page, 1800)
-  await scrollToBottom(page, 20)
+  await scrollToBottom(page)
   await beat(page, 800)
 
   await page.goto("/admin/products", { waitUntil: "networkidle" })

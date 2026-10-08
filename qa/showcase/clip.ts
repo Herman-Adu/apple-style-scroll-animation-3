@@ -2,7 +2,7 @@ import path from "node:path"
 import type { Page } from "@playwright/test"
 import { formatFromEnv, slugForFormat } from "../../scripts/lib/showcase-formats.mjs"
 import { CAPTION_ELEMENT_ID, buildCaptionHtml } from "./caption"
-import { planScroll } from "./scroll-plan"
+import { STEP_PAUSE_MS, planPacedScroll } from "./scroll-plan"
 
 export const RAW_CLIP_DIR = path.join(process.cwd(), "test-results", "showcase", "raw")
 
@@ -39,15 +39,53 @@ function measurePage(page: Page) {
 
 const MAX_SCROLL_PASSES = 4
 
-/** Scrolls from the current position to the true bottom of the page, footer included, with an eased pace. */
-export async function scrollToBottom(page: Page, steps = 36) {
+/**
+ * Where the canvas frame sequences are, in page coordinates. Such a section is
+ * sticky: its progress runs from its top edge to one viewport before its bottom
+ * edge, which is the span that has to be paced frame by frame.
+ */
+function measureFrameSequences(page: Page, selectors: readonly string[]) {
+  return page.evaluate((list) => {
+    const pageTop = window.scrollY
+    return list.flatMap((selector) => {
+      const element = document.querySelector(selector)
+      if (!element) return []
+      const box = element.getBoundingClientRect()
+      const start = box.top + pageTop
+      const end = start + box.height - window.innerHeight
+      return end > start ? [{ start, end }] : []
+    })
+  }, [...selectors])
+}
+
+export interface ScrollOptions {
+  /** Selectors for canvas frame sequences, which are paced so that every frame renders. */
+  frameSequenceSelectors?: readonly string[]
+}
+
+/**
+ * Scrolls from the current position to the true bottom of the page, footer
+ * included, at one readable pace throughout.
+ *
+ * Steps are driven by the clock, not by a sleep per step: a `mouse.wheel` call
+ * costs about 20ms of its own, which silently stretched a 12-second sequence to
+ * 16. Waiting until each step is *due* keeps the section the length it plans to be.
+ */
+export async function scrollToBottom(page: Page, { frameSequenceSelectors = [] }: ScrollOptions = {}) {
   for (let pass = 0; pass < MAX_SCROLL_PASSES; pass++) {
     const { scrollHeight, viewportHeight, scrollY } = await measurePage(page)
-    const deltas = planScroll({ scrollHeight: scrollHeight - scrollY, viewportHeight, steps })
+    const frameSequences = await measureFrameSequences(page, frameSequenceSelectors)
+    const deltas = planPacedScroll({ scrollHeight, viewportHeight, scrollY, frameSequences }).flatMap(
+      (segment) => segment.deltas,
+    )
     if (deltas.length === 0) return
-    for (const delta of deltas) {
+
+    const startedAt = Date.now()
+    for (const [index, delta] of deltas.entries()) {
       await page.mouse.wheel(0, delta)
-      await page.waitForTimeout(70)
+      const due = startedAt + (index + 1) * STEP_PAUSE_MS
+      const wait = due - Date.now()
+      if (wait > 0) await page.waitForTimeout(wait)
     }
     await page.waitForTimeout(400)
   }

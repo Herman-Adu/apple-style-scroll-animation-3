@@ -15,6 +15,46 @@ export const CHECKOUT_DISCOUNT_CODE = "LAUNCH20"
 /** The demo seed puts demo shoppers on this product's waiting list, so the restock clip emails nobody real. */
 export const RESTOCK_PRODUCT_SLUG = "momo-beat"
 
+/**
+ * Canvas frame sequences, which a recording has to pace frame by frame instead
+ * of stepping past. Keyed by the page they live on.
+ *
+ * Nothing else belongs here. A scroll-triggered reveal such as the About
+ * timeline only needs the ordinary reading pace; giving it a frame sequence's
+ * fixed duration makes a short section crawl while the rest of the page races.
+ */
+export const FRAME_SEQUENCE_SECTIONS = {
+  home: ["#top"],
+} as const
+
+/** Two public enquiry types, so the form's fields visibly change on camera. */
+export const ENQUIRY_CLIP_TYPES = ["general", "wholesale"] as const
+
+/** Typed into the form on camera. A reserved demo domain, so the address can only bounce. */
+export const ENQUIRY_CLIP_SENDER = {
+  name: "Demo Shopper",
+  email: "shopper@demo.momo-audio.test",
+}
+
+/** What the enquiry clip answers, by enquiry type and field name. */
+export const ENQUIRY_CLIP_ANSWERS: Record<(typeof ENQUIRY_CLIP_TYPES)[number], Record<string, string>> = {
+  general: {
+    subject: "Does the Momo X ship to Denmark?",
+    message: "Looking at the Momo X for a small listening room. What is the lead time on walnut?",
+  },
+  wholesale: {
+    company: "Northern Sound Co.",
+    country: "Denmark",
+    message: "We run three listening rooms in Copenhagen and would like to stock the Momo range.",
+  },
+}
+
+/**
+ * The enquiry clip shows this button and never clicks it. Submitting sends a real
+ * email through Resend to the owner's inbox, and a recording runs it twice per format.
+ */
+export const ENQUIRY_SUBMIT_LABEL = "Send message"
+
 export const CLIPS: ClipPlan[] = [
   {
     slug: "storefront",
@@ -116,6 +156,31 @@ export const CLIPS: ClipPlan[] = [
       "The admin shows how many people are waiting",
       "Restock in one click",
       "Everyone waiting gets one email, sent once",
+    ],
+  },
+  {
+    slug: "sitetour",
+    audience: "both",
+    title: "The rest of the site",
+    spec: "sitetour.spec.ts",
+    routes: ["/about", "/articles", "/contact"],
+    captions: [
+      "An About page with a timeline that builds as you scroll",
+      "A searchable journal, lead story first",
+      "Contact: opening hours, three studios and a map",
+    ],
+  },
+  {
+    slug: "enquiry",
+    audience: "both",
+    title: "The enquiry form",
+    spec: "enquiry.spec.ts",
+    routes: ["/contact"],
+    captions: [
+      "Five kinds of enquiry, one short form",
+      "A general enquiry asks for a subject and a message",
+      "Pick wholesale and the form asks about your business",
+      "Everything is shown for review before anything is sent",
     ],
   },
 ]

@@ -7,11 +7,18 @@ import {
   ADMIN_ROUTES,
   CHECKOUT_DISCOUNT_CODE,
   CLIPS,
+  ENQUIRY_CLIP_ANSWERS,
+  ENQUIRY_CLIP_SENDER,
+  ENQUIRY_CLIP_TYPES,
+  ENQUIRY_SUBMIT_LABEL,
   PUBLIC_ROUTES,
   RESTOCK_PRODUCT_SLUG,
+  FRAME_SEQUENCE_SECTIONS,
   getClip,
 } from "../../showcase/shot-list"
-import { buildDemoData } from "../../../scripts/lib/showcase-demo-data.mjs"
+import { enquiryTypes } from "@/features/contact"
+import { isReservedEmail } from "@/features/email/lib/domain/reserved-recipients"
+import { DEMO_EMAIL_DOMAIN, buildDemoData } from "../../../scripts/lib/showcase-demo-data.mjs"
 
 const root = REPO_ROOT
 
@@ -41,6 +48,8 @@ describe("showcase shot list", () => {
       "engineering",
       "journey",
       "restock",
+      "sitetour",
+      "enquiry",
     ])
     expect(new Set(CLIPS.map((clip) => clip.slug)).size).toBe(CLIPS.length)
   })
@@ -58,6 +67,8 @@ describe("showcase shot list", () => {
     expect(bySlug.checkout).toBe("both")
     expect(bySlug.journey).toBe("both")
     expect(bySlug.engineering).toBe("recruiter")
+    expect(bySlug.sitetour).toBe("both")
+    expect(bySlug.enquiry).toBe("both")
     for (const slug of ["campaigns", "discounts", "orders", "restock"]) expect(bySlug[slug]).toBe("client")
   })
 
@@ -73,6 +84,57 @@ describe("showcase shot list", () => {
     expect(routes[0]).toBe("/")
     expect(routes).toContain("/sign-in")
     expect(routes.indexOf("/sign-in")).toBeLessThan(routes.indexOf("/admin"))
+  })
+
+  it("puts About, Articles and Contact on camera, which no earlier clip did", () => {
+    expect(getClip("sitetour").routes).toEqual(["/about", "/articles", "/contact"])
+    const older = CLIPS.filter((clip) => !["sitetour", "enquiry"].includes(clip.slug)).flatMap((clip) => clip.routes)
+    for (const route of getClip("sitetour").routes) expect(older, route).not.toContain(route)
+  })
+
+  it("paces the homepage canvas hero frame by frame, and nothing else", () => {
+    expect(FRAME_SEQUENCE_SECTIONS.home).toEqual(["#top"])
+    expect(Object.keys(FRAME_SEQUENCE_SECTIONS)).toEqual(["home"])
+  })
+
+  it("demonstrates the enquiry form on two public topics, so the fields visibly change", () => {
+    expect(getClip("enquiry").routes).toEqual(["/contact"])
+    expect(ENQUIRY_CLIP_TYPES).toHaveLength(2)
+    const shown = ENQUIRY_CLIP_TYPES.map((id) => enquiryTypes.find((type) => type.id === id))
+    for (const type of shown) {
+      expect(type, "a seeded enquiry type").toBeDefined()
+      expect(type!.access, type!.id).toBe("public")
+    }
+    const [first, second] = shown
+    expect(first!.fields.map((field) => field.label)).not.toEqual(second!.fields.map((field) => field.label))
+  })
+
+  it("answers every required field of both topics, and only fields it can type into", () => {
+    for (const id of ENQUIRY_CLIP_TYPES) {
+      const fields = enquiryTypes.find((type) => type.id === id)!.fields
+      const answered = Object.keys(ENQUIRY_CLIP_ANSWERS[id])
+      for (const field of fields) {
+        if (field.required) expect(answered, `${id}.${field.name}`).toContain(field.name)
+        if (answered.includes(field.name)) expect(field.type, `${id}.${field.name}`).toMatch(/^(text|textarea)$/)
+      }
+      for (const name of answered) expect(fields.map((field) => field.name), `${id}.${name}`).toContain(name)
+    }
+  })
+
+  it("types a reserved demo address, so nothing it leaves behind can reach a real inbox", () => {
+    expect(ENQUIRY_CLIP_SENDER.email).toMatch(new RegExp(`@${DEMO_EMAIL_DOMAIN}$`))
+    expect(isReservedEmail(ENQUIRY_CLIP_SENDER.email)).toBe(true)
+  })
+
+  it("stops the enquiry clip on the review step, so no recording sends a real email", () => {
+    const spec = readFileSync(path.join(root, "qa", "showcase", "enquiry.spec.ts"), "utf8")
+    expect(spec).toContain("ENQUIRY_SUBMIT_LABEL")
+    expect(spec).toMatch(/toBeVisible/)
+    const clicks = spec.split(/\r?\n/).filter((line) => line.includes("click("))
+    expect(clicks.length).toBeGreaterThan(0)
+    for (const line of clicks) {
+      expect(line.trim(), line.trim()).not.toMatch(new RegExp(`${ENQUIRY_SUBMIT_LABEL}|ENQUIRY_SUBMIT_LABEL|submit`, "i"))
+    }
   })
 
   it("gives every clip a title, a spec file and two to six captions that fit on screen", () => {

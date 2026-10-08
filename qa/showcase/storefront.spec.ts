@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
-import { getClip } from "./shot-list"
+import { FRAME_SEQUENCE_SECTIONS, getClip } from "./shot-list"
 
 /**
  * Clip 1, storefront tour: the home page scrolled all the way to the footer,
@@ -19,7 +19,7 @@ test("clip: storefront journey", async ({ page, request }) => {
   await showCaption(page, homeCaption)
   await beat(page, 1800)
   await clearCaption(page)
-  await scrollToBottom(page)
+  await scrollToBottom(page, { frameSequenceSelectors: FRAME_SEQUENCE_SECTIONS.home })
   await beat(page, 1500)
 
   await page.goto(new URL(productUrl!).pathname, { waitUntil: "networkidle" })

@@ -25,7 +25,7 @@ test("clip: email campaigns", async ({ context }) => {
     await page.waitForLoadState("networkidle")
     await beat(page, 1800)
     await showCaption(page, statsCaption)
-    await scrollToBottom(page, 24)
+    await scrollToBottom(page)
     await beat(page, 1800)
   }
   await clearCaption(page)

@@ -12,6 +12,7 @@ import path from "node:path"
 import ffmpegPath from "ffmpeg-static"
 import { formatFromEnv } from "./lib/showcase-formats.mjs"
 import { buildPosterArgs, buildTranscodeArgs, clipFileNames } from "./lib/video-args.mjs"
+import { publishedVideoFromRaw } from "./lib/showcase-paths.mjs"
 
 const root = process.cwd()
 const rawDir = path.join(root, "test-results", "showcase", "raw")
@@ -43,8 +44,10 @@ mkdirSync(outDir, { recursive: true })
 const clips = readdirSync(rawDir).filter((file) => file.endsWith(".webm"))
 for (const file of clips) {
   const slug = file.replace(/\.webm$/, "")
-  const names = clipFileNames(slug)
+  clipFileNames(slug)
+  const names = publishedVideoFromRaw(slug)
   const input = path.join(rawDir, file)
+  mkdirSync(path.join(outDir, names.dir), { recursive: true })
   execFileSync(ffmpeg, buildTranscodeArgs({ input, output: path.join(outDir, names.video) }), { stdio: "ignore" })
   execFileSync(ffmpeg, buildPosterArgs({ input, output: path.join(outDir, names.poster), atSeconds: 8 }), {
     stdio: "ignore",

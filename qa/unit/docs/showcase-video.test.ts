@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { docs } from "@/features/docs/content";
 import type { DocBlock } from "@/features/docs/lib/domain/schema";
 import { REPO_ROOT } from "@/qa/config/repo-root";
+import { videoPath } from "@/features/showcase/lib/domain/asset-paths";
 
 type VideoBlock = Extract<DocBlock, { type: "video" }>;
 
@@ -21,27 +22,27 @@ describe("showcase video embeds", () => {
     (slug) => {
       const videos = videosIn(slug);
       expect(videos.map((v) => v.src)).toContain(
-        "/showcase/video/storefront.mp4",
+        "/showcase/video/storefront/landscape.mp4",
       );
     },
   );
 
   it("the launch kit embeds the journey calendar clip in both formats", () => {
     const srcs = videosIn("social-launch-kit").map((v) => v.src);
-    expect(srcs).toContain("/showcase/video/journey-4x5.mp4");
-    expect(srcs).toContain("/showcase/video/journey-9x16.mp4");
+    expect(srcs).toContain("/showcase/video/journey/4x5.mp4");
+    expect(srcs).toContain("/showcase/video/journey/9x16.mp4");
   });
 
   it.each(["recruiter", "buyer", "engineer"])("the launch kit embeds the %s cut in both formats", (cut) => {
     const srcs = videosIn("social-launch-kit").map((v) => v.src);
-    expect(srcs).toContain(`/showcase/video/cut-${cut}-4x5.mp4`);
-    expect(srcs).toContain(`/showcase/video/cut-${cut}-9x16.mp4`);
+    expect(srcs).toContain(videoPath(cut, "4x5", "mp4"));
+    expect(srcs).toContain(videoPath(cut, "9x16", "mp4"));
   });
 
   it("the launch kit embeds the restock calendar clip in both formats", () => {
     const srcs = videosIn("social-launch-kit").map((v) => v.src);
-    expect(srcs).toContain("/showcase/video/restock-4x5.mp4");
-    expect(srcs).toContain("/showcase/video/restock-9x16.mp4");
+    expect(srcs).toContain("/showcase/video/restock/4x5.mp4");
+    expect(srcs).toContain("/showcase/video/restock/9x16.mp4");
   });
 
   it("every video block points at a committed clip and poster with a text alternative", () => {

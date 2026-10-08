@@ -2,6 +2,7 @@ import { ADUDEV } from "./brand"
 import { infographics } from "./infographics"
 import { sequenceSlides } from "./sequence-slides"
 import { topicSlides } from "./topic-slides"
+import { carouselPdfPath, socialAssetPath } from "./asset-paths"
 
 export const SOCIAL_FORMATS = {
   carousel: { width: 1080, height: 1350 },
@@ -30,7 +31,7 @@ export type SocialAsset = {
 }
 
 export const CAROUSEL_ID = "carousel"
-export const CAROUSEL_PDF = "/showcase/social/linkedin-carousel.pdf"
+export const CAROUSEL_PDF = carouselPdfPath("email-case-study")
 export const CASE_STUDY_LINK = "momo-audio.adudev.co.uk/docs/case-study-email-platform"
 
 export function caseStudyUrl(): string {
@@ -220,7 +221,7 @@ export function exportPlan(): ExportItem[] {
     ...[...socialAssets, ...infographics].map((a) => ({
       kind: "png" as const,
       asset: a.id,
-      file: `/showcase/social/${a.id}.png`,
+      file: socialAssetPath(a.id),
       ...SOCIAL_FORMATS[a.format],
     })),
     { kind: "pdf", asset: CAROUSEL_ID, file: CAROUSEL_PDF, ...SOCIAL_FORMATS.carousel },

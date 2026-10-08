@@ -23,7 +23,8 @@ import {
   selectCalendarClips,
 } from "./lib/showcase-cuts.mjs"
 import { slugForFormat } from "./lib/showcase-formats.mjs"
-import { buildPosterArgs, buildTranscodeArgs, clipFileNames } from "./lib/video-args.mjs"
+import { buildPosterArgs, buildTranscodeArgs } from "./lib/video-args.mjs"
+import { publishedVideo } from "./lib/showcase-paths.mjs"
 
 const root = process.cwd()
 const rawDir = path.join(root, "test-results", "showcase", "raw")
@@ -64,9 +65,10 @@ if (missing.length > 0) {
 mkdirSync(outDir, { recursive: true })
 mkdirSync(listDir, { recursive: true })
 
-/** @param {string} input @param {string} name */
-function writePoster(input, name) {
-  execFileSync(ffmpeg, buildPosterArgs({ input, output: path.join(outDir, clipFileNames(name).poster), atSeconds: 3 }), {
+/** @param {string} input @param {{ dir: string, poster: string }} target */
+function writePoster(input, target) {
+  mkdirSync(path.join(outDir, target.dir), { recursive: true })
+  execFileSync(ffmpeg, buildPosterArgs({ input, output: path.join(outDir, target.poster), atSeconds: 3 }), {
     stdio: "ignore",
   })
 }
@@ -74,22 +76,26 @@ function writePoster(input, name) {
 for (const format of CUT_FORMATS) {
   for (const cut of cuts) {
     const name = cutOutputName(cut.slug, format)
+    const target = publishedVideo(cut.slug, format)
     const listFile = path.join(listDir, `${name}.txt`)
     const inputs = cut.clips.map((clip) => path.join(rawDir, `${slugForFormat(clip, format)}.webm`))
     writeFileSync(listFile, buildConcatList(inputs))
-    const output = path.join(outDir, clipFileNames(name).video)
+    mkdirSync(path.join(outDir, target.dir), { recursive: true })
+    const output = path.join(outDir, target.video)
     execFileSync(ffmpeg, buildConcatArgs({ listFile, output }), { stdio: "ignore" })
-    writePoster(output, name)
-    console.log(`✓ ${name}.mp4 (${cut.clips.join(" + ")})`)
+    writePoster(output, target)
+    console.log(`✓ ${target.video} (${cut.clips.join(" + ")})`)
   }
 
   for (const clip of calendarClips) {
     const name = slugForFormat(clip, format)
+    const target = publishedVideo(clip, format)
     const input = path.join(rawDir, `${name}.webm`)
-    execFileSync(ffmpeg, buildTranscodeArgs({ input, output: path.join(outDir, clipFileNames(name).video) }), {
+    mkdirSync(path.join(outDir, target.dir), { recursive: true })
+    execFileSync(ffmpeg, buildTranscodeArgs({ input, output: path.join(outDir, target.video) }), {
       stdio: "ignore",
     })
-    writePoster(input, name)
-    console.log(`✓ ${name}.mp4`)
+    writePoster(input, target)
+    console.log(`✓ ${target.video}`)
   }
 }

@@ -63,11 +63,11 @@ If optional providers stay enabled (Strapi/analytics/extra auth), replace those 
 ### Primary outputs to regenerate
 
 - Storefront demo clip + poster:
-  - `public/showcase/video/storefront.mp4`
-  - `public/showcase/video/storefront.jpg`
+  - `public/showcase/video/storefront/landscape.mp4`
+  - `public/showcase/video/storefront/landscape.jpg`
 - Social carousel/squares:
-  - `public/showcase/social/linkedin-carousel.pdf`
-  - `public/showcase/social/*.png`
+  - `public/showcase/social/email-case-study/carousel.pdf`
+  - `public/showcase/social/<group>/*.png` (one folder per audience or topic)
 - Docs showcase imagery:
   - `public/docs/showcase/*.png`
 

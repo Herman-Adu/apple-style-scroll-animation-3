@@ -1,4 +1,5 @@
 import type { SocialAsset } from "./social-assets"
+import { tourStillPath } from "./asset-paths"
 
 type Step = { name: string; title: string; body: string }
 
@@ -64,7 +65,7 @@ export const BUILD_STEPS = [
 export const TOUR_STOPS = [
   {
     id: "storefront",
-    still: "/showcase/tour/storefront.jpg",
+    still: tourStillPath("storefront"),
     eyebrow: "Storefront",
     title: "Real product pages, ready to sell.",
     body: "Scroll-driven product stories with live prices from the catalogue.",
@@ -72,7 +73,7 @@ export const TOUR_STOPS = [
   },
   {
     id: "checkout",
-    still: "/showcase/tour/checkout.jpg",
+    still: tourStillPath("checkout"),
     eyebrow: "Checkout",
     title: "Discounts show instantly in the total.",
     body: "Stripe checkout with the order total always recomputed on the server.",
@@ -80,7 +81,7 @@ export const TOUR_STOPS = [
   },
   {
     id: "products",
-    still: "/showcase/tour/products.jpg",
+    still: tourStillPath("products"),
     eyebrow: "Admin: products",
     title: "Stock and waiting lists at a glance.",
     body: "See who is waiting for each product and restock in one click.",
@@ -88,7 +89,7 @@ export const TOUR_STOPS = [
   },
   {
     id: "campaigns",
-    still: "/showcase/tour/campaigns.jpg",
+    still: tourStillPath("campaigns"),
     eyebrow: "Admin: campaigns",
     title: "Campaigns without a developer.",
     body: "Pick a template, write the subject, choose the audience and send.",
@@ -96,7 +97,7 @@ export const TOUR_STOPS = [
   },
   {
     id: "analytics",
-    still: "/showcase/tour/analytics.jpg",
+    still: tourStillPath("analytics"),
     eyebrow: "Admin: analytics",
     title: "Revenue and orders in one view.",
     body: "Thirty days of revenue, best sellers and orders by status.",

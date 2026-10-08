@@ -41,8 +41,8 @@ export const caseStudyEmailPlatform: Doc = {
     },
     {
       type: "video",
-      src: "/showcase/video/storefront.mp4",
-      poster: "/showcase/video/storefront.jpg",
+      src: "/showcase/video/storefront/landscape.mp4",
+      poster: "/showcase/video/storefront/landscape.jpg",
       description:
         "Screen recording of the storefront: the home page scroll animation plays, a product is opened from the shop, added to the cart, and the cart drawer shows the item and subtotal.",
       caption: "The storefront journey, recorded automatically by Playwright with pnpm showcase:video.",

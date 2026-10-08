@@ -55,9 +55,9 @@ describe("the public showcase-assets doc", () => {
   it("points at the pack carousels it claims to generate", () => {
     const text = bodyText(slug);
     for (const file of [
-      "/showcase/social/linkedin-recruiter-carousel.pdf",
-      "/showcase/social/linkedin-buyer-carousel.pdf",
-      "/showcase/social/linkedin-engineer-carousel.pdf",
+      "/showcase/social/recruiter/carousel.pdf",
+      "/showcase/social/buyer/carousel.pdf",
+      "/showcase/social/engineer/carousel.pdf",
     ]) {
       expect(text).toContain(file);
     }

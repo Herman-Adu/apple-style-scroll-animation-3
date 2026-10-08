@@ -57,18 +57,20 @@ describe("S37 showcase pipeline runbook", () => {
     expect(missingMentions(read("docs/showcase-pipeline.md"), showcaseScripts)).toEqual([]);
   });
 
-  it("names every carousel PDF and the clean-up step", () => {
+  it("names every carousel's folder and the clean-up step", () => {
     const runbook = read("docs/showcase-pipeline.md");
+    // Each carousel is `carousel.pdf` inside its own folder, so the runbook names
+    // the folder a reader has to open rather than eight near-identical filenames.
     expect(
       missingMentions(runbook, [
-        "linkedin-carousel.pdf",
-        "linkedin-recruiter-carousel.pdf",
-        "linkedin-buyer-carousel.pdf",
-        "linkedin-engineer-carousel.pdf",
-        "linkedin-checkout-sequence-carousel.pdf",
-        "linkedin-security-carousel.pdf",
-        "linkedin-how-it-was-built-carousel.pdf",
-        "linkedin-site-tour-carousel.pdf",
+        "email-case-study/",
+        "recruiter/",
+        "buyer/",
+        "engineer/",
+        "checkout-sequence/",
+        "security/",
+        "how-it-was-built/",
+        "site-tour/",
         "showcase:unseed",
       ]),
     ).toEqual([]);

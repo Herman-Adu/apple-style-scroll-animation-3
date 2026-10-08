@@ -27,6 +27,9 @@ A recording pass costs about fifteen minutes; the check that reproduces its fail
 ## Video poster is a blank frame
 The page was still loading at grab time. `scripts/showcase-video.mjs` grabs at 8s; a jpg of a few KB means blank.
 
+## An intermittent axe failure is usually real, not flaky
+S43: `/` failed about two runs in three. It was not timing noise — `text-foreground/40` genuinely failed AA on five elements, and axe only saw them once their scroll-reveal animation finished, so catching them depended on how fast the hero frames loaded. Print the offending selectors (`v.nodes[].target`) rather than rerunning until it passes; the spec does this now.
+
 ## Axe colour-contrast failure on `/` that "comes and goes"
   Not flaky: it only shows while the hero loader is on screen, so it depends on how fast frames load. W1b traced it to the loader's `Loading N%` text (`text-on-media/30`, 2.47:1); fixed at `/70`. If it recurs, log the failing nodes (`v.nodes[].target`, `html`) from the axe spec instead of rerunning, and treat anything visible during loading as in scope.
 

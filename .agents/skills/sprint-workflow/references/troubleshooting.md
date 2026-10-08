@@ -15,6 +15,12 @@ Add it to `pnpm.onlyBuiltDependencies` in `package.json`, then `pnpm rebuild <pk
 ## Playwright: no browser / `libnspr4.so` missing
 `pnpm exec playwright install chromium`. The sandbox is Amazon Linux 2023 (`dnf`, no `apt-get`), so `playwright install-deps` cannot work. Install the libraries with `sudo -n dnf install -y nspr nss nss-util atk at-spi2-atk cups-libs libdrm libxkbcommon libXcomposite libXdamage libXfixes libXrandr mesa-libgbm alsa-lib pango cairo`, then confirm with a one-line `chromium.launch()`. If that fails, report the check as blocked; don't loop.
 
+## Recordings vanish when the test suite runs
+Playwright empties `outputDir` before every run and defaults it to the whole of `test-results`, where the showcase raw clips live. Running the browser gates therefore deleted the clips a recording pass had just made — twice in S42, costing two full re-records. Every config now sets its own folder and `qa/unit/meta/playwright-configs.test.ts` fails if one does not.
+
+## Check before you spend, not after
+A recording pass costs about fifteen minutes; the check that reproduces its failure modes costs forty seconds. In S42 three faults reached published clips — an error screen, a sign-in wall, a sixteen-second frozen frame — and every one of them reproduced instantly in the browser. Before any expensive generate-or-render step, run the cheap thing that would catch it: here, `pnpm showcase:check` and `pnpm showcase:captions`.
+
 ## A recorded clip runs longer than its pacing says
 `page.mouse.wheel` costs about 20ms of its own, on top of whatever you wait. A sleep per step therefore drifts: in S41 a 12-second frame sequence took 16. Drive the steps from the clock — wait until step `i` is *due* (`startedAt + (i + 1) * pause`) rather than sleeping a fixed amount. Measure the real cost before trusting a pacing number; the plan's estimate was out by a third.
 

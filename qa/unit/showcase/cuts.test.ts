@@ -41,6 +41,13 @@ describe("showcase audience cuts", () => {
     expect(buyer.clips).toContain("campaigns")
   })
 
+  it("walks a buyer round the rest of the site and its enquiry form", () => {
+    const buyer = CUTS.find((cut) => cut.slug === "buyer")!
+    expect(buyer.clips).toContain("sitetour")
+    expect(buyer.clips).toContain("enquiry")
+    expect(buyer.clips.indexOf("sitetour")).toBe(buyer.clips.indexOf("storefront") + 1)
+  })
+
   it("leads the engineer cut with the engineering proof and an end-to-end flow", () => {
     const engineer = CUTS.find((cut) => cut.slug === "engineer")!
     expect(engineer.clips[0]).toBe("engineering")
@@ -55,8 +62,8 @@ describe("showcase audience cuts", () => {
     expect(CUT_FORMATS).toEqual(["4x5", "9x16"])
   })
 
-  it("publishes the journey and restock clips on their own for the calendar", () => {
-    expect(CALENDAR_CLIPS).toEqual(["journey", "restock"])
+  it("publishes the journey, restock, site tour and enquiry clips on their own for the calendar", () => {
+    expect(CALENDAR_CLIPS).toEqual(["journey", "restock", "sitetour", "enquiry"])
     for (const clip of CALENDAR_CLIPS) expect(clipSlugs).toContain(clip)
   })
 
@@ -99,7 +106,7 @@ describe("concat helpers", () => {
   })
 
   it("publishes every calendar clip unless --clip names one", () => {
-    expect(selectCalendarClips([])).toEqual(["journey", "restock"])
+    expect(selectCalendarClips([])).toEqual(["journey", "restock", "sitetour", "enquiry"])
     expect(selectCalendarClips(["--calendar-only", "--clip", "restock"])).toEqual(["restock"])
     expect(() => selectCalendarClips(["--clip", "storefront"])).toThrow(/calendar clip/)
     expect(() => selectCalendarClips(["--clip"])).toThrow(/calendar clip/)

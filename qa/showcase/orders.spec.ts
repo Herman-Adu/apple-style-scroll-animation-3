@@ -13,19 +13,19 @@ test("clip: orders, customers and analytics", async ({ context }) => {
   const page = await openSignedInAdminPage(context, credentials!, "/admin/orders")
   await showCaption(page, ordersCaption)
   await beat(page, 2400)
-  await scrollToBottom(page, 20)
+  await scrollToBottom(page)
   await beat(page, 1200)
 
   await page.goto("/admin/customers", { waitUntil: "networkidle" })
   await showCaption(page, customersCaption)
   await beat(page, 2400)
-  await scrollToBottom(page, 20)
+  await scrollToBottom(page)
   await beat(page, 1200)
 
   await page.goto("/admin/analytics", { waitUntil: "networkidle" })
   await showCaption(page, analyticsCaption)
   await beat(page, 2600)
-  await scrollToBottom(page, 20)
+  await scrollToBottom(page)
   await beat(page, 1500)
 
   await saveClip(page, "orders")

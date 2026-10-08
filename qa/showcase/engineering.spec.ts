@@ -14,7 +14,7 @@ test("clip: engineering proof", async ({ page }) => {
   await showCaption(page, rulesCaption)
   await beat(page, 2400)
   await showCaption(page, numbersCaption)
-  await scrollToBottom(page, 40)
+  await scrollToBottom(page)
   await beat(page, 1800)
 
   await saveClip(page, "engineering")

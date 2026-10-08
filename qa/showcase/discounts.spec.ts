@@ -14,13 +14,13 @@ test("clip: discounts and message templates", async ({ context }) => {
   await showCaption(page, codesCaption)
   await beat(page, 2400)
   await showCaption(page, kindsCaption)
-  await scrollToBottom(page, 20)
+  await scrollToBottom(page)
   await beat(page, 1800)
 
   await page.goto("/admin/email/messages", { waitUntil: "networkidle" })
   await showCaption(page, templatesCaption)
   await beat(page, 2600)
-  await scrollToBottom(page, 20)
+  await scrollToBottom(page)
   await beat(page, 1500)
 
   await saveClip(page, "discounts")

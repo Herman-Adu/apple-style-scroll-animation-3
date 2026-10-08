@@ -15,6 +15,15 @@ How the demo videos, slides and LinkedIn carousels are made, from an empty datab
 
 Run steps 2 to 4 against a running dev server. Seeding and unseeding use the database in `.env.local` or `.env.development.local`, so always read the dry-run host before adding `--confirm`.
 
+## How a recording scrolls
+
+`qa/showcase/scroll-plan.ts` sets the pace; `scrollToBottom` in `qa/showcase/clip.ts` drives it.
+
+- **One pace for a page.** Every page scrolls at about 660 pixels a second, so a long page takes longer rather than scrolling faster. Pacing by a step count used to do the opposite: 36 steps covered the homepage's 11,800px in 2.5 seconds.
+- **A canvas frame sequence gets a fixed 12 seconds**, whatever the recording size. Its height is set in viewport units, so a fixed pixels-per-step would still skip frames in the portrait formats. It is scrubbed at a constant speed, because easing makes the middle steps the largest and those are the ones that skip. Only the homepage hero qualifies, and it is listed in `FRAME_SEQUENCE_SECTIONS` in `qa/showcase/shot-list.ts`.
+- **A scroll-triggered reveal is not a frame sequence.** The About timeline reveals itself at the ordinary pace. Giving it a frame sequence's fixed duration makes a short section crawl while the rest of the page races.
+- **Steps are driven by the clock.** A `mouse.wheel` call costs about 20ms of its own, so sleeping a fixed amount per step stretched a 12-second sequence to 16.
+
 ## Carousels
 
 Each carousel is one swipeable PDF for LinkedIn. The slide order is defined in `features/showcase/lib/domain/packs.ts` and checked by tests.
@@ -36,6 +45,7 @@ The site-tour stills in `public/showcase/tour/` are frames taken from the buyer 
 
 - **Checkout needs an account.** The checkout clip signs in as the seeded demo admin first. Without step 1b it records the sign-in page.
 - **Restock is demo-only in recordings.** The restock clip uses a guarded demo action, so recording never changes real stock.
+- **The enquiry clip must never press send.** `features/contact/lib/adapters/submit.ts` sends a real email through Resend to `EMAIL_TO`; the reserved-recipient guard covers demo recipients, not that path. `qa/showcase/enquiry.spec.ts` stops on the review step, and a unit test fails if any click in it touches the submit button.
 - **One export at a time.** Two `showcase:assets` runs write to the same files. Stop one before starting another.
 - **PDF page count.** Each carousel must have exactly one page per slide. A blank trailing page means a slide is taller than its page.
 - **Facts must exist before the render.** `.generated/facts.json` is gitignored, and a slide bound to a fact renders a dash when it is missing. `pnpm showcase:assets` runs `pnpm facts` first for exactly this reason; calling Playwright directly skips it. The five fact-bound slides are the recruiter proof strip, the engineer test pyramid and coverage bars, the before/after strip and the bar chart.

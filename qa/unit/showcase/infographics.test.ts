@@ -11,6 +11,7 @@ import { SOCIAL_FORMATS, exportPlan, socialAssets } from "@/features/showcase/li
 import { REPO_ROOT } from "@/qa/config/repo-root"
 import { measure } from "@/scripts/lib/arch-audit-metrics.mjs"
 import { collectSources } from "@/scripts/lib/source-files.mjs"
+import { socialAssetPath } from "@/features/showcase/lib/domain/asset-paths"
 
 const read = (file: string) => readFileSync(join(REPO_ROOT, file), "utf8")
 const pkg = JSON.parse(read("package.json")) as {
@@ -205,7 +206,7 @@ describe("export plan", () => {
     for (const i of infographics) {
       const item = plan.find((p) => p.asset === i.id)
       expect(item, i.id).toBeDefined()
-      expect(item).toMatchObject({ kind: "png", file: `/showcase/social/${i.id}.png`, ...SOCIAL_FORMATS[i.format] })
+      expect(item).toMatchObject({ kind: "png", file: socialAssetPath(i.id), ...SOCIAL_FORMATS[i.format] })
     }
   })
 

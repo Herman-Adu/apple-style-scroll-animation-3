@@ -41,7 +41,7 @@ describe("pack carousels", () => {
   })
 
   it("names each file linkedin-<pack>-carousel.pdf", () => {
-    expect(packCarouselPdf("buyer")).toBe("/showcase/social/linkedin-buyer-carousel.pdf")
+    expect(packCarouselPdf("buyer")).toBe("/showcase/social/buyer/carousel.pdf")
     expect(packCarouselId("buyer")).toBe("pack-buyer")
   })
 })

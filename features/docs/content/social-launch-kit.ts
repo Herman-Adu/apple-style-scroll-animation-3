@@ -27,12 +27,12 @@ export const socialLaunchKit: Doc = {
     { type: "heading", text: "Demo clip" },
     {
       type: "paragraph",
-      text: "A 30-second muted MP4 (1280×720, H.264) that LinkedIn, Facebook, X and Telegram all play inline. Download it from /showcase/video/storefront.mp4 and upload it natively rather than linking, because native video gets far more reach. Re-record it after UI changes with pnpm showcase:video.",
+      text: "A 30-second muted MP4 (1280×720, H.264) that LinkedIn, Facebook, X and Telegram all play inline. Download it from /showcase/video/storefront/landscape.mp4 and upload it natively rather than linking, because native video gets far more reach. Re-record it after UI changes with pnpm showcase:video.",
     },
     {
       type: "video",
-      src: "/showcase/video/storefront.mp4",
-      poster: "/showcase/video/storefront.jpg",
+      src: "/showcase/video/storefront/landscape.mp4",
+      poster: "/showcase/video/storefront/landscape.jpg",
       description:
         "Screen recording of the storefront: the home page scroll animation plays, a product is opened from the shop, added to the cart, and the cart drawer shows the item and subtotal.",
       caption: "Storefront journey clip for social posts.",
@@ -46,7 +46,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/carousel-cover.png",
+      src: "/showcase/social/email-case-study/cover.png",
       alt: "Carousel cover slide: 'Email built into the store, not bolted on.' above the Christmas campaign email.",
       caption: "Carousel cover slide.",
       width: 1080,
@@ -54,7 +54,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/carousel-flow.png",
+      src: "/showcase/social/email-case-study/flow.png",
       alt: "Carousel slide showing the flow from the checkout action to a Stripe payment, a signed webhook, the saved order and the Resend order email.",
       caption: "Checkout to inbox. The new flow slide.",
       width: 1080,
@@ -67,7 +67,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-stack.png",
+      src: "/showcase/social/shared/stack.png",
       alt: "Infographic listing the stack: Next.js, React, TypeScript, Prisma on Neon, Better Auth, Stripe, Resend, Vitest and Playwright.",
       caption: "Stack. Post first for recruiters and CTOs.",
       width: 1080,
@@ -75,7 +75,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-layers.png",
+      src: "/showcase/social/shared/layers.png",
       alt: "Infographic of the dependency layers, showing each layer depending only on the one beneath it.",
       caption: "Architecture layers. Shows the one-way dependency rule.",
       width: 1080,
@@ -83,7 +83,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-before-after.png",
+      src: "/showcase/social/shared/before-after.png",
       alt: "Infographic comparing four architecture metrics before and after the refactor sprints.",
       caption: "Before and after. The strongest proof for recruiters.",
       width: 1080,
@@ -91,7 +91,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-site-map.png",
+      src: "/showcase/social/shared/site-map.png",
       alt: "Infographic mapping the storefront, admin and docs areas of the site and their main routes.",
       caption: "Site map. Shows clients how much is included.",
       width: 1080,
@@ -99,7 +99,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-flow.png",
+      src: "/showcase/social/shared/flow.png",
       alt: "Infographic of the journey from cart to payment to confirmation email.",
       caption: "Cart to confirmation email. Best for client posts.",
       width: 1080,
@@ -107,7 +107,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-gates.png",
+      src: "/showcase/social/shared/gates.png",
       alt: "Infographic listing the seven quality gates every change must pass before merging.",
       caption: "Quality gates. Shows the engineering discipline behind the template.",
       width: 1080,
@@ -115,7 +115,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-offer.png",
+      src: "/showcase/social/shared/offer.png",
       alt: "Infographic of what is included, what can be customised and how handover works.",
       caption: "The client offer. Post with a call to action.",
       width: 1080,
@@ -123,7 +123,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-table.png",
+      src: "/showcase/social/shared/table.png",
       alt: "Table of the five test layers, the tool each uses and what each one proves.",
       caption: "Testing table. Explains how every layer is tested.",
       width: 1080,
@@ -131,7 +131,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-bar-chart.png",
+      src: "/showcase/social/shared/bar-chart.png",
       alt: "Vertical story image with a bar chart of automated test counts by layer: unit, integration, smoke, accessibility and SEO.",
       caption: "Test counts. A 1080×1920 story for Instagram, Facebook and LinkedIn stories.",
       width: 1080,
@@ -139,7 +139,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-line-chart.png",
+      src: "/showcase/social/shared/line-chart.png",
       alt: "Illustrative line chart: total cost from scratch climbs steeply over three years, while a tested template starts lower and rises gently.",
       caption: "Build versus template. Illustrative, for client posts.",
       width: 1080,
@@ -147,7 +147,7 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/infographic-sequence.png",
+      src: "/showcase/social/shared/sequence.png",
       alt: "Sequence diagram of the back-in-stock flow between the customer, the store, the database and Resend.",
       caption: "Back in stock, end to end. Shows a real flow across services.",
       width: 1080,
@@ -162,22 +162,22 @@ export const socialLaunchKit: Doc = {
       rows: [
         [
           "LinkedIn",
-          "/showcase/social/linkedin-carousel.pdf as a document post",
+          "/showcase/social/email-case-study/carousel.pdf as a document post",
           "Document posts swipe like a carousel and get the most dwell time.",
         ],
         [
           "Facebook",
-          "/showcase/social/square-starters.png, /showcase/social/square-locks.png",
+          "/showcase/social/shared/squares/starters.png, /showcase/social/shared/squares/locks.png",
           "Squares crop cleanly in the feed and on mobile.",
         ],
         [
           "Telegram",
-          "/showcase/social/carousel-cover.png, /showcase/social/carousel-products.png, /showcase/social/carousel-starters.png, /showcase/social/carousel-locks.png, /showcase/social/carousel-history.png, /showcase/social/carousel-flow.png, /showcase/social/carousel-layers.png, /showcase/social/carousel-cta.png as one album",
+          "/showcase/social/email-case-study/cover.png, /showcase/social/email-case-study/products.png, /showcase/social/email-case-study/starters.png, /showcase/social/email-case-study/locks.png, /showcase/social/email-case-study/history.png, /showcase/social/email-case-study/flow.png, /showcase/social/email-case-study/layers.png, /showcase/social/email-case-study/cta.png as one album",
           "Albums show the slides in order, like the LinkedIn carousel.",
         ],
         [
           "X",
-          "/showcase/social/square-layers.png",
+          "/showcase/social/shared/squares/layers.png",
           "One image per post. Use the video clip for the thread opener.",
         ],
       ],

@@ -10,9 +10,9 @@ How the demo videos, slides and LinkedIn carousels are made, from an empty datab
 | 1b. Seed for real | `pnpm showcase:seed -- --confirm` | Replaces any earlier demo rows, then writes the demo set (customers, orders, offers, waiting lists, a demo admin). Every row is tagged as demo. | Demo rows in the database |
 | 1c. Check it is fit to record | `pnpm showcase:check` | Opens every route the clips film, through the same fixture a take uses, and fails if any comes up broken or behind a sign-in. Forty seconds. Run it before every recording pass. | Console only |
 | 1d. Check captions | `pnpm showcase:captions` | Renders every caption on its route at all three sizes and writes one screenshot per shot. Two minutes, no recording — run it before a recording pass, not after. | `test-results/preview/captions/` |
-| 2. Record clips | `pnpm showcase:video` | Records each clip with Playwright, then converts it to H.264 `.mp4` with a `.jpg` poster. `--no-record` converts existing raw clips only. | `public/showcase/video/` |
-| 3. Build cuts | `pnpm showcase:cuts` | Records every clip in 4:5 and 9:16, then stitches the recruiter, buyer and engineer cuts and publishes the calendar clips. `--no-record`, `--calendar-only` and `--clip <slug>` narrow the run. | `public/showcase/video/` |
-| 4. Export slides and carousels | `pnpm showcase:assets` | Runs `pnpm facts`, then renders every slide to PNG and every carousel to a PDF with one page per slide. | `public/showcase/social/` |
+| 2. Record clips | `pnpm showcase:video` | Records each clip with Playwright, then converts it to H.264 `.mp4` with a `.jpg` poster. `--no-record` converts existing raw clips only. | `public/showcase/video/<clip>/` |
+| 3. Build cuts | `pnpm showcase:cuts` | Records every clip in 4:5 and 9:16, then stitches the recruiter, buyer and engineer cuts and publishes the calendar clips. `--no-record`, `--calendar-only` and `--clip <slug>` narrow the run. | `public/showcase/video/<clip>/` |
+| 4. Export slides and carousels | `pnpm showcase:assets` | Runs `pnpm facts`, then renders every slide to PNG and every carousel to a PDF with one page per slide. | `public/showcase/social/<group>/` |
 | 5. Clean up | `pnpm showcase:unseed -- --confirm` | Removes only the rows tagged as demo. Real data is never touched. | Demo rows gone |
 
 Run steps 2 to 4 against a running dev server. Seeding and unseeding use the database in `.env.local` or `.env.development.local`, so always read the dry-run host before adding `--confirm`.
@@ -32,22 +32,44 @@ Check placement with `pnpm showcase:captions` rather than by recording.
 - **A scroll-triggered reveal is not a frame sequence.** The About timeline reveals itself at the ordinary pace. Giving it a frame sequence's fixed duration makes a short section crawl while the rest of the page races.
 - **Steps are driven by the clock.** A `mouse.wheel` call costs about 20ms of its own, so sleeping a fixed amount per step stretched a 12-second sequence to 16.
 
+## Where the assets live
+
+One folder per audience or topic, holding everything for it — so picking what to post means opening a folder, not filtering filenames. `features/showcase/lib/domain/asset-paths.ts` defines the shape and `qa/unit/showcase/asset-layout.test.ts` fails if anything lands outside it. **Anything new follows the same pattern.**
+
+```
+public/showcase/
+  video/
+    buyer/  engineer/  recruiter/     4x5.mp4  4x5.jpg  9x16.mp4  9x16.jpg
+    enquiry/  journey/  restock/  sitetour/
+    storefront/                        landscape.mp4  landscape.jpg
+  social/
+    buyer/  engineer/  recruiter/     carousel.pdf + that audience's images
+    security/  how-it-was-built/      carousel.pdf  cover.png  1..5.png
+    checkout-sequence/
+    site-tour/                        carousel.pdf  + stills/
+    email-case-study/                 carousel.pdf  + its slides
+    shared/                           infographics that belong to no audience
+    shared/squares/                   the 1080×1080 squares
+```
+
+A video folder is named for the cut or clip; the file is named for the format. A social folder is named for the audience or topic; its carousel is always `carousel.pdf`.
+
 ## Carousels
 
-Each carousel is one swipeable PDF for LinkedIn. The slide order is defined in `features/showcase/lib/domain/packs.ts` and checked by tests.
+Each carousel is one swipeable PDF for LinkedIn, published as `carousel.pdf` inside its own folder. The slide order is defined in `features/showcase/lib/domain/packs.ts` and checked by tests.
 
-| File | Audience | Story |
+| Folder | Audience | Story |
 | --- | --- | --- |
-| `linkedin-carousel.pdf` | Everyone | The email platform case study |
-| `linkedin-recruiter-carousel.pdf` | Recruiters | Outcome, proof, judgement, worked example, close |
-| `linkedin-buyer-carousel.pdf` | Buyers | Cost, self-serve admin, stock-alert demand |
-| `linkedin-engineer-carousel.pdf` | Engineers | Architecture, three flow sequences, test pyramid |
-| `linkedin-checkout-sequence-carousel.pdf` | Engineers and buyers | Checkout one step per swipe |
-| `linkedin-security-carousel.pdf` | Security reviewers | Five layers: proxy, server action, screen, merge gates, locked blocks |
-| `linkedin-how-it-was-built-carousel.pdf` | Recruiters and engineers | The sprint loop: plan, test first, one PR, green only, ratchet |
-| `linkedin-site-tour-carousel.pdf` | Everyone | Storefront, checkout, products, campaigns and analytics stills |
+| `email-case-study/` | Everyone | The email platform case study |
+| `recruiter/` | Recruiters | Outcome, proof, judgement, worked example, close |
+| `buyer/` | Buyers | Cost, self-serve admin, stock-alert demand |
+| `engineer/` | Engineers | Architecture, three flow sequences, test pyramid |
+| `checkout-sequence/` | Engineers and buyers | Checkout one step per swipe |
+| `security/` | Security reviewers | Five layers: proxy, server action, screen, merge gates, locked blocks |
+| `how-it-was-built/` | Recruiters and engineers | The sprint loop: plan, test first, one PR, green only, ratchet |
+| `site-tour/` | Everyone | Storefront, checkout, products, campaigns and analytics stills |
 
-The site-tour stills in `public/showcase/tour/` are frames taken from the buyer cut with `ffmpeg-static`. Re-take them after a visible UI change, then rerun `pnpm showcase:assets`.
+The site-tour stills in `public/showcase/social/site-tour/stills/` are frames taken from the buyer cut with `ffmpeg-static`. Re-take them after a visible UI change, then rerun `pnpm showcase:assets`.
 
 ## Things that will catch you out
 

@@ -6,7 +6,7 @@ export function BrandStatement() {
     <section className="relative z-10 bg-background px-6 py-32 md:px-12 md:py-44">
       <div className="mx-auto max-w-4xl text-center">
         <Reveal y={0}>
-          <p className="mb-8 font-mono text-[10px] uppercase tracking-[0.5em] text-foreground/40">Our philosophy</p>
+          <p className="mb-8 font-mono text-[10px] uppercase tracking-[0.5em] text-foreground/60">Our philosophy</p>
         </Reveal>
         <Reveal delay={0.1}>
           <h2 className="text-balance text-3xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl md:leading-[1.1]">

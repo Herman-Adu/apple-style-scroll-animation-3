@@ -9,16 +9,16 @@ export const launchKitClipBlocks: DocBlock[] = [
   },
   {
     type: "video",
-    src: "/showcase/video/journey-4x5.mp4",
-    poster: "/showcase/video/journey-4x5.jpg",
+    src: "/showcase/video/journey/4x5.mp4",
+    poster: "/showcase/video/journey/4x5.jpg",
     description:
       "Screen recording in 4:5: the home page scroll story plays, the visitor signs in as the demo admin, and the admin dashboard and its pages open in turn.",
     caption: "Journey clip, 4:5 feed format.",
   },
   {
     type: "video",
-    src: "/showcase/video/journey-9x16.mp4",
-    poster: "/showcase/video/journey-9x16.jpg",
+    src: "/showcase/video/journey/9x16.mp4",
+    poster: "/showcase/video/journey/9x16.jpg",
     description:
       "The same journey recorded in 9:16 for stories and reels: scroll story, sign-in as the demo admin, then the admin dashboard and its pages.",
     caption: "Journey clip, 9:16 story format.",
@@ -30,16 +30,16 @@ export const launchKitClipBlocks: DocBlock[] = [
   },
   {
     type: "video",
-    src: "/showcase/video/restock-4x5.mp4",
-    poster: "/showcase/video/restock-4x5.jpg",
+    src: "/showcase/video/restock/4x5.mp4",
+    poster: "/showcase/video/restock/4x5.jpg",
     description:
       "Screen recording in 4:5: a sold-out product page, a shopper enters an email to be notified, the admin products table shows the waiting count, stock is raised by one, and the back-in-stock email template opens.",
     caption: "Restock clip, 4:5 feed format.",
   },
   {
     type: "video",
-    src: "/showcase/video/restock-9x16.mp4",
-    poster: "/showcase/video/restock-9x16.jpg",
+    src: "/showcase/video/restock/9x16.mp4",
+    poster: "/showcase/video/restock/9x16.jpg",
     description:
       "The same back-in-stock flow in 9:16 for stories and reels: sold-out page, join the waiting list, admin restock, then the email.",
     caption: "Restock clip, 9:16 story format.",
@@ -51,16 +51,16 @@ export const launchKitClipBlocks: DocBlock[] = [
   },
   {
     type: "video",
-    src: "/showcase/video/sitetour-4x5.mp4",
-    poster: "/showcase/video/sitetour-4x5.jpg",
+    src: "/showcase/video/sitetour/4x5.mp4",
+    poster: "/showcase/video/sitetour/4x5.jpg",
     description:
       "Screen recording in 4:5: the homepage scroll story through the canvas hero, the About page and its animated timeline, the articles journal with its lead story, then the contact page with opening hours, the studio list and the store map.",
     caption: "Site tour clip, 4:5 feed format.",
   },
   {
     type: "video",
-    src: "/showcase/video/sitetour-9x16.mp4",
-    poster: "/showcase/video/sitetour-9x16.jpg",
+    src: "/showcase/video/sitetour/9x16.mp4",
+    poster: "/showcase/video/sitetour/9x16.jpg",
     description:
       "The same tour in 9:16 for stories and reels: the homepage scroll story, About with its timeline, the articles journal, then contact with the store map.",
     caption: "Site tour clip, 9:16 story format.",
@@ -72,16 +72,16 @@ export const launchKitClipBlocks: DocBlock[] = [
   },
   {
     type: "video",
-    src: "/showcase/video/enquiry-4x5.mp4",
-    poster: "/showcase/video/enquiry-4x5.jpg",
+    src: "/showcase/video/enquiry/4x5.mp4",
+    poster: "/showcase/video/enquiry/4x5.jpg",
     description:
       "Screen recording in 4:5: five enquiry topics, a general enquiry filled in with a subject and a message, then wholesale asking instead for a company, a country and a description of the business, ending on the review step.",
     caption: "Enquiry form clip, 4:5 feed format.",
   },
   {
     type: "video",
-    src: "/showcase/video/enquiry-9x16.mp4",
-    poster: "/showcase/video/enquiry-9x16.jpg",
+    src: "/showcase/video/enquiry/9x16.mp4",
+    poster: "/showcase/video/enquiry/9x16.jpg",
     description:
       "The same enquiry form in 9:16 for stories and reels: the topic picker, a general enquiry, then the wholesale fields, stopping on the review step.",
     caption: "Enquiry form clip, 9:16 story format.",

@@ -11,7 +11,7 @@ export function ProductShowcase({ products }: { products: Product[] }) {
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-14 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <Eyebrow dot={false} className="mb-4 text-foreground/40">
+            <Eyebrow dot={false} className="mb-4 text-foreground/60">
               The collection
             </Eyebrow>
             <h2 className="max-w-xl text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">

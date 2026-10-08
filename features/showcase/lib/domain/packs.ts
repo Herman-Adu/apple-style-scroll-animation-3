@@ -2,6 +2,7 @@ import { getInfographic, type Infographic } from "./infographics"
 import { CHECKOUT_STEPS } from "./sequence-slides"
 import { BUILD_STEPS, SECURITY_STEPS, TOUR_STOPS } from "./topic-slides"
 import { SOCIAL_FORMATS, getSocialAsset, type ExportItem, type SocialAsset } from "./social-assets"
+import { carouselPdfPath, type AssetGroup } from "./asset-paths"
 
 export type PackRole =
   | "cover"
@@ -102,7 +103,7 @@ export function getPack(id: string): Pack | undefined {
 }
 
 export const packCarouselId = (packId: string) => `pack-${packId}`
-export const packCarouselPdf = (packId: string) => `/showcase/social/linkedin-${packId}-carousel.pdf`
+export const packCarouselPdf = (packId: string) => carouselPdfPath(packId.replace(/^pack-/, "") as AssetGroup)
 
 export function getPackByCarouselId(carouselId: string): Pack | undefined {
   return packs.find((p) => packCarouselId(p.id) === carouselId)

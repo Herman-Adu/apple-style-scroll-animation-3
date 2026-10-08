@@ -16,6 +16,7 @@ import {
 import { getInfographic, infographics } from "@/features/showcase/lib/domain/infographics";
 import { docs } from "@/features/docs/content";
 import { REPO_ROOT } from "@/qa/config/repo-root";
+import { socialAssetPath } from "@/features/showcase/lib/domain/asset-paths";
 
 const publicFile = (src: string) =>
   existsSync(join(REPO_ROOT, "public", src.replace(/^[/\\\\]/, "")));
@@ -134,7 +135,7 @@ describe("export plan", () => {
     expect(pngs).toHaveLength(socialAssets.length + infographics.length);
     for (const p of pngs) {
       const asset = getSocialAsset(p.asset) ?? getInfographic(p.asset)!;
-      expect(p.file).toBe(`/showcase/social/${asset.id}.png`);
+      expect(p.file).toBe(socialAssetPath(asset.id));
       expect({ width: p.width, height: p.height }).toEqual(
         SOCIAL_FORMATS[asset.format],
       );

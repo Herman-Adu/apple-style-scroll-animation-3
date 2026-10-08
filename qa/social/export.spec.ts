@@ -25,9 +25,10 @@ async function waitForAssets(page: Page) {
   })
 }
 
-test.beforeAll(() => {
-  mkdirSync(publicPath("/showcase/social"), { recursive: true })
-})
+/** Assets live one folder per audience or topic, so each file makes its own. */
+function ensureDir(file: string) {
+  mkdirSync(path.dirname(publicPath(file)), { recursive: true })
+}
 
 for (const item of [...exportPlan(), ...packExportPlan()]) {
   test(`export ${item.file}`, async ({ page }) => {
@@ -38,6 +39,7 @@ for (const item of [...exportPlan(), ...packExportPlan()]) {
     // The export runs against `next dev`, whose dev-tools badge would otherwise be baked into the PNG.
     await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" })
 
+    ensureDir(item.file)
     if (item.kind === "png") {
       await page.screenshot({ path: publicPath(item.file), clip: { x: 0, y: 0, width: item.width, height: item.height } })
       return

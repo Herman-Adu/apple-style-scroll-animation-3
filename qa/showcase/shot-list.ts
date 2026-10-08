@@ -16,6 +16,14 @@ export const CHECKOUT_DISCOUNT_CODE = "LAUNCH20"
 export const RESTOCK_PRODUCT_SLUG = "momo-beat"
 
 /**
+ * The flagship, and the product the storefront and checkout clips stand for in
+ * this list. Those clips take whichever product the sitemap offers first, so the
+ * slug here is a representative one: `routes` says which pages a clip puts on
+ * camera, and `pnpm showcase:check` opens every one of them before a recording.
+ */
+export const FLAGSHIP_PRODUCT_SLUG = "momo-x"
+
+/**
  * Canvas frame sequences, which a recording has to pace frame by frame instead
  * of stepping past. Keyed by the page they live on.
  *
@@ -61,7 +69,7 @@ export const CLIPS: ClipPlan[] = [
     audience: "both",
     title: "Storefront tour",
     spec: "storefront.spec.ts",
-    routes: ["/"],
+    routes: ["/", `/products/${FLAGSHIP_PRODUCT_SLUG}`, "/checkout"],
     captions: [
       "A scroll-driven storefront, built on Next.js 16",
       "Real product pages, ready to sell",
@@ -73,7 +81,7 @@ export const CLIPS: ClipPlan[] = [
     audience: "both",
     title: "Checkout end to end",
     spec: "checkout.spec.ts",
-    routes: ["/checkout"],
+    routes: [`/products/${FLAGSHIP_PRODUCT_SLUG}`, "/checkout"],
     captions: [
       "Add to cart in one tap",
       "Apply a discount code at checkout",

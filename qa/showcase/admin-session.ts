@@ -3,12 +3,10 @@ import path from "node:path"
 import type { BrowserContext, Page } from "@playwright/test"
 import {
   ADMIN_CREDENTIALS_FILE,
-  DEMO_ADMIN,
   isDemoAdminEmail,
   parseAdminCredentials,
 } from "../../scripts/lib/showcase-admin.mjs"
-
-const MASKED_EMAIL = DEMO_ADMIN.email
+import { installIdentityMask } from "./real-identities"
 
 export interface AdminCredentials {
   email: string
@@ -46,32 +44,14 @@ export function canSignInOnCamera(credentials: AdminCredentials | null): boolean
 /**
  * Signs in on a throwaway page, so the sign-in form (with the real address typed
  * into it) is never part of a saved clip, then returns a fresh page that is already
- * signed in. Everywhere the admin prints the real address, the recording shows a
- * demo address instead.
+ * signed in. Every real name, address and avatar in the admin shows as a stand-in,
+ * and the signed-in admin shows as the demo admin.
+ *
+ * The mask this replaced only rewrote the signed-in admin's own address, and
+ * disabled itself for the seeded demo admin — so every other customer was on camera.
  */
-/**
- * Masking rewrites every text node that contains the real address. If the alias still
- * contains it (the seeded demo admin signs in as the alias itself), each rewrite triggers
- * another mutation and the page's main thread locks up.
- */
-export function shouldMaskEmail(real: string, alias: string): boolean {
-  return real !== "" && !alias.includes(real)
-}
-
 export async function openSignedInAdminPage(context: BrowserContext, credentials: AdminCredentials, landing: string): Promise<Page> {
-  if (shouldMaskEmail(credentials.email, MASKED_EMAIL)) await context.addInitScript(
-    ({ real, alias }) => {
-      const mask = () => {
-        const walker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT)
-        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-          if (node.nodeValue?.includes(real)) node.nodeValue = node.nodeValue.split(real).join(alias)
-        }
-      }
-      new MutationObserver(mask).observe(document, { childList: true, subtree: true, characterData: true })
-      document.addEventListener("DOMContentLoaded", mask)
-    },
-    { real: credentials.email, alias: MASKED_EMAIL },
-  )
+  await installIdentityMask(context, { signedInAs: credentials.email })
 
   const signIn = await context.newPage()
   await signIn.goto(`/sign-in?redirect=${encodeURIComponent(landing)}`, { waitUntil: "networkidle" })

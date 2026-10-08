@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, readFileSync, readdirSync } from "node:fs"
 import path from "node:path"
 import { describe, expect, it } from "vitest"
 import { REPO_ROOT } from "@/qa/config/repo-root"
@@ -135,6 +135,13 @@ describe("showcase shot list", () => {
     for (const line of clicks) {
       expect(line.trim(), line.trim()).not.toMatch(new RegExp(`${ENQUIRY_SUBMIT_LABEL}|ENQUIRY_SUBMIT_LABEL|submit`, "i"))
     }
+  })
+
+  it("records nothing that is not on the shot list", () => {
+    // The recorder matches showcase/**/*.spec.ts, so an orphan spec costs a take
+    // in every format and lands in no cut. admin.spec.ts was one for eight sprints.
+    const specs = readdirSync(path.join(root, "qa", "showcase")).filter((file) => file.endsWith(".spec.ts"))
+    expect(specs.sort()).toEqual(CLIPS.map((clip) => clip.spec).sort())
   })
 
   it("gives every clip a title, a spec file and two to six captions that fit on screen", () => {

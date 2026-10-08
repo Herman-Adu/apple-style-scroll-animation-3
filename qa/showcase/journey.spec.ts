@@ -1,5 +1,6 @@
 import { test } from "@playwright/test"
 import { adminCredentials, canSignInOnCamera } from "./admin-session"
+import { installIdentityMask } from "./real-identities"
 import { beat, clearCaption, saveClip, scrollToBottom, showCaption } from "./clip"
 import { FRAME_SEQUENCE_SECTIONS, getClip } from "./shot-list"
 
@@ -15,6 +16,10 @@ test("clip: from scroll story to admin", async ({ page }) => {
   test.skip(!canSignInOnCamera(credentials), "The journey signs in on camera, so it needs the seeded demo admin")
   const [storyCaption, signInCaption, dashboardCaption, productsCaption, themeCaption, docsCaption] =
     getClip("journey").captions
+
+  // This clip signs in on camera instead of going through openSignedInAdminPage,
+  // so it installs the mask itself before the first page is loaded.
+  await installIdentityMask(page.context())
 
   await page.goto("/", { waitUntil: "networkidle" })
   await showCaption(page, storyCaption)

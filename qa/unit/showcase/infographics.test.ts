@@ -20,7 +20,7 @@ const pkg = JSON.parse(read("package.json")) as {
 }
 const installed = { ...pkg.dependencies, ...pkg.devDependencies }
 
-const NON_COPY_KEYS = new Set(["id", "kind", "format", "source", "path", "version", "before", "after", "alt"])
+const NON_COPY_KEYS = new Set(["id", "kind", "area", "format", "source", "path", "version", "before", "after", "alt"])
 
 function visibleCopy(value: unknown, key = ""): string[] {
   if (NON_COPY_KEYS.has(key)) return []

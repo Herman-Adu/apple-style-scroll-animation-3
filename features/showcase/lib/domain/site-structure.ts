@@ -20,7 +20,10 @@ export type StructureNode = { label: string; path?: string; note?: string }
 export type StructureGroup = { label: string; path?: string; note?: string; children: StructureNode[] }
 export type StructureArea = {
   id: AreaId
-  heading: string
+  /** Short name, as the overview slide lists it. */
+  name: string
+  /** Where this front door starts. */
+  path?: string
   /** Who this front door is for. */
   forWhom: string
   groups: StructureGroup[]
@@ -33,12 +36,15 @@ export type StructureArea = {
  */
 const ARTICLES_NOTE = "newest posts, generated"
 
+/** Matched on the route, not the label, so renaming the nav item cannot change the slide. */
+const ARTICLES_HREF = "/articles"
+
 function storefrontGroups(): StructureGroup[] {
   return mainNav.map((item) => ({
     label: item.label,
     path: item.href,
     children:
-      item.label === "Articles"
+      item.href === ARTICLES_HREF
         ? [{ label: "Latest posts", note: ARTICLES_NOTE }]
         : (item.sections ?? []).map((section) => ({ label: section.label, path: section.href })),
   }))
@@ -76,25 +82,37 @@ function docsGroups(): StructureGroup[] {
   })
 }
 
-function overviewGroups(): StructureGroup[] {
+/** The three front doors, each described by the area that defines it. */
+function frontDoors(): StructureArea[] {
   return [
-    { label: "Storefront", path: "/", children: [{ label: "What customers see" }] },
-    { label: "Admin", path: "/admin", children: [{ label: "What the owner runs" }] },
-    { label: "Docs", path: "/docs", children: [{ label: "What teams inherit" }] },
+    { id: "storefront", name: "Storefront", path: "/", forWhom: "Shoppers", groups: storefrontGroups() },
+    { id: "admin", name: "Admin", path: "/admin", forWhom: "Whoever runs the store", groups: adminGroups() },
+    {
+      id: "docs",
+      name: "Docs",
+      path: "/docs",
+      forWhom: "Developers, CTOs and content owners",
+      groups: docsGroups(),
+    },
   ]
 }
 
 export function siteStructure(): StructureArea[] {
+  const doors = frontDoors()
   return [
-    { id: "overview", heading: "One repo, three front doors.", forWhom: "Everyone", groups: overviewGroups() },
-    { id: "storefront", heading: "What customers see.", forWhom: "Shoppers", groups: storefrontGroups() },
-    { id: "admin", heading: "What the owner sees.", forWhom: "Whoever runs the store", groups: adminGroups() },
     {
-      id: "docs",
-      heading: "What teams inherit.",
-      forWhom: "Developers, CTOs and content owners",
-      groups: docsGroups(),
+      id: "overview",
+      name: "Overview",
+      forWhom: "Everyone",
+      // Built from the areas themselves. Written by hand it drifted from them,
+      // saying "What the owner runs" while the admin slide said "sees".
+      groups: doors.map((door) => ({
+        label: door.name,
+        path: door.path,
+        children: [{ label: door.forWhom }],
+      })),
     },
+    ...doors,
   ]
 }
 

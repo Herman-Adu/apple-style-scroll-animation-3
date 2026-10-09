@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test"
-import { infographics } from "@/features/showcase/lib/domain/infographics"
+import { packCarouselId } from "@/features/showcase/lib/domain/packs"
 import { signatureOverruns } from "../social/slide-geometry"
 
 /**
@@ -9,19 +9,15 @@ import { signatureOverruns } from "../social/slide-geometry"
  * not a merge gate. Without this, a nav change could pass every gate and the
  * overflow would surface later, against whoever next re-exported.
  *
- * Only these four, deliberately: the full set is sixty-two cold route compiles
- * and timed this suite out when it was tried.
+ * One page load, not one per slide. The carousel route stacks all ten pages in
+ * a single document and `signatureOverruns` walks every `[data-social-asset]`
+ * on it, so this covers the four structure slides and the six around them.
+ * Checking them individually meant five more cold route compiles in a suite
+ * that already timed out its heaviest routes under that load.
  */
-const STRUCTURE_SLIDES = infographics.filter((i) => i.kind === "structure").map((i) => i.id)
-
-test("there are structure slides to check", () => {
-  expect(STRUCTURE_SLIDES.length).toBeGreaterThan(0)
+test("every page of the site tour keeps clear of its signature", async ({ page }) => {
+  await page.goto(`/showcase-render/${packCarouselId("site-tour")}`, { waitUntil: "networkidle" })
+  await page.evaluate(() => document.fonts.ready)
+  await expect(page.locator("[data-social-asset]")).toHaveCount(10)
+  expect(await signatureOverruns(page)).toEqual([])
 })
-
-for (const id of STRUCTURE_SLIDES) {
-  test(`${id} keeps its content clear of the signature`, async ({ page }) => {
-    await page.goto(`/showcase-render/${id}`, { waitUntil: "networkidle" })
-    await page.evaluate(() => document.fonts.ready)
-    expect(await signatureOverruns(page)).toEqual([])
-  })
-}

@@ -89,4 +89,23 @@ describe("site structure", () => {
     )
     expect(bare).toEqual([])
   })
+  it("builds the overview from the other areas, so it cannot drift from them", () => {
+    // The overview was the one hand-written area, which is how it came to say
+    // "What the owner runs" while the admin slide says "What the owner sees."
+    const others = siteStructure().filter((area) => area.id !== "overview")
+    const overview = getArea("overview")
+    expect(overview.groups.map((group) => group.label)).toEqual(others.map((area) => area.name))
+    expect(overview.groups.flatMap((group) => group.children.map((child) => child.label))).toEqual(
+      others.map((area) => area.forWhom),
+    )
+  })
+
+  it("finds the generated Articles node by route, not by its display name", () => {
+    // Keyed on the label, renaming the nav item to "Journal" would spill three
+    // dated article titles and their /articles/[slug] paths onto the slide.
+    const articles = getArea("storefront").groups.find((group) => group.path === "/articles")
+    expect(articles, "the storefront nav has an /articles item").toBeDefined()
+    expect(articles!.children).toHaveLength(1)
+    expect(articles!.children[0].note).toMatch(/generated/)
+  })
 })

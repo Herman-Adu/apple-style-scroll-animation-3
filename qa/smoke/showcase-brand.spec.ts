@@ -20,7 +20,7 @@ const SLIDES = [
   "/showcase-render/infographic-sequence",
   "/showcase-render/infographic-buyer-stock-alerts",
   "/showcase-render/infographic-stack",
-  "/showcase-render/infographic-site-map",
+  "/showcase-render/infographic-tour-structure-admin",
 ]
 
 /** Paints each computed colour and reads the pixel back, so any colour space works. */

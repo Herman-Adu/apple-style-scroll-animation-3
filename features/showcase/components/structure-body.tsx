@@ -11,11 +11,17 @@ import { getArea, type AreaId } from "../lib/domain/site-structure"
  */
 export function StructureBody({ area }: { area: AreaId }) {
   const { groups, forWhom } = getArea(area)
+  // The admin nav has nine groups; in two columns that is five rows and the
+  // last one lands on the signature. Three columns keeps any area to three rows.
+  const columns = groups.length > 6 ? 3 : 2
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       <p className="font-mono text-xl uppercase tracking-widest text-muted-foreground">{forWhom}</p>
-      <ul className="grid flex-1 grid-cols-2 content-start gap-x-10 gap-y-6">
+      <ul
+        className="grid flex-1 content-start gap-x-8 gap-y-6"
+        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+      >
         {groups.map((group) => (
           <li key={group.label} className="flex flex-col gap-2 border-t border-border pt-4">
             <span className="text-3xl font-semibold leading-tight">{group.label}</span>

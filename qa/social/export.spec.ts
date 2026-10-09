@@ -25,6 +25,40 @@ async function waitForAssets(page: Page) {
   })
 }
 
+/**
+ * No slide may draw its content over its own signature.
+ *
+ * This is how the old site map shipped — three columns of routes running under
+ * the AduDev footer. The check lives here because the export already renders
+ * every slide with its fonts settled, so it costs nothing and makes it
+ * impossible to publish an overflowing page.
+ *
+ * The obvious check, `scrollHeight > clientHeight` on the frame, does not see
+ * it: the frame is `overflow-hidden` and the body is a flex child, so both
+ * heights stay equal at 1350 while content sits 88px past the footer.
+ */
+async function expectNothingOverTheSignature(page: Page) {
+  const overruns = await page.evaluate(() =>
+    Array.from(document.querySelectorAll("[data-social-asset]")).flatMap((slide) => {
+      const footer = slide.querySelector("footer")
+      if (!footer) return []
+      const footerTop = footer.getBoundingClientRect().top
+      let worst = { what: "", over: Number.NEGATIVE_INFINITY }
+      for (const node of Array.from(slide.querySelectorAll("*"))) {
+        if (node === footer || footer.contains(node)) continue
+        const box = node.getBoundingClientRect()
+        if (box.height === 0) continue
+        const over = box.bottom - footerTop
+        if (over > worst.over) worst = { what: node.tagName.toLowerCase(), over: Math.round(over) }
+      }
+      return worst.over > 0
+        ? [`${slide.getAttribute("data-social-asset")}: ${worst.what} overruns the footer by ${worst.over}px`]
+        : []
+    }),
+  )
+  expect(overruns).toEqual([])
+}
+
 /** Assets live one folder per audience or topic, so each file makes its own. */
 function ensureDir(file: string) {
   mkdirSync(path.dirname(publicPath(file)), { recursive: true })
@@ -36,6 +70,7 @@ for (const item of [...exportPlan(), ...packExportPlan()]) {
     await page.goto(`/showcase-render/${item.asset}`, { waitUntil: "networkidle" })
     await expect(page.locator("[data-social-asset]").first()).toBeVisible()
     await waitForAssets(page)
+    await expectNothingOverTheSignature(page)
     // The export runs against `next dev`, whose dev-tools badge would otherwise be baked into the PNG.
     await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" })
 

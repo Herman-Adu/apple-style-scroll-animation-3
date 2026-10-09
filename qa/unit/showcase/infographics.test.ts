@@ -55,7 +55,7 @@ describe("infographic catalogue", () => {
         "gates",
         "layers",
         "offer",
-        "site-map",
+        "structure",
         "stack",
         "table",
         "bar-chart",
@@ -64,7 +64,10 @@ describe("infographic catalogue", () => {
       ].sort(),
     )
     for (const kind of INFOGRAPHIC_KINDS) {
-      expect(ofKind(kind).filter((i) => !i.pack), kind).toHaveLength(1)
+      // "structure" is the one kind with a slide per area rather than one
+      // slide: the site tour opens on an overview and a page per front door.
+      const expected = kind === "structure" ? 4 : 1
+      expect(ofKind(kind).filter((i) => !i.pack), kind).toHaveLength(expected)
     }
   })
 
@@ -123,26 +126,6 @@ describe("stack infographic", () => {
     const names = items.map((i) => i.name)
     for (const expected of ["Next.js", "React", "TypeScript", "Prisma", "Neon", "Better Auth", "Stripe", "Resend", "Vitest", "Playwright"]) {
       expect(names, expected).toContain(expected)
-    }
-  })
-})
-
-describe("site map infographic", () => {
-  const [siteMap] = ofKind("site-map")
-  const pageExists = (route: string) => {
-    if (route === "/") return existsSync(join(REPO_ROOT, "app/page.tsx"))
-    const rel = route.replace(/^\//, "")
-    return [`app/${rel}/page.tsx`, `app/(admin)/${rel}/page.tsx`].some((f) => existsSync(join(REPO_ROOT, f)))
-  }
-
-  it("shows storefront, admin and docs", () => {
-    expect(siteMap.areas.map((a) => a.name)).toEqual(["Storefront", "Admin", "Docs"])
-  })
-
-  it("only lists routes that have a page", () => {
-    for (const area of siteMap.areas) {
-      expect(area.routes.length, area.name).toBeGreaterThanOrEqual(3)
-      for (const route of area.routes) expect(pageExists(route.path), route.path).toBe(true)
     }
   })
 })

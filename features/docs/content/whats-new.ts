@@ -114,6 +114,7 @@ export const whatsNew: Doc = {
         ["#189", "Every carousel slide wears the AduDev brand, with two guards on the source and the rendered pixels", "The decks read as one company's work, and a store accent colour reaching a slide fails the build."],
         ["#191", "The site map is derived from the app's own navigation: four structure slides replace one hand-written one", "The map shown to a buyer or a candidate cannot drift from the real site, because a nav item that reaches no slide fails a test."],
         ["#194", "pnpm clean and pnpm health, plus a close-out step in the sprint workflow", "Regenerable build and test output is cleared every sprint instead of when someone notices, which is what made the browser suite flaky."],
+        ["#196", "This page is checked against the sprint ledger, and eleven missing sprints were added", "The changelog cannot fall behind again: a merged sprint with no entry here fails a test, so what you are reading is the whole record rather than whatever was remembered."],
       ],
     },
     {

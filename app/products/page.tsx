@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/seo/site"
 import Link from "next/link"
 import { Suspense } from "react"
 import { ProductCollection, ProductGridSkeleton } from "@/features/products"
@@ -10,10 +11,11 @@ import { ScrollToResults } from "@/features/products"
 import { ProductsOfferCallout } from "@/features/products"
 import { cn } from "@/lib/utils"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Products",
   description: "Explore the full Momo collection of headphones, earbuds, and speakers.",
-}
+  path: "/products",
+})
 
 const CATEGORIES = ["Headphones", "Earbuds", "Speakers"] as const
 type Category = (typeof CATEGORIES)[number]

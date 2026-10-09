@@ -1,15 +1,16 @@
 import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/seo/site"
 import { PageHero } from "@/components/layout/page-hero"
 import { pageHeroes } from "@/lib/data/heroes"
 import { DocsExplorer, toDocSummary, canViewDoc } from "@/features/docs"
 import { fetchDocs } from "@/features/docs/server"
 import { getServerRole, getServerIsOwner } from "@/lib/auth/server"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Documentation",
-  description:
-    "Help and guides for Momo Audio: setup and device user guides, plus content-management and engineering references — all publicly available.",
-}
+  description: "Help and guides for Momo Audio: setup and device user guides, plus content-management and engineering references — all publicly available.",
+  path: "/docs",
+})
 
 export default async function DocsPage() {
   const all = await fetchDocs()

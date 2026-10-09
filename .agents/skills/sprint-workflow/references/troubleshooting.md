@@ -47,3 +47,21 @@ The v0 GitHub app lacks the `workflows` permission. The user accepts it in GitHu
 
 ## Headless tooling hits `/admin` and gets 307 to `/sign-in`
 Admin routes are gated by the proxy. Render public-safe material from a noindex route outside `/admin` (as `/showcase-render/[asset]` does), or ask the user to add `QA_ADMIN_EMAIL` / `QA_ADMIN_PASSWORD` under Vars.
+
+## Smoke fails 2-5 tests on 30s `page.goto` timeouts, different ones each run
+Not flaky tests and not the code: the machine has no memory headroom, so Playwright's default worker count oversubscribes it. Never assertion failures, always timeouts. Run `pnpm exec playwright test --config qa/config/playwright.config.mts smoke --workers=2` and it passes 24/24. Measured on Oct 9, 2026: 4.4 GB free of 31.7 GB, with Chrome holding 7.5 GB across 57 processes and VS Code 4.7 GB across 55. `pnpm health` prints the headroom and warns under 20%. CI is unaffected; the runner is its own machine.
+
+## Smoke fails with `SyntaxError: Unexpected end of JSON input`
+Repeated `pnpm showcase:assets` runs leave `.next` half-written. Clear it with `pnpm clean` and re-run. This is the one case where deleting `.next` is right; mid-sprint, prefer the workaround in the Turbopack entry above, because a cold rebuild costs minutes.
+
+## `pnpm showcase:assets` cannot fix a snapshot a failing test depends on
+It runs `pnpm facts` first, and `facts` runs Vitest. A red suite writes nothing, so the snapshot a red test needs can never be regenerated through this path. Break the cycle by exporting directly: `pnpm exec playwright test --config qa/config/playwright.social.config.mts`.
+
+## The machine slows down across days and `git status` is clean
+Nothing in the repo shows it. Run `pnpm health`. On Oct 9, 2026 it was nine live Claude Code sessions - eight of them finished work left open, 133 processes and about 1.15 GB with their MCP servers - plus 289 MB in `.next` and `test-results`, all gitignored. `pnpm clean` takes the disk side. Sessions are only ever reported: age cannot distinguish an abandoned session from a busy one, so close them from their own window, or `taskkill /PID <pid> /T /F` after checking. Never script that kill.
+
+## CI `app` job fails in about 30s having run no tests
+Read the log before re-running. `toomanyrequests: You have reached your unauthenticated pull rate limit` on `docker pull postgres:16` in "Initialize containers" is Docker Hub's shared-IP limit on GitHub runners, not the branch. `gh run rerun <id> --failed` once, usually on a different runner IP, clears it. Do not loop; each attempt burns quota.
+
+## A `pnpm <name>` script prints nothing and exits 0
+The name collides with a pnpm built-in, which wins silently. `doctor` is one, which is why the health command is `pnpm health`. `pnpm run <name>` reaches the script, but rename it instead: `qa/unit/meta/housekeeping.test.ts` fails if any script is named after a built-in.

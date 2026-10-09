@@ -33,6 +33,12 @@ export default defineConfig({
   // running the browser gates deletes the raw clips a recording pass just made.
   outputDir: path.join(projectRoot, "test-results", "e2e"),
   fullyParallel: true,
+  // This machine runs out of memory before it runs out of cores. At Playwright's
+  // default worker count smoke failed 2-5 tests a run on 30s `page.goto`
+  // timeouts — different tests each time, never assertions — because Chrome and
+  // the editor leave under 20% of 31.7 GB free. Two workers passes 24/24. CI
+  // gets a machine to itself, so it keeps the default. `PW_WORKERS` overrides.
+  workers: isCI ? undefined : Number(process.env.PW_WORKERS ?? 2),
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,
   reporter: isCI ? "line" : "list",

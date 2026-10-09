@@ -17,7 +17,7 @@ import { DOC_AUDIENCES, DOC_CATEGORY_AUDIENCE, docAudienceMeta } from "@/feature
 export type AreaId = "overview" | "storefront" | "admin" | "docs"
 
 export type StructureNode = { label: string; path?: string; note?: string }
-export type StructureGroup = { label: string; path?: string; children: StructureNode[] }
+export type StructureGroup = { label: string; path?: string; note?: string; children: StructureNode[] }
 export type StructureArea = {
   id: AreaId
   heading: string
@@ -26,8 +26,12 @@ export type StructureArea = {
   groups: StructureGroup[]
 }
 
-/** The Articles dropdown is built from the newest posts, so its children would date the slide. */
-const ARTICLES_NOTE = "3 most recent, generated"
+/**
+ * The Articles dropdown is built from the newest posts, so listing its children
+ * would date the slide. The count is deliberately not printed either: it is a
+ * `slice()` in main-nav that can change without anyone touching this file.
+ */
+const ARTICLES_NOTE = "newest posts, generated"
 
 function storefrontGroups(): StructureGroup[] {
   return mainNav.map((item) => ({
@@ -54,15 +58,22 @@ function adminGroups(): StructureGroup[] {
 /**
  * An audience with no categories is left in rather than filtered out: dropping
  * it would fail the coverage test with a confusing message, while keeping it
- * fails the empty-group test by name.
+ * fails "gives every group either children or a path" by name, because a docs
+ * group carries no path to fall back on.
  */
 function docsGroups(): StructureGroup[] {
-  return DOC_AUDIENCES.map((audience) => ({
-    label: docAudienceMeta[audience].label,
-    children: Object.entries(DOC_CATEGORY_AUDIENCE)
-      .filter(([, owner]) => owner === audience)
-      .map(([category]) => ({ label: category })),
-  }))
+  return DOC_AUDIENCES.map((audience) => {
+    const meta = docAudienceMeta[audience]
+    return {
+      label: meta.label,
+      // Read from the audience's own access tier rather than named here, so the
+      // slide cannot claim a page is public after someone gates it.
+      ...(meta.access === "owner" ? { note: "owner only" } : {}),
+      children: Object.entries(DOC_CATEGORY_AUDIENCE)
+        .filter(([, owner]) => owner === audience)
+        .map(([category]) => ({ label: category })),
+    }
+  })
 }
 
 function overviewGroups(): StructureGroup[] {

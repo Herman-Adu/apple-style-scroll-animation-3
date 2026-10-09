@@ -47,6 +47,12 @@ describe("infographic catalogue", () => {
     }
   })
 
+  it("renders each structure area exactly once, in tour order", () => {
+    // Without this, giving two slides the same area shows one tree twice and
+    // drops another, under a title that still promises the missing one.
+    expect(ofKind("structure").map((i) => i.area)).toEqual(["overview", "storefront", "admin", "docs"])
+  })
+
   it("covers every planned kind exactly once in the core catalogue (audience packs reuse kinds)", () => {
     expect([...INFOGRAPHIC_KINDS].sort()).toEqual(
       [

@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest"
 import { mainNav } from "@/components/layout/main-nav"
 import { adminNav } from "@/features/admin"
 import { DOC_AUDIENCES, docAudienceMeta } from "@/features/docs"
+import { findHardCodedNumbers } from "@/features/showcase/lib/domain/facts"
 import { getArea, siteStructure, type AreaId } from "@/features/showcase/lib/domain/site-structure"
 import { REPO_ROOT } from "@/qa/config/repo-root"
 
@@ -57,5 +58,35 @@ describe("site structure", () => {
       ),
     )
     expect(missing).toEqual([])
+  })
+  it("types no measured number into derived copy", () => {
+    // Slide copy in the registry is covered by the catalogue guards; copy built
+    // here reaches the slide without passing any of them. "3 most recent" would
+    // have gone stale the moment main-nav sliced a different number.
+    expect(findHardCodedNumbers(siteStructure())).toEqual([])
+  })
+
+  it("marks the one docs tier that is gated", () => {
+    const gated = DOC_AUDIENCES.filter((audience) => docAudienceMeta[audience].access === "owner")
+    expect(gated.length, "exactly one owner-gated audience").toBe(1)
+    const label = docAudienceMeta[gated[0]].label
+    const group = getArea("docs").groups.find((candidate) => candidate.label === label)
+    expect(group, `${label} is on the docs slide`).toBeDefined()
+    expect(group!.note, `${label} is marked as gated`).toMatch(/owner/i)
+    for (const open of getArea("docs").groups.filter((candidate) => candidate.label !== label)) {
+      expect(open.note, `${open.label} is not marked gated`).toBeUndefined()
+    }
+  })
+
+  it("gives every group either children or a path, never a bare heading", () => {
+    // A group with neither renders as a title under a rule with nothing below
+    // it. Admin leaves (Orders, Analytics) legitimately have a path and no
+    // children; a docs audience with no categories yet would have neither.
+    const bare = siteStructure().flatMap((area) =>
+      area.groups
+        .filter((group) => group.children.length === 0 && !group.path)
+        .map((group) => `${area.id}: ${group.label}`),
+    )
+    expect(bare).toEqual([])
   })
 })

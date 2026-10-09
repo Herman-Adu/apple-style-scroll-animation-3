@@ -6,7 +6,7 @@ import { getArea, type AreaId } from "../lib/domain/site-structure"
  * The slide this replaced put three columns of routes on a single page. They
  * outgrew it, and because the frame is `overflow-hidden` the overspill was
  * drawn straight over the signature. One tree per slide means the page cannot
- * overfill however the navigation grows, and `qa/smoke/slide-overflow.spec.ts`
+ * overfill however the navigation grows, and `qa/social/export.spec.ts`
  * fails if it ever does.
  */
 export function StructureBody({ area }: { area: AreaId }) {
@@ -24,7 +24,14 @@ export function StructureBody({ area }: { area: AreaId }) {
       >
         {groups.map((group) => (
           <li key={group.label} className="flex flex-col gap-2 border-t border-border pt-4">
-            <span className="text-3xl font-semibold leading-tight">{group.label}</span>
+            {/* The note rides on the heading line: on its own row it added a
+                line to one group and pushed the docs slide past the footer. */}
+            <span className="flex items-baseline gap-3">
+              <span className="text-3xl font-semibold leading-tight">{group.label}</span>
+              {group.note ? (
+                <span className="font-mono text-base uppercase tracking-widest text-primary">{group.note}</span>
+              ) : null}
+            </span>
             {group.path ? <span className="font-mono text-lg text-muted-foreground">{group.path}</span> : null}
             {group.children.length > 0 ? (
               <ul className="flex flex-col gap-1 pt-1">

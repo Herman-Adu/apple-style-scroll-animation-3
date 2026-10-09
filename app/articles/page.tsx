@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/seo/site"
 import { Suspense } from "react"
 import { ArticleCard, ArticleCardSkeleton, ArticleGridSkeleton, filterArticles } from "@/features/articles"
 import { fetchArticles } from "@/features/articles/server"
@@ -6,10 +7,11 @@ import { pageHeroes } from "@/lib/data/heroes"
 import { PageHero } from "@/components/layout/page-hero"
 import { SearchField } from "@/components/primitives"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Articles",
   description: "Field notes on sound, craft, and engineering from the Momo lab.",
-}
+  path: "/articles",
+})
 
 async function ArticleFeed({ query }: { query?: string }) {
   const articles = await fetchArticles()

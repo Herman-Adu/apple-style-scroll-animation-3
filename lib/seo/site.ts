@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { env } from "@/lib/env"
 
 /**
@@ -27,4 +28,37 @@ export function absoluteUrl(path = ""): string {
   const base = getBaseUrl()
   if (!path) return base
   return `${base}${path.startsWith("/") ? path : `/${path}`}`
+}
+
+/**
+ * Metadata for one indexable page: its own canonical and its own card titles.
+ *
+ * A page that leaves these out silently inherits the root layout's, which is a
+ * quiet fault rather than a loud one — every docs page once declared the home
+ * page as canonical and carried the site-wide `twitter:title`, so links posted
+ * to X previewed as the store name. `qa/seo/seo-surfaces.spec.ts` checks a
+ * sample of page types; using this helper is how a new page passes it.
+ *
+ * `title` is the bare page title. The root layout's `%s | <site>` template adds
+ * the suffix for `<title>`, while the cards keep the unsuffixed form.
+ */
+export function pageMetadata({
+  title,
+  description,
+  path,
+  type = "website",
+}: {
+  title: string
+  description: string
+  /** Root-relative, e.g. `/docs/engineering-quality`. */
+  path: string
+  type?: "website" | "article"
+}): Metadata {
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { type, title, description, url: absoluteUrl(path) },
+    twitter: { card: "summary_large_image", title, description },
+  }
 }

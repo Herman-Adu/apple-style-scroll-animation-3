@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { pageMetadata } from "@/lib/seo/site"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, ArrowUpRight, Clock, Lock } from "lucide-react"
@@ -30,11 +31,12 @@ export async function generateMetadata({
   const { slug } = await params
   const doc = await fetchDoc(slug)
   if (!doc) return { title: "Not found" }
-  return {
+  return pageMetadata({
     title: doc.title,
     description: doc.summary,
-    openGraph: { title: doc.title, description: doc.summary, type: "article" },
-  }
+    path: `/docs/${doc.slug}`,
+    type: "article",
+  })
 }
 
 export default async function DocPage({ params }: { params: Promise<{ slug: string }> }) {

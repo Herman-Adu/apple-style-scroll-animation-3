@@ -108,8 +108,13 @@ describe("posting calendar", () => {
     expect(broken).toEqual([])
   })
 
-  it("builds each link from the live-URL placeholder the kit uses", () => {
-    expect(docLink(POSTING_CALENDAR[0])).toBe(`[live URL]/docs/${POSTING_CALENDAR[0].docSlug}`)
+  it("builds every link absolute, with no placeholder left to substitute", () => {
+    for (const slot of POSTING_CALENDAR) {
+      const link = docLink(slot)
+      expect(link, `${slot.docSlug} link`).toMatch(/^https?:\/\/[^/]+\/docs\//)
+      expect(link, `${slot.docSlug} link`).not.toContain("[")
+      expect(link.endsWith(`/docs/${slot.docSlug}`), link).toBe(true)
+    }
   })
 
   it("alternates video first, carousel second, every week", () => {

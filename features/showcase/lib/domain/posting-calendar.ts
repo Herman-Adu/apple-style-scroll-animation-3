@@ -12,6 +12,7 @@
  * through `asset-paths.ts`, the one place the published layout is written down.
  */
 
+import { absoluteUrl } from "@/lib/seo/site"
 import { type AssetGroup, carouselPdfPath, socialAssetPath, videoPath } from "./asset-paths"
 
 /** Channels in the order a week visits them before the weekly rotation is applied. */
@@ -88,9 +89,13 @@ export function slotWhen(slot: PostingSlot): string {
   return `${WEEKDAYS[date.getUTCDay()]} ${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]}`
 }
 
-/** The kit's placeholder, replaced with the deployed host at posting time. */
+/**
+ * The link to post, already absolute against the canonical origin so the copy is
+ * ready to paste. It must be the canonical host: the app answers on its Vercel
+ * hosts too, but a session started there is lost after checkout.
+ */
 export function docLink(slot: PostingSlot): string {
-  return `[live URL]/docs/${slot.docSlug}`
+  return absoluteUrl(`/docs/${slot.docSlug}`)
 }
 
 /** What each published video is called, so the kit never prints a folder name. */

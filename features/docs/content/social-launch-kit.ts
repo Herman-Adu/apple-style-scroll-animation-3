@@ -1,10 +1,14 @@
 import type { Doc } from "../lib/domain/schema"
 import { facts } from "@/lib/facts"
+import { absoluteUrl } from "@/lib/seo/site"
 import { launchKitCalendarBlocks } from "./social-launch-kit-calendar"
 import { launchKitPackBlocks } from "./social-launch-kit-packs"
 import { launchKitClipBlocks } from "./social-launch-kit-clips"
 import { launchKitCutBlocks } from "./social-launch-kit-cuts"
 import { launchKitCarouselBlocks } from "./social-launch-kit-carousels"
+
+/** The deployed origin, so posting copy is ready to paste and a fork gets its own. */
+const LIVE = absoluteUrl("")
 
 export const socialLaunchKit: Doc = {
   slug: "social-launch-kit",
@@ -16,14 +20,20 @@ export const socialLaunchKit: Doc = {
     "Ready-to-post copy for LinkedIn, a Facebook business page, Telegram and X covering the email builder, seasonal campaigns, defence-in-depth permissions and the documentation programme, plus a four-week posting calendar that gives every published cut, clip and carousel a slot. Each post is paired with an image already in the repo and a link that previews well when shared.",
   readingMinutes: 12,
   order: 3,
-  updatedAt: "2026-10-08",
+  updatedAt: "2026-10-09",
   tags: ["social", "linkedin", "facebook", "telegram", "launch", "recruitment", "marketing"],
   body: [
     {
       type: "callout",
       variant: "info",
       title: "Before you post",
-      text: "Replace [live URL] with the deployed site. Every /docs page now generates its own link preview image, so pasting a docs link into LinkedIn, Facebook or Telegram shows a branded card with the page title. Post the case study link rather than the homepage when the audience is a hiring manager or CTO.",
+      text: `Every link below is already pointed at ${LIVE}, so the copy is ready to paste. Every /docs page generates its own link preview image, so pasting a docs link into LinkedIn, Facebook or Telegram shows a branded card with that page's own title. Post the case study link rather than the homepage when the audience is a hiring manager or CTO.`,
+    },
+    {
+      type: "callout",
+      variant: "warning",
+      title: "Post this host and no other",
+      text: `${LIVE} is the only host to publish. The app is also reachable on its Vercel hosts, but sign-in there fails with an invalid-origin error and the signed-in user is lost after checkout, because the session cookie and the checkout return URL are both pinned to the canonical origin. A per-deployment Vercel URL is worse still: it redirects anyone who clicks it to a Vercel login page. Never copy a link out of the Vercel dashboard to post.`,
     },
     { type: "heading", text: "Demo clip" },
     {
@@ -188,30 +198,30 @@ export const socialLaunchKit: Doc = {
       type: "table",
       headers: ["Post theme", "Attach", "Link to"],
       rows: [
-        ["Seasonal campaigns", "public/docs/showcase/email-black-friday.png and email-christmas.png", "[live URL]/docs/email-seasonal-campaigns"],
-        ["Email builder overview", "public/docs/showcase/email-newsletter.png", "[live URL]/docs/case-study-email-platform"],
-        ["Security and permissions", "Screenshot of the defence-in-depth diagram on the security page", "[live URL]/docs/security-and-compliance-posture"],
-        ["Engineering process", "Screenshot of the test growth table on the engineering quality page", "[live URL]/docs/engineering-quality"],
-        ["Changelog roundup", "The docs link preview card itself", "[live URL]/docs/whats-new"],
+        [`Seasonal campaigns", "public/docs/showcase/email-black-friday.png and email-christmas.png", "${LIVE}/docs/email-seasonal-campaigns`],
+        [`Email builder overview", "public/docs/showcase/email-newsletter.png", "${LIVE}/docs/case-study-email-platform`],
+        [`Security and permissions", "Screenshot of the defence-in-depth diagram on the security page", "${LIVE}/docs/security-and-compliance-posture`],
+        [`Engineering process", "Screenshot of the test growth table on the engineering quality page", "${LIVE}/docs/engineering-quality`],
+        [`Changelog roundup", "The docs link preview card itself", "${LIVE}/docs/whats-new`],
       ],
     },
     { type: "heading", text: "LinkedIn (professional, recruiters and CTOs)" },
     {
       type: "paragraph",
-      text: "Post 1: I built a block-based email builder into a Next.js commerce platform, the kind of tool teams usually rent from Klaviyo or Mailchimp. Staff build emails from blocks, pull real products and prices from the catalog, and start from Black Friday, Bank Holiday or Christmas starters. Every save is versioned (last 50 kept, the original always kept), brand headers can be saved once and reused, and brand-critical blocks can be locked. Each feature shipped as a small PR with the tests written first. Case study: [live URL]/docs/case-study-email-platform",
+      text: `Post 1: I built a block-based email builder into a Next.js commerce platform, the kind of tool teams usually rent from Klaviyo or Mailchimp. Staff build emails from blocks, pull real products and prices from the catalog, and start from Black Friday, Bank Holiday or Christmas starters. Every save is versioned (last 50 kept, the original always kept), brand headers can be saved once and reused, and brand-critical blocks can be locked. Each feature shipped as a small PR with the tests written first. Case study: ${LIVE}/docs/case-study-email-platform`,
     },
     {
       type: "paragraph",
-      text: "Post 2: One permission check is a single point of failure. When I added block locking, I checked who can lock in three independent places: the request proxy, every server action, and the UI. Building it also exposed a real gap, email server actions that trusted the page to have checked the user, so every action now verifies the caller itself. The rules live in small pure functions with their own tests. Write-up with diagrams: [live URL]/docs/security-and-compliance-posture",
+      text: `Post 2: One permission check is a single point of failure. When I added block locking, I checked who can lock in three independent places: the request proxy, every server action, and the UI. Building it also exposed a real gap, email server actions that trusted the page to have checked the user, so every action now verifies the caller itself. The rules live in small pure functions with their own tests. Write-up with diagrams: ${LIVE}/docs/security-and-compliance-posture`,
     },
     {
       type: "paragraph",
-      text: `Post 3 (process): Across ${facts.repo.mergedPrs} small reviewed PRs I shipped an email builder, a permissions model and a documentation library for five audiences: customers, content managers, developers, CTOs and the owner. Every sprint followed the same loop: failing test, smallest change to pass, type-check, squash-merge, docs updated in the same week. The full changelog is public: [live URL]/docs/whats-new`,
+      text: `Post 3 (process): Across ${facts.repo.mergedPrs} small reviewed PRs I shipped an email builder, a permissions model and a documentation library for five audiences: customers, content managers, developers, CTOs and the owner. Every sprint followed the same loop: failing test, smallest change to pass, type-check, squash-merge, docs updated in the same week. The full changelog is public: ${LIVE}/docs/whats-new`,
     },
     { type: "heading", text: "Facebook business page (clients and store owners)" },
     {
       type: "paragraph",
-      text: "Seasonal sales without the scramble. Our store platform now includes ready-made Black Friday, Bank Holiday and Christmas email starters. Pick one, swap in your offer, and the real products and prices come straight from your catalog. Your logo and footer stay locked so nothing gets changed by accident, and every edit can be undone. See the finished emails: [live URL]/docs/email-seasonal-campaigns",
+      text: `Seasonal sales without the scramble. Our store platform now includes ready-made Black Friday, Bank Holiday and Christmas email starters. Pick one, swap in your offer, and the real products and prices come straight from your catalog. Your logo and footer stay locked so nothing gets changed by accident, and every edit can be undone. See the finished emails: ${LIVE}/docs/email-seasonal-campaigns`,
     },
     {
       type: "paragraph",
@@ -220,14 +230,14 @@ export const socialLaunchKit: Doc = {
     { type: "heading", text: "Telegram (developer and founder channels)" },
     {
       type: "paragraph",
-      text: "Short drop: Next.js 16 + Prisma/Neon + Better Auth commerce build, now with a block email builder (versioning, saved sections, seasonal starters, locked blocks) and defence-in-depth permissions (proxy + server actions + UI). Decision records and diagrams are all public: [live URL]/docs/architecture-decision-records",
+      text: `Short drop: Next.js 16 + Prisma/Neon + Better Auth commerce build, now with a block email builder (versioning, saved sections, seasonal starters, locked blocks) and defence-in-depth permissions (proxy + server actions + UI). Decision records and diagrams are all public: ${LIVE}/docs/architecture-decision-records`,
     },
     { type: "heading", text: "X (short form)" },
     {
       type: "list",
       items: [
-        "Shipped: Black Friday, Bank Holiday and Christmas email starters that pull live products from the catalog. [live URL]/docs/email-seasonal-campaigns",
-        "Permissions checked in 3 places: proxy, server actions, UI. Rules are pure functions with tests. [live URL]/docs/security-and-compliance-posture",
+        `Shipped: Black Friday, Bank Holiday and Christmas email starters that pull live products from the catalog. ${LIVE}/docs/email-seasonal-campaigns`,
+        `Permissions checked in 3 places: proxy, server actions, UI. Rules are pure functions with tests. ${LIVE}/docs/security-and-compliance-posture`,
         "Email hero images: 7.6 MB down to 1.25 MB with no visible quality loss. Small wins add up.",
       ],
     },

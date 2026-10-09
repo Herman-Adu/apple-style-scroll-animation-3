@@ -21,4 +21,12 @@ describe("playwright configs", () => {
       /outputDir:\s*path\.join\(projectRoot,\s*"test-results"\s*\)/,
     )
   })
+
+  it("caps local workers in the gate config, and leaves CI on the default", () => {
+    // The default oversubscribes a developer machine that is already short of
+    // memory, and the failures look like flaky tests rather than a full machine:
+    // timeouts on different specs each run. CI has its own runner.
+    const source = readFileSync(path.join(configDir, "playwright.config.mts"), "utf8")
+    expect(source).toMatch(/workers:\s*isCI\s*\?\s*undefined\s*:/)
+  })
 })

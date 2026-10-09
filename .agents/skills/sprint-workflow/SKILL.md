@@ -67,6 +67,19 @@ git fetch origin +refs/heads/main:refs/remotes/origin/main && git log --oneline 
 
 Confirm `main` points at the merge commit. Run `.agents/skills/sprint-retro/`. Add the ledger row (it rides with the next sprint's PR). Then go back to step 1 for the next sprint.
 
+## 7. Leave the machine as you found it
+
+```bash
+pnpm clean     # delete regenerable build and test output
+pnpm health    # free memory, leftover output, Claude Code sessions still running
+```
+
+`clean` only touches an allow-list, so it cannot take the fact snapshot in `.generated` with it. `health` changes nothing.
+
+Act on what `health` reports. It cannot tell an abandoned Claude Code session from a busy one, so close the ones you are finished with from their own window, or `taskkill /PID <pid> /T /F` after checking which is which — never from a script. Low memory is the cause of smoke timing out at the default worker count; [troubleshooting](references/troubleshooting.md) has the detail.
+
+Why this is a step and not a habit: a sprint can pass every gate with a clean `git status` on a machine carrying 289 MB of gitignored output and eight finished sessions, and nothing in the repo would say so.
+
 ## Gates: stop and ask
 
 Production deploy, destructive data or schema changes, repo settings, secrets. Ask, then wait. "ok", "yes and..." or silence is not approval.

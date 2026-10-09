@@ -201,6 +201,7 @@ export const infographics: Infographic[] = [
     title: "Tests at every layer.",
     summary: "Counted on each run, never typed in by hand.",
     alt: "Horizontal bar chart of automated test counts by layer: unit, integration, smoke, accessibility and SEO.",
+    unit: "tests",
     bars: [
       { label: "Unit", value: { fact: "tests.unit" } },
       { label: "Integration", value: { fact: "tests.integration" } },

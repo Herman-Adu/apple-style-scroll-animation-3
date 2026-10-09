@@ -1,25 +1,13 @@
-import type { CSSProperties } from "react"
 import Image from "next/image"
-import { siteConfig } from "@/lib/data/site"
 import { ADUDEV } from "../lib/domain/brand"
-import { SOCIAL_FORMATS, caseStudyUrl, type SocialAsset } from "../lib/domain/social-assets"
+import { caseStudyUrl, type SocialAsset } from "../lib/domain/social-assets"
+import { SlideEyebrow, SlideShell } from "./slide-shell"
 import { LayersGraphic } from "./layers-graphic"
 import { QrCode } from "./qr-code"
 import { SlideDiagram } from "./slide-diagram"
 import { StepTrack } from "./step-track"
 
 const { colors } = ADUDEV
-
-// Local overrides so every slide uses the AduDev palette whatever store theme is active.
-const brandTokens = {
-  "--background": colors.base,
-  "--foreground": colors.text,
-  "--card": colors.surface,
-  "--card-foreground": colors.text,
-  "--border": colors.border,
-  "--muted-foreground": colors.muted,
-  "--primary": colors.orange,
-} as CSSProperties
 
 type Props = {
   asset: SocialAsset
@@ -58,32 +46,16 @@ function CtaPanel({ cta }: { cta: NonNullable<SocialAsset["cta"]> }) {
 }
 
 export function SocialSlide({ asset, position }: Props) {
-  const { width, height } = SOCIAL_FORMATS[asset.format]
   const isSquare = asset.format === "square"
   const isSideBySide = isSquare && Boolean(asset.image || asset.visual)
   const hasDiagram = Boolean(asset.diagram)
 
   return (
-    <section
-      data-social-asset={asset.id}
-      style={{ width, height, ...brandTokens }}
-      className="dark flex shrink-0 flex-col gap-10 overflow-hidden bg-background p-20 font-sans text-foreground break-after-page"
-    >
-      <header className="flex items-center justify-between text-2xl font-medium uppercase tracking-widest text-muted-foreground">
-        <Image src={ADUDEV.logos.wordmarkLight} alt={ADUDEV.name} width={988} height={333} className="h-14 w-auto" priority />
-        {position ? (
-          <span className="tabular-nums">
-            {String(position.index + 1).padStart(2, "0")} / {String(position.total).padStart(2, "0")}
-          </span>
-        ) : null}
-      </header>
+    <SlideShell id={asset.id} format={asset.format} position={position}>
 
       <div className={isSideBySide ? "flex min-h-0 flex-1 gap-12" : "flex min-h-0 flex-1 flex-col gap-10"}>
         <div className={isSideBySide ? "flex w-1/2 flex-col justify-center gap-8" : "flex flex-col gap-6"}>
-          <p className="flex items-center gap-4 text-2xl font-semibold uppercase tracking-widest" style={{ color: colors.orange }}>
-            <span aria-hidden className="h-0.5 w-12" style={{ backgroundColor: colors.orange }} />
-            {asset.eyebrow}
-          </p>
+          <SlideEyebrow>{asset.eyebrow}</SlideEyebrow>
           <h1
             className={
               asset.role === "cover"
@@ -151,12 +123,6 @@ export function SocialSlide({ asset, position }: Props) {
         {asset.cta ? <CtaPanel cta={asset.cta} /> : null}
       </div>
 
-      <footer className="flex items-center gap-4 text-2xl text-muted-foreground">
-        <Image src={ADUDEV.logos.monogramLight} alt="" width={257} height={257} className="size-10" />
-        <span>
-          {ADUDEV.name} · Case study: {siteConfig.name}
-        </span>
-      </footer>
-    </section>
+    </SlideShell>
   )
 }

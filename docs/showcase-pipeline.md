@@ -71,6 +71,16 @@ Each carousel is one swipeable PDF for LinkedIn, published as `carousel.pdf` ins
 
 The site-tour stills in `public/showcase/social/site-tour/stills/` are frames taken from the buyer cut with `ffmpeg-static`. Re-take them after a visible UI change, then rerun `pnpm showcase:assets`.
 
+## Whose brand is on a slide
+
+**Slides are AduDev's. Recordings and screenshots are the store's.**
+
+A carousel is AduDev showing its work, so every slide carries the AduDev wordmark, the orange accent and the AduDev signature. The store is the subject, not the brand. Momo's teal belongs on the storefront, in the clips and in any screenshot of the running app — including the email screenshots inside the email case study carousel, where the emails are genuinely Momo's.
+
+Both slide types render one frame, `features/showcase/components/slide-shell.tsx`, which sets the palette through CSS variables. A pack carousel interleaves infographic and social slides in a single PDF, so they cannot merely look similar — a different padding or header between consecutive pages reads as a mistake. Slide bodies take their accent from `--primary`; never name a colour directly.
+
+Two guards, because this shipped wrong once: `qa/unit/showcase/slide-palette.test.ts` fails if a slide component mentions `accent-teal` or hard-codes a hex, and `qa/smoke/showcase-brand.spec.ts` renders slides and fails on any cool-toned pixel. The smoke test normalises colours through a canvas, because Chromium reports these as `oklch(...)` and an `rgb()` regex reads straight past them.
+
 ## The posting calendar
 
 Four weeks, four posts a week, Tuesday to Friday, across LinkedIn, Telegram, X and Facebook. Each week opens with a video and alternates video, carousel, video, carousel.

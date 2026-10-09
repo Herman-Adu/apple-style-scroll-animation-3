@@ -31,7 +31,7 @@ export type Infographic =
   | (Base & { kind: "gates"; steps: { name: string; detail: string }[] })
   | (Base & { kind: "offer"; columns: { heading: string; items: string[] }[] })
   | (Base & { kind: "table"; columns: string[]; rows: { label: string; cells: TableCell[] }[] })
-  | (Base & { kind: "bar-chart"; alt: string; bars: { label: string; value: ChartValue }[] })
+  | (Base & { kind: "bar-chart"; alt: string; unit?: string; bars: { label: string; value: ChartValue }[] })
   | (Base & { kind: "line-chart"; alt: string; xLabels: string[]; series: { name: string; values: ChartValue[] }[] })
   | (Base & { kind: "sequence"; actors: string[]; steps: SequenceStep[] })
 

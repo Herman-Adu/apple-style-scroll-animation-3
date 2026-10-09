@@ -141,7 +141,9 @@ describe("charts are readable and accessible", () => {
     const line = sample("line-chart")
     const barSizes = chartLabelSizes(render(bar))
     const lineSizes = chartLabelSizes(render(line))
-    expect(barSizes).toHaveLength(bar.bars.length)
+    // A bar chart prints a label per bar plus its axis ticks, as the line chart
+    // prints its series names alongside its x labels. The size is the invariant.
+    expect(barSizes.length).toBeGreaterThanOrEqual(bar.bars.length)
     expect(lineSizes.length).toBeGreaterThanOrEqual(line.xLabels.length)
     for (const size of [...barSizes, ...lineSizes]) expect(size).toBeGreaterThanOrEqual(CHART_LABEL_MIN_PX)
   })

@@ -60,6 +60,7 @@ export const buyerInfographics: Infographic[] = [
     title: "Sold out, still selling.",
     summary: "Waiting per product in the demo store, emailed when stock returns.",
     alt: "Bar chart from the demo store showing how many people are waiting for each sold-out product, with MOMO Studio the most wanted.",
+    unit: "people waiting",
     bars: [
       { label: "MOMO Studio", value: 12 },
       { label: "MOMO X", value: 7 },

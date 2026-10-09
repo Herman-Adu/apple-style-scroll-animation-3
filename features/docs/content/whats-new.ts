@@ -10,7 +10,7 @@ export const whatsNew: Doc = {
     "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), plus the architecture and engineering-quality refactors through PR #146. Each entry says what changed and why it matters.",
   readingMinutes: 5,
   order: 1,
-  updatedAt: "2026-10-07",
+  updatedAt: "2026-10-09",
   tags: ["changelog", "release notes", "email builder", "security", "documentation"],
   body: [
     {
@@ -76,6 +76,7 @@ export const whatsNew: Doc = {
         ["#122", "Public server actions guarded; server-only exports moved out of use-server endpoints", "Admin mutations cannot be called by an unauthorised visitor, and secrets-adjacent helpers are no longer exposed as endpoints."],
         ["#124", "Auth and checkout origin resolution stabilised", "Sign-in and Stripe return URLs always land on the canonical site, including behind a proxy."],
         ["#146", "Checkout hydration and local-image origin fixes", "Checkout renders without hydration warnings and product images load from the correct origin."],
+        ["#187", "Every page points its canonical at itself and carries its own card titles", "Documentation pages rank for their own content instead of being folded into the home page, and a link shared on X previews with that page's title rather than the store name."],
       ],
     },
     { type: "heading", text: "Stock alerts, checkout and showcase" },

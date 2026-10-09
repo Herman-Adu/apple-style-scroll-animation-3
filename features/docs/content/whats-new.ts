@@ -7,11 +7,11 @@ export const whatsNew: Doc = {
   audience: "cto",
   access: "public",
   summary:
-    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), plus the architecture and engineering-quality refactors through PR #146. Each entry says what changed and why it matters.",
-  readingMinutes: 5,
+    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), the architecture and engineering-quality refactors through PR #187, and the showcase and launch-collateral run through PR #194. Each entry says what changed and why it matters.",
+  readingMinutes: 7,
   order: 1,
-  updatedAt: "2026-10-09",
-  tags: ["changelog", "release notes", "email builder", "security", "documentation"],
+  updatedAt: "2026-10-10",
+  tags: ["changelog", "release notes", "email builder", "security", "documentation", "showcase"],
   body: [
     {
       type: "paragraph",
@@ -92,6 +92,28 @@ export const whatsNew: Doc = {
         ["#166", "Checkout is sign-in only", "You sign in to check out, so every order is tied to an account and its order history."],
         ["#168", "Audience packs and a checkout sequence as LinkedIn carousel PDFs", "Each pack is one swipeable post instead of loose images."],
         ["#169", "Security, how-it-was-built and site-tour carousels", "Three more ready-to-post stories built from the same facts."],
+      ],
+    },
+    { type: "heading", text: "Showcase, launch collateral and release discipline" },
+    {
+      type: "paragraph",
+      text: "The run from S38 to S49 turned the launch collateral into something generated rather than assembled by hand: the numbers on every slide are read from a committed snapshot of the repo, the demo recordings are produced from real screens with every real person replaced by a stand-in, and the site map is derived from the app's own navigation. S46's canonical-URL work is listed under Architecture and engineering quality above.",
+    },
+    {
+      type: "table",
+      headers: ["PR", "What shipped", "Why it matters"],
+      rows: [
+        ["#172", "Launch kit renders the same on any machine: Geist Mono loaded locally, every asset re-rendered from real facts, one dev port", "Slides and carousels come out identical wherever they are generated, instead of depending on which fonts a machine happens to have."],
+        ["#174", "A public showcase-launch-assets guide; the nine Positioning docs stay owner-only, now guarded by a test", "Anyone evaluating the template can see exactly what collateral it produces, while the sales material stays private by test rather than by care."],
+        ["#175", "Posts and slides quote measured numbers from a committed fact snapshot", "Every figure in a post can be traced back to the commit that produced it, so nothing is quoted from memory."],
+        ["#177", "Recordings pace by distance rather than step count, plus site-tour and enquiry-form clips", "Demo videos read at a human pace, and the enquiry clip stops before it would actually send."],
+        ["#179", "Every real person in a recording is a stand-in, including the store's own contact details; clips refuse to film a broken or gated page", "No real contact details appear in a demo, and a recording fails loudly instead of quietly filming an error page."],
+        ["#181", "Showcase assets grouped one folder per audience or topic, with the layout defined in one place and pinned by tests", "Collateral is where you expect it, and a contrast failure found while grouping it was fixed at the token for every page."],
+        ["#183", "Slides and carousels re-exported from a fresh fact run", "Published assets quote current test and coverage figures instead of counts three sprints old."],
+        ["#185", "A recruitment-first posting calendar as data: four weeks, sixteen slots, every asset scheduled exactly once", "Nothing generated is left unposted and nothing is posted twice, and a slot cannot link a file that is missing or owner-only."],
+        ["#189", "Every carousel slide wears the AduDev brand, with two guards on the source and the rendered pixels", "The decks read as one company's work, and a store accent colour reaching a slide fails the build."],
+        ["#191", "The site map is derived from the app's own navigation: four structure slides replace one hand-written one", "The map shown to a buyer or a candidate cannot drift from the real site, because a nav item that reaches no slide fails a test."],
+        ["#194", "pnpm clean and pnpm health, plus a close-out step in the sprint workflow", "Regenerable build and test output is cleared every sprint instead of when someone notices, which is what made the browser suite flaky."],
       ],
     },
     {

@@ -11,6 +11,8 @@ import {
   type Infographic,
 } from "@/features/showcase/lib/domain/infographics"
 import { SOCIAL_FORMATS, type SocialFormat } from "@/features/showcase/lib/domain/social-assets"
+import { StructureBody } from "@/features/showcase/components/structure-body"
+import { getArea } from "@/features/showcase/lib/domain/site-structure"
 
 const facts: Facts = {
   generatedAt: "2026-10-06T00:00:00.000Z",
@@ -165,5 +167,45 @@ describe("charts are readable and accessible", () => {
     const html = render(seq)
     const [first] = seq.steps
     expect(html).toContain(`${first.from} to ${first.to}: ${first.label}`)
+  })
+})
+
+describe("structure body", () => {
+  const renderArea = (area: Parameters<typeof getArea>[0]) =>
+    renderToStaticMarkup(createElement(StructureBody, { area }))
+
+  /** React escapes markup characters, so "Headings & style" renders as "Headings &amp; style". */
+  const escaped = (text: string) =>
+    text
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#x27;")
+
+  it.each(["overview", "storefront", "admin", "docs"] as const)("prints every group of the %s area", (area) => {
+    const html = renderArea(area)
+    for (const group of getArea(area).groups) expect(html).toContain(escaped(group.label))
+  })
+
+  it("prints the children of a group that has them", () => {
+    const html = renderArea("admin")
+    const parent = getArea("admin").groups.find((group) => group.children.length > 0)
+    expect(parent, "the admin nav has a group with children").toBeDefined()
+    for (const child of parent!.children) expect(html).toContain(escaped(child.label))
+  })
+
+  it("renders a group with no children as a leaf, with no empty list", () => {
+    // Orders and Analytics have no sub-items. An empty <ul> would draw a rule
+    // under them and read as a section that failed to load.
+    const leaf = getArea("admin").groups.find((group) => group.children.length === 0)
+    expect(leaf, "the admin nav has a childless group to exercise").toBeDefined()
+    const html = renderArea("admin")
+    expect(html).toContain(escaped(leaf!.label))
+    expect(html).not.toMatch(/<ul[^>]*><\/ul>/)
+  })
+
+  it("names who each front door is for", () => {
+    expect(renderArea("storefront")).toContain(escaped(getArea("storefront").forWhom))
   })
 })

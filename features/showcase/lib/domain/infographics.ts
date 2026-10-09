@@ -1,5 +1,6 @@
 import { resolveFact, type FactRef, type Facts } from "./facts"
 import type { SocialFormat } from "./social-assets"
+import type { AreaId } from "./site-structure"
 
 type Base = {
   id: string
@@ -34,6 +35,7 @@ export type Infographic =
   | (Base & { kind: "bar-chart"; alt: string; unit?: string; bars: { label: string; value: ChartValue }[] })
   | (Base & { kind: "line-chart"; alt: string; xLabels: string[]; series: { name: string; values: ChartValue[] }[] })
   | (Base & { kind: "sequence"; actors: string[]; steps: SequenceStep[] })
+  | (Base & { kind: "structure"; area: AreaId })
 
 export const INFOGRAPHIC_KINDS = [
   "stack",

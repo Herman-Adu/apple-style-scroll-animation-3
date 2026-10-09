@@ -37,6 +37,8 @@ const SOCIAL_PREFIXES: { prefix: string; group: AssetGroup }[] = [
   { prefix: "security-", group: "security" },
   { prefix: "build-", group: "how-it-was-built" },
   { prefix: "sequence-checkout-", group: "checkout-sequence" },
+  // Structure slides are infographics but belong with the tour they open.
+  { prefix: "infographic-tour-", group: "site-tour" },
   { prefix: "tour-", group: "site-tour" },
   { prefix: "carousel-", group: "email-case-study" },
 ]

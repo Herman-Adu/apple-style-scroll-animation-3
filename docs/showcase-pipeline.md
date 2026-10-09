@@ -81,6 +81,14 @@ Both slide types render one frame, `features/showcase/components/slide-shell.tsx
 
 Two guards, because this shipped wrong once: `qa/unit/showcase/slide-palette.test.ts` fails if a slide component mentions `accent-teal` or hard-codes a hex, and `qa/smoke/showcase-brand.spec.ts` renders slides and fails on any cool-toned pixel. The smoke test normalises colours through a canvas, because Chromium reports these as `oklch(...)` and an `rgb()` regex reads straight past them.
 
+## The site tour opens on derived structure
+
+The site tour's first four pages are built from the app's own navigation — the storefront mega-nav (`components/layout/main-nav.ts`), the admin sidebar (`features/admin/lib/domain/nav.ts`) and the docs taxonomy — mapped in `features/showcase/lib/domain/site-structure.ts`. Nothing in them is hand-listed.
+
+The slide they replaced was hand-kept and had drifted: it omitted About and Contact, which are top-level nav, and listed Checkout and Account, which are not. Add a nav item now and `qa/unit/showcase/site-structure.test.ts` fails until it appears on a slide.
+
+**One tree per slide.** The old slide put three columns of routes on one page; they outgrew it and the footer was drawn over them. `qa/social/export.spec.ts` now refuses to export any slide whose content overruns its signature, and names the element and the overrun in pixels. The obvious check — `scrollHeight > clientHeight` — does not see this, because the frame is `overflow-hidden` and the body is a flex child: both heights stay equal while content sits 88px past the footer. It compares painted geometry instead.
+
 ## The posting calendar
 
 Four weeks, four posts a week, Tuesday to Friday, across LinkedIn, Telegram, X and Facebook. Each week opens with a video and alternates video, carousel, video, carousel.

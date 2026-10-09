@@ -1,5 +1,6 @@
 import { resolveFact, type FactRef, type Facts } from "./facts"
 import type { SocialFormat } from "./social-assets"
+import type { AreaId } from "./site-structure"
 
 type Base = {
   id: string
@@ -26,7 +27,6 @@ export type Infographic =
   | (Base & { kind: "stack"; groups: { label: string; items: StackItem[] }[] })
   | (Base & { kind: "layers"; layers: { name: string; detail: string }[] })
   | (Base & { kind: "before-after"; rows: { label: string; before: number; after: FactRef; note: string }[] })
-  | (Base & { kind: "site-map"; areas: { name: string; routes: { path: string; label: string }[] }[] })
   | (Base & { kind: "flow"; steps: { title: string; detail: string }[] })
   | (Base & { kind: "gates"; steps: { name: string; detail: string }[] })
   | (Base & { kind: "offer"; columns: { heading: string; items: string[] }[] })
@@ -34,12 +34,12 @@ export type Infographic =
   | (Base & { kind: "bar-chart"; alt: string; unit?: string; bars: { label: string; value: ChartValue }[] })
   | (Base & { kind: "line-chart"; alt: string; xLabels: string[]; series: { name: string; values: ChartValue[] }[] })
   | (Base & { kind: "sequence"; actors: string[]; steps: SequenceStep[] })
+  | (Base & { kind: "structure"; area: AreaId })
 
 export const INFOGRAPHIC_KINDS = [
   "stack",
   "layers",
   "before-after",
-  "site-map",
   "flow",
   "gates",
   "offer",
@@ -47,6 +47,7 @@ export const INFOGRAPHIC_KINDS = [
   "bar-chart",
   "line-chart",
   "sequence",
+  "structure",
 ] as const
 
 export const SLIDE_LIMITS = {

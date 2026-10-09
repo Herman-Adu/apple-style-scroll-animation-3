@@ -3,6 +3,7 @@ import path from "node:path"
 import { expect, test, type Page } from "@playwright/test"
 import { packExportPlan } from "../../features/showcase/lib/domain/packs"
 import { exportPlan } from "../../features/showcase/lib/domain/social-assets"
+import { signatureOverruns } from "./slide-geometry"
 
 const publicPath = (file: string) => path.join(process.cwd(), "public", file)
 
@@ -36,6 +37,7 @@ for (const item of [...exportPlan(), ...packExportPlan()]) {
     await page.goto(`/showcase-render/${item.asset}`, { waitUntil: "networkidle" })
     await expect(page.locator("[data-social-asset]").first()).toBeVisible()
     await waitForAssets(page)
+    expect(await signatureOverruns(page)).toEqual([])
     // The export runs against `next dev`, whose dev-tools badge would otherwise be baked into the PNG.
     await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" })
 

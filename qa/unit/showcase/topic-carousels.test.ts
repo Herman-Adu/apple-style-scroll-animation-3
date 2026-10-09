@@ -72,9 +72,14 @@ describe("site tour carousel", () => {
   const pack = getPack("site-tour")!
   const slides = packSlides(pack) as SocialAsset[]
 
-  it("opens on the site map, then one recorded still per stop", () => {
-    expect(pack.slides[0].id).toBe("infographic-site-map")
-    expect(slides.slice(1, -1).map((s) => s.id)).toEqual(TOUR_STOPS.map((s) => `tour-${s.id}`))
+  it("opens on four structure slides, then one recorded still per stop", () => {
+    expect(pack.slides.slice(0, 4).map((s) => s.id)).toEqual([
+      "infographic-tour-structure-overview",
+      "infographic-tour-structure-storefront",
+      "infographic-tour-structure-admin",
+      "infographic-tour-structure-docs",
+    ])
+    expect(slides.slice(4, -1).map((s) => s.id)).toEqual(TOUR_STOPS.map((s) => `tour-${s.id}`))
   })
 
   it.each(TOUR_STOPS.map((s) => [s.id, s.still] as const))("the %s still is committed", (_id, still) => {
@@ -82,6 +87,6 @@ describe("site tour carousel", () => {
   })
 
   it("describes every still for screen readers", () => {
-    for (const slide of slides.slice(1, -1)) expect(slide.image?.alt.length).toBeGreaterThan(30)
+    for (const slide of slides.slice(4, -1)) expect(slide.image?.alt.length).toBeGreaterThan(30)
   })
 })

@@ -91,7 +91,10 @@ export const packs: Pack[] = [
     id: "site-tour",
     audience: "Everyone: what the site looks like, stop by stop",
     slides: [
-      { id: "infographic-site-map", role: "architecture" },
+      { id: "infographic-tour-structure-overview", role: "architecture" },
+      { id: "infographic-tour-structure-storefront", role: "architecture" },
+      { id: "infographic-tour-structure-admin", role: "architecture" },
+      { id: "infographic-tour-structure-docs", role: "architecture" },
       ...TOUR_STOPS.map((s) => ({ id: `tour-${s.id}`, role: "example" as const })),
       { id: "carousel-cta", role: "close" },
     ],

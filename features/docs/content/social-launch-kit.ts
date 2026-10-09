@@ -102,9 +102,9 @@ export const socialLaunchKit: Doc = {
     },
     {
       type: "image",
-      src: "/showcase/social/shared/site-map.png",
-      alt: "Infographic mapping the storefront, admin and docs areas of the site and their main routes.",
-      caption: "Site map. Shows clients how much is included.",
+      src: "/showcase/social/site-tour/structure-overview.png",
+      alt: "Slide naming the three areas of the site: a storefront to shop, an admin to run it, and documentation for the team that inherits it.",
+      caption: "One repo, three front doors. Opens the site tour carousel.",
       width: 1080,
       height: 1350,
     },

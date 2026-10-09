@@ -35,3 +35,6 @@ qa/.coverage/
 
 # pnpm facts output (slide numbers are read from here)
 /.generated/
+
+# Plan execution scratch (superpowers ledger/briefs)
+.superpowers/

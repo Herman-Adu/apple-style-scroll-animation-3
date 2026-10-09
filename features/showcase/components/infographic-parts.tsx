@@ -72,26 +72,6 @@ export function BeforeAfterBody({ rows, facts }: Pick<Kind<"before-after">, "row
   )
 }
 
-export function SiteMapBody({ areas }: Pick<Kind<"site-map">, "areas">) {
-  return (
-    <div className="grid flex-1 grid-cols-3 gap-6">
-      {areas.map((area) => (
-        <section key={area.name} className="flex flex-col gap-5 rounded-xl border border-border bg-card p-6">
-          <h2 className="font-mono text-2xl font-medium uppercase tracking-widest text-primary">{area.name}</h2>
-          <ul className="flex flex-col gap-8">
-            {area.routes.map((route) => (
-              <li key={route.path} className="flex flex-col gap-2">
-                <span className="text-3xl font-medium leading-snug">{route.label}</span>
-                <span className="font-mono text-xl text-muted-foreground">{route.path}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-    </div>
-  )
-}
-
 export function FlowBody({ steps }: Pick<Kind<"flow">, "steps">) {
   return (
     <ol className="flex flex-1 flex-col justify-between">
@@ -116,7 +96,7 @@ export function GatesBody({ steps }: Pick<Kind<"gates">, "steps">) {
       {steps.map((step) => (
         <li
           key={step.name}
-          className="flex items-center gap-5 rounded-xl border border-border bg-card px-6 py-5 odd:last:col-span-2"
+          className="flex items-center gap-5 rounded-xl border border-border bg-card px-6 py-4 odd:last:col-span-2"
         >
           <Check aria-hidden className="size-9 shrink-0 text-success" />
           <div className="flex flex-col gap-1">

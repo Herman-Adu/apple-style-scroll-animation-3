@@ -6,11 +6,11 @@ import {
   GatesBody,
   LayersBody,
   OfferBody,
-  SiteMapBody,
   StackBody,
 } from "./infographic-parts"
 import { BarChartBody, LineChartBody, SequenceBody, TableBody } from "./infographic-charts"
 import { SlideEyebrow, SlideShell } from "./slide-shell"
+import { StructureBody } from "./structure-body"
 
 type SlideProps = { infographic: Infographic; facts: Facts | null }
 
@@ -22,8 +22,6 @@ function Body({ infographic, facts }: SlideProps) {
       return <LayersBody layers={infographic.layers} />
     case "before-after":
       return <BeforeAfterBody rows={infographic.rows} facts={facts} />
-    case "site-map":
-      return <SiteMapBody areas={infographic.areas} />
     case "flow":
       return <FlowBody steps={infographic.steps} />
     case "gates":
@@ -38,6 +36,8 @@ function Body({ infographic, facts }: SlideProps) {
       return <LineChartBody alt={infographic.alt} xLabels={infographic.xLabels} series={infographic.series} facts={facts} />
     case "sequence":
       return <SequenceBody actors={infographic.actors} steps={infographic.steps} />
+    case "structure":
+      return <StructureBody area={infographic.area} />
   }
 }
 

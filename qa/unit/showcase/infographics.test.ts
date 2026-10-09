@@ -20,7 +20,7 @@ const pkg = JSON.parse(read("package.json")) as {
 }
 const installed = { ...pkg.dependencies, ...pkg.devDependencies }
 
-const NON_COPY_KEYS = new Set(["id", "kind", "format", "source", "path", "version", "before", "after", "alt"])
+const NON_COPY_KEYS = new Set(["id", "kind", "area", "format", "source", "path", "version", "before", "after", "alt"])
 
 function visibleCopy(value: unknown, key = ""): string[] {
   if (NON_COPY_KEYS.has(key)) return []
@@ -47,6 +47,12 @@ describe("infographic catalogue", () => {
     }
   })
 
+  it("renders each structure area exactly once, in tour order", () => {
+    // Without this, giving two slides the same area shows one tree twice and
+    // drops another, under a title that still promises the missing one.
+    expect(ofKind("structure").map((i) => i.area)).toEqual(["overview", "storefront", "admin", "docs"])
+  })
+
   it("covers every planned kind exactly once in the core catalogue (audience packs reuse kinds)", () => {
     expect([...INFOGRAPHIC_KINDS].sort()).toEqual(
       [
@@ -55,7 +61,7 @@ describe("infographic catalogue", () => {
         "gates",
         "layers",
         "offer",
-        "site-map",
+        "structure",
         "stack",
         "table",
         "bar-chart",
@@ -64,7 +70,10 @@ describe("infographic catalogue", () => {
       ].sort(),
     )
     for (const kind of INFOGRAPHIC_KINDS) {
-      expect(ofKind(kind).filter((i) => !i.pack), kind).toHaveLength(1)
+      // "structure" is the one kind with a slide per area rather than one
+      // slide: the site tour opens on an overview and a page per front door.
+      const expected = kind === "structure" ? 4 : 1
+      expect(ofKind(kind).filter((i) => !i.pack), kind).toHaveLength(expected)
     }
   })
 
@@ -123,26 +132,6 @@ describe("stack infographic", () => {
     const names = items.map((i) => i.name)
     for (const expected of ["Next.js", "React", "TypeScript", "Prisma", "Neon", "Better Auth", "Stripe", "Resend", "Vitest", "Playwright"]) {
       expect(names, expected).toContain(expected)
-    }
-  })
-})
-
-describe("site map infographic", () => {
-  const [siteMap] = ofKind("site-map")
-  const pageExists = (route: string) => {
-    if (route === "/") return existsSync(join(REPO_ROOT, "app/page.tsx"))
-    const rel = route.replace(/^\//, "")
-    return [`app/${rel}/page.tsx`, `app/(admin)/${rel}/page.tsx`].some((f) => existsSync(join(REPO_ROOT, f)))
-  }
-
-  it("shows storefront, admin and docs", () => {
-    expect(siteMap.areas.map((a) => a.name)).toEqual(["Storefront", "Admin", "Docs"])
-  })
-
-  it("only lists routes that have a page", () => {
-    for (const area of siteMap.areas) {
-      expect(area.routes.length, area.name).toBeGreaterThanOrEqual(3)
-      for (const route of area.routes) expect(pageExists(route.path), route.path).toBe(true)
     }
   })
 })

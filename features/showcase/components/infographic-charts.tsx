@@ -68,37 +68,91 @@ export function TableBody({
 export function BarChartBody({
   alt,
   bars,
+  unit,
   facts,
 }: {
   alt: string
   bars: { label: string; value: ChartValue }[]
+  unit?: string
   facts: Facts | null
 }) {
   const values = bars.map((bar) => resolveChartValue(facts, bar.value))
-  const max = Math.max(1, ...values.map((v) => v ?? 0))
+  const peak = Math.max(1, ...values.map((v) => v ?? 0))
+  // Round the axis up to a readable step so the longest bar stops short of the
+  // edge. A bar pinned to full width reads as "all of it" rather than a number.
+  const step = 10 ** Math.floor(Math.log10(peak))
+  const max = Math.ceil(peak / step) * step
+  const ticks = [0, max / 2, max]
 
   return (
-    <figure role="img" aria-label={alt} className="flex flex-1 flex-col justify-center gap-8">
-      {bars.map((bar, index) => {
-        const value = values[index]
-        const share = value ? Math.max((value / max) * 100, 1) : 0
-        return (
-          <div key={bar.label} className="flex flex-col gap-3">
-            <div className="flex items-baseline justify-between gap-6">
-              <ChartLabel className="font-medium">{bar.label}</ChartLabel>
-              <span className="font-mono text-4xl font-semibold text-accent-teal">{formatValue(value)}</span>
+    <figure role="img" aria-label={alt} className="flex flex-1 flex-col justify-center gap-10">
+      <div className="flex flex-col gap-7">
+        {bars.map((bar, index) => {
+          const value = values[index]
+          const share = value ? (value / max) * 100 : 0
+          return (
+            <div key={bar.label} className="flex flex-col gap-3">
+              <div className="flex items-baseline justify-between gap-6">
+                <ChartLabel className="font-medium">{bar.label}</ChartLabel>
+                <span className="font-mono text-4xl font-semibold tabular-nums text-primary">
+                  {formatValue(value)}
+                </span>
+              </div>
+              <div className="h-7 w-full overflow-hidden rounded-full bg-card">
+                {/*
+                  A bar narrower than its own corner radius renders as a dot, so
+                  a small value next to a large one looks like a glitch rather
+                  than a quantity. The floor is the bar's height; the printed
+                  number alongside keeps the real value honest.
+                */}
+                <div
+                  data-chart-fill
+                  className="h-full rounded-full bg-primary"
+                  style={{ width: `${share}%`, minWidth: value ? "1.75rem" : 0 }}
+                />
+              </div>
             </div>
-            <div className="h-6 w-full overflow-hidden rounded-full bg-muted">
-              <div className="h-full rounded-full bg-accent-teal" style={{ width: `${share}%` }} />
-            </div>
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
+
+      {/*
+        Ticks and their numbers share one grid so they cannot drift apart; two
+        `justify-between` rows line up only while every label is the same width.
+        The unit is named once, under the scale, rather than tacked onto the
+        last number where it crowds the edge and pulls the number off its tick.
+      */}
+      <div aria-hidden className="flex flex-col gap-2">
+        <div
+          className="grid border-t border-border"
+          style={{ gridTemplateColumns: `repeat(${ticks.length}, minmax(0, 1fr))` }}
+        >
+          {ticks.map((tick, index) => (
+            <span
+              key={tick}
+              className={`h-2 w-px bg-border ${index === 0 ? "justify-self-start" : index === ticks.length - 1 ? "justify-self-end" : "justify-self-center"}`}
+            />
+          ))}
+        </div>
+        <div className="grid" style={{ gridTemplateColumns: `repeat(${ticks.length}, minmax(0, 1fr))` }}>
+          {ticks.map((tick, index) => (
+            <ChartLabel
+              key={tick}
+              className={`font-mono tabular-nums text-muted-foreground ${index === 0 ? "text-left" : index === ticks.length - 1 ? "text-right" : "text-center"}`}
+            >
+              {formatValue(tick)}
+            </ChartLabel>
+          ))}
+        </div>
+        {unit ? (
+          <ChartLabel className="pt-1 text-center font-medium text-muted-foreground">{unit}</ChartLabel>
+        ) : null}
+      </div>
     </figure>
   )
 }
 
-const SERIES_TONES = ["text-accent-teal", "text-muted-foreground"] as const
+const SERIES_TONES = ["text-primary", "text-muted-foreground"] as const
 
 export function LineChartBody({
   alt,
@@ -179,13 +233,13 @@ function SequenceArrow({ step, row, actors }: { step: SequenceStep; row: number;
   return (
     <div
       style={{ gridColumn: `${Math.min(from, to)} / span ${span}`, gridRow: row + 2 }}
-      className="flex flex-col justify-center gap-2"
+      className="flex flex-col justify-end gap-2 pb-1"
     >
       <span className="self-center bg-background px-3 text-center text-2xl leading-snug">{step.label}</span>
-      <div style={{ paddingInline: `calc(100% / ${span * 2})` }} className="flex items-center text-accent-teal">
-        {rightward ? null : <ChevronLeft className="-mr-3 size-7 shrink-0" />}
-        <span className="h-0.5 flex-1 bg-current" />
-        {rightward ? <ChevronRight className="-ml-3 size-7 shrink-0" /> : null}
+      <div style={{ paddingInline: `calc(100% / ${span * 2})` }} className="flex items-center text-primary">
+        {rightward ? null : <ChevronLeft className="-mr-3 size-7 shrink-0" strokeWidth={3} />}
+        <span className="h-1 flex-1 rounded-full bg-current" />
+        {rightward ? <ChevronRight className="-ml-3 size-7 shrink-0" strokeWidth={3} /> : null}
       </div>
     </div>
   )
@@ -201,30 +255,39 @@ export function SequenceBody({ actors, steps }: { actors: string[]; steps: Seque
           <li key={stepKey(step)}>{`${step.from} to ${step.to}: ${step.label}`}</li>
         ))}
       </ol>
+      {/*
+        Rows are sized to their content and the whole block is centred, rather
+        than each step stretching to an equal share of the slide. Stretching
+        left a tall gap between every arrow and pushed the last step off the
+        optical centre, which is what made this diagram read as unfinished.
+      */}
       <div
         aria-hidden="true"
-        className="grid flex-1 gap-x-4"
+        className="grid flex-1 content-center gap-x-4"
         style={{
           gridTemplateColumns: `repeat(${actors.length}, minmax(0, 1fr))`,
-          gridTemplateRows: `auto repeat(${steps.length}, minmax(0, 1fr))`,
+          gridTemplateRows: `auto repeat(${steps.length}, minmax(5.5rem, auto))`,
         }}
       >
         {actors.map((actor, column) => (
           <div
             key={actor}
             style={{ gridColumn: column + 1, gridRow: 1 }}
-            className="rounded-lg border border-border bg-card px-3 py-4 text-center text-2xl font-semibold text-card-foreground"
+            className="mb-4 rounded-lg border border-border bg-card px-3 py-4 text-center text-2xl font-semibold text-card-foreground"
           >
             {actor}
           </div>
         ))}
-        {steps.flatMap((step, row) =>
-          actors.map((actor, column) => (
-            <div key={`${stepKey(step)}-${actor}`} style={{ gridColumn: column + 1, gridRow: row + 2 }} className="flex justify-center">
-              <span className="w-px bg-border" />
-            </div>
-          )),
-        )}
+        {/* One continuous lifeline per actor, behind every step. */}
+        {actors.map((actor, column) => (
+          <div
+            key={`lifeline-${actor}`}
+            style={{ gridColumn: column + 1, gridRow: `2 / span ${steps.length}` }}
+            className="flex justify-center"
+          >
+            <span className="w-px bg-border" />
+          </div>
+        ))}
         {steps.map((step, row) => (
           <SequenceArrow key={stepKey(step)} step={step} row={row} actors={actors} />
         ))}

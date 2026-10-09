@@ -17,6 +17,8 @@ Read the ledger in `docs/next-steps.md` and the sprint's section of the plan. Te
 
 Why: the workspace can be switched to a fresh branch from `main` between turns. That wiped uncommitted files in S1.
 
+**A handoff is a claim; the repo and `gh` decide.** When a prompt, a summary or a session note disagrees with `git log` and `gh pr view`, the repo wins: say which parts are already done and re-plan from there. The S50 handoff asked for a CI re-run and a merge of PR #191 that had merged two sprints earlier, with its ledger row already on `main`.
+
 ## 1. Branch from the real main
 
 ```bash

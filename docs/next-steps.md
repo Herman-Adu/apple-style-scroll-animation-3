@@ -23,10 +23,10 @@ approved plan. This file is the source of truth for **what is on `main`**.
 - Template handover is the active posture (`docs/template-handover.md`), not in-repo production go-live.
 - All required gates were run green for S5 before merge (`tsc`, lint, test, arch, build, smoke, axe).
 
-## Current handoff snapshot (Oct 6, 2026)
+## Current handoff snapshot (Oct 9, 2026)
 
-- Cleanup pass is complete and validated: `pnpm typecheck`, `pnpm lint`, and `pnpm arch` all pass on the working tree.
-- Architecture metrics are currently stable at: `deepImports 0`, `libToFeatures 0`, `routePropDrilling 0`, `useEffect 31`, `anyTypes 0`, `incrementers 3`, `clientComponents 151`, `largeFiles 21`. Baseline before the R-series: deep imports 116, inversions 16, `any` 28, `useEffect` 45.
+- `main` is at S48: PR #191 merged as `a2ef81c`, its ledger row as `7efc2ce` (PR #192). Verified green on this tree: `pnpm typecheck`, `pnpm lint`, `pnpm arch` (no regressions), `pnpm test:unit` (85 files, 1482 tests).
+- Architecture metrics are currently stable at: `deepImports 0`, `libToFeatures 0`, `routePropDrilling 0`, `useEffect 32`, `anyTypes 0`, `incrementers 3`, `clientComponents 153`, `largeFiles 21`. Baseline before the R-series: deep imports 116, inversions 16, `any` 28, `useEffect` 45.
 - S20 (docs and social catch-up) adds the ready-to-post pack `features/docs/content/social-launch-pack*.ts`, a guard that every path named in a doc exists (`qa/unit/docs/doc-paths.test.ts`), and a guard for pack and ledger continuity (`qa/unit/docs/social-launch-pack.test.ts`).
 - Post-formatter regressions were fixed in strict-typing boundaries and client search sync; no lint or architecture regressions were introduced.
 

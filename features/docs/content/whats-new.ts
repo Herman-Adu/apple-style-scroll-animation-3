@@ -118,6 +118,7 @@ export const whatsNew: Doc = {
         ["#199", "Stale advice fails a test, and the browser gate checks which app answered it", "Instructions printed by the tooling or written in the docs cannot outlive the thing they describe, and a gate run against another project's dev server now stops with that app's name instead of reporting this one's pages as broken."],
         ["#201", "A mention is not advice: the stale-advice guard now refuses only an instruction you could copy and run", "The docs can name an obsolete flag in order to correct it, so someone who remembers the old advice and searches for it finds the entry that explains why it is gone instead of silence."],
         ["#203", "The rule against committing to the main branch is now enforced by a git hook", "The release discipline this project documents is checked by the machine instead of remembered, so the one mistake that leaves no trace in a diff or a review cannot happen quietly."],
+        ["#205", "The numbers quoted on the launch slides are recounted, not trusted", "The test and pull-request counts shown to a buyer or a candidate had drifted 14 pull requests and 84 tests behind the real work, and no check could see it; they are now re-derived from git history and a real test run before any merge, and the same recount found that the build pipeline had been publishing a count of zero merged pull requests."],
       ],
     },
     {

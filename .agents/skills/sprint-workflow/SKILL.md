@@ -46,6 +46,16 @@ pnpm test:smoke && pnpm test:axe     # browser tests: always before merge
 
 **A guard is not green until it has been red on the real files.** Remove what it demands and watch it fail *naming that thing*: in S51 the changelog guard passed with the new entry deleted, because the same PR number was still in the doc's summary. Do it on committed work - `git checkout -- <file>` to undo the experiment also deletes any uncommitted edit in that file, which is how S51's closeout lost its changelog row and had to redo it. A guard that reads the repo's own prose needs the other half as well: the cases it must *allow* are lines lifted from the repo, not invented ones. S52's first design counted any line carrying a command as an instruction, which would have failed the S51 ledger row - a single line that names `--workers` in one span and `pnpm health` in another. An invented allow case would have agreed with the bug.
 
+**Every sprint runs `pnpm facts` and commits `lib/facts/snapshot.json`.** The
+browser gate recounts it: merged PRs from `git log`, `tests.unit` from a real run
+of `qa/unit`, the browser layers from a Playwright `--list`. Immediately after any
+merge the merged-PR recount is red by exactly one - the snapshot committed in a PR
+cannot record that PR's own squash commit - so a branch cut from a fresh `main`
+starts one behind and `pnpm facts` is what clears it. That is the guard working,
+not a bug in it; S54 proved it on `main`. Adding or removing a spec in `qa/smoke`,
+`qa/axe` or `qa/seo` also changes the counts the snapshot records, so regenerate
+*after* the test is written, and commit the two together.
+
 Add `pnpm build` when config, dependencies or deploy are touched. If anything fails, fix it in this sprint and rerun. Never merge red; never skip a check silently. If the sandbox blocks a check, see [troubleshooting](references/troubleshooting.md), make one recovery attempt, then report it as blocked.
 
 ## 4. Docs

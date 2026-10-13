@@ -34,8 +34,8 @@ So `facts.repo.mergedPrs` and `facts.tests.unit` are the two numbers the posts
 lean on hardest and the two nothing recounts.
 
 **2. There is no profile or discoverability copy.** The kit has a profile
-headline and a featured-link line (`features/docs/content/social-launch-pack.ts:69-79`)
-and nothing else — no About copy, no skills list, no guidance on the Open to
+headline and a featured-link line (under the "Profile copy to update first"
+heading in `features/docs/content/social-launch-pack.ts`) and nothing else — no About copy, no skills list, no guidance on the Open to
 Work setting. For an owner whose goal is *being found* by recruiters rather than
 seen in a feed, those fields do more work than any post: recruiter search is
 keyword-driven, and LinkedIn's current ranking model matches post content
@@ -157,9 +157,12 @@ Deliberately out of scope, so a sprint does not drift into them:
      argument. Independent surveys put the badge's effect on recruiter attitudes
      at roughly neutral (one 2023 survey: 91% of hiring professionals say it does
      not deter them), so little is given up.
-  3. The `#opentowork` hashtag advice currently sitting in
-     `social-and-recruitment-marketing.ts` no longer recommends the public badge
-     without that caveat.
+  3. The `#opentowork` hashtag advice in
+     `social-and-recruitment-marketing.ts` carries that caveat. Nothing in that
+     file recommends the public badge today; what it has is `#opentowork` in the
+     "Hashtags and keywords" list, which is public in the same way and carries
+     the same signal to a client, so the work is adding the caveat rather than
+     removing a recommendation.
   4. The doc stays `access: "owner"`.
 - **Tests first:** `qa/unit/docs/social-launch-pack.test.ts` (**unit**) — assert
   the profile section exists and carries each field; assert no client-facing

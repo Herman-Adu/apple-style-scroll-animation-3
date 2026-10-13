@@ -13,7 +13,7 @@ export const socialLaunchPack: Doc = {
     "Paste-ready LinkedIn, Telegram and X posts for two audiences: recruiters and hiring managers, and prospective clients who might buy a site or hire you to build one from this template. Every number is taken from the repo, every post respects its channel limit, and every link points at a public docs page.",
   readingMinutes: 12,
   order: 6,
-  updatedAt: "2026-10-07",
+  updatedAt: "2026-10-13",
   tags: ["social", "linkedin", "telegram", "x", "recruitment", "clients", "launch", "template"],
   body: [
     {
@@ -62,18 +62,88 @@ export const socialLaunchPack: Doc = {
       title: "Keep claims accurate",
       text: "This is a template and a tested build, not a live business, so do not quote revenue, customers or client results. Scheduled email sends are built and tested but not switched on, so say built and tested, not live. Production go-live, Stripe live mode and compliance are set up per project. Check the availability line in the recruiter posts matches your situation before you publish.",
     },
-    { type: "heading", text: "Profile copy to update first" },
+    { type: "heading", text: "Profile and discoverability" },
+    {
+      type: "paragraph",
+      text: "A post reaches a feed for a day; the profile is what a recruiter search returns for months. LinkedIn matches a recruiter's query against the headline, the About section and the skills list, and ranks a post partly against the profile it came from, so these fields do more for being found than any single post does. Fill all four in before the first post goes out, and keep the headline and the skills list in step: the terms you lead with in one are the terms you pin in the other.",
+    },
     {
       type: "code",
       language: "text",
-      title: "Profile headline",
-      code: "Full-stack engineer | Next.js, TypeScript, Postgres | Test-first, documented, handover-ready commerce builds",
+      title: "Profile headline - recruiter search",
+      code: "Full-stack engineer | Next.js, TypeScript, PostgreSQL | Test-first, documented, handover-ready commerce builds",
+    },
+    {
+      type: "code",
+      language: "text",
+      title: "Profile headline - client work",
+      code: "I build commerce sites that own their own email | Next.js, Stripe, PostgreSQL | Documented and handed over so your team can run it without me",
     },
     {
       type: "code",
       language: "text",
       title: "Profile featured link line",
       code: "Next.js 16 commerce template with an email builder, role-based admin and public engineering docs: [live URL]/docs/engineering-quality",
+    },
+    {
+      type: "code",
+      language: "text",
+      title: "Profile About section",
+      code: `I am a full-stack engineer. I build commerce sites and the systems behind them, and I document them so the team that inherits the code can run it without me.
+
+My current work is a Next.js 16 commerce platform I built end to end: TypeScript throughout, Prisma on PostgreSQL (Neon), Better Auth for sessions and roles, Stripe for checkout, Resend for delivery. It owns its own email - block-based templates, campaigns and customer messaging on the store's own domain and database - instead of renting an email service and copying products between tools.
+
+How I work matters more than the feature list:
+
+- Small pull requests, test-first. ${facts.repo.mergedPrs} are merged, each with the failing test written before the code.
+- ${facts.tests.total.toLocaleString("en-GB")} automated tests, plus browser smoke tests and accessibility checks, run before anything merges.
+- Permissions are verified on the server in three places: the request proxy, every server action and the UI. Gated content is never sent to a browser that lacks the role.
+- Architecture rules are enforced by CI rather than by memory. A ratchet fails the build if deep imports, any types or useEffect counts get worse.
+- All of it is written up in public docs with diagrams, for five audiences from a first-time user to a CTO.
+
+What I am looking for: senior full-stack or product engineering work, permanent or contract. I am also available to build and hand over a commerce site for a business directly.
+
+Read the engineering write-up rather than taking my word for it: [live URL]/docs/engineering-quality`,
+    },
+    {
+      type: "paragraph",
+      text: "Add the skills in this order. LinkedIn pins the first three to the top of the profile and weights them most heavily in recruiter search, so the first three are the terms the recruiter headline leads with. The rest are there to be matched rather than read, which is why the list names the thing a recruiter types (PostgreSQL, Test-Driven Development) rather than the thing you would say out loud.",
+    },
+    {
+      type: "code",
+      language: "text",
+      title: "Profile skills, in the order to add them",
+      code: `Next.js
+TypeScript
+PostgreSQL
+React
+Node.js
+Full-Stack Development
+Software Architecture
+REST APIs
+Prisma
+Server-Side Rendering
+Authentication
+Role-Based Access Control
+Stripe
+Test-Driven Development
+Playwright
+Vitest
+Continuous Integration
+Web Accessibility
+Technical Documentation
+Tailwind CSS
+SQL
+Git
+Vercel
+Search Engine Optimisation
+Email Marketing`,
+    },
+    {
+      type: "callout",
+      variant: "warning",
+      title: "Open to Work: recruiters only, not the public badge",
+      text: "Switch Open to Work on for recruiters only and leave the public green badge off. The badge is shown to every prospective client who opens the profile, and it reads as you leaving, which undercuts the argument that wins client work here: that you hand a build over so a team can run it without you. Recruiter-only mode is seen by the people actually searching, and gives up very little - one 2023 survey of hiring professionals found 91% say the public badge does not put them off a candidate, so the badge is not what gets you found. The #opentowork hashtag is public in the same way, so keep it to the recruiter posts.",
     },
     ...socialLaunchPackRecruiterBlocks,
     ...socialLaunchPackClientBlocks,

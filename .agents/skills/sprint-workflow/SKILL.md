@@ -19,6 +19,8 @@ Why: the workspace can be switched to a fresh branch from `main` between turns. 
 
 **A handoff is a claim; the repo and `gh` decide.** When a prompt, a summary or a session note disagrees with `git log` and `gh pr view`, the repo wins: say which parts are already done and re-plan from there. The S50 handoff asked for a CI re-run and a merge of PR #191 that had merged two sprints earlier, with its ledger row already on `main`.
 
+**A plan's measurements are claims too.** Count the prose yourself with a script before acting on a number in the plan. A `grep` of `features/docs/content/` truncates its output: post copy lives in one-line template strings, so a line with several claims on it shows one - that is how S56's audit found four of the six "four audiences" claims and missed two, and only an enumerating script found the rest. And when a stated number turns out to be *right*, the fix is a test that pins it, not a rewrite of a true sentence: S56's plan called the "8-slide carousel" sentence false, and it described the one carousel that really is eight.
+
 ## 1. Branch from the real main
 
 ```bash

@@ -159,7 +159,7 @@ export const socialAndRecruitmentMarketing: Doc = {
       items: [
         "Engineering reach: #nextjs #react #typescript #softwarearchitecture #webdev",
         "Business / founder reach: #ecommerce #startups #saas #marketing",
-        "Hiring reach: #opentowork #hiring #fullstack #frontend (use sparingly — one or two, not a wall)",
+        "Hiring reach: #hiring #fullstack #frontend (use sparingly — one or two, not a wall). Add #opentowork to recruiter posts only: the hashtag is public, so a prospective client reading the post sees it and reads it as you leaving. Set the profile badge to recruiters only for the same reason — the reasoning is in /docs/social-launch-pack.",
         "Keep it to 3–5 tags per post; a wall of hashtags reads as spam and suppresses reach.",
       ],
     },

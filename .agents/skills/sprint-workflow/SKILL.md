@@ -69,7 +69,7 @@ git diff --stat origin/main    # only this sprint's files; anything else = stale
 git fetch origin +refs/heads/main:refs/remotes/origin/main && git log --oneline -1 origin/main
 ```
 
-Confirm `main` points at the merge commit. Run `.agents/skills/sprint-retro/`. Add the ledger row (it rides with the next sprint's PR). Then go back to step 1 for the next sprint.
+Confirm `main` points at the merge commit. **Prove here whatever could only be proved here.** A hook, a CI workflow or an installed config does not take effect until it is on `main`, so a branch can only show it is wired, never that it works - S53 could prove git ran the hook, but not that `main` refused a commit, until after the merge. Do it before the ledger row, and fix what fails in the same sprint. Run `.agents/skills/sprint-retro/`. Add the ledger row (it rides with the next sprint's PR). Then go back to step 1 for the next sprint.
 
 ## 7. Leave the machine as you found it
 

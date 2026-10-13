@@ -7,7 +7,7 @@ export const whatsNew: Doc = {
   audience: "cto",
   access: "public",
   summary:
-    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), the architecture and engineering-quality refactors through PR #187, and the showcase, launch-collateral and release-discipline run through PR #201. Each entry says what changed and why it matters.",
+    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), the architecture and engineering-quality refactors through PR #187, and the showcase, launch-collateral and release-discipline run through PR #203. Each entry says what changed and why it matters.",
   readingMinutes: 7,
   order: 1,
   updatedAt: "2026-10-13",
@@ -117,6 +117,7 @@ export const whatsNew: Doc = {
         ["#196", "This page is checked against the sprint ledger, and eleven missing sprints were added", "The changelog cannot fall behind again: a merged sprint with no entry here fails a test, so what you are reading is the whole record rather than whatever was remembered."],
         ["#199", "Stale advice fails a test, and the browser gate checks which app answered it", "Instructions printed by the tooling or written in the docs cannot outlive the thing they describe, and a gate run against another project's dev server now stops with that app's name instead of reporting this one's pages as broken."],
         ["#201", "A mention is not advice: the stale-advice guard now refuses only an instruction you could copy and run", "The docs can name an obsolete flag in order to correct it, so someone who remembers the old advice and searches for it finds the entry that explains why it is gone instead of silence."],
+        ["#203", "The rule against committing to the main branch is now enforced by a git hook", "The release discipline this project documents is checked by the machine instead of remembered, so the one mistake that leaves no trace in a diff or a review cannot happen quietly."],
       ],
     },
     {

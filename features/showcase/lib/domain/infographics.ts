@@ -13,7 +13,7 @@ type Base = {
   /** Typed values that mirror the seeded demo store; the slide prints "Demo data" and a test binds them to the seed. */
   demoData?: true
   /** Set on slides written for one audience pack, so catalogue guards can tell them from the core set. */
-  pack?: "recruiter" | "buyer" | "engineer"
+  pack?: "recruiter" | "buyer" | "engineer" | "cto"
 }
 
 export type ChartValue = number | FactRef

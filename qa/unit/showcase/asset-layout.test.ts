@@ -3,6 +3,7 @@ import path from "node:path"
 import { describe, expect, it } from "vitest"
 import { REPO_ROOT } from "@/qa/config/repo-root"
 import { ASSET_GROUPS, videoPath } from "@/features/showcase/lib/domain/asset-paths"
+import { briefExportPlan } from "@/features/showcase/lib/domain/briefs"
 import { packExportPlan } from "@/features/showcase/lib/domain/packs"
 import { exportPlan } from "@/features/showcase/lib/domain/social-assets"
 import { publishedVideo } from "../../../scripts/lib/showcase-paths.mjs"
@@ -46,7 +47,7 @@ describe("published showcase assets", () => {
   })
 
   it("publishes every social asset exactly where the export plan says", () => {
-    for (const item of [...exportPlan(), ...packExportPlan()]) {
+    for (const item of [...exportPlan(), ...packExportPlan(), ...briefExportPlan()]) {
       const file = path.join(REPO_ROOT, "public", item.file)
       expect(existsSync(file), `${item.asset} -> ${item.file}`).toBe(true)
     }

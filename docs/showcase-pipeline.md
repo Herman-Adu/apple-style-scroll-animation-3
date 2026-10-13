@@ -48,6 +48,7 @@ public/showcase/
     checkout-sequence/
     site-tour/                        carousel.pdf  + stills/
     email-case-study/                 carousel.pdf  + its slides
+    business-case/                    brief.pdf     + its two own slides
     shared/                           infographics that belong to no audience
     shared/squares/                   the 1080×1080 squares
 ```
@@ -68,6 +69,16 @@ Each carousel is one swipeable PDF for LinkedIn, published as `carousel.pdf` ins
 | `security/` | Security reviewers | Five layers: proxy, server action, screen, merge gates, locked blocks |
 | `how-it-was-built/` | Recruiters and engineers | The sprint loop: plan, test first, one PR, green only, ratchet |
 | `site-tour/` | Everyone | Storefront, checkout, products, campaigns and analytics stills |
+
+A **brief** is a different thing from a carousel, and the layout says so: it publishes as `brief.pdf`, not `carousel.pdf`.
+
+| Folder | Audience | Story |
+| --- | --- | --- |
+| `business-case/` | CTOs and whoever approves the spend | What it is, build vs buy, three-year cost, replatform risk, the measured proof, the stack, the offer |
+
+The difference is not cosmetic. `qa/unit/showcase/posting-calendar.test.ts` requires every published `carousel.pdf` to hold exactly one slot in the four-week calendar - which is right for a post and wrong for a document that gets forwarded in a reply or attached to a proposal. Naming it `brief.pdf` keeps both guards honest: the brief is still checked for page count, slide order and signature overrun, and the calendar does not demand a feed slot it should never have. A brief reuses the `Pack` shape, so `packProblems` still applies.
+
+Briefs are defined in `features/showcase/lib/domain/briefs.ts` and exported by the same harness, so `pnpm showcase:assets` builds them with everything else.
 
 The site-tour stills in `public/showcase/social/site-tour/stills/` are frames taken from the buyer cut with `ffmpeg-static`. Re-take them after a visible UI change, then rerun `pnpm showcase:assets`.
 

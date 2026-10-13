@@ -8,6 +8,9 @@ import {
   getInfographic,
   getPackByCarouselId,
   getSocialAsset,
+  briefId,
+  briefs,
+  getBriefByExportId,
   infographics,
   packCarouselId,
   packSlides,
@@ -25,6 +28,7 @@ export function generateStaticParams() {
   return [
     { asset: CAROUSEL_ID },
     ...packs.map((p) => ({ asset: packCarouselId(p.id) })),
+    ...briefs.map((b) => ({ asset: briefId(b.id) })),
     ...socialAssets.map((a) => ({ asset: a.id })),
     ...infographics.map((i) => ({ asset: i.id })),
   ]
@@ -46,7 +50,7 @@ export default async function ShowcaseRenderPage({ params }: { params: Promise<{
     )
   }
 
-  const pack = getPackByCarouselId(asset)
+  const pack = getPackByCarouselId(asset) ?? getBriefByExportId(asset)
   if (pack) {
     const slides = packSlides(pack)
     const facts = await loadFacts()

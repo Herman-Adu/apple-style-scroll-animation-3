@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from "node:fs"
+import { existsSync, readFileSync, readdirSync } from "node:fs"
 import path from "node:path"
 import { describe, expect, it } from "vitest"
 import { REPO_ROOT } from "@/qa/config/repo-root"
@@ -20,6 +20,16 @@ describe("playwright configs", () => {
     expect(source, `${file} does not claim the whole of test-results`).not.toMatch(
       /outputDir:\s*path\.join\(projectRoot,\s*"test-results"\s*\)/,
     )
+  })
+
+  it("checks the app's identity before any other project runs", () => {
+    // `reuseExistingServer` reuses whatever is on the port, including another
+    // repo's dev server. Without the dependency the check still exists but
+    // nothing waits for it, and a stranger's pages get reported as broken.
+    const source = readFileSync(path.join(configDir, "playwright.config.mts"), "utf8")
+    expect(source).toMatch(/name:\s*"app-identity"/)
+    expect(source).toMatch(/dependencies:\s*\["app-identity"\]/)
+    expect(existsSync(path.join(REPO_ROOT, "qa/config/setup/app-identity.setup.ts"))).toBe(true)
   })
 
   it("caps local workers in the gate config, and leaves CI on the default", () => {

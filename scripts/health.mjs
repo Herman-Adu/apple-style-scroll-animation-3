@@ -29,7 +29,7 @@ const free = freemem();
 const total = totalmem();
 console.log(`  ${gb(free)} GB free of ${gb(total)} GB (${Math.round((free / total) * 100)}%)`);
 if (free / total < 0.2) {
-  console.log("  Low headroom. Smoke needs --workers=2 here; see sprint-workflow/references/troubleshooting.md.");
+  console.log("  Low headroom. The gate config already runs local smoke on two workers; if it still times out, free memory rather than lowering the count. See sprint-workflow/references/troubleshooting.md.");
 }
 
 console.log("\nRegenerable output");

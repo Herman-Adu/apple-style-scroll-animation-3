@@ -85,6 +85,14 @@ A number written into a sentence goes stale silently: re-export a carousel one s
 
 Page counts are read from the PDF bytes, two ways - the page-tree `/Count` and the `/Type /Page` objects - and compared, because a parse that found nothing would agree with any claim. There is deliberately no PDF dependency: a new one would pull `pnpm build` into the gate for a page count. The sweep carries two allow cases lifted from the files themselves ("Step 3 of 5 slide" in alt text, "the whole system on one page"), because an invented allow case cannot catch a guard that is too greedy.
 
+### A public count is measured or it is dated history
+
+Until S57 every number a reader could check sat behind the owner gate. The posts quote the whole platform - merged pull requests and the full suite - and linked to `/docs/engineering-quality`, whose only counts were the email builder's delivery log, scoped to PRs #63-#84. Both were true. Side by side they read as an inflated claim, because nothing public stated the current scale at all.
+
+So that page opens with a "Where the platform is today" section rendered from the committed snapshot, and the delivery log below it is untouched - S56's lesson is that a true sentence gets pinned, not rewritten. `qa/unit/docs/doc-facts.test.ts` holds both halves: the section must carry the snapshot's own pull-request, test and coverage figures, and the historical log must still be there, because a current-state section above it is what makes the smaller figures legible as a subset.
+
+The same file sweeps every **public** doc for a count phrase and fails any figure that is neither a value in the snapshot nor an allow-listed line of recorded history - the four allow cases are lifted from the files with their reasons, since an invented one cannot catch a guard that is too greedy. The section's assertions read the section's own blocks rather than the whole page, because `docText` includes the summary: asserting against that would let the numbers be moved into the summary and the section deleted, which is exactly how S51's changelog guard passed with its entry removed.
+
 Coverage only goes up: the run fails if lines or branches drop below `qa/baselines/coverage.json`. After raising coverage, run `pnpm facts --update-baseline` and commit the new baseline. CI runs `pnpm facts` and uploads the file as an artifact; `pnpm showcase:assets` runs it before rendering.
 
 ## Notes

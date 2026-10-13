@@ -25,7 +25,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 
 ## Current handoff snapshot (Oct 13, 2026)
 
-- `main` is at S57 by the ledger: PR #209 merged as `84c35ac`. **This line names the newest *row*, not the tip of `main`** - a row means merged *and* recorded in What's New, so it lags the tip by one sprint by design, and `qa/unit/docs/changelog-coverage.test.ts` pins it to that row. The tip is S58, whose row rides with the next sprint. Included and rowed: S54 (#205, `23bdf12`) with its closeout (#206, `acc83a4`), S56 (#207, `ecde8e6`), S55 (#208, `8b0632e`) which carried S56's owed closeout, and S57 (#209, `84c35ac`). Verified green on this tree: `pnpm typecheck`, `pnpm lint`, `pnpm arch` (no regressions), `pnpm test:unit` (1,620 across 91 files), `pnpm test:integration` (83), `pnpm test:smoke` (27 runs, 26 counted), `pnpm test:axe` (11 runs, 10 counted), `pnpm test:seo` (19 runs, 18 counted).
+- `main` is at S58: PR #210 merged as `f5bc668`, and **nothing is owed** - this closeout carries S58's own ledger row and What's New entry, so the newest row and the tip of `main` are the same sprint for the first time in five. Rowed and included: S54 (#205, `23bdf12`) with its closeout (#206, `acc83a4`), S56 (#207, `ecde8e6`), S55 (#208, `8b0632e`) which carried S56's owed closeout, S57 (#209, `84c35ac`), and S58 (#210, `f5bc668`). Verified green on this tree: `pnpm typecheck`, `pnpm lint`, `pnpm arch` (no regressions), `pnpm test:unit` (1,620 across 91 files), `pnpm test:integration` (83), `pnpm test:smoke` (27 runs, 26 counted), `pnpm test:axe` (11 runs, 10 counted), `pnpm test:seo` (19 runs, 18 counted).
 - **The browser counts are two numbers, not one stale one.** Playwright runs the `app-identity` setup project that every other project depends on; `pnpm facts` counts a spec only when its path contains `smoke/`, `axe/` or `seo/`, and that setup lives in `qa/config/setup/`. So a run of 27/11/19 and a snapshot of 26/10/18 are both right. Do not "fix" either.
 - **The merged-PR recount is red by exactly one immediately after a merge**, because the snapshot committed in a PR cannot record that PR's own squash commit. The fix is the next sprint's first `pnpm facts`, not a change to the guard. Every sprint therefore regenerates and commits `lib/facts/snapshot.json`; `.agents/skills/sprint-workflow/` says so in its checks step.
 - The sprint named here is checked against the newest row in the ledger below by `qa/unit/docs/changelog-coverage.test.ts`, so this line cannot fall behind a merge again.
@@ -133,6 +133,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 | S55    | #208     | `8b0632e`            | The profile does the finding, not the posts: the launch pack gained a "Profile and discoverability" section - a headline per angle inside LinkedIn's limit, About copy quoting the fact snapshot rather than typed numbers, a skills list in the order LinkedIn pins and searches, and Open to Work recommended as recruiter-only with the reason recorded, because the public badge is shown to every prospective client and reads as leaving; the `#opentowork` advice in the playbook carries the same caveat, since the hashtag is public in exactly the same way; also carried S56's owed closeout |
 | S56    | #207     | `ecde8e6`            | Slide and audience counts come from the artefacts instead of prose: every stated carousel length is compared against the page count inside the committed PDF, read from the bytes two independent ways so a parse failure cannot agree with the claim, and a sweep of `features/docs/content/` fails any slide, page or audience count that no test pins; the audience count was wrong in six places and right in two, so the four were corrected to the five audiences the library actually has, derived from the docs rather than typed in, while the "8-slide carousel" sentence turned out to be true and was pinned instead of rewritten |
 | S57    | #209     | `84c35ac`            | The public proof page states the current scale: `/docs/engineering-quality` - the page every recruiter and buyer post links to - opens with the platform's current totals rendered from the committed fact snapshot, where before every checkable number sat behind the owner gate and the only public counts were the email builder's delivery log scoped to PRs #63-#84; both were true, and side by side they read as an inflated claim. The log is pinned rather than rewritten, a sweep fails any public count that is neither measured nor allow-listed history, and the section's assertions read the section's own blocks so the numbers cannot be moved into the summary and the section deleted |
+| S58    | #210     | `f5bc668`            | One business case brief to forward: `/showcase/social/business-case/brief.pdf`, eight pages, built through the harness that exports the carousels and assembled from slides the other packs already use, so it cannot drift from them - only the build-buy decision and the replatform-risk pages are new, and each has its row labels bound by a test to the public doc it summarises. A brief is deliberately not a pack: every published `carousel.pdf` must hold exactly one slot in the four-week posting calendar, which is right for a post and wrong for a document sent in a reply, so it publishes as `brief.pdf` while still reusing `packProblems` for page size, slide order and the closing contact page |
 | S0     | archived | archived             | Historical placeholder for initial ledger/protocol setup; retained for chronology                                                        |
 | SEC1   | #122     | `c6e8b40`            | Guard admin transactional actions; move server-only email/discount exports out of `"use server"` endpoints                               |
 | SEC2   | #124     | `3d32053`            | Stabilized auth/session origin handling: Better Auth trusted canonical/proxy host set and checkout return URL pinned to canonical origin |
@@ -157,17 +158,28 @@ Gap found after S34: only the email case study was exported as a swipeable PDF. 
 - **S36: Security, how-it-was-built and site-tour carousels.** Security: three permission layers, merge gates, locked brand blocks, contact. How it was built: test-first sprints, one PR per sprint, green-only merges, coverage ratchet, test-count chart, contact. Site tour: site map plus stills from the S34 recordings, contact. All exported as PDFs and listed in the launch kit. Data impact: none.
 - **S37: Docs audit and gap fill.** Audit every feature shipped since S26 against `docs/*.md`, in-app guides, ADRs and glossary. At minimum add a back-in-stock (stock alerts) guide and a showcase pipeline guide (seed, record, cuts, carousels, unseed), refresh the handover doc, and fix stale counts and file lists. Data impact: none. After S37 the owner clears the demo data.
 
-## Next sprints (added after S53) - planned, not shipped
+## Next sprints (added after S58) - candidates, none started
 
-S54 shipped as #205 and S56 as #207; both have their rows above. S55 is the
-last of the three and the only one still planned.
+The S54-S56 plan in `v0_plans/s54-linkedin-pack-refresh.md` is **fully shipped**:
+S54 (#205), S56 (#207), S55 (#208). S57 (#209) and S58 (#210) followed from an
+audit of the public CTO layer. Nothing from that plan is outstanding.
 
-Planned in `v0_plans/s54-linkedin-pack-refresh.md` from an audit of the launch
-packs. Deliberately prose rather than ledger rows: a row in the table above
-means merged, and `qa/unit/docs/changelog-coverage.test.ts` would require a
-What's New entry for it.
+Deliberately prose rather than ledger rows: a row in the table above means
+merged, and `qa/unit/docs/changelog-coverage.test.ts` would require a What's New
+entry for it.
 
-- **S55: profile and discoverability copy.** The packs carry a profile headline and a featured-link line and nothing else - no About copy, no skills list, no guidance on the Open to Work setting - although being found by recruiters is the stated priority. Adds a "Profile and discoverability" section to `social-launch-pack`, recommending recruiter-only mode over the public banner and recording why. Data impact: none.
+Where the posting push stands: the proof surface is ready. `/docs/engineering-quality`
+states the platform's current scale (S57), the profile and discoverability copy
+is written and approved (S55), and there is one business case document to
+forward (S58). The owner's next move is the social posting itself, which needs
+no sprint.
+
+Candidates, in the order they were judged most useful, none started:
+
+- **A gated-to-public drift guard.** The nine owner-gated Positioning docs are the engine room; the eight public `cto` docs (Business Case, Security & Trust, Technology Strategy) are the showroom. Nothing fails when the pitch changes and its public counterpart does not - the same failure mode that let What's New drift for eleven sprints before S50. Model it on `qa/unit/docs/changelog-coverage.test.ts`. Data impact: none.
+- **The handover tier matrix.** `pricing-and-packaging-the-build` names three tiers (Launch, Growth, Scale) as a scope ladder, but nothing says what a client actually *receives* at each: docs access, repo access, training, support window, who owns the Stripe and Resend accounts. It is the question that follows "I have read the business case". Note that "handover" means three different things in this repo - the client-facing argument, the packaging tiers, and `docs/template-handover.md` for forking - and they are easy to conflate. Data impact: none.
+- **A full showcase re-export.** Every pack's committed PNGs and PDFs still quote their last export's figures; only the S58 brief carries current numbers. Last done wholesale in S44. A large binary diff, so it wants its own sprint. Data impact: none.
+- **The Strapi builder direction, on the record.** The owner's stated destination is migrating this commerce product into a full Next + Strapi builder sold as a starter, in a monorepo, aimed at engagement with Strapi developers and companies - the thesis being that no large applications are known to be built on Strapi and Next. A site is already migrated onto it and hosted. None of this is in the repo: `docs/strapi-migration.md` only covers flipping this app's data source via `STRAPI_API_URL` over the existing port/adapter seam, which is a config switch, not a product migration. Wants a backlog entry plus an ADR for the thesis before it has code. Data impact: none.
 
 Excluded on purpose, each its own later sprint: a LinkedIn company-page channel
 in `posting-calendar.ts` (needs a `PostingSlot` schema change for owner

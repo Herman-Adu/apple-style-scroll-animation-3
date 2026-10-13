@@ -66,7 +66,12 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     steps:
+      # Full history: `pnpm facts` counts merged pull requests from `git log`
+      # subject lines, and the default single-commit fetch made it write 0 into
+      # both the artifact and the snapshot this job then builds and smoke-tests.
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
         with:
           version: 10

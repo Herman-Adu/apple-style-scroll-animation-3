@@ -10,7 +10,7 @@ export const contributingAndWorkflow: Doc = {
     "How to make a change safely: branch naming, tests first, which test suite covers what, the checks to run before a pull request, and how docs are kept in step with the code.",
   readingMinutes: 6,
   order: 2,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-13",
   tags: [
     "contributing",
     "workflow",
@@ -75,7 +75,7 @@ export const contributingAndWorkflow: Doc = {
         ],
         [
           "pnpm test:smoke",
-          "Key pages load in a real browser",
+          "Key pages load in a real browser, and the committed fact snapshot is recounted against git history and a fresh test run",
           "Running dev server",
         ],
         ["pnpm test:axe", "Accessibility checks", "Running dev server"],

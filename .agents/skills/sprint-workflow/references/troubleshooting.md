@@ -71,3 +71,15 @@ The hook is tracked in `.githooks/` and only runs once `core.hooksPath` points t
 
 ## A `pnpm <name>` script prints nothing and exits 0
 The name collides with a pnpm built-in, which wins silently. `doctor` is one, which is why the health command is `pnpm health`. `pnpm run <name>` reaches the script, but rename it instead: `qa/unit/meta/housekeeping.test.ts` fails if any script is named after a built-in.
+
+## Inspecting the docs corpus ad hoc
+
+There is no script runner for the TypeScript content modules: `vite-node` and
+`tsx` are not installed, and `node` cannot import `features/docs/content/` or
+resolve `@/`. Write a throwaway test under `qa/unit/` instead and run it with
+the project config. Vitest's reporter swallows `console.log` on a passing test,
+so have the test **write its output to a file** (`C:/tmp/...`, an allowed
+working directory) and read that. Delete the file before committing. This is
+how S59 enumerated the 55 docs by category, access and audience, and how it
+confirmed which objection terms were missing from the public layer - counting
+the corpus with a script rather than trusting the plan's numbers.

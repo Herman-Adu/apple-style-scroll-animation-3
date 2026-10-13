@@ -33,6 +33,25 @@ export const launchKitCarouselBlocks: DocBlock[] = [
       ["Site tour", "/showcase/social/site-tour/carousel.pdf", "Everyone: what the site looks like, stop by stop"],
     ],
   },
+  { type: "heading", text: "The business case brief" },
+  {
+    type: "paragraph",
+    text: "One document to forward to whoever has to approve the spend, published as /showcase/social/business-case/brief.pdf. It is a document rather than a feed post: send it in a reply or attach it to a proposal, which is why it is not in the posting calendar. It is assembled from slides the other packs already use, so it cannot drift from them, plus the two arguments the catalogue had no slide for: the build-buy decision and what a replatform costs. The long form stays in the public Business Case guides, which the brief summarises rather than replaces.",
+  },
+  {
+    type: "table",
+    headers: ["Page", "Slide", "Job"],
+    rows: [
+      ["1", "/showcase/social/site-tour/structure-overview.png", "What the thing actually is"],
+      ["2", "/showcase/social/business-case/build-vs-buy.png", "Three honest options, and the catch in each"],
+      ["3", "/showcase/social/buyer/cost-line.png", "Where cost goes over three years"],
+      ["4", "/showcase/social/business-case/replatform-risk.png", "What lock-in and a rebuild cost"],
+      ["5", "/showcase/social/recruiter/proof.png", "The numbers, measured rather than claimed"],
+      ["6", "/showcase/social/shared/stack.png", "The stack, named only after the proof"],
+      ["7", "/showcase/social/shared/offer.png", "What is included, and the handover"],
+      ["8", "/showcase/social/email-case-study/cta.png", "QR code and contact"],
+    ],
+  },
   { type: "heading", text: "Checkout, step by step" },
   {
     type: "paragraph",

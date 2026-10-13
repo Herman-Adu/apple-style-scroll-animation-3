@@ -19,6 +19,7 @@ export const ASSET_GROUPS = [
   "checkout-sequence",
   "site-tour",
   "email-case-study",
+  "business-case",
   "shared",
 ] as const
 
@@ -31,6 +32,7 @@ export type AssetGroup = (typeof ASSET_GROUPS)[number]
  */
 const SOCIAL_PREFIXES: { prefix: string; group: AssetGroup }[] = [
   { prefix: "infographic-buyer-", group: "buyer" },
+  { prefix: "infographic-cto-", group: "business-case" },
   { prefix: "infographic-engineer-", group: "engineer" },
   { prefix: "infographic-recruiter-", group: "recruiter" },
   { prefix: "recruiter-", group: "recruiter" },
@@ -59,6 +61,16 @@ export function socialAssetPath(id: string): string {
 /** A group's folder, for channels that post its images rather than its PDF. */
 export function socialGroupPath(group: AssetGroup): string {
   return `${SHOWCASE_ROOT}/social/${group}`
+}
+
+/**
+ * A brief is a document, not a post: something forwarded in a reply or attached
+ * to a proposal rather than swiped in a feed. It takes its own name in the group
+ * folder so the posting calendar's "every published carousel gets a slot" guard
+ * does not demand a feed slot for it, which it should not have.
+ */
+export function briefPdfPath(group: AssetGroup): string {
+  return `${SHOWCASE_ROOT}/social/${group}/brief.pdf`
 }
 
 /** Every carousel is its group's `carousel.pdf`, so one folder holds one swipeable post. */

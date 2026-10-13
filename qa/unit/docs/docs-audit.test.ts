@@ -71,6 +71,7 @@ describe("S37 showcase pipeline runbook", () => {
         "security/",
         "how-it-was-built/",
         "site-tour/",
+        "business-case/",
         "showcase:unseed",
       ]),
     ).toEqual([]);

@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs"
 import path from "node:path"
 import { expect, test, type Page } from "@playwright/test"
+import { briefExportPlan } from "../../features/showcase/lib/domain/briefs"
 import { packExportPlan } from "../../features/showcase/lib/domain/packs"
 import { exportPlan } from "../../features/showcase/lib/domain/social-assets"
 import { signatureOverruns } from "./slide-geometry"
@@ -31,7 +32,7 @@ function ensureDir(file: string) {
   mkdirSync(path.dirname(publicPath(file)), { recursive: true })
 }
 
-for (const item of [...exportPlan(), ...packExportPlan()]) {
+for (const item of [...exportPlan(), ...packExportPlan(), ...briefExportPlan()]) {
   test(`export ${item.file}`, async ({ page }) => {
     await page.setViewportSize({ width: item.width, height: item.height })
     await page.goto(`/showcase-render/${item.asset}`, { waitUntil: "networkidle" })

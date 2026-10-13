@@ -1,11 +1,13 @@
 import type { Infographic } from "./infographics"
 import { buyerInfographics } from "./buyer-slides"
+import { ctoInfographics } from "./cto-slides"
 import { engineerInfographics } from "./engineer-slides"
 import { recruiterInfographics } from "./recruiter-slides"
 
 export const infographics: Infographic[] = [
   ...recruiterInfographics,
   ...buyerInfographics,
+  ...ctoInfographics,
   ...engineerInfographics,
   {
     id: "infographic-stack",

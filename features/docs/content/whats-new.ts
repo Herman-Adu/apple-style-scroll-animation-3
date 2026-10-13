@@ -7,10 +7,10 @@ export const whatsNew: Doc = {
   audience: "cto",
   access: "public",
   summary:
-    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), the architecture and engineering-quality refactors through PR #187, and the showcase and launch-collateral run through PR #194. Each entry says what changed and why it matters.",
+    "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), the architecture and engineering-quality refactors through PR #187, and the showcase, launch-collateral and release-discipline run through PR #199. Each entry says what changed and why it matters.",
   readingMinutes: 7,
   order: 1,
-  updatedAt: "2026-10-10",
+  updatedAt: "2026-10-13",
   tags: ["changelog", "release notes", "email builder", "security", "documentation", "showcase"],
   body: [
     {
@@ -115,6 +115,7 @@ export const whatsNew: Doc = {
         ["#191", "The site map is derived from the app's own navigation: four structure slides replace one hand-written one", "The map shown to a buyer or a candidate cannot drift from the real site, because a nav item that reaches no slide fails a test."],
         ["#194", "pnpm clean and pnpm health, plus a close-out step in the sprint workflow", "Regenerable build and test output is cleared every sprint instead of when someone notices, which is what made the browser suite flaky."],
         ["#196", "This page is checked against the sprint ledger, and eleven missing sprints were added", "The changelog cannot fall behind again: a merged sprint with no entry here fails a test, so what you are reading is the whole record rather than whatever was remembered."],
+        ["#199", "Stale advice fails a test, and the browser gate checks which app answered it", "Instructions printed by the tooling or written in the docs cannot outlive the thing they describe, and a gate run against another project's dev server now stops with that app's name instead of reporting this one's pages as broken."],
       ],
     },
     {

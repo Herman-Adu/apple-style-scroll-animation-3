@@ -35,7 +35,7 @@ Read this file, then open **only** the skill that matches the task. Skills link 
 
 ## Gates (stop and get explicit approval)
 
-- Production deploy, promote or alias.
+- Production deploy, promote or alias. Not a goal here: the site is the owner's promo build, Stripe stays in test mode, and `main` running ahead of what the live domain serves is the normal resting state - never propose going live.
 - Deleting or rewriting existing data; non-additive schema changes.
 - Repo settings (rulesets, branch protection, secrets).
 - Secrets: the user adds them in Vars / GitHub settings. Never ask for a value in chat.

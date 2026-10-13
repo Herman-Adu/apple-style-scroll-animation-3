@@ -44,6 +44,8 @@ pnpm test:integration
 pnpm test:smoke && pnpm test:axe     # browser tests: always before merge
 ```
 
+**A guard is not green until it has been red on the real files.** Remove what it demands and watch it fail *naming that thing*: in S51 the changelog guard passed with the new entry deleted, because the same PR number was still in the doc's summary. Do it on committed work - `git checkout -- <file>` to undo the experiment also deletes any uncommitted edit in that file, which is how S51's closeout lost its changelog row and had to redo it.
+
 Add `pnpm build` when config, dependencies or deploy are touched. If anything fails, fix it in this sprint and rerun. Never merge red; never skip a check silently. If the sandbox blocks a check, see [troubleshooting](references/troubleshooting.md), make one recovery attempt, then report it as blocked.
 
 ## 4. Docs

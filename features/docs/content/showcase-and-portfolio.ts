@@ -10,12 +10,12 @@ export const showcaseAndPortfolio: Doc = {
     "How to present this project as proof of senior engineering skill — on LinkedIn, Telegram, and a portfolio. What to highlight, ready-to-adapt post templates, the screenshots and links to attach, and where to drop the live URL once it is deployed.",
   readingMinutes: 9,
   order: 4,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-13",
   tags: ["portfolio", "showcase", "linkedin", "personal brand", "career"],
   body: [
     {
       type: "paragraph",
-      text: "This build is a strong portfolio piece precisely because it is not a toy. It is a server-first commerce app with an owned email platform, real authentication and authorization, a database, and a documentation system for four different audiences. This guide helps you tell that story so the engineering reads as senior, not incidental.",
+      text: "This build is a strong portfolio piece precisely because it is not a toy. It is a server-first commerce app with an owned email platform, real authentication and authorization, a database, and a documentation system for five different audiences. This guide helps you tell that story so the engineering reads as senior, not incidental.",
     },
     {
       type: "callout",
@@ -123,7 +123,7 @@ export const showcaseAndPortfolio: Doc = {
       type: "callout",
       variant: "success",
       title: "The meta-point",
-      text: "The fact that this project is documented this thoroughly is itself the strongest signal. Most engineers ship features; fewer document them for four audiences with diagrams and training guides. That gap is your differentiator — make it visible.",
+      text: "The fact that this project is documented this thoroughly is itself the strongest signal. Most engineers ship features; fewer document them for five audiences with diagrams and training guides. That gap is your differentiator — make it visible.",
     },
   ],
 }

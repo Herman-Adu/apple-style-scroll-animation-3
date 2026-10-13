@@ -10,7 +10,7 @@ export const socialAndRecruitmentMarketing: Doc = {
     "The tactical companion to the Showcase guide: a ready-to-run content engine. A two-week launch calendar, a copy bank of post variants for LinkedIn, X, and Telegram tuned to each audience, and recruitment artifacts — CV line, STAR bullets, interview talking points, and a 60-second verbal pitch — so this build works as hard for your career as it does for the client.",
   readingMinutes: 12,
   order: 5,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-13",
   tags: ["marketing", "social", "linkedin", "recruitment", "personal brand", "career", "content"],
   body: [
     {
@@ -76,7 +76,7 @@ export const socialAndRecruitmentMarketing: Doc = {
         },
         {
           title: "Day 12 — LinkedIn (the docs as the artifact)",
-          text: "Post the documentation library itself. 'I documented this for four audiences with diagrams and training guides.' Link the public docs hub.",
+          text: "Post the documentation library itself. 'I documented this for five audiences with diagrams and training guides.' Link the public docs hub.",
         },
       ],
     },
@@ -98,7 +98,7 @@ export const socialAndRecruitmentMarketing: Doc = {
       type: "code",
       language: "text",
       title: "X / Twitter — thread (architecture angle)",
-      code: "1/ I built a server-first commerce platform with its own email system. A thread on the decisions that made it fast and maintainable.\n\n2/ Server-first: pages are React Server Components by default. The browser only downloads interactive islands, not the whole app. Fast first paint, clean SEO.\n\n3/ A port/adapter seam sits between the UI and the data source. The UI never talks to the CMS or DB directly — so swapping the local corpus for Strapi is a config change, not a rewrite.\n\n4/ Access control is enforced on the server. Gated content is never serialized to a browser that lacks the role. Not hidden with CSS — never sent.\n\n5/ Email is owned, not rented: block-based templates, campaigns, and customer messaging on our own domain + Postgres.\n\n6/ Documented end to end with diagrams for four audiences. Live: [your-url-here]",
+      code: "1/ I built a server-first commerce platform with its own email system. A thread on the decisions that made it fast and maintainable.\n\n2/ Server-first: pages are React Server Components by default. The browser only downloads interactive islands, not the whole app. Fast first paint, clean SEO.\n\n3/ A port/adapter seam sits between the UI and the data source. The UI never talks to the CMS or DB directly — so swapping the local corpus for Strapi is a config change, not a rewrite.\n\n4/ Access control is enforced on the server. Gated content is never serialized to a browser that lacks the role. Not hidden with CSS — never sent.\n\n5/ Email is owned, not rented: block-based templates, campaigns, and customer messaging on our own domain + Postgres.\n\n6/ Documented end to end with diagrams for five audiences. Live: [your-url-here]",
     },
     {
       type: "code",
@@ -142,7 +142,7 @@ export const socialAndRecruitmentMarketing: Doc = {
       type: "code",
       language: "text",
       title: "60-second verbal pitch",
-      code: "It is a server-first e-commerce platform, but the part I am proudest of is that it owns its email. Instead of renting Klaviyo or Mailchimp and paying per contact, the app has its own template engine, campaigns, and customer messaging running on the client's domain and Postgres database — right beside the real order data, so emails can use actual order lines and product images. I put a port/adapter seam between the UI and the data source, so we can move from the local content to a Strapi CMS without rewriting the app. Auth and authorization are enforced on the server, and I documented the whole thing for four different audiences with architecture diagrams. It is live, and the docs are public if you want to see the depth.",
+      code: "It is a server-first e-commerce platform, but the part I am proudest of is that it owns its email. Instead of renting Klaviyo or Mailchimp and paying per contact, the app has its own template engine, campaigns, and customer messaging running on the client's domain and Postgres database — right beside the real order data, so emails can use actual order lines and product images. I put a port/adapter seam between the UI and the data source, so we can move from the local content to a Strapi CMS without rewriting the app. Auth and authorization are enforced on the server, and I documented the whole thing for five different audiences with architecture diagrams. It is live, and the docs are public if you want to see the depth.",
     },
     {
       type: "callout",

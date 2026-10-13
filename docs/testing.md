@@ -79,6 +79,12 @@ Two things about where it lives:
 - **It is red by exactly one immediately after a merge.** The snapshot committed in a pull request cannot record that pull request's own squash commit, so `main` at rest is always one merged PR ahead of the number it carries. The fix is the next sprint's first `pnpm facts`, not a looser guard: every sprint regenerates and commits the snapshot, which is the behaviour this guard exists to force.
 - **The merged-PR recount skips itself on a shallow clone**, where there is no history to count and it would otherwise agree with any snapshot at all. That is why the `app` job checks out with `fetch-depth: 0`: `actions/checkout` fetches a single commit by default, and until S54 every CI run therefore published a facts artifact claiming **0** merged pull requests and overwrote the snapshot it then built and smoke-tested with it. Nothing read the field afterwards, so nothing failed - the recount is what found it.
 
+### Prose counts are pinned to the thing they count
+
+A number written into a sentence goes stale silently: re-export a carousel one slide shorter and the paragraph describing it simply becomes false. `qa/unit/showcase/stated-counts.test.ts` pins each one to its artefact - every stated slide count against the page count inside the committed PDF, and the docs library's audience count against the distinct `audience` values the docs actually carry. It also sweeps `features/docs/content/` for a count phrase no assertion covers, so a new claim cannot arrive unpinned.
+
+Page counts are read from the PDF bytes, two ways - the page-tree `/Count` and the `/Type /Page` objects - and compared, because a parse that found nothing would agree with any claim. There is deliberately no PDF dependency: a new one would pull `pnpm build` into the gate for a page count. The sweep carries two allow cases lifted from the files themselves ("Step 3 of 5 slide" in alt text, "the whole system on one page"), because an invented allow case cannot catch a guard that is too greedy.
+
 Coverage only goes up: the run fails if lines or branches drop below `qa/baselines/coverage.json`. After raising coverage, run `pnpm facts --update-baseline` and commit the new baseline. CI runs `pnpm facts` and uploads the file as an artifact; `pnpm showcase:assets` runs it before rendering.
 
 ## Notes

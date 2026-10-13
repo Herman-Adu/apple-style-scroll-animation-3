@@ -10,7 +10,7 @@ export const salesDemoAndObjections: Doc = {
     "A repeatable way to sell the build in a live conversation: discovery questions to open with, a ten-minute guided demo flow with what to say at each screen, straight answers to the objections you will actually hear (why not Shopify, why not Klaviyo, who maintains it), and a clean close.",
   readingMinutes: 10,
   order: 6,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-13",
   tags: ["sales", "demo", "objections", "positioning", "pitch", "closing"],
   body: [
     {
@@ -104,7 +104,7 @@ export const salesDemoAndObjections: Doc = {
         ],
         [
           "Isn't a custom build risky?",
-          "The risk with custom is usually undocumented code only one person understands. This is documented for four audiences with diagrams, and the content layer sits behind a swappable seam — so another developer can pick it up.",
+          "The risk with custom is usually undocumented code only one person understands. This is documented for five audiences with diagrams, and the content layer sits behind a swappable seam — so another developer can pick it up.",
         ],
         [
           "Who maintains it if you disappear?",

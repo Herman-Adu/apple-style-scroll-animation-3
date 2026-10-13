@@ -41,7 +41,8 @@ seen in a feed, those fields do more work than any post: recruiter search is
 keyword-driven, and LinkedIn's current ranking model matches post content
 against the profile it came from. This is the largest genuine gap in the packs.
 
-**3. Two copy claims are false.** Measured from the exported PDFs:
+**3. One copy claim is false, and the rest are unpinned.** Measured from the
+exported PDFs:
 
 | Carousel | PDF pages |
 |---|---|
@@ -50,11 +51,25 @@ against the profile it came from. This is the largest genuine gap in the packs.
 | email-case-study, how-it-was-built | 8 |
 | site-tour | 10 |
 
-`features/docs/content/social-launch-kit.ts:52` describes "An 8-slide LinkedIn
-carousel (1080x1350)" as though that were the shape of the set; only two of the
-eight are 8 pages. Separately, `social-and-recruitment-marketing.ts` says the
-docs are written for **four** audiences while `social-launch-pack-client.ts`
-says **five**. One of them is wrong in front of a CTO.
+`features/docs/content/social-launch-kit.ts:56` describes "An 8-slide LinkedIn
+carousel (1080x1350)". It sits under the "Carousel and square images" heading,
+immediately above `/showcase/social/email-case-study/cover.png`, so it describes
+that one carousel — which really is 8 pages. The sentence is true. What it lacks
+is a test: a re-export at a different length would make it false silently. The
+same holds for the three pack counts stated in words in
+`social-launch-kit-packs.ts` ("Six slides for recruiters…", "Six slides for
+business owners…", "Seven slides for engineers…"), all three also correct today.
+
+The false claim is the audience count. **Six** statements say the docs are
+written for four audiences — `sales-demo-and-objections.ts:107`,
+`showcase-and-portfolio.ts:18` and `:126`, and
+`social-and-recruitment-marketing.ts:79`, `:101` and `:145` — against **two**
+that say five: `case-study-email-platform.ts:58` and
+`social-launch-kit.ts:219`. Ground truth is five: the distinct `audience` values
+across `features/docs/content/` are user, content, developer, cto and owner,
+which is exactly the enumeration at `social-launch-kit.ts:219`. The four-audience
+version is wrong in front of a CTO, and it is in the X thread and the verbal
+pitch as well as the guides.
 
 All page sizes are correct 4:5 portrait (810x1013pt; PNG slides exactly
 1080x1350), so nothing needs re-exporting — only the prose is wrong.
@@ -157,21 +172,40 @@ Deliberately out of scope, so a sprint does not drift into them:
 
 ### S56: slide counts and audience counts come from the artefacts
 
-- **Why:** gap 3 above. Both claims are prose a reader cannot check, and one is
-  measurably wrong.
+- **Why:** gap 3 above. Both claims are prose a reader cannot check: the slide
+  counts are correct but unpinned, the audience count is measurably wrong in six
+  places.
 - **Acceptance:**
-  1. The carousel paragraph no longer claims a single slide count for the set.
+  1. Every slide count the library states is pinned to the PDF it describes, so
+     a re-export at a different length fails a test instead of quietly making
+     the prose false.
   2. A test derives each carousel's page count **from the PDF on disk** and
      fails when prose contradicts it, so this cannot drift again.
-  3. The audience count is identical in every doc that states it.
+  3. The audience count is identical in every doc that states it, and derived
+     from the docs rather than typed in.
 - **Tests first:** a **unit** test beside the existing showcase asset guards,
   reading `/showcase/social/*/carousel.pdf` page counts and comparing against the
   kit's stated figures; and an assertion that the audience count appears with one
-  value across `features/docs/content/`.
-- **Files:** `features/docs/content/social-launch-kit.ts`,
-  `features/docs/content/social-and-recruitment-marketing.ts`,
-  `features/docs/content/social-launch-pack-client.ts`, plus the new test.
+  value across `features/docs/content/`. No PDF dependency: the page-tree
+  `/Count` and the `/Type /Page` objects agree on all eight files, and a new
+  dependency would pull `pnpm build` into the gate for a page count.
+- **Files:** `features/docs/content/sales-demo-and-objections.ts`,
+  `features/docs/content/showcase-and-portfolio.ts`,
+  `features/docs/content/social-and-recruitment-marketing.ts`, plus the new
+  test. `social-launch-kit.ts` needs no edit — its sentence is already true.
 - **Data impact:** none. **Gate:** none.
+
+> **Corrected on 2026-10-13, before the work.** This section was written against
+> two misreadings, both found by measuring again rather than reading. The
+> "8-slide" sentence is at `social-launch-kit.ts:56`, not `:52`, and it describes
+> the email case study carousel rather than the set, so the original acceptance 1
+> — "no longer claims a single slide count for the set" — would have rewritten a
+> correct sentence. And the audience count is stated in **six** places as four,
+> not one: the audit missed `social-and-recruitment-marketing.ts:101` and `:145`,
+> both inside long one-line template strings that a grep prints truncated.
+> `social-launch-pack-client.ts`, named here originally, states no count at all.
+> Measured page counts, all eight: buyer 6, recruiter 6, checkout-sequence 7,
+> engineer 7, security 7, email-case-study 8, how-it-was-built 8, site-tour 10.
 
 ---
 

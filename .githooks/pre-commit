@@ -1,0 +1,3 @@
+#!/bin/sh
+# Tracked hook: see scripts/lib/branch-guard.mjs for the rule and why it exists.
+exec node scripts/pre-commit.mjs

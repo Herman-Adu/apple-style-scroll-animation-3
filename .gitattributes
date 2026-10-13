@@ -1,0 +1,6 @@
+# Git hooks are shell scripts: CRLF in the working copy makes `#!/bin/sh` fail
+# with a `\r` glued to the interpreter path. `core.autocrlf` is on for Windows
+# clones of this repo, so the hooks opt out of it explicitly rather than relying
+# on whatever each machine is configured to do.
+.githooks/** text eol=lf
+*.sh text eol=lf

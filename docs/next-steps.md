@@ -151,6 +151,24 @@ Gap found after S34: only the email case study was exported as a swipeable PDF. 
 - **S36: Security, how-it-was-built and site-tour carousels.** Security: three permission layers, merge gates, locked brand blocks, contact. How it was built: test-first sprints, one PR per sprint, green-only merges, coverage ratchet, test-count chart, contact. Site tour: site map plus stills from the S34 recordings, contact. All exported as PDFs and listed in the launch kit. Data impact: none.
 - **S37: Docs audit and gap fill.** Audit every feature shipped since S26 against `docs/*.md`, in-app guides, ADRs and glossary. At minimum add a back-in-stock (stock alerts) guide and a showcase pipeline guide (seed, record, cuts, carousels, unseed), refresh the handover doc, and fix stale counts and file lists. Data impact: none. After S37 the owner clears the demo data.
 
+## Next sprints (added after S53) - planned, not shipped
+
+Planned in `v0_plans/s54-linkedin-pack-refresh.md` from an audit of the launch
+packs. Deliberately prose rather than ledger rows: a row in the table above
+means merged, and `qa/unit/docs/changelog-coverage.test.ts` would require a
+What's New entry for it.
+
+- **S54: the snapshot cannot go stale unnoticed.** `lib/facts/snapshot.json` records 181 merged PRs and 1,617 tests against a measured 195 and 1,701, and no guard can see it - `qa/smoke/facts-freshness.spec.ts` recounts only the browser layers, and the unit guards check internal consistency, which a wrong snapshot also satisfies. Refresh the snapshot and extend the smoke guard to recount `repo.mergedPrs` from `git log` and `tests.unit` from the Vitest report. Data impact: none.
+- **S55: profile and discoverability copy.** The packs carry a profile headline and a featured-link line and nothing else - no About copy, no skills list, no guidance on the Open to Work setting - although being found by recruiters is the stated priority. Adds a "Profile and discoverability" section to `social-launch-pack`, recommending recruiter-only mode over the public banner and recording why. Data impact: none.
+- **S56: slide counts and audience counts come from the artefacts.** `social-launch-kit.ts` calls the set an "8-slide" carousel when the exported PDFs run 6 to 10 pages, and the audience count is four in one doc and five in another. Derives slide counts from the PDFs on disk so prose cannot contradict the files. Data impact: none.
+
+Excluded on purpose, each its own later sprint: a LinkedIn company-page channel
+in `posting-calendar.ts` (needs a `PostingSlot` schema change for owner
+amplification), reconciling the two competing posting calendars, `CALENDAR_START`
+being in the past, and moving post links to the first comment (investigated and
+rejected - no confirmed link penalty, conflicting effect sizes, and the one
+consistent signal is that pages absorb it while personal profiles do not).
+
 ## Open work (template repo)
 
 - No mandatory in-repo product feature sprint is pending after S6.

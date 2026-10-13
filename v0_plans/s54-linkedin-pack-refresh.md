@@ -112,6 +112,15 @@ Deliberately out of scope, so a sprint does not drift into them:
 > red, *then* run `pnpm facts`, and commit the test and the regenerated snapshot
 > together. Regenerating first guarantees a red gate on the very next run.
 >
+> **Expect the browser counts to disagree with the S53 handoff note, and do not
+> chase it.** `docs/next-steps.md` records S53 as green with `test:smoke` 25,
+> `test:axe` 11 and `test:seo` 19; the snapshot and a fresh `pnpm facts` run both
+> say 24, 10 and 18. The generator counts a spec only when its path contains
+> `smoke/`, `axe/` or `seo/` (`scripts/facts.mjs`), so the `app-identity` project
+> S51 added — which every other project depends on — is run by Playwright but not
+> counted by facts. Two different definitions of the same word, not a stale
+> number. Leave it alone unless S54's new assertions trip on it.
+>
 > **The guard must live in the browser gate, not the unit suite.**
 > `scripts/facts.mjs:38` abandons the run when Vitest fails, so a unit-level
 > freshness guard would deadlock — the stale snapshot would block the one command

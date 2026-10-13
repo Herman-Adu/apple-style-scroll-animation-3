@@ -34,6 +34,19 @@ pnpm test:axe          # accessibility
 pnpm test:all          # unit/integration + e2e
 ```
 
+## Which app the browser suites talk to
+
+The Playwright gates reuse a dev server already listening on `PORT` (3000 by
+default) and boot one only if nothing answers. That is a shortcut with a sharp
+edge: another project's dev server on the same port gets reused just as happily.
+The `app-identity` project in `qa/config/playwright.config.mts` runs first and
+every other project depends on it, so the run stops with the name of whatever
+answered instead of reporting a stranger's pages as broken.
+
+To run the gates on another port, move the canonical origin with it -
+`PORT=3100 NEXT_PUBLIC_SITE_URL=http://localhost:3100 pnpm test:seo` - because
+the SEO suite checks that each page's canonical points at where it is served.
+
 ## How the layers map to the architecture
 
 - **Unit / mappers** are the highest-value tests for the CMS migration. They pin the contract between Strapi's field shapes and the domain schemas. If a content-type drifts, these fail before anything ships. Keep them current as content-types evolve.

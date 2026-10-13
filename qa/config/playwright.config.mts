@@ -47,7 +47,17 @@ export default defineConfig({
     baseURL,
     trace: "on-first-retry",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    // Runs first and blocks the rest: `reuseExistingServer` cannot tell this
+    // app's dev server from another project's on the same port.
+    {
+      name: "app-identity",
+      testDir: path.join(projectRoot, "qa/config/setup"),
+      testMatch: /app-identity\.setup\.ts$/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    { name: "chromium", use: { ...devices["Desktop Chrome"] }, dependencies: ["app-identity"] },
+  ],
   webServer: process.env.QA_BASE_URL
     ? undefined
     : {

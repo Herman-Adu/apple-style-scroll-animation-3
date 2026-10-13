@@ -120,7 +120,7 @@ export const salesDemoAndObjections: Doc = {
         ],
         [
           "What's the real cost saving?",
-          "See the cost comparison in the Email Selling Points doc: flat infrastructure instead of per-contact fees. The saving grows as the audience grows, which is when ESPs get most expensive.",
+          "Send them the public ROI & Total Cost of Ownership page: flat infrastructure instead of per-contact fees, in a doc they can read without you in the room. The Email Selling Points doc has the longer version for your own prep. The saving grows as the audience grows, which is when ESPs get most expensive.",
         ],
       ],
     },

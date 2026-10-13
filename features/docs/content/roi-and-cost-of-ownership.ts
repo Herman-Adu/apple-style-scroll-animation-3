@@ -10,7 +10,7 @@ export const roiAndCostOfOwnership: Doc = {
     "The money case for the platform in the language a CTO signs off on: what it costs over three years versus a template or page builder, where the savings come from, and how fast it pays back.",
   readingMinutes: 9,
   order: 1,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-13",
   tags: ["roi", "tco", "cost", "business case", "budget", "cto"],
   body: [
     {
@@ -43,9 +43,14 @@ export const roiAndCostOfOwnership: Doc = {
         ["Initial build", "Low", "Low", "Medium"],
         ["Editor / content time", "High (engineer in the loop)", "Medium (per-seat + limits)", "Low (editors self-serve)"],
         ["Platform / license fees", "Low", "High (per-page tax)", "Low"],
+        ["Email and marketing tooling", "High (rented ESP, per-contact)", "High (rented ESP, per-contact)", "Low (email runs beside the orders)"],
         ["Replatform risk", "High (rebuild within ~18mo)", "Medium (lock-in)", "Low (CMS is swappable)"],
         ["3-year direction", "Rises sharply", "Rises steadily", "Flattens"],
       ],
+    },
+    {
+      type: "paragraph",
+      text: "One row there moves differently from the rest. A rented email platform prices on contacts, so its invoice climbs as the list grows — precisely when the marketing is working and you least want to renegotiate. Here the email system runs on your own domain and database, beside the order data it needs, so audience growth shows up as infrastructure rather than as a per-contact fee, and the customer list stays yours rather than being held by the tool that mails it.",
     },
     {
       type: "chart",

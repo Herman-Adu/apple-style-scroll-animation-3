@@ -10,7 +10,7 @@ export const securityAndCompliancePosture: Doc = {
     "How the platform earns trust: server-verified auth, three independent permission layers (proxy, server actions, UI), payment data that never touches our servers, a full version history on every template, and defence-in-depth headers. Written for a buyer's security review.",
   readingMinutes: 10,
   order: 1,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-13",
   tags: ["security", "compliance", "trust", "pci", "auth", "cto", "posture", "permissions", "defence in depth"],
   body: [
     {
@@ -119,6 +119,23 @@ export const securityAndCompliancePosture: Doc = {
     {
       type: "paragraph",
       text: "Scheduled campaign sends run with no one signed in, so they go through a dedicated server-only function rather than through the admin actions. The route that triggers them refuses any call without the CRON_SECRET bearer token, and it does nothing until that secret is configured.",
+    },
+    {
+      type: "heading",
+      text: "Email leaves on a domain you own",
+    },
+    {
+      type: "paragraph",
+      text: "Owning the email system raises a fair question in a review: does mail sent from your own platform land as reliably, and hold up to the same scrutiny, as mail sent from a rented marketing tool? Deliverability here rests on the same foundations a specialist provider uses — the difference is that the authenticated sending domain, the consent records and the audience are yours rather than a shared tenancy.",
+    },
+    {
+      type: "list",
+      items: [
+        "Sends go out through Resend on an authenticated sending domain, so SPF and DKIM are aligned with the brand the recipient actually sees in the from line.",
+        "Marketing opt-in and transactional consent are separate records: a subscriber who agreed to campaigns is not the same thing as a guest asking to be told when one sold-out product returns.",
+        "Every send is logged with its recipient, subject, template, type and outcome — sent, skipped or failed — so a complaint is answered from a record rather than from a recollection.",
+        "Each alert email carries its own one-click unsubscribe token, so withdrawal takes effect immediately and without anyone in support handling it.",
+      ],
     },
     {
       type: "heading",

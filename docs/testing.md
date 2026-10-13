@@ -93,6 +93,16 @@ So that page opens with a "Where the platform is today" section rendered from th
 
 The same file sweeps every **public** doc for a count phrase and fails any figure that is neither a value in the snapshot nor an allow-listed line of recorded history - the four allow cases are lifted from the files with their reasons, since an invented one cannot catch a guard that is too greedy. The section's assertions read the section's own blocks rather than the whole page, because `docText` includes the summary: asserting against that would let the numbers be moved into the summary and the section deleted, which is exactly how S51's changelog guard passed with its entry removed.
 
+### The showroom answers the engine room
+
+The nine owner-gated `Positioning` docs are the engine room: what the owner charges and how they answer a buyer in the room. The eight public CTO docs are the showroom, read by that buyer with nobody beside them. Nothing failed when the pitch committed to an answer and the public layer did not carry it - the drift that let What's New fall eleven sprints behind before S50.
+
+`qa/unit/docs/showroom-coverage.test.ts` parses the objections out of the three gated docs that carry an objection-handling section, rather than listing them by hand, because a hand-written list can only check the past. Each one is keyed past its quotes and apostrophes and must appear in the manifest in `features/docs/lib/domain/showroom.ts`, which names the public doc that answers it and the words that prove the answer is still there. The guard fails three ways: a new objection with no public home, a manifest entry whose objection the pitch has dropped, and a public page edited until its anchors are gone or moved behind the gate.
+
+Anchors match on word boundaries with the hyphen counted as part of a word, so `ESP` is not found inside "responses" and `page` is not found inside "per-page tax" - a substring search would report a deliverability answer on a page about edge caching (S52: judge the span that holds the mention). Both halves are table-driven with every line lifted from the corpus, since an invented allow case cannot catch a guard that is too greedy. `OBJECTION_SOURCES` and `OBJECTION_FLOOR` are asserted against what the parser actually finds, because a parser that returned nothing would satisfy the coverage check.
+
+It was red on the real files before it was green: three objections had no public answer anywhere - the words `deliverability`, `rented`, `per-contact` and `another developer` appeared in no public CTO doc, while the gated demo script told the seller to send a buyer to an owner-gated doc for "the real cost saving".
+
 Coverage only goes up: the run fails if lines or branches drop below `qa/baselines/coverage.json`. After raising coverage, run `pnpm facts --update-baseline` and commit the new baseline. CI runs `pnpm facts` and uploads the file as an artifact; `pnpm showcase:assets` runs it before rendering.
 
 ## Notes

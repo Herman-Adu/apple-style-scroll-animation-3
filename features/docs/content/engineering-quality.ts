@@ -206,6 +206,11 @@ export const engineeringQuality: Doc = {
       title: "Honest about gaps",
       text: "Quality also means saying what isn't finished. The full click-through browser test is skipped until a dedicated test admin account exists, and scheduled sends are built and tested but not switched on. Both are tracked on the roadmap.",
     },
+    { type: "heading", text: "If someone else has to pick it up" },
+    {
+      type: "paragraph",
+      text: "The real risk in a purpose-built platform is never the code — it is code that only one person understands. The answer to that is not a promise that the original developer stays available; it is that another developer can take the platform over and be productive in days. What makes that true here sits in the repository rather than in someone's head: the domain model is typed end to end, so an editor tells a newcomer what is allowed; the conventions are written down in this library for every audience it serves; the Architecture Decision Records say why each major choice was made, including the ones that were reversed; and the test suite states the intended behaviour precisely enough to refactor against without asking anyone.",
+    },
     { type: "heading", text: "What a reviewer can check in ten minutes" },
     {
       type: "list",

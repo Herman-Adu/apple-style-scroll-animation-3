@@ -127,6 +127,10 @@ test("the committed facts snapshot still matches the merged pull requests in git
     git("rev-parse", "--is-shallow-repository").trim() === "true",
     "shallow clone: no history to recount merged pull requests from",
   )
+  // Red by exactly one right after a merge: the snapshot committed in a pull
+  // request cannot record that pull request's own squash commit, so `main` at
+  // rest is always one ahead of the number it carries. The next sprint's first
+  // `pnpm facts` clears it, which is the habit this guard exists to force.
   const counted = countPullRequests()
   expect(counted.mergedPrs, "merged pull requests actually present in history").toBeGreaterThan(0)
   expect(facts.repo.mergedPrs, "snapshot.repo.mergedPrs is stale — rerun pnpm facts").toBe(counted.mergedPrs)

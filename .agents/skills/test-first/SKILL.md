@@ -22,6 +22,8 @@ description: Red-green-refactor for this repo - choose the test layer (Vitest un
 | Metadata, sitemap, robots                      | seo         | `qa/seo/*.spec.ts`                 |
 | Accessibility of a page                        | axe         | `qa/axe/*.spec.ts`                 |
 
+**A route list is a claim about coverage.** `qa/axe` and `qa/seo` scan the routes they name and nothing else, so a page type with no entry is unguarded however many instances it has: before S62 the axe list held ten routes and none of them was a doc, leaving all 56 doc pages unscanned. The first one added found a real AA failure in shared chrome - the 10px labels were `text-foreground/40`, 3.30:1 on dark and 2.68:1 on light - so budget for a fix when you add the first route of a kind, and expect it to be the layout's rather than the page's.
+
 Make it testable by design. Put the rule in a small pure module (`features/<x>/lib/*.ts`, `lib/auth/permissions.ts`) and keep components and actions thin, so most tests are fast unit tests.
 
 ## Run

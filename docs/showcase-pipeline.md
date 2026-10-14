@@ -12,7 +12,7 @@ How the demo videos, slides and LinkedIn carousels are made, from an empty datab
 | 1d. Check captions | `pnpm showcase:captions` | Renders every caption on its route at all three sizes and writes one screenshot per shot. Two minutes, no recording — run it before a recording pass, not after. | `test-results/preview/captions/` |
 | 2. Record clips | `pnpm showcase:video` | Records each clip with Playwright, then converts it to H.264 `.mp4` with a `.jpg` poster. `--no-record` converts existing raw clips only. | `public/showcase/video/<clip>/` |
 | 3. Build cuts | `pnpm showcase:cuts` | Records every clip in 4:5 and 9:16, then stitches the recruiter, buyer and engineer cuts and publishes the calendar clips. `--no-record`, `--calendar-only` and `--clip <slug>` narrow the run. | `public/showcase/video/<clip>/` |
-| 4. Export slides and carousels | `pnpm showcase:assets` | Runs `pnpm facts`, then renders every slide to PNG and every carousel to a PDF with one page per slide. | `public/showcase/social/<group>/` |
+| 4. Export slides and carousels | `pnpm showcase:assets` | Runs `pnpm facts`, then renders every slide to PNG and every carousel to a PDF with one page per slide, recording what each file was drawn from. | `public/showcase/social/<group>/`, `public/showcase/export-manifest.json` |
 | 5. Clean up | `pnpm showcase:unseed -- --confirm` | Removes only the rows tagged as demo. Real data is never touched. | Demo rows gone |
 
 Run steps 2 to 4 against a running dev server. Seeding and unseeding use the database in `.env.local` or `.env.development.local`, so always read the dry-run host before adding `--confirm`.
@@ -38,6 +38,7 @@ One folder per audience or topic, holding everything for it — so picking what 
 
 ```
 public/showcase/
+  export-manifest.json                 what each published file was rendered from
   video/
     buyer/  engineer/  recruiter/     4x5.mp4  4x5.jpg  9x16.mp4  9x16.jpg
     enquiry/  journey/  restock/  sitetour/
@@ -81,6 +82,22 @@ The difference is not cosmetic. `qa/unit/showcase/posting-calendar.test.ts` requ
 Briefs are defined in `features/showcase/lib/domain/briefs.ts` and exported by the same harness, so `pnpm showcase:assets` builds them with everything else.
 
 The site-tour stills in `public/showcase/social/site-tour/stills/` are frames taken from the buyer cut with `ffmpeg-static`. Re-take them after a visible UI change, then rerun `pnpm showcase:assets`.
+
+## What each export was rendered from
+
+`public/showcase/export-manifest.json` records, per published file, the value of every fact drawn on it at the moment it was rendered. `pnpm showcase:assets` writes it — one record per file the run actually wrote, never one more — and `qa/smoke/export-freshness.spec.ts` compares it to the facts now, naming any file whose numbers have moved.
+
+This is the half of the facts guard that was missing. `qa/smoke/facts-freshness.spec.ts` recounts the snapshot, so a wrong number cannot stay in the repo; it says nothing about the images. A docs page resolves its numbers when it renders, so S63's work made the post text current for good. A slide bakes them in. S48 shipped five PDFs with the wrong figure drawn on them, and by S64 eight files were quoting the Oct 9 snapshot — `recruiter/proof.png` printed "Automated tests 1,617" under a column headed TODAY, beneath the headline "Measured on every run, not claimed", against a real 1,830.
+
+The record is per file and per fact, not per snapshot. Of the 73 published exports, 65 draw no fact at all and `shared/before-after.png` draws four that have read 0/0/0/32 since S43, so a snapshot-level comparison would demand a re-export of all 73 every time one unit test was added. A guard that cries wolf ends up with an allow-list, and an allow-list is the guard agreeing with the bug.
+
+Three things follow from that, and each is deliberate:
+
+- **Only a render may write a record.** There is no "rebuild the manifest from today's facts" helper, because it would turn the guard green without re-rendering a file. `mergeExportManifest` takes records for files a run just wrote, keeps the records of files it did not touch — so a partial run cannot claim them — and drops any file the plan no longer publishes.
+- **The guard is a browser test, not a unit test.** `scripts/facts.mjs` abandons the run if Vitest fails, and `pnpm showcase:assets` is `pnpm facts && playwright test`. A unit guard over the real files would block the only command that repairs it. `pnpm facts` only *lists* Playwright tests, so a red test here never stops the fix. The pure rules are unit-tested in `qa/unit/showcase/export-manifest.test.ts`, where they never read the real manifest and so cannot deadlock.
+- **A sprint that moves a test count owes a re-export.** That is the point rather than a cost: the export is deterministic, so re-rendering the whole set only changes the files whose numbers changed.
+
+Which facts a file draws is read off the slide by `factRefsIn`, the same shape-walk as `findHardCodedNumbers` — one reports the numbers a slide typed in, the other the numbers it asked for. Neither knows anything about slide kinds, so a new kind of slide is covered the day it is written.
 
 ## Whose brand is on a slide
 
@@ -132,8 +149,9 @@ A carousel only posts as a PDF on LinkedIn and Telegram. X and Facebook take the
 - **PDF page count.** Each carousel must have exactly one page per slide. A blank trailing page means a slide is taller than its page.
 - **Facts must exist before the render.** `.generated/facts.json` is gitignored, and a slide bound to a fact renders a dash when it is missing. `pnpm showcase:assets` runs `pnpm facts` first for exactly this reason; calling Playwright directly skips it. The five fact-bound slides are the recruiter proof strip, the engineer test pyramid and coverage bars, the before/after strip and the bar chart.
 - **The exporter reuses your dev server on 3000.** `playwright.social.config.mts` boots `pnpm dev` only when nothing is listening. If a dev server is already up, make sure it is running this branch, because the export screenshots whatever it serves.
-- **Re-render the whole set, not a subset.** Fonts and theme are shared, so a partial render leaves the kit in two different states. The export is deterministic: the same commit on the same machine produces byte-identical files.
-- **Facts drift.** Numbers on slides come from `facts.json`. If a test says a fact is stale, rerun `pnpm facts` and re-export.
+- **Re-render the whole set, not a subset.** Fonts and theme are shared, so a partial render leaves the kit in two different states.
+- **The render is deterministic; the files are not quite.** Of the 64 PNGs, 57 came back byte-identical across S48's export and S64's. Every PDF changes on every run — Chromium writes a creation date and a document id into it, and three of the nine changed with no change in size at all — and the two mermaid slides (`email-case-study/flow.png`, `layers.png`) differ by a few dozen bytes because the diagram is laid out afresh. So a re-export always shows nine PDFs and two PNGs in the diff. Read the binary diff by which *slides* changed, never by the file count.
+- **Facts drift, and an exported file cannot notice.** Numbers on slides come from `facts.json` at render time, so none is typed by hand — but a PNG keeps whatever was true the day it was exported, while the post text beside it reads the facts live. If a test says a fact is stale, rerun `pnpm facts` and re-export.
 
 ## Where the text lives
 

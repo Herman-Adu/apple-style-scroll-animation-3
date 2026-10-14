@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { docs } from "@/features/docs/content";
 import { docText } from "@/features/docs/lib/domain/freshness";
+import { DELIVERABLES } from "@/features/docs/lib/domain/deliverables";
 import {
-  DELIVERABLES,
   missingTierValues,
   TIERS,
   tierNames,

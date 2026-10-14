@@ -1,7 +1,7 @@
 import type { Doc } from "../lib/domain/schema"
+import { DELIVERABLES } from "../lib/domain/deliverables"
 import {
   CAPACITY,
-  DELIVERABLES,
   deliverableTableRows,
   PHASES,
   SETUP_DEPENDENCY,

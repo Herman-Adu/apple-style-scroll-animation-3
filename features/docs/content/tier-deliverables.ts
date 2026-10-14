@@ -25,13 +25,14 @@ export const tierDeliverables: Doc = {
   access: "owner",
   summary:
     "What a client actually receives at each tier - code access and escrow, whose name every account is in, who runs the infrastructure, training, support, and how they leave. The engagement phases, the capacity model behind the prices, and the decisions that set all of it.",
-  readingMinutes: 9,
+  readingMinutes: 11,
   order: 3,
   updatedAt: "2026-10-14",
   tags: [
     "tiers",
     "deliverables",
     "escrow",
+    "objections",
     "support",
     "capacity",
     "retainer",
@@ -154,6 +155,35 @@ export const tierDeliverables: Doc = {
     {
       type: "paragraph",
       text: `Decision 2 - a monthly, not an optional maintenance contract. Context: I host and operate every deployment, so there is no version of the offer where the client runs it alone and pays nothing. Decision: a fixed Setup fee plus a monthly, on ${TERM.text.charAt(0).toLowerCase()}${TERM.text.slice(1)} Alternatives: a one-off build price with an optional care plan, which makes the recurring revenue a negotiation at the worst possible moment; or monthly-only with no setup fee, which finances every client's onboarding out of my own time. Trade-off: the monthly has to be defended once, up front, instead of never. In return the business has a floor that does not depend on winning the next deal, and the first year is predictable enough to plan product work around.`,
+    },
+    {
+      type: "heading",
+      text: "Objection handling",
+    },
+    {
+      type: "paragraph",
+      text: "Four questions follow the ladder every time. Answer each in one breath, then say what the client does get - a hedge here reads as the vague version of 'you own everything' and costs the same trust. Every answer has a public half at /docs/what-you-receive, and a guard fails the build if the words that carry it ever leave that page, so a buyer reading it alone gets the same answer as a buyer on a call.",
+    },
+    {
+      type: "steps",
+      items: [
+        {
+          title: "Do we own the code?",
+          text: "No, and the honest version is stronger than the hedge: you own your accounts, your domain and your data, and the source sits in escrow from day one, released to you if I cease trading, breach the agreement or fail to deliver. At Scale a perpetual licence for use in your own business can be priced up front. What you are buying is a platform that runs, maintained for every client at once, rather than a snapshot of a repository you would then need an engineer to look after.",
+        },
+        {
+          title: "Are we locked into a retainer?",
+          text: `No - locked out of the exit is the thing to disprove, and the answer is the term plus the exit. ${TERM.text} Your data is yours on request at any time, in a standard format, with no exit fee. The monthly is not a maintenance contract bolted on; it is hosting, monitoring, updates and support for a platform I operate, and there is no version of the offer where you run it alone and pay nothing.`,
+        },
+        {
+          title: "What if we want to move to another developer?",
+          text: "Then you move. You keep every vendor account, the domain, the data and the runbook for operating it, and the escrow agreement covers the source on its release triggers. Say this one flatly and early: a buyer who believes the exit is real stops negotiating for the repository, which is the request that makes the engagement unprofitable for both of us.",
+        },
+        {
+          title: "Why are the Stripe and Resend accounts in our name?",
+          text: "Because your customers pay you directly, into your own Stripe account, and your sending reputation belongs to your domain. Accounts in my name would make me a payment intermediary and put your deliverability on someone else's record - and it would quietly make leaving hard, which contradicts everything else on this page. I hold delegated access to operate and support the platform, and you can revoke it without asking me.",
+        },
+      ],
     },
     {
       type: "quote",

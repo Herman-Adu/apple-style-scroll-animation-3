@@ -32,7 +32,7 @@ export function DocsSidebar({
     <nav aria-label="All documentation" className="sticky top-28 space-y-8">
       {groups.map((group) => (
         <div key={group.audience}>
-          <p className="mb-3 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+          <p className="mb-3 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
             {group.meta.title}
           </p>
           <ul className="space-y-1 border-l border-foreground/10">

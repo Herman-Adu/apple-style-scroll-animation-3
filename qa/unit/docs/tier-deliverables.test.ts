@@ -3,7 +3,11 @@ import { docs } from "@/features/docs/content";
 import { docText } from "@/features/docs/lib/domain/freshness";
 import { DELIVERABLES } from "@/features/docs/lib/domain/deliverables";
 import {
+  CAPACITY,
   missingTierValues,
+  phaseChecklist,
+  PHASES,
+  SETUP_DEPENDENCY,
   TIERS,
   tierNames,
 } from "@/features/docs/lib/domain/tiers";
@@ -21,9 +25,36 @@ import {
  */
 
 const deliverablesDoc = docs.find((doc) => doc.slug === "tier-deliverables");
+const publicDoc = docs.find((doc) => doc.slug === "what-you-receive");
 const pricingDoc = docs.find(
   (doc) => doc.slug === "pricing-and-packaging-the-build",
 );
+
+/**
+ * Bare uses of "handover", with their surrounding words.
+ *
+ * GLOSSARY.md: "handover" alone has meant three different things in this repo.
+ * Qualified uses ("template handover", "operational handover") are fine; the
+ * bare noun is what caused the drift, and it leaked into client-facing copy
+ * once already. Reported with context, because "expected true to be false"
+ * does not tell the next reader which sentence to fix.
+ */
+const bareHandovers = (text: string): string[] => {
+  const allowed = ["template", "operational"];
+  const offenders: string[] = [];
+
+  for (const match of text.matchAll(/handover/gi)) {
+    const before = text.slice(Math.max(0, match.index - 14), match.index);
+    if (allowed.some((word) => new RegExp(`${word}\\s+$`, "i").test(before))) {
+      continue;
+    }
+    offenders.push(
+      text.slice(Math.max(0, match.index - 40), match.index + 20).trim(),
+    );
+  }
+
+  return offenders;
+};
 
 describe("the tier deliverables matrix", () => {
   it("publishes the three tiers in ladder order", () => {
@@ -74,26 +105,63 @@ describe("the gated doc that carries it", () => {
   });
 
   it("never uses the bare term the glossary forbids", () => {
-    // GLOSSARY.md: "handover" alone has meant three different things in this
-    // repo. Qualified uses ("template handover", "operational handover") are
-    // fine; the bare noun is what caused the drift. Reported with its
-    // surrounding words, because "expected true to be false" does not tell the
-    // next reader which sentence to fix.
-    const allowed = ["template", "operational"];
-    const text = docText(deliverablesDoc!);
-    const offenders: string[] = [];
+    expect(bareHandovers(docText(deliverablesDoc!))).toEqual([]);
+  });
+});
 
-    for (const match of text.matchAll(/handover/gi)) {
-      const before = text.slice(Math.max(0, match.index - 14), match.index);
-      if (allowed.some((word) => new RegExp(`${word}\\s+$`, "i").test(before))) {
-        continue;
-      }
-      offenders.push(
-        text.slice(Math.max(0, match.index - 40), match.index + 20).trim(),
-      );
+/**
+ * The public half. It is a subset of the gated doc, rendered from the same
+ * typed data, so the two cannot promise different things - and it is the page
+ * the owner sends after a call and edits least, which is why the subset is
+ * drawn by a guard rather than by hand. What must *not* cross the gate is the
+ * capacity model, the decision records and any price.
+ */
+describe("the public subset a buyer reads alone", () => {
+  it("is a public CTO doc in the business case", () => {
+    expect(publicDoc, "what-you-receive should exist").toBeDefined();
+    expect(publicDoc?.category).toBe("Business Case");
+    expect(publicDoc?.audience).toBe("cto");
+    expect(publicDoc?.access).toBe("public");
+  });
+
+  it("renders the same ladder, from the same data as the gated doc", () => {
+    const text = docText(publicDoc!);
+
+    for (const row of DELIVERABLES) expect(text, row.id).toContain(row.label);
+    for (const name of tierNames()) expect(text).toContain(name);
+  });
+
+  it("names the Setup dependency that is not the builder's to control", () => {
+    expect(docText(publicDoc!)).toContain(SETUP_DEPENDENCY);
+  });
+
+  it("turns the gated Setup sentence into the public confidence list", () => {
+    const text = docText(publicDoc!);
+    const items = phaseChecklist(PHASES[0]);
+
+    expect(items.length).toBeGreaterThan(3);
+    for (const item of items) expect(text, item).toContain(item);
+  });
+
+  it("states the pricing shape and not a price", () => {
+    const text = docText(publicDoc!);
+
+    for (const basis of new Set(PHASES.map((phase) => phase.basis))) {
+      expect(text, basis).toContain(basis);
     }
+    expect(text, "a price in the public doc").not.toMatch(/[£$€]/);
+  });
 
-    expect(offenders).toEqual([]);
+  it("leaves the gated half behind the gate", () => {
+    const text = docText(publicDoc!);
+
+    expect(text, "the capacity model").not.toContain(CAPACITY.ninthClient);
+    expect(text).not.toMatch(/concurrent Care clients/i);
+    expect(text, "a decision record").not.toMatch(/\bDecision \d/);
+  });
+
+  it("never uses the bare term the glossary forbids", () => {
+    expect(bareHandovers(docText(publicDoc!))).toEqual([]);
   });
 });
 

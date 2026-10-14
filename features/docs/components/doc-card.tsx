@@ -12,7 +12,7 @@ export function DocCard({ doc, index = 0, snippet }: { doc: DocSummary; index?: 
         href={`/docs/${doc.slug}`}
         className="group flex h-full flex-col rounded-2xl border border-foreground/10 bg-card/40 p-6 transition-colors hover:border-accent-teal/40 hover:bg-card/70"
       >
-        <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+        <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
           <span>{doc.category}</span>
           <span>{doc.readingMinutes} min</span>
         </div>

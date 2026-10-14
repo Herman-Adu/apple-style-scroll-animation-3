@@ -248,7 +248,7 @@ describe("the showroom answers the engine room", () => {
   });
 
   it("pins how many objections the pitch carried when this guard was written", () => {
-    expect(OBJECTION_FLOOR).toBe(15);
+    expect(OBJECTION_FLOOR).toBe(19);
   });
 
   it("answers every objection the gated pitch commits to, somewhere public", () => {
@@ -261,5 +261,48 @@ describe("the showroom answers the engine room", () => {
 
   it("still has every answer on the public page that claims it", () => {
     expect(driftedAnswers(PUBLIC_ANSWERS, showroom), "a public answer that drifted away").toEqual([]);
+  });
+});
+
+/**
+ * The tier promise is the newest half of the pitch and the one a buyer reads
+ * alone, after a call. A gated-only answer to "do we own the code?" re-creates
+ * exactly the bug this guard was built for, so the four questions the ladder
+ * provokes are named here rather than left to the generic sweep: a sweep proves
+ * every objection has *an* answer somewhere, and this proves these four are
+ * answered on the page the owner actually sends.
+ */
+describe("the tier promise has a public half", () => {
+  const TIER_OBJECTIONS = [
+    "do we own the code",
+    "are we locked into a retainer",
+    "what if we want to move to another developer",
+    "why are the stripe and resend accounts in our name",
+  ];
+
+  const deliverables = docs.find((doc) => doc.slug === "tier-deliverables");
+
+  it("parses the objection section out of the gated deliverables doc", () => {
+    expect(OBJECTION_SOURCES).toContain("tier-deliverables");
+    expect(parseObjections(deliverables!).map((objection) => objection.key)).toEqual(
+      TIER_OBJECTIONS,
+    );
+  });
+
+  it("answers all four in the public doc, not somewhere else public", () => {
+    for (const key of TIER_OBJECTIONS) {
+      expect(PUBLIC_ANSWERS[key]?.doc, key).toBe("what-you-receive");
+    }
+  });
+
+  it("anchors each answer on words the public doc still carries", () => {
+    const text = docText(docs.find((doc) => doc.slug === "what-you-receive")!);
+    const lost = TIER_OBJECTIONS.flatMap((key) =>
+      (PUBLIC_ANSWERS[key]?.anchors ?? [])
+        .filter((anchor) => !mentionsAnchor(text, anchor))
+        .map((anchor) => `${key}: "${anchor}"`),
+    );
+
+    expect(lost, "an anchor phrase that is not in the public doc").toEqual([]);
   });
 });

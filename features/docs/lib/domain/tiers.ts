@@ -145,6 +145,23 @@ export const CAPACITY = {
     "The ninth client raises the price rather than filling the slot. Being fully booked at the wrong price is the failure mode a sole developer cannot recover from quickly.",
 } as const
 
+/**
+ * A phase's description as list items: the clauses of one semicolon-separated
+ * sentence, each sentence-cased and with the trailing "and" dropped.
+ *
+ * The gated doc reads the Setup phase as prose and the public doc renders it as
+ * a checklist. Deriving one from the other means a client cannot be promised a
+ * different Setup in the two places, which is the whole failure this ladder's
+ * public half exists to prevent.
+ */
+export function phaseChecklist(phase: EngagementPhase): string[] {
+  return phase.text
+    .split(";")
+    .map((clause) => clause.trim().replace(/^and\s+/i, "").replace(/\.$/, ""))
+    .filter((clause) => clause.length > 0)
+    .map((clause) => clause.charAt(0).toUpperCase() + clause.slice(1))
+}
+
 /** The tier names, in ladder order. */
 export function tierNames(): string[] {
   return TIERS.map((tier) => tier.name)

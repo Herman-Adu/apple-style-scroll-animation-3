@@ -140,7 +140,7 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
         <label className="relative w-full lg:w-80">
           <span className="sr-only">Search documentation</span>
           <Search
-            className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/40"
+            className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/60"
             strokeWidth={1.5}
           />
           <input
@@ -148,7 +148,7 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search guides…"
-            className="w-full rounded-full border border-foreground/15 bg-card/40 py-2.5 pl-11 pr-4 text-sm text-foreground placeholder:text-foreground/40 outline-none transition-colors focus:border-accent-teal/50"
+            className="w-full rounded-full border border-foreground/15 bg-card/40 py-2.5 pl-11 pr-4 text-sm text-foreground placeholder:text-foreground/60 outline-none transition-colors focus:border-accent-teal/50"
           />
         </label>
       </div>

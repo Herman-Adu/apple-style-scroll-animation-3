@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-10-14T13:54:56.044Z",
+  "generatedAt": "2026-10-14T14:22:25.269Z",
   "tests": {
-    "unit": 1674,
+    "unit": 1684,
     "integration": 83,
-    "smoke": 27,
-    "axe": 10,
+    "smoke": 29,
+    "axe": 11,
     "seo": 18,
-    "total": 1812
+    "total": 1825
   },
   "coverage": {
-    "lines": 40.97,
+    "lines": 41.04,
     "branches": 30.86
   },
   "arch": {
@@ -20,13 +20,13 @@
     "useEffect": 32
   },
   "docs": {
-    "pages": 56
+    "pages": 57
   },
   "routes": {
     "pages": 45
   },
   "repo": {
-    "mergedPrs": 207,
-    "latestPr": 216
+    "mergedPrs": 208,
+    "latestPr": 217
   }
 }

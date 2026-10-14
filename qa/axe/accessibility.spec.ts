@@ -13,6 +13,10 @@ const routes = [
   "/about",
   "/contact",
   "/stock-alerts/unsubscribe?token=axe-check",
+  // The public tier promise: the page the owner sends after a call, and the
+  // only doc route in this scan - a long table in a reading column is where a
+  // contrast or heading-order failure would actually appear.
+  "/docs/what-you-receive",
   "/showcase-render/infographic-table",
   "/showcase-render/infographic-bar-chart",
   "/showcase-render/infographic-line-chart",

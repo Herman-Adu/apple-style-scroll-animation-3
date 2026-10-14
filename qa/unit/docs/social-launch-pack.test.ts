@@ -5,6 +5,7 @@ import { docs } from "@/features/docs/content";
 import { socialLaunchPackClientBlocks } from "@/features/docs/content/social-launch-pack-client";
 import { docText } from "@/features/docs/lib/domain/freshness";
 import type { DocBlock } from "@/features/docs/lib/domain/schema";
+import { absoluteUrl } from "@/lib/seo/site";
 import { REPO_ROOT } from "@/qa/config/repo-root";
 
 /**
@@ -20,7 +21,14 @@ const TELEGRAM_POST_LIMIT = 4096;
 // silently truncated in the middle of a sentence, which is worse than short.
 const LINKEDIN_HEADLINE_LIMIT = 220;
 const LINKEDIN_ABOUT_LIMIT = 2600;
-const ALLOWED_PLACEHOLDERS = new Set(["[live URL]", "[your name]"]);
+/**
+ * `[your name]` is filled in by the reader as they send the DM, so it stays.
+ * `[live URL]` was on this list until S63 and that is why twenty of them
+ * survived into copy meant to be pasted straight into LinkedIn: the host is
+ * resolvable from `absoluteUrl("")`, so a placeholder for it is a bug, not an
+ * instruction. Allowing it here is what kept the guard quiet.
+ */
+const ALLOWED_PLACEHOLDERS = new Set(["[your name]"]);
 const OVERCLAIMS = [
   /production[- ]ready/i,
   /battle[- ]tested/i,
@@ -30,6 +38,30 @@ const OVERCLAIMS = [
 ];
 
 type CodeBlock = Extract<DocBlock, { type: "code" }>;
+
+const docSlugs = new Set(docs.map((doc) => doc.slug));
+
+/** Every absolute URL the doc renders. Sentence punctuation is not part of the link. */
+const urlsIn = (text: string) =>
+  (text.match(/https?:\/\/[^\s)\]]+/g) ?? []).map((url) => new URL(url.replace(/[.,;:!?]+$/, "")));
+
+/**
+ * Does a path in the posting copy lead anywhere? The freshness guard checks
+ * that a `/docs/<slug>` link names a doc that exists, which is most of the
+ * pack but not all of it: a post is free to link the storefront or a PDF, and
+ * nothing checked those. A link in published copy that 404s costs more than a
+ * stale one, because the reader is a recruiter or a buyer who clicked it.
+ */
+const resolves = (pathname: string) => {
+  const path = pathname.replace(/\/$/, "");
+  if (path === "") return true;
+  const doc = /^\/docs\/([a-z0-9-]+)$/.exec(path);
+  if (doc) return docSlugs.has(doc[1]);
+  if (existsSync(join(REPO_ROOT, "public", path))) return true;
+  return ["page.tsx", "page.ts", "route.ts"].some((file) =>
+    existsSync(join(REPO_ROOT, "app", path, file)),
+  );
+};
 
 const postsTitled = (prefix: string) =>
   (pack?.body ?? []).filter(
@@ -179,6 +211,15 @@ describe("social launch pack", () => {
     expect(used.filter((token) => !ALLOWED_PLACEHOLDERS.has(token))).toEqual([]);
   });
 
+  // The posts are not the only copy the owner reads. The "Before you post"
+  // callout told the reader to replace a placeholder, so the instruction and
+  // the placeholder had to be removed together; sweeping only the code blocks
+  // would have left the instruction behind, pointing at nothing.
+  it("uses only the agreed placeholders anywhere in the doc, not only in the posts", () => {
+    const used = docText(pack!).match(/\[[^\]\n]+\]/g) ?? [];
+    expect(used.filter((token) => !ALLOWED_PLACEHOLDERS.has(token))).toEqual([]);
+  });
+
   it("makes no claim the template cannot back up", () => {
     const text = docText(pack!);
     const hits = OVERCLAIMS.filter((pattern) => pattern.test(text));
@@ -191,6 +232,20 @@ describe("social launch pack", () => {
     ];
     expect(mediaPaths.length).toBeGreaterThan(0);
     expect(mediaPaths.filter((path) => !existsSync(join(REPO_ROOT, "public", path)))).toEqual([]);
+  });
+
+  it("points every link at this site's own origin", () => {
+    const hosts = [...new Set(urlsIn(docText(pack!)).map((url) => url.origin))];
+    // A hardcoded host drifts the moment a fork re-points the site, and a
+    // `*.vercel.app` one is worse than drift: sign-in there fails with an
+    // invalid-origin error and the session is lost after checkout.
+    expect(hosts).toEqual([new URL(absoluteUrl("")).origin]);
+  });
+
+  it("links only to pages that exist", () => {
+    const paths = [...new Set(urlsIn(docText(pack!)).map((url) => url.pathname))];
+    expect(paths.length, "no links in the pack to check").toBeGreaterThan(0);
+    expect(paths.filter((path) => !resolves(path))).toEqual([]);
   });
 
   it("is listed in the template handover so a fork finds it", () => {

@@ -70,6 +70,42 @@ describe("docs freshness helpers", () => {
     ]);
   });
 
+  it("reads an absolute link to this site as an internal doc link", () => {
+    // Posting copy carries the whole URL so it is ready to paste, which puts a
+    // host in front of `/docs/…`. Without this the link stops being checked at
+    // the moment it starts being published: `…co.uk/docs/x` ends in a word
+    // character before the slash, so the lookbehind that skips
+    // `features/docs/api` skipped the live link too.
+    const absoluteSample = {
+      ...docs[0],
+      body: [
+        {
+          type: "paragraph" as const,
+          text: "Read it here: https://momo-audio.adudev.co.uk/docs/engineering-quality and http://localhost:3000/docs/whats-new",
+        },
+      ],
+    };
+
+    expect(internalDocLinks(absoluteSample)).toEqual([
+      "engineering-quality",
+      "whats-new",
+    ]);
+  });
+
+  it("still ignores a source path that only looks like a doc link", () => {
+    const sourceSample = {
+      ...docs[0],
+      body: [
+        {
+          type: "paragraph" as const,
+          text: "Source lives in features/docs/api and qa/unit/docs/freshness.test.ts.",
+        },
+      ],
+    };
+
+    expect(internalDocLinks(sourceSample)).toEqual([]);
+  });
+
   it("lists image sources", () => {
     expect(docImages(sample)).toEqual(["/docs/showcase/email-christmas.png"]);
   });

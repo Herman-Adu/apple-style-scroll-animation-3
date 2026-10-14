@@ -19,5 +19,5 @@ Target: `momo-audio.adudev.co.uk`. Each step is reported as passed / failed / bl
 7. Deploy, and record the deployment URL.
 8. `QA_BASE_URL=https://momo-audio.adudev.co.uk pnpm test:smoke && pnpm test:seo && pnpm test:axe`.
 9. Check the Stripe webhook endpoint points at production and a test event returns 200 (`vercel logs`).
-10. Replace the `[live URL]` placeholders in docs and showcase content, in a follow-up PR.
+10. Nothing to replace in the launch pack: since S63 its links resolve from `absoluteUrl("")`, and a guard fails the build if a placeholder or a foreign host comes back. Older showcase copy still carries `[your-url-here]`.
 11. Rollback plan: `vercel rollback` (gated) if smoke fails in production.

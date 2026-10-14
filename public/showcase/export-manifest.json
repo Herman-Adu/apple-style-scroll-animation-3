@@ -1,141 +1,141 @@
 {
   "exports": {
     "/showcase/social/business-case/brief.pdf": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {
-        "tests.total": 1863,
-        "coverage.lines": 41.88,
-        "coverage.branches": 31.62,
+        "tests.total": 1868,
+        "coverage.lines": 41.95,
+        "coverage.branches": 31.67,
         "arch.deepImports": 0
       }
     },
     "/showcase/social/business-case/build-vs-buy.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/business-case/replatform-risk.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/buyer/carousel.pdf": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/buyer/cost-line.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/buyer/cost-table.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/buyer/self-serve.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/buyer/stock-alerts.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/1.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/2.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/3.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/4.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/5.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/carousel.pdf": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/cover.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/email-case-study/carousel.pdf": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/email-case-study/cover.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/email-case-study/cta.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/email-case-study/flow.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/email-case-study/history.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/email-case-study/layers.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/email-case-study/locks.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/email-case-study/products.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/email-case-study/starters.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/engineer/architecture.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/engineer/carousel.pdf": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {
-        "tests.unit": 1721,
+        "tests.unit": 1726,
         "tests.integration": 83,
         "tests.smoke": 30,
         "tests.axe": 11,
         "tests.seo": 18,
-        "coverage.lines": 41.88,
-        "coverage.branches": 31.62
+        "coverage.lines": 41.95,
+        "coverage.branches": 31.67
       }
     },
     "/showcase/social/engineer/checkout.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/engineer/coverage.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {
-        "coverage.lines": 41.88,
-        "coverage.branches": 31.62
+        "coverage.lines": 41.95,
+        "coverage.branches": 31.67
       }
     },
     "/showcase/social/engineer/restock.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/engineer/tests.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {
-        "tests.unit": 1721,
+        "tests.unit": 1726,
         "tests.integration": 83,
         "tests.smoke": 30,
         "tests.axe": 11,
@@ -143,33 +143,33 @@
       }
     },
     "/showcase/social/engineer/theme.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/1.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/2.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/3.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/4.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/5.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/carousel.pdf": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {
-        "tests.unit": 1721,
+        "tests.unit": 1726,
         "tests.integration": 83,
         "tests.smoke": 30,
         "tests.axe": 11,
@@ -177,71 +177,71 @@
       }
     },
     "/showcase/social/how-it-was-built/cover.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/recruiter/built.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/recruiter/carousel.pdf": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {
-        "tests.total": 1863,
-        "coverage.lines": 41.88,
-        "coverage.branches": 31.62,
+        "tests.total": 1868,
+        "coverage.lines": 41.95,
+        "coverage.branches": 31.67,
         "arch.deepImports": 0
       }
     },
     "/showcase/social/recruiter/cta.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/recruiter/judgement.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/recruiter/proof.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {
-        "tests.total": 1863,
-        "coverage.lines": 41.88,
-        "coverage.branches": 31.62,
+        "tests.total": 1868,
+        "coverage.lines": 41.95,
+        "coverage.branches": 31.67,
         "arch.deepImports": 0
       }
     },
     "/showcase/social/security/1.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/security/2.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/security/3.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/security/4.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/security/5.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/security/carousel.pdf": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/security/cover.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/bar-chart.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {
-        "tests.unit": 1721,
+        "tests.unit": 1726,
         "tests.integration": 83,
         "tests.smoke": 30,
         "tests.axe": 11,
@@ -249,7 +249,7 @@
       }
     },
     "/showcase/social/shared/before-after.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {
         "arch.deepImports": 0,
         "arch.libToFeatures": 0,
@@ -258,87 +258,87 @@
       }
     },
     "/showcase/social/shared/flow.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/gates.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/layers.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/line-chart.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/offer.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/sequence.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/squares/layers.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/squares/locks.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/squares/starters.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/stack.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/shared/table.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/site-tour/analytics.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/site-tour/campaigns.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/site-tour/carousel.pdf": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/site-tour/checkout.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/site-tour/products.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/site-tour/storefront.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/site-tour/structure-admin.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/site-tour/structure-docs.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/site-tour/structure-overview.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     },
     "/showcase/social/site-tour/structure-storefront.png": {
-      "renderedFrom": "2026-10-14T16:57:09.645Z",
+      "renderedFrom": "2026-10-14T17:14:49.282Z",
       "facts": {}
     }
   }

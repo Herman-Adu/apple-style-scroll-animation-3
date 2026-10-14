@@ -57,7 +57,8 @@ test("every committed showcase export still agrees with the facts drawn on it", 
   console.log(
     [
       `Facts snapshot generated ${facts.generatedAt}`,
-      `${compared.length} published exports, ${drawing.length} of them drawing a fact:`,
+      `${compared.length} published exports, ${drawing.length} of them drawing a comparable fact.`,
+      "Coverage is recorded in the manifest but never compared: it measures a run, not the repo, and CI's platform moves it.",
       ...drawing.map(
         (row) =>
           `  ${row.file}\n    rendered from ${row.renderedFrom}\n` +

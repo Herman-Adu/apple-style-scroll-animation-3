@@ -3,6 +3,7 @@ import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import { factsSchema, type Facts } from "@/features/showcase/lib/domain/facts"
 import {
+  COMPARABLE_FACT_KEYS,
   compareExports,
   exportFactKeys,
   exportManifestRecord,
@@ -165,8 +166,6 @@ describe("comparing the committed exports with the facts they draw", () => {
     const row = compareExports(freshManifest(), FACTS).find((r) => r.file === PROOF)
     expect(row?.compared).toEqual([
       { key: "tests.total", rendered: 17, current: 17 },
-      { key: "coverage.lines", rendered: 50.5, current: 50.5 },
-      { key: "coverage.branches", rendered: 40.25, current: 40.25 },
       { key: "arch.deepImports", rendered: 0, current: 0 },
     ])
   })
@@ -184,10 +183,10 @@ describe("comparing the committed exports with the facts they draw", () => {
   it("reports every fact that moved, not just the first", () => {
     const manifest = freshManifest()
     manifest.exports[PROOF].facts["tests.total"] = 11
-    manifest.exports[PROOF].facts["coverage.lines"] = 1.5
+    manifest.exports[PROOF].facts["arch.deepImports"] = 9
     expect(problemsFor(manifest, PROOF)).toEqual([
       "tests.total was 11 when it was rendered, now 17",
-      "coverage.lines was 1.5 when it was rendered, now 50.5",
+      "arch.deepImports was 9 when it was rendered, now 0",
     ])
   })
 
@@ -222,6 +221,44 @@ describe("comparing the committed exports with the facts they draw", () => {
     const manifest = freshManifest()
     delete manifest.exports[CASE_STUDY]
     expect(problemsFor(manifest, CASE_STUDY)).toEqual(["no record of the facts it was rendered from"])
+  })
+})
+
+describe("coverage is recorded but never compared", () => {
+  it("records it, so a reader of the manifest sees every number the file drew", () => {
+    expect(freshManifest().exports[PROOF].facts).toMatchObject({ "coverage.lines": 50.5, "coverage.branches": 40.25 })
+  })
+
+  it("does not fail when it has moved, because the platform moves it", () => {
+    // S64's export measured 41.88/31.62 locally and CI's Node 24 measured
+    // 41.91/31.69 from the identical tree. Comparing it would make the guard
+    // red on every CI run forever. `facts-freshness.spec.ts` draws the same
+    // line: it recounts the suite and `git log`, never coverage.
+    const manifest = freshManifest()
+    manifest.exports[PROOF].facts["coverage.lines"] = 1.5
+    manifest.exports[PROOF].facts["coverage.branches"] = 2.5
+    expect(problemsFor(manifest, PROOF)).toEqual([])
+  })
+
+  it("still notices a coverage cell the file was never rendered with", () => {
+    // The values are not a gate; the shape still is. A slide that gained a
+    // coverage cell after its file was rendered is a stale file.
+    const manifest = freshManifest()
+    delete manifest.exports[PROOF].facts["coverage.lines"]
+    expect(problemsFor(manifest, PROOF)).toEqual(["draws coverage.lines, which it was not rendered with"])
+  })
+
+  it("compares only facts that are a deterministic function of the repo", () => {
+    expect(COMPARABLE_FACT_KEYS).not.toContain("coverage.lines")
+    expect(COMPARABLE_FACT_KEYS).not.toContain("coverage.branches")
+    expect(COMPARABLE_FACT_KEYS).toContain("tests.unit")
+    expect(COMPARABLE_FACT_KEYS).toContain("repo.mergedPrs")
+  })
+
+  it("leaves the coverage-only slide guarded by shape alone, and says so", () => {
+    const row = compareExports(freshManifest(), FACTS).find((r) => r.file.endsWith("engineer/coverage.png"))
+    expect(row?.compared).toEqual([])
+    expect(exportFactKeys("infographic-engineer-coverage")).toEqual(["coverage.lines", "coverage.branches"])
   })
 })
 

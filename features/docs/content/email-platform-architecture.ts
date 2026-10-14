@@ -9,7 +9,7 @@ export const emailPlatformArchitecture: Doc = {
   summary:
     "How the block-based email editor works under the hood: the Neon tables, the save path with lock checks and version snapshots, the template lifecycle, saved sections, starters, and how a campaign gets sent, both manually and on a schedule.",
   readingMinutes: 12,
-  order: 2,
+  order: 4,
   updatedAt: "2026-10-04",
   tags: [
     "email",

@@ -9,7 +9,7 @@ export const socialAndRecruitmentMarketing: Doc = {
   summary:
     "The tactical companion to the Showcase guide: a ready-to-run content engine. A two-week launch calendar, a copy bank of post variants for LinkedIn, X, and Telegram tuned to each audience, and recruitment artifacts — CV line, STAR bullets, interview talking points, and a 60-second verbal pitch — so this build works as hard for your career as it does for the client.",
   readingMinutes: 12,
-  order: 5,
+  order: 7,
   updatedAt: "2026-10-13",
   tags: ["marketing", "social", "linkedin", "recruitment", "personal brand", "career", "content"],
   body: [

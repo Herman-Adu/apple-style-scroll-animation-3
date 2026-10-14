@@ -12,7 +12,7 @@ export const socialLaunchPack: Doc = {
   summary:
     "Paste-ready LinkedIn, Telegram and X posts for two audiences: recruiters and hiring managers, and prospective clients who might buy a site or hire you to build one from this template. Every number is taken from the repo, every post respects its channel limit, and every link points at a public docs page.",
   readingMinutes: 12,
-  order: 6,
+  order: 9,
   updatedAt: "2026-10-13",
   tags: ["social", "linkedin", "telegram", "x", "recruitment", "clients", "launch", "template"],
   body: [

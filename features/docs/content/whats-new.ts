@@ -9,7 +9,7 @@ export const whatsNew: Doc = {
   summary:
     "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), the architecture and engineering-quality refactors through PR #187, and the showcase, launch-collateral and release-discipline run through PR #203. Each entry says what changed and why it matters.",
   readingMinutes: 7,
-  order: 1,
+  order: 4,
   updatedAt: "2026-10-14",
   tags: ["changelog", "release notes", "email builder", "security", "documentation", "showcase"],
   body: [

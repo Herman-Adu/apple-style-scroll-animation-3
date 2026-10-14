@@ -10,7 +10,7 @@ export const architectureDecisionRecords: Doc = {
     "The key design decisions behind the email platform and permissions, each with the context, the choice, the alternatives considered and the trade-offs accepted. Read this before changing how templates, versions, locks or sends work.",
   readingMinutes: 10,
   order: 3,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-14",
   tags: [
     "adr",
     "decisions",
@@ -62,6 +62,12 @@ export const architectureDecisionRecords: Doc = {
           "010",
           "Tests first for rules; in-memory Prisma for integration tests",
           "Accepted",
+        ],
+        ["011", "Lock permissions stored in the database", "Accepted"],
+        [
+          "012",
+          "One isolated deployment per client, not multi-tenancy",
+          "Accepted, revisit",
         ],
       ],
     },
@@ -137,6 +143,14 @@ export const architectureDecisionRecords: Doc = {
     {
       type: "paragraph",
       text: "Context: ADR-008 meant every change to who can lock needed a redeploy, with no record of who changed what. Decision: lock rights live in a database table, granted and revoked by the owner in Admin → Settings → Permissions, and every change writes an audit row. The owner always has the right, and EMAIL_BLOCK_LOCKERS still works as a read-only fallback seed. The rules stay pure (canGrantPermission, resolveLockRights) and the lookup is cached per request with React cache(). Trade-off: one extra query per admin request. In return, changes take effect immediately and are fully auditable.",
+    },
+    {
+      type: "heading",
+      text: "ADR-012 — One isolated deployment per client",
+    },
+    {
+      type: "paragraph",
+      text: "Context: client installations are operated for the client rather than handed to them, and each client's payment, email and database accounts are opened in the client's own name. Decision: one deployment and one managed database per client, never shared with another client; multi-tenancy stays a roadmap item rather than a delivery default. Alternatives: a multi-tenant deploy with per-tenant settings and data isolation, which is already on the roadmap as an agency upsell; or co-tenanting several clients on one server to cut hosting cost. Trade-off: operational cost, patching and backup verification grow once per client rather than once in total, which is what caps a sole operator's book and is priced accordingly. In return the blast radius of any failure is one client, each client's payment account and database can stay in their own name, and no tenancy bug can show one client's orders in another client's dashboard.",
     },
   ],
 };

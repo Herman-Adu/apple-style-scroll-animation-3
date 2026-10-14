@@ -9,7 +9,7 @@ export const paymentsOperations: Doc = {
   summary:
     "The operational side of payments: where money actually lives, how an order becomes 'processing', how to issue a refund correctly, and how to reconcile the Stripe Dashboard against the store's own orders so the two never drift.",
   readingMinutes: 10,
-  order: 1,
+  order: 2,
   updatedAt: "2026-10-04",
   tags: ["payments", "refunds", "reconciliation", "orders", "stripe", "operations"],
   body: [

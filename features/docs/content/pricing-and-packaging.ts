@@ -10,7 +10,7 @@ export const pricingAndPackaging: Doc = {
     "Turn the platform into an offer: how to package it into tiers, price on value rather than hours, structure recurring revenue, and run a demo that closes.",
   readingMinutes: 9,
   order: 2,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-14",
   tags: ["pricing", "packaging", "sales", "positioning", "retainer", "demo"],
   body: [
     {
@@ -28,12 +28,18 @@ export const pricingAndPackaging: Doc = {
     {
       type: "table",
       title: "Reference packaging",
-      headers: ["Tier", "Who it's for", "Includes"],
+      headers: ["Tier", "Who it's for", "Scope built"],
       rows: [
-        ["Launch", "A brand that needs to go live fast", "Storefront + docs, CMS seam ready, standard content types"],
-        ["Growth", "Teams publishing daily", "Everything in Launch + custom content modelling, analytics, campaign email"],
-        ["Scale", "Multi-market / integration-heavy", "Everything in Growth + bespoke integrations, SLAs, priority support"],
+        ["Launch", "A brand that needs to be trading fast", "Storefront, admin and docs; CMS seam ready; standard content types"],
+        ["Growth", "Teams publishing daily", "Everything in Launch, plus custom content modelling, analytics and campaign email"],
+        ["Scale", "Multi-market or integration-heavy", "Everything in Growth, plus bespoke integrations and multi-market content"],
       ],
+    },
+    {
+      type: "callout",
+      variant: "info",
+      title: "Scope here, deliverables next door",
+      text: "This table is the scope ladder: what gets built. What a client receives - code access and escrow, whose name each account is in, who runs the infrastructure, training, the support window, the exit - lives in Tier Deliverables, which is the single source for all of it. Quoting from two tables is how a tier comes to mean two different things in one conversation.",
     },
     {
       type: "chart",

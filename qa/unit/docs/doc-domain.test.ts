@@ -99,3 +99,34 @@ describe("docs domain public API", () => {
     }
   });
 });
+
+/**
+ * `order` is the only thing that decides where a doc sits in its category's
+ * dropdown. Two docs sharing a number leaves the sort to whatever order the
+ * corpus array happens to be in, so the nav silently depends on an import list.
+ * S61 found two live collisions this way - `Positioning` had two `order: 6` and
+ * `Business Case` had two `order: 1` - which is why this is a guard and not a
+ * one-off fix.
+ */
+describe("doc ordering within a category", () => {
+  it("gives every doc in a category a unique order", () => {
+    const seen = new Map<string, Map<number, string>>();
+    const collisions: string[] = [];
+
+    for (const doc of docs) {
+      const byOrder = seen.get(doc.category) ?? new Map<number, string>();
+      const existing = byOrder.get(doc.order);
+
+      if (existing) {
+        collisions.push(
+          `${doc.category} order ${doc.order}: ${existing} and ${doc.slug}`,
+        );
+      }
+
+      byOrder.set(doc.order, doc.slug);
+      seen.set(doc.category, byOrder);
+    }
+
+    expect(collisions).toEqual([]);
+  });
+});

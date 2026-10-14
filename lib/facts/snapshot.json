@@ -1,32 +1,32 @@
 {
-  "generatedAt": "2026-10-14T09:05:35.894Z",
+  "generatedAt": "2026-10-14T13:31:08.730Z",
   "tests": {
-    "unit": 1650,
+    "unit": 1672,
     "integration": 83,
     "smoke": 27,
     "axe": 10,
     "seo": 18,
-    "total": 1788
+    "total": 1810
   },
   "coverage": {
-    "lines": 40.66,
-    "branches": 30.84
+    "lines": 40.97,
+    "branches": 30.91
   },
   "arch": {
     "deepImports": 0,
     "libToFeatures": 0,
     "anyTypes": 0,
-    "largeFiles": 21,
+    "largeFiles": 22,
     "useEffect": 32
   },
   "docs": {
-    "pages": 55
+    "pages": 56
   },
   "routes": {
     "pages": 45
   },
   "repo": {
-    "mergedPrs": 205,
-    "latestPr": 214
+    "mergedPrs": 206,
+    "latestPr": 215
   }
 }

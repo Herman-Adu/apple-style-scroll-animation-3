@@ -44,6 +44,7 @@ Read this file, then open **only** the skill that matches the task. Skills link 
 
 ## Where things are
 
+- Canonical terms: `GLOSSARY.md` (read it before naming a domain concept).
 - Plans: `v0_plans/*.md`. Ledger: `docs/next-steps.md`. ADRs: in-app `/docs/architecture-decision-records`.
 - Tests: `qa/unit`, `qa/integration` (Vitest), `qa/smoke`, `qa/seo`, `qa/axe` (Playwright). Always use the `pnpm test:*` scripts.
 - Known sandbox problems and fixes: `.agents/skills/sprint-workflow/references/troubleshooting.md`.

@@ -1,7 +1,11 @@
 import type { Doc } from "../lib/domain/schema"
 import { facts } from "@/lib/facts"
+import { absoluteUrl } from "@/lib/seo/site"
 import { socialLaunchPackClientBlocks } from "./social-launch-pack-client"
 import { socialLaunchPackRecruiterBlocks } from "./social-launch-pack-recruiter"
+
+/** The deployed origin, so posting copy is ready to paste and a fork gets its own. */
+const LIVE = absoluteUrl("")
 
 export const socialLaunchPack: Doc = {
   slug: "social-launch-pack",
@@ -13,14 +17,14 @@ export const socialLaunchPack: Doc = {
     "Paste-ready LinkedIn, Telegram and X posts for two audiences: recruiters and hiring managers, and prospective clients who might buy a site or hire you to build one from this template. Every number is taken from the repo, every post respects its channel limit, and every link points at a public docs page.",
   readingMinutes: 12,
   order: 9,
-  updatedAt: "2026-10-13",
+  updatedAt: "2026-10-14",
   tags: ["social", "linkedin", "telegram", "x", "recruitment", "clients", "launch", "template"],
   body: [
     {
       type: "callout",
       variant: "info",
       title: "Before you post",
-      text: "Replace [live URL] with the deployed site and [your name] in the DMs. Every link below is a public docs page, so anyone who clicks it can read it without signing in. Paste the link into a draft first and check the preview card renders before you publish.",
+      text: `Every link below is already pointed at ${LIVE}, so the copy is ready to paste. The DMs are the exception: sign them off with [your name]. Every link is a public docs page, so anyone who clicks it can read it without signing in. Paste the link into a draft first and check the preview card renders before you publish.`,
     },
     { type: "heading", text: "The two angles" },
     {
@@ -83,7 +87,7 @@ export const socialLaunchPack: Doc = {
       type: "code",
       language: "text",
       title: "Profile featured link line",
-      code: "Next.js 16 commerce template with an email builder, role-based admin and public engineering docs: [live URL]/docs/engineering-quality",
+      code: `Next.js 16 commerce template with an email builder, role-based admin and public engineering docs: ${LIVE}/docs/engineering-quality`,
     },
     {
       type: "code",
@@ -103,7 +107,7 @@ How I work matters more than the feature list:
 
 What I am looking for: senior full-stack or product engineering work, permanent or contract. I am also available to build and hand over a commerce site for a business directly.
 
-Read the engineering write-up rather than taking my word for it: [live URL]/docs/engineering-quality`,
+Read the engineering write-up rather than taking my word for it: ${LIVE}/docs/engineering-quality`,
     },
     {
       type: "paragraph",

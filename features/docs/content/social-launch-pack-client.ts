@@ -1,4 +1,8 @@
 import type { DocBlock } from "../lib/domain/schema"
+import { absoluteUrl } from "@/lib/seo/site"
+
+/** The deployed origin, so posting copy is ready to paste and a fork gets its own. */
+const LIVE = absoluteUrl("")
 
 export const socialLaunchPackClientBlocks: DocBlock[] = [
   { type: "heading", text: "For prospective clients" },
@@ -16,7 +20,7 @@ I built the two into one system. Staff create emails from blocks, pull real prod
 
 Customer emails, order confirmations, refunds and campaigns sit next to the orders they relate to. No copying between tools.
 
-See the finished emails: [live URL]/docs/email-seasonal-campaigns
+See the finished emails: ${LIVE}/docs/email-seasonal-campaigns
 
 If you want something like this for your business, send me a message.`,
   },
@@ -36,7 +40,7 @@ What you start with:
 
 How it works: we start from the template, customise the brand, products, content and emails, connect your own database, payment and email accounts, and I hand over with documentation. Going live, payments and compliance are set up with you, not assumed.
 
-The case study and docs are public: [live URL]/docs/case-study-email-platform
+The case study and docs are public: ${LIVE}/docs/case-study-email-platform
 
 Message me with what you sell and I will tell you honestly whether it fits.`,
   },
@@ -50,7 +54,7 @@ Every project I deliver comes with documentation written for five different read
 
 So when you bring in a new developer next year, they start on day one instead of reverse engineering a black box.
 
-You can read the same documentation I use on my own template: [live URL]/docs/whats-new`,
+You can read the same documentation I use on my own template: ${LIVE}/docs/whats-new`,
   },
   {
     type: "code",
@@ -60,7 +64,7 @@ You can read the same documentation I use on my own template: [live URL]/docs/wh
 
 I build commerce sites where the store and the email live in one system: real products and prices in your emails, seasonal starters, locked brand blocks and undo on every edit. Built on a tested template, documented for handover.
 
-See the emails: [live URL]/docs/email-seasonal-campaigns
+See the emails: ${LIVE}/docs/email-seasonal-campaigns
 
 Tell me what you sell and I will say whether it fits.`,
   },
@@ -68,25 +72,25 @@ Tell me what you sell and I will say whether it fits.`,
     type: "code",
     language: "text",
     title: "X - client 1",
-    code: "Own your store and your email in one place. Block-based email builder, seasonal starters, real products and prices from your catalog. No separate email subscription. [live URL]/docs/email-seasonal-campaigns",
+    code: `Own your store and your email in one place. Block-based email builder, seasonal starters, real products and prices from your catalog. No separate email subscription. ${LIVE}/docs/email-seasonal-campaigns`,
   },
   {
     type: "code",
     language: "text",
     title: "X - client 2",
-    code: "Need a commerce site on a tested foundation? I start from a Next.js template with checkout, admin, email and docs already in place, then customise it to your brand. Message me. [live URL]/docs/case-study-email-platform",
+    code: `Need a commerce site on a tested foundation? I start from a Next.js template with checkout, admin, email and docs already in place, then customise it to your brand. Message me. ${LIVE}/docs/case-study-email-platform`,
   },
   {
     type: "code",
     language: "text",
     title: "X - client 3",
-    code: "A handover should not be a black box. My builds ship with decision records, a changelog and a test suite, so your next developer can start on day one. [live URL]/docs/whats-new",
+    code: `A handover should not be a black box. My builds ship with decision records, a changelog and a test suite, so your next developer can start on day one. ${LIVE}/docs/whats-new`,
   },
   {
     type: "code",
     language: "text",
     title: "DM - client",
-    code: `Hi, thanks for your message. The best overview is the public case study for the platform I would start from: [live URL]/docs/case-study-email-platform
+    code: `Hi, thanks for your message. The best overview is the public case study for the platform I would start from: ${LIVE}/docs/case-study-email-platform
 
 To tell you honestly whether it fits, I need three things: what you sell, roughly how many products, and whether you already have a site or email tool you want to replace. Then I can suggest a scope.
 

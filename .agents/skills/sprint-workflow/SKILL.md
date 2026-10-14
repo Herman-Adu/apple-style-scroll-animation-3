@@ -41,6 +41,7 @@ Long sprint? Push work in progress to the sprint branch early (SyncGit / `git pu
 ```bash
 pnpm exec tsc --noEmit
 pnpm lint
+pnpm arch                            # the ratchet CI runs; absent from this list until S61
 pnpm test:unit
 pnpm test:integration
 pnpm test:smoke && pnpm test:axe     # browser tests: always before merge
@@ -56,7 +57,12 @@ cannot record that PR's own squash commit - so a branch cut from a fresh `main`
 starts one behind and `pnpm facts` is what clears it. That is the guard working,
 not a bug in it; S54 proved it on `main`. Adding or removing a spec in `qa/smoke`,
 `qa/axe` or `qa/seo` also changes the counts the snapshot records, so regenerate
-*after* the test is written, and commit the two together.
+*after* the test is written, and commit the two together. **A new source file
+moves the unit count too**, because `qa/unit/meta/lib-roles` and
+`folder-layout` assert once per file: S61 split one module in two and the unit
+count moved 1672 to 1674 after `pnpm facts` had already been run and committed,
+so the browser gate would have failed on a snapshot that was correct an hour
+earlier. Regenerate after the last file is added, not after the last test.
 
 Add `pnpm build` when config, dependencies or deploy are touched. If anything fails, fix it in this sprint and rerun. Never merge red; never skip a check silently. If the sandbox blocks a check, see [troubleshooting](references/troubleshooting.md), make one recovery attempt, then report it as blocked.
 

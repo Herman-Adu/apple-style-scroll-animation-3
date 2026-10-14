@@ -30,6 +30,8 @@ The page was still loading at grab time. `scripts/showcase-video.mjs` grabs at 8
 ## The browser gates suddenly 500 on pages that work in a browser
 A long-lived `pnpm dev` degrades after heavy use — a recording pass, a 67-slide export — and then answers 500 under the parallel smoke suite while `curl` on the same URL still returns 200. It is the server, not the code. Restart it (`taskkill /F /PID $(netstat -ano | findstr :3000)`, then `pnpm dev`) and re-run; it happened three times in S42-S44 and the re-run was clean every time.
 
+It does not take a recording pass. In S62 one `pnpm facts` (which runs Vitest with coverage) plus one full smoke run was enough: `/about` and `/contact` returned 500 while `curl` returned 200, and the dev server Playwright had booted 30 minutes earlier was holding 5.7 GB. Read the working set before reading the failures — `Get-NetTCPConnection -LocalPort 3000 -State Listen` gives the PID, `Get-Process` the memory — because a failure on routes the sprint never touched is the tell. `pnpm health` showed 15% free at the same moment.
+
 ## An intermittent axe failure is usually real, not flaky
 S43: `/` failed about two runs in three. It was not timing noise — `text-foreground/40` genuinely failed AA on five elements, and axe only saw them once their scroll-reveal animation finished, so catching them depended on how fast the hero frames loaded. Print the offending selectors (`v.nodes[].target`) rather than rerunning until it passes; the spec does this now.
 

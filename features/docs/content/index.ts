@@ -49,6 +49,7 @@ import { socialAndRecruitmentMarketing } from "./social-and-recruitment-marketin
 import { salesDemoAndObjections } from "./sales-demo-and-objections"
 import { productRoadmap } from "./product-roadmap"
 import { engineeringQuality } from "./engineering-quality"
+import { whatYouReceive } from "./what-you-receive"
 import { architectureDecisionRecords } from "./architecture-decision-records"
 import { contributingAndWorkflow } from "./contributing-and-workflow"
 import { whatsNew } from "./whats-new"
@@ -113,6 +114,7 @@ export const docs: Doc[] = [
   scaleAndReliability,
   securityAndCompliancePosture,
   engineeringQuality,
+  whatYouReceive,
   // Owner (owner-only)
   positioningAndSelling,
   pricingAndPackaging,

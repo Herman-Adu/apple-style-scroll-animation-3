@@ -5,7 +5,7 @@
  * The nine `Positioning` docs are owner-only — what the owner charges, how they
  * pitch, and the questions they answer in a live sales conversation. The public
  * CTO docs are what a post links to, read by a buyer with nobody in the room.
- * Three gated docs carry an objection-handling section, and those sections are
+ * Four gated docs carry an objection-handling section, and those sections are
  * the source of truth here: the objections are parsed out of them rather than
  * listed by hand, because a hand-written list can only ever check the past.
  * That is how What's New drifted for eleven sprints before S50, and the same
@@ -36,13 +36,14 @@ export const OBJECTION_SOURCES = [
   "positioning-and-selling-the-platform",
   "email-system-selling-points",
   "sales-demo-and-objection-handling",
+  "tier-deliverables",
 ] as const
 
 /**
  * The number of objections the gated pitch carried when the guard was written.
  * Pinned so lowering it — which weakens the guard — shows up in a diff.
  */
-export const OBJECTION_FLOOR = 15
+export const OBJECTION_FLOOR = 19
 
 /** Lowercase words only, so quotes, apostrophes and trailing stops never matter. */
 export function objectionKey(question: string): string {
@@ -167,6 +168,24 @@ export const PUBLIC_ANSWERS: Readonly<Record<string, PublicAnswer>> = {
   "whats the real cost saving": {
     doc: "roi-and-total-cost-of-ownership",
     anchors: ["three cost centers", "flatter cost curve"],
+  },
+
+  // tier-deliverables
+  "do we own the code": {
+    doc: "what-you-receive",
+    anchors: ["source escrow", "release triggers"],
+  },
+  "are we locked into a retainer": {
+    doc: "what-you-receive",
+    anchors: ["rolling monthly", "no exit fee"],
+  },
+  "what if we want to move to another developer": {
+    doc: "what-you-receive",
+    anchors: ["another developer", "runbook"],
+  },
+  "why are the stripe and resend accounts in our name": {
+    doc: "what-you-receive",
+    anchors: ["in your name", "your customers pay you directly"],
   },
 }
 

@@ -9,7 +9,7 @@ export const caseStudyEmailPlatform: Doc = {
   summary:
     "How a block-based email builder, seasonal campaign starters and a defence-in-depth permissions model were added to a Next.js commerce platform in small, test-first pull requests, and what that means for a business weighing build against buy.",
   readingMinutes: 6,
-  order: 1,
+  order: 3,
   updatedAt: "2026-10-04",
   tags: ["case study", "email", "commerce", "security", "tdd", "build vs buy"],
   body: [

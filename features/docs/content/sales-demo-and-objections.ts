@@ -9,7 +9,7 @@ export const salesDemoAndObjections: Doc = {
   summary:
     "A repeatable way to sell the build in a live conversation: discovery questions to open with, a ten-minute guided demo flow with what to say at each screen, straight answers to the objections you will actually hear (why not Shopify, why not Klaviyo, who maintains it), and a clean close.",
   readingMinutes: 10,
-  order: 6,
+  order: 8,
   updatedAt: "2026-10-13",
   tags: ["sales", "demo", "objections", "positioning", "pitch", "closing"],
   body: [

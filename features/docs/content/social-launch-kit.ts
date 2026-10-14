@@ -19,8 +19,8 @@ export const socialLaunchKit: Doc = {
   summary:
     "Ready-to-post copy for LinkedIn, a Facebook business page, Telegram and X covering the email builder, seasonal campaigns, defence-in-depth permissions and the documentation programme, plus a four-week posting calendar that gives every published cut, clip and carousel a slot. Each post is paired with an image already in the repo and a link that previews well when shared.",
   readingMinutes: 12,
-  order: 3,
-  updatedAt: "2026-10-09",
+  order: 5,
+  updatedAt: "2026-10-14",
   tags: ["social", "linkedin", "facebook", "telegram", "launch", "recruitment", "marketing"],
   body: [
     {
@@ -127,7 +127,7 @@ export const socialLaunchKit: Doc = {
     {
       type: "image",
       src: "/showcase/social/shared/offer.png",
-      alt: "Infographic of what is included, what can be customised and how handover works.",
+      alt: "Infographic of what is included, what is customised for the client, and what they run and own themselves.",
       caption: "The client offer. Post with a call to action.",
       width: 1080,
       height: 1350,

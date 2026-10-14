@@ -9,7 +9,7 @@ export const ordersAndEmailOperations: Doc = {
   summary:
     "Process orders through their lifecycle and manage the transactional emails customers receive.",
   readingMinutes: 6,
-  order: 1,
+  order: 2,
   updatedAt: "2026-10-04",
   tags: ["admin", "orders", "fulfilment", "email", "notifications"],
   body: [

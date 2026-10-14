@@ -9,7 +9,7 @@ export const showcaseAndPortfolio: Doc = {
   summary:
     "How to present this project as proof of senior engineering skill — on LinkedIn, Telegram, and a portfolio. What to highlight, ready-to-adapt post templates, the screenshots and links to attach, and where to drop the live URL once it is deployed.",
   readingMinutes: 9,
-  order: 4,
+  order: 6,
   updatedAt: "2026-10-13",
   tags: ["portfolio", "showcase", "linkedin", "personal brand", "career"],
   body: [

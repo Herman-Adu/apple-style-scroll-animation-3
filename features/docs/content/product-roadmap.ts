@@ -9,7 +9,7 @@ export const productRoadmap: Doc = {
   summary:
     "What is shipped, what is next, and what is later — the honest roadmap. Use it to show depth in a pitch (there is a credible plan beyond today), to scope paid phases with a client, and to keep your own build sequence clear. Each item lists its value, rough effort, and dependency.",
   readingMinutes: 8,
-  order: 7,
+  order: 10,
   updatedAt: "2026-10-04",
   tags: ["roadmap", "phase 2", "planning", "positioning", "scope"],
   body: [

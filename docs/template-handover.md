@@ -2,6 +2,11 @@
 
 This repository is a **prototype template**, not a production go-live runbook. Use it as a starting point for a new product and replace demo assumptions before launch.
 
+> **Terminology.** "Template handover" is the builder-facing sense of the word:
+> forking this repo as a baseline. It is not what a client receives. A client is
+> delivered a built-and-run engagement - see `GLOSSARY.md` and the gated Tier
+> Deliverables guide - and never receives this repository as a deliverable.
+
 ## Copy/paste context for v0
 
 Use this block as your kickoff context in v0 so you do not need to re-type sprint history.

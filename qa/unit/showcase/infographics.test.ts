@@ -182,10 +182,30 @@ describe("flow and quality gate infographics", () => {
 })
 
 describe("client offer infographic", () => {
-  it("separates what is included, what is customised and the handover", () => {
+  it("separates what is included, what is customised and what the client runs", () => {
     const [offer] = ofKind("offer")
-    expect(offer.columns.map((c) => c.heading)).toEqual(["Included", "Customised for you", "Handover"])
+    expect(offer.columns.map((c) => c.heading)).toEqual(["Included", "Customised for you", "Yours to run"])
     for (const column of offer.columns) expect(column.items.length, column.heading).toBeGreaterThanOrEqual(3)
+  })
+
+  /**
+   * The third column used to promise "Local runbook and environment guide" and
+   * "Tests and CI left green" - template handover, which is builder-facing,
+   * offered to a client who has no repository and does not run CI. Under the
+   * built-and-run model the client is promised what they operate and how they
+   * leave, so the builder-facing vocabulary must not come back.
+   */
+  it("promises the client operation and an exit, never a developer workflow", () => {
+    const [offer] = ofKind("offer")
+    const column = offer.columns.at(-1)!
+    const text = column.items.join(" ")
+
+    for (const word of ["CI", "environment guide", "local", "pull request"]) {
+      expect(new RegExp(`\\b${word}\\b`, "i").test(text), word).toBe(false)
+    }
+
+    expect(text).toMatch(/escrow/i)
+    expect(text).toMatch(/export|data/i)
   })
 })
 

@@ -42,6 +42,7 @@ import { scaleAndReliability } from "./scale-and-reliability"
 import { securityAndCompliancePosture } from "./security-and-compliance-posture"
 import { positioningAndSelling } from "./positioning-and-selling"
 import { pricingAndPackaging } from "./pricing-and-packaging"
+import { tierDeliverables } from "./tier-deliverables"
 import { emailSellingPoints } from "./email-selling-points"
 import { showcaseAndPortfolio } from "./showcase-and-portfolio"
 import { socialAndRecruitmentMarketing } from "./social-and-recruitment-marketing"
@@ -115,6 +116,7 @@ export const docs: Doc[] = [
   // Owner (owner-only)
   positioningAndSelling,
   pricingAndPackaging,
+  tierDeliverables,
   emailSellingPoints,
   showcaseAndPortfolio,
   socialAndRecruitmentMarketing,

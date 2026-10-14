@@ -171,8 +171,8 @@ export const infographics: Infographic[] = [
         items: ["Your brand, theme and fonts", "Your products and catalog", "Your domain and email sender", "Your Stripe and Resend accounts"],
       },
       {
-        heading: "Handover",
-        items: ["Written handover guide", "Local runbook and environment guide", "Tests and CI left green", "Docs site your team can extend"],
+        heading: "Yours to run",
+        items: ["Trained team, sessions recorded", "Docs site for your team", "Your data exported on request", "Source escrow if I stop trading"],
       },
     ],
   },

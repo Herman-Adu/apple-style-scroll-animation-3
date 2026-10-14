@@ -71,7 +71,7 @@ function Block({ block }: { block: DocBlock }) {
             {block.text}
           </p>
           {block.attribution && (
-            <cite className="mt-3 block text-sm not-italic text-foreground/40">
+            <cite className="mt-3 block text-sm not-italic text-foreground/60">
               — {block.attribution}
             </cite>
           )}
@@ -104,7 +104,7 @@ function Block({ block }: { block: DocBlock }) {
       return (
         <div className="my-8 overflow-hidden rounded-2xl border border-foreground/10 bg-card/60">
           <div className="flex items-center justify-between border-b border-foreground/10 px-4 py-2.5">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
               {block.title ?? block.language}
             </span>
             <span className="font-mono text-[10px] text-foreground/30">
@@ -160,7 +160,7 @@ function Block({ block }: { block: DocBlock }) {
       return (
         <div className="my-8 overflow-x-auto rounded-2xl border border-foreground/10">
           {block.title && (
-            <div className="border-b border-foreground/10 px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+            <div className="border-b border-foreground/10 px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
               {block.title}
             </div>
           )}
@@ -212,7 +212,7 @@ function Block({ block }: { block: DocBlock }) {
             />
           </div>
           {block.caption && (
-            <figcaption className="mt-3 text-center text-sm leading-relaxed text-foreground/40">
+            <figcaption className="mt-3 text-center text-sm leading-relaxed text-foreground/60">
               {block.caption}
             </figcaption>
           )}
@@ -236,7 +236,7 @@ function Block({ block }: { block: DocBlock }) {
               className="h-auto w-full"
             />
           </div>
-          <figcaption className="mt-3 text-center text-sm leading-relaxed text-foreground/40">
+          <figcaption className="mt-3 text-center text-sm leading-relaxed text-foreground/60">
             {block.caption && <span className="block">{block.caption}</span>}
             <span className="sr-only">{block.description}</span>
           </figcaption>

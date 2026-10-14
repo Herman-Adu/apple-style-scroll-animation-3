@@ -40,7 +40,7 @@ export function PageToc({
 
   return (
     <nav aria-label={title} className={cn("sticky top-28", className)}>
-      <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">{title}</p>
+      <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/60">{title}</p>
       <ul className="flex flex-col border-l border-foreground/10">
         {items.map((item) => {
           const active = activeId === item.id

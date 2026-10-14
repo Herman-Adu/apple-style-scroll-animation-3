@@ -60,7 +60,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
         <div className="mx-auto max-w-7xl">
           <Link
             href="/docs"
-            className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40 transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60 transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.5} />
             Documentation
@@ -74,7 +74,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
 
             <div className="min-w-0">
               <header className="border-b border-foreground/10 pb-10">
-                <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+                <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
                   <span className="rounded-full border border-accent-teal/40 px-3 py-1 text-accent-teal">
                     {doc.category}
                   </span>
@@ -108,7 +108,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
 
               {authorized && (
                 <div className="mt-16 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-8">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">Tags</span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">Tags</span>
                   {doc.tags.map((tag) => (
                     <span key={tag} className="rounded-full bg-foreground/5 px-3 py-1 text-xs text-foreground/50">
                       {tag}
@@ -130,7 +130,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
       {related.length > 0 && (
         <section className="border-t border-foreground/10 px-6 py-16 md:px-12">
           <div className="mx-auto max-w-6xl">
-            <h2 className="mb-8 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+            <h2 className="mb-8 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
               Related guides
             </h2>
             <div className="grid gap-5 md:grid-cols-3">
@@ -140,7 +140,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
                   href={`/docs/${r.slug}`}
                   className="group flex h-full flex-col rounded-2xl border border-foreground/10 bg-card/40 p-6 transition-colors hover:border-accent-teal/40 hover:bg-card/70"
                 >
-                  <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+                  <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
                     <span>{r.category}</span>
                     <span>{r.readingMinutes} min</span>
                   </div>

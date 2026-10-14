@@ -32,11 +32,15 @@ export function AboutTimeline({ milestones }: { milestones: Milestone[] }) {
       {/* Static track */}
       <div
         className="absolute left-[19px] top-0 bottom-0 w-px bg-foreground/12 md:left-1/2 md:-translate-x-1/2"
+        data-timeline-track
         aria-hidden
       />
       {/* Animated teal progress line */}
       <motion.div
-        className="absolute left-[19px] top-0 bottom-0 w-px origin-top md:left-1/2 md:-translate-x-1/2"
+        // 2px, not the track's 1px: a one-device-pixel line is blended away to
+        // roughly a third of its contrast on a display below retina density.
+        className="absolute left-[19px] top-0 bottom-0 w-0.5 origin-top md:left-1/2 md:-translate-x-1/2"
+        data-timeline-progress
         style={{
           scaleY: progress,
           background:
@@ -76,7 +80,10 @@ function TimelineItem({ milestone, index }: { milestone: Milestone; index: numbe
   return (
     <li ref={itemRef} className="relative pl-14 md:grid md:grid-cols-2 md:items-center md:gap-16 md:pl-0">
       {/* Icon node */}
-      <div className="absolute left-0 top-0 md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2">
+      <div
+        className="absolute left-0 top-0 md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
+        data-timeline-node
+      >
         {/* pulsing halo */}
         <motion.span
           className="absolute inset-0 rounded-full bg-accent-teal/25"

@@ -83,3 +83,19 @@ working directory) and read that. Delete the file before committing. This is
 how S59 enumerated the 55 docs by category, access and audience, and how it
 confirmed which objection terms were missing from the public layer - counting
 the corpus with a script rather than trusting the plan's numbers.
+
+## Reading the pixels a page actually painted
+
+No image-decoding dependency is installed, and none is needed. Take the
+screenshot, hand it back to the page as a base64 `data:` URL, draw it into a 2D
+canvas and read `getImageData` - `qa/smoke/about-timeline.spec.ts` does this,
+and `qa/smoke/showcase-brand.spec.ts` uses the same canvas round-trip to
+normalise a computed colour so any colour space resolves.
+
+Reach for it when the defect lives *below* computed style. Chromium reports
+`oklch(...)` at full strength no matter how faintly a thing is really drawn,
+because blending happens at rasterisation: a sub-device-pixel line, a colour on
+a near-identical background, or anything a screenshot would settle. Note that
+`devices["Desktop Chrome"]` - what the smoke and axe projects use - is
+`deviceScaleFactor: 1`, so the suite already runs at the density where
+hairline rendering problems appear, and a retina dev machine does not.

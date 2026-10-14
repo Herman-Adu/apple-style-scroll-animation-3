@@ -10,7 +10,7 @@ export const whatsNew: Doc = {
     "A dated changelog of everything shipped in the email builder, permissions and documentation programme, from the Product picks block (PR #70) to the owner permissions page (PR #92), the architecture and engineering-quality refactors through PR #187, and the showcase, launch-collateral and release-discipline run through PR #203. Each entry says what changed and why it matters.",
   readingMinutes: 7,
   order: 1,
-  updatedAt: "2026-10-13",
+  updatedAt: "2026-10-14",
   tags: ["changelog", "release notes", "email builder", "security", "documentation", "showcase"],
   body: [
     {
@@ -124,6 +124,7 @@ export const whatsNew: Doc = {
         ["#209", "The page that proves the work now says how much work there is", "Anyone sent here to check the claims was landing on a page whose only counts described a single feature, finished long ago, while the posts that brought them described the whole platform. Both were accurate and together they looked like an exaggeration. The page now opens with the current totals, re-derived from the repository on every sprint, and the older figures stay exactly as they were - correct, and now obviously a part of something larger."],
         ["#210", "A single business case document, for whoever has to approve the spend", "The guides that make the commercial case are thorough, which is the problem when someone needs one thing to forward to a board. There is now a short document that makes the same case in order - what it is, the three honest options, where cost goes over three years, what a rebuild costs, the measured proof, and what is included - assembled from the slides already in use so it cannot quietly disagree with them."],
         ["#212", "The pages a buyer reads now answer the questions a buyer asks", "The guides written for whoever approves the spend were missing three of the answers the sales conversation promises them: whether owned email really lands as reliably as a rented marketing tool, what happens to the bill as the mailing list grows, and who could pick the platform up if the original developer were not available. All three are now answered on the public pages, with the email claims checked against what the database actually records - and a test keeps the two halves together, so an answer cannot quietly disappear from the public side again."],
+        ["#214", "The progress line on the About page timeline is visible on an ordinary display", "The teal line that tracks your scroll through the company story was drawn one pixel wide, and a screen cannot draw less than one pixel - so on any display that is not high-density it was mixed into the background until it read as empty, and it faded further the more you zoomed out. It was only ever fully visible to someone working on a high-density screen, which is why it shipped that way. The line is now drawn two pixels wide, and a test photographs it and inspects the actual pixels so it cannot quietly disappear again."],
       ],
     },
     {

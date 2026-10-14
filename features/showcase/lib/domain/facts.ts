@@ -32,3 +32,26 @@ export function findHardCodedNumbers(value: unknown, path = "", illustrative = f
 }
 
 const join = (path: string, part: string | number) => (path ? `${path}.${part}` : String(part))
+
+/**
+ * Every fact a slide reads, in the order the schema lists them.
+ *
+ * The walk mirrors `findHardCodedNumbers`: that one reports the numbers a slide
+ * typed in, this one reports the numbers it asked for. Both read the shape
+ * rather than the slide kind, so a new kind of slide is covered the day it is
+ * written and nothing has to be registered anywhere.
+ */
+export function factRefsIn(value: unknown): FactKey[] {
+  const found = new Set<FactKey>()
+  const walk = (node: unknown) => {
+    if (Array.isArray(node)) return node.forEach(walk)
+    if (!node || typeof node !== "object") return
+    if ("fact" in node) {
+      if (isFactKey(node.fact)) found.add(node.fact)
+      return
+    }
+    Object.values(node).forEach(walk)
+  }
+  walk(value)
+  return FACT_KEYS.filter((key) => found.has(key))
+}

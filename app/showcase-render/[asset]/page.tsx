@@ -5,6 +5,7 @@ import {
   InfographicSlide,
   SocialSlide,
   carouselSlides,
+  exportSlides,
   getInfographic,
   getPackByCarouselId,
   getSocialAsset,
@@ -13,7 +14,6 @@ import {
   getBriefByExportId,
   infographics,
   packCarouselId,
-  packSlides,
   packs,
   socialAssets,
 } from "@/features/showcase"
@@ -40,6 +40,8 @@ export default async function ShowcaseRenderPage({ params }: { params: Promise<{
   const { asset } = await params
 
   if (asset === CAROUSEL_ID) {
+    // `exportSlides` resolves this to the same list; this branch keeps the
+    // narrower type, since every slide in it is a social asset.
     const slides = carouselSlides()
     return (
       <main className="flex flex-col">
@@ -52,7 +54,7 @@ export default async function ShowcaseRenderPage({ params }: { params: Promise<{
 
   const pack = getPackByCarouselId(asset) ?? getBriefByExportId(asset)
   if (pack) {
-    const slides = packSlides(pack)
+    const slides = exportSlides(asset)
     const facts = await loadFacts()
     return (
       <main className="flex flex-col">

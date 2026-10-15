@@ -89,7 +89,7 @@ The site-tour stills in `public/showcase/social/site-tour/stills/` are frames ta
 
 This is the half of the facts guard that was missing. `qa/smoke/facts-freshness.spec.ts` recounts the snapshot, so a wrong number cannot stay in the repo; it says nothing about the images. A docs page resolves its numbers when it renders, so S63's work made the post text current for good. A slide bakes them in. S48 shipped five PDFs with the wrong figure drawn on them, and by S64 eight files were quoting the Oct 9 snapshot — `recruiter/proof.png` printed "Automated tests 1,617" under a column headed TODAY, beneath the headline "Measured on every run, not claimed", against a real 1,830.
 
-The record is per file and per fact, not per snapshot. Of the 73 published exports, 65 draw no fact at all and `shared/before-after.png` draws four that have read 0/0/0/32 since S43, so a snapshot-level comparison would demand a re-export of all 73 every time one unit test was added. A guard that cries wolf ends up with an allow-list, and an allow-list is the guard agreeing with the bug.
+The record is per file and per fact, not per snapshot. Of the 73 published exports, 64 draw no fact at all and `shared/before-after.png` draws four that have read 0/0/0/32 since S43, so a snapshot-level comparison would demand a re-export of all 73 every time one unit test was added. A guard that cries wolf ends up with an allow-list, and an allow-list is the guard agreeing with the bug.
 
 Three things follow from that, and each is deliberate:
 
@@ -98,6 +98,19 @@ Three things follow from that, and each is deliberate:
 - **A sprint that moves a test count owes a re-export.** That is the point rather than a cost: the export is deterministic, so re-rendering the whole set only changes the files whose numbers changed.
 
 Which facts a file draws is read off the slide by `factRefsIn`, the same shape-walk as `findHardCodedNumbers` — one reports the numbers a slide typed in, the other the numbers it asked for. Neither knows anything about slide kinds, so a new kind of slide is covered the day it is written.
+
+## And what its words were
+
+The same record holds `sourceHash`: `contentHash` of the slides the renderer read for that file, from `features/showcase/lib/domain/slide-source.ts`. `export-freshness` compares it the way it compares a fact, so an edited slide names its published files the moment the edit lands — and that matters most for the 64 exports that draw no fact and were invisible to the fact comparison.
+
+It is not a hypothetical. S61 (#216) rewrote the third column of `infographic-offer` from "Handover / Written handover guide" to "Yours to run / Source escrow if I stop trading", that sprint's entire point being that "handover" was the wrong promise. Nothing re-exported it, so `shared/offer.png`, `buyer/carousel.pdf` and `business-case/brief.pdf` all showed the retired wording for three sprints, and only S64's blanket re-export repaired them.
+
+- **What is hashed is the slide definition, not the file.** The published bytes are not a function of the repo alone: all nine PDFs change on every run (Chromium writes a creation date and a document id) and the two mermaid slides re-lay out. The definition is plain data, so its hash is the same on every machine — the rule that keeps coverage recorded and never compared.
+- **One resolution of what an export renders.** `exportRenderSlides` returns the pages and their printed page numbers, and `app/showcase-render/[asset]/page.tsx` renders exactly that. The position is in the hash because the shell prints it: adding a page to the email case-study carousel dates its eight standalone PNGs too.
+- **Re-ordering a slide's fields changes nothing and is not flagged; re-ordering its pages is.**
+- **`pnpm showcase:assets` after a slide edit is no longer a habit to remember.** Forgetting it now fails `pnpm test:smoke` with the file named.
+
+**Was anything already drifted when the guard was written?** No, and that was measured rather than assumed. The last full export is S64's single run (one `renderedFrom` across all 73 records), S64 itself edited no slide definition — only the manifest module, `factRefsIn` and the slice barrel — and nothing a slide definition reads has changed between that commit and this one. `shared/offer.png` confirms it from the other side: its bytes were last rewritten by S64's export, the time before that being S47. The re-export that recorded the first hashes was expected to change the nine PDFs, the two mermaid slides and the files whose facts had moved, and nothing else.
 
 ## Whose brand is on a slide
 

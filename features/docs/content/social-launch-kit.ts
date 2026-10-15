@@ -20,7 +20,7 @@ export const socialLaunchKit: Doc = {
     "Ready-to-post copy for LinkedIn, a Facebook business page, Telegram and X covering the email builder, seasonal campaigns, defence-in-depth permissions and the documentation programme, plus a four-week posting calendar that gives every published cut, clip and carousel a slot. Each post is paired with an image already in the repo and a link that previews well when shared.",
   readingMinutes: 12,
   order: 5,
-  updatedAt: "2026-10-14",
+  updatedAt: "2026-10-15",
   tags: ["social", "linkedin", "facebook", "telegram", "launch", "recruitment", "marketing"],
   body: [
     {
@@ -74,7 +74,7 @@ export const socialLaunchKit: Doc = {
     { type: "heading", text: "Infographics" },
     {
       type: "paragraph",
-      text: "Eleven developer and CTO-minded infographics, rendered from the same tokens as the slides: portrait 1080×1350, square 1080×1080 and one 1080×1920 story. Measured numbers are read from .generated/facts.json at the moment the slide renders, so no number is ever typed in by hand. They can still go out of date, because a PNG keeps whatever was true the day it was exported while the post text beside it reads the facts live: public/showcase/export-manifest.json records what each file was drawn from, and qa/smoke/export-freshness.spec.ts names any file whose numbers have moved since. A chart with typed numbers must be marked illustrative, and the slide prints that word. Re-export with pnpm showcase:assets.",
+      text: "Eleven developer and CTO-minded infographics, rendered from the same tokens as the slides: portrait 1080×1350, square 1080×1080 and one 1080×1920 story. Measured numbers are read from .generated/facts.json at the moment the slide renders, so no number is ever typed in by hand. They can still go out of date, because a PNG keeps whatever was true the day it was exported while the post text beside it reads the facts live: public/showcase/export-manifest.json records both the numbers each file drew and a fingerprint of the slide it was drawn from, and qa/smoke/export-freshness.spec.ts names any file whose numbers or wording have moved since. A chart with typed numbers must be marked illustrative, and the slide prints that word. Re-export with pnpm showcase:assets.",
     },
     {
       type: "image",

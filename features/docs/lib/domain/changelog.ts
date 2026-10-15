@@ -96,7 +96,12 @@ export function newestLedgerSprint(rows: LedgerRow[]): LedgerRow | null {
     .reduce<LedgerRow | null>(
       (newest, row) =>
         newest === null ||
-        sprintNumber(row.sprint)! > sprintNumber(newest.sprint)!
+        // `>=` so a suffixed follow-on (S5a, S25a, S65a) counts as newer than
+        // the plain row it follows: `sprintNumber` ties them, and the ledger is
+        // chronological, so the later row wins. Strict `>` kept the first and
+        // made the repo's own follow-on convention unrepresentable in the
+        // handoff line.
+        sprintNumber(row.sprint)! >= sprintNumber(newest.sprint)!
           ? row
           : newest,
       null,

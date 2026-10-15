@@ -33,7 +33,7 @@ export type OverviewStats = {
 const STATUS_STYLES: Record<string, string> = {
   sent: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
   skipped: "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  failed: "border-destructive/30 bg-destructive/10 text-destructive",
+  failed: "border-destructive/30 bg-destructive/10 text-destructive-strong",
 }
 
 function fmt(d: string | Date) {

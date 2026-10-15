@@ -27,8 +27,19 @@
   --muted-glyph: oklch(0.61 0 0);
   --accent: oklch(0.955 0 0);
   --accent-foreground: oklch(0.18 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  /* The surface role: the red fill under a white label - the "Sold out" tag, the
+     destructive button and badge, the status dot. Darker here than the 0.577 it
+     shared with dark until S67, because the tag renders at `bg-destructive/90`
+     and the composited fill put its own white label at 4.32:1. At 0.52 the
+     rendered tag reads 4.99:1 and the solid fill 5.38:1. */
+  --destructive: oklch(0.52 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
+  /* The text role: red words on the page, which is the opposite job. It has to
+     clear AA on the five page surfaces AND on the `bg-destructive/10|12` tint
+     that `hover:text-destructive-strong` sits on, which is the tighter of the
+     two - 5.89:1 on the surfaces, 4.75:1 on the tint. Held by
+     qa/unit/theme/destructive-contrast.test.ts. */
+  --destructive-strong: oklch(0.46 0.245 27.325);
   --border: oklch(0.9 0 0);
   --input: oklch(0.9 0 0);
   --ring: oklch(0.6 0 0);
@@ -90,8 +101,18 @@
   --muted-glyph: oklch(0.57 0 0);
   --accent: oklch(0.15 0 0);
   --accent-foreground: oklch(0.95 0 0);
+  /* Unchanged at 0.577: on dark the white label reads 5.45:1 on the rendered
+     `bg-destructive/90` tag and 9.6:1 on the `dark:bg-destructive/60` button,
+     so the surface role needs nothing here. */
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
+  /* Lighter than the surface, where light's text role is darker than it. This
+     is the pair that cannot be one token: as text on dark the red needs
+     L >= 0.62 to clear AA on every surface and its own tint, while the white
+     label on it needs L <= 0.58. There is no overlap, which is why splitting
+     per theme alone could not settle this. 5.2:1 on the surfaces, 4.92:1 on
+     the tint. */
+  --destructive-strong: oklch(0.64 0.245 27.325);
   --border: oklch(0.2 0 0);
   --input: oklch(0.2 0 0);
   --ring: oklch(0.4 0 0);
@@ -133,6 +154,7 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-strong: var(--destructive-strong);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

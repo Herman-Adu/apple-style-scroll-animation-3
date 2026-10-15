@@ -132,7 +132,7 @@ export function ActivePresets() {
                     disabled={theme.kind === "system" || state.themes.length <= 1}
                     title={theme.kind === "system" ? "Built-in themes can't be deleted" : "Delete"}
                     aria-label={`Delete ${theme.name}`}
-                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/12 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/12 hover:text-destructive-strong disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <Trash2 className="size-4" aria-hidden />
                   </button>

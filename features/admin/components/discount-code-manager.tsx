@@ -168,7 +168,7 @@ export function DiscountCodeManager({ codesPromise }: { codesPromise: Promise<Di
                           <button
                             type="button"
                             onClick={() => setPendingDelete(code)}
-                            className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                            className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive-strong"
                             aria-label={`Delete ${code.code}`}
                           >
                             <Trash2 className="size-4" aria-hidden />

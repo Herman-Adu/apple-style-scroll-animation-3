@@ -69,13 +69,17 @@ interface NamedToken {
  * it, and a `--muted-label` would have been a third. `--muted-glyph` is new
  * because no token held the non-text role.
  *
- * `--destructive` is deliberately absent, and it is a known gap rather than an
- * oversight: it is one value for both themes doing two opposed jobs - text on
- * the page, and the surface under the white "Sold out" label - so it measures
- * 4.41:1 as text on dark and 4.18:1 on light's `--muted`, and no single
- * lightness fixes those without taking the tag's own label under 4.5:1
- * (`destructive-contrast.test.ts` holds that one). Splitting it per theme, the
- * way every other colour here already is, is its own change.
+ * The destructive pair is absent because it is held in full by
+ * `destructive-contrast.test.ts`, and asserting it twice would mean two files
+ * to keep in step. S66 left it here as a known gap - one value for both themes
+ * doing two opposed jobs, text on the page and the surface under the white
+ * "Sold out" label - and recorded it as "split it per theme, the way every
+ * other colour here already is". S67 measured that and it was not enough: on
+ * dark the text role needs `L >= 0.62` and the white label on the fill needs
+ * `L <= 0.58`, so no per-theme value settles it either. The roles are two
+ * tokens now - `--destructive` the fill, `--destructive-strong` the text - and
+ * the floors they are held to include the tints mixed from the fill, which the
+ * sweep below cannot model for the same reason it cannot model the accent's.
  */
 const TOKEN_FLOORS: readonly NamedToken[] = [
   {
@@ -164,6 +168,7 @@ const PLACEMENTS: Record<string, Placement> = {
   "accent-teal": { kind: "coloured" },
   "accent-teal-muted": { kind: "coloured" },
   destructive: { kind: "coloured" },
+  "destructive-strong": { kind: "coloured" },
   success: { kind: "coloured" },
   warning: { kind: "coloured" },
   "accent-orange": { kind: "coloured" },

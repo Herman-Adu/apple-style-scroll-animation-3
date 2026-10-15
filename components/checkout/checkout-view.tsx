@@ -277,7 +277,7 @@ export function CheckoutView() {
                   </button>
                 </form>
               )}
-              {codeError && <p className="mt-2 text-xs text-destructive">{codeError}</p>}
+              {codeError && <p className="mt-2 text-xs text-destructive-strong">{codeError}</p>}
             </div>
 
             {quote.discount > 0 && (

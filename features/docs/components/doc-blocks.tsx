@@ -41,7 +41,7 @@ const calloutConfig = {
   warning: {
     Icon: TriangleAlert,
     className: "border-destructive/30 bg-destructive/[0.06]",
-    iconClass: "text-destructive",
+    iconClass: "text-destructive-strong",
   },
 } as const;
 

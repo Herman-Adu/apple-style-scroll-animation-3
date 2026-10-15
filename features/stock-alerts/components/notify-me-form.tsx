@@ -57,7 +57,7 @@ export function NotifyMeForm({ productSlug }: { productSlug: string }) {
         </button>
       </div>
       {result?.ok === false && (
-        <p id={`notify-error-${productSlug}`} role="alert" className="text-sm text-destructive">
+        <p id={`notify-error-${productSlug}`} role="alert" className="text-sm text-destructive-strong">
           {result.error}
         </p>
       )}

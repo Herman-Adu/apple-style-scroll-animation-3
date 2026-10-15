@@ -40,7 +40,7 @@ function FieldShell({
       </label>
       {children}
       {error ? (
-        <p className="text-xs text-destructive">{error}</p>
+        <p className="text-xs text-destructive-strong">{error}</p>
       ) : hint ? (
         <p className="text-xs text-muted-foreground">{hint}</p>
       ) : null}
@@ -117,7 +117,7 @@ export function AddressFieldset({
               aria-invalid={Boolean(error)}
               className={cn(inputClass, error && errorClass)}
             />
-            {error && <p className="text-xs text-destructive">{error}</p>}
+            {error && <p className="text-xs text-destructive-strong">{error}</p>}
           </div>
         )
       })}

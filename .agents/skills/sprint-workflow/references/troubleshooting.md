@@ -115,3 +115,6 @@ Read the diff by *which* slides changed, never by how many. `git diff --stat`
 over `public/showcase/` and then subtract the PDFs and the mermaid pair; what
 is left is the set that genuinely re-rendered. A re-export that touches only
 those eleven changed nothing a reader would see.
+
+## `tsc` rejects a BigInt literal
+`error TS2737: BigInt literals are not available when targeting lower than ES2020`. `tsconfig.json` compiles with `target: "ES6"`, and raising it is a config change that drags `pnpm build` into a sprint that never asked for one. Write the constants through the constructor instead - `BigInt("0xcbf29ce484222325")` - which typechecks under ES6 and runs identically. S65 hit this writing a 64-bit hash; the `bigint` type itself is fine, because `lib` already includes `esnext`.

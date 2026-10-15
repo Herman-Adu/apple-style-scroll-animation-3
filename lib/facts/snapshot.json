@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-10-15T09:34:48.609Z",
+  "generatedAt": "2026-10-15T15:06:18.366Z",
   "tests": {
-    "unit": 1752,
+    "unit": 1826,
     "integration": 83,
     "smoke": 30,
-    "axe": 11,
+    "axe": 32,
     "seo": 18,
-    "total": 1894
+    "total": 1989
   },
   "coverage": {
-    "lines": 42.43,
-    "branches": 32.07
+    "lines": 43.02,
+    "branches": 33.18
   },
   "arch": {
     "deepImports": 0,
@@ -26,7 +26,7 @@
     "pages": 45
   },
   "repo": {
-    "mergedPrs": 215,
-    "latestPr": 225
+    "mergedPrs": 217,
+    "latestPr": 226
   }
 }

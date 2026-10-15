@@ -21,12 +21,12 @@ async function ArticleFeed({ query }: { query?: string }) {
     const results = filterArticles(articles, query)
     if (results.length === 0) {
       return (
-        <p className="text-foreground/50">{`No articles match “${query}”. Try a different search.`}</p>
+        <p className="text-muted-foreground">{`No articles match “${query}”. Try a different search.`}</p>
       )
     }
     return (
       <>
-        <p className="mb-8 font-mono text-xs uppercase tracking-[0.2em] text-foreground/40">
+        <p className="mb-8 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
           {results.length} {results.length === 1 ? "result" : "results"} for “{query}”
         </p>
         <div className="grid gap-8 md:grid-cols-3">

@@ -1038,7 +1038,7 @@ function SortableBlockRow({
             type="button"
             {...attributes}
             {...listeners}
-            className="shrink-0 cursor-grab touch-none text-muted-foreground/50 hover:text-foreground active:cursor-grabbing"
+            className="shrink-0 cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
             aria-label={`Drag to reorder ${label}`}
           >
             <GripVertical className="size-4" />

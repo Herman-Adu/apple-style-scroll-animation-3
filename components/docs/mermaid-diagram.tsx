@@ -201,7 +201,7 @@ export function MermaidDiagram({ diagram, title, caption }: Props) {
   return (
     <figure className="my-10">
       {title && (
-        <figcaption className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+        <figcaption className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           {title}
         </figcaption>
       )}
@@ -219,13 +219,13 @@ export function MermaidDiagram({ diagram, title, caption }: Props) {
           />
         ) : (
           <div className="flex min-h-[120px] items-center justify-center">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/30">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
               Rendering diagram…
             </span>
           </div>
         )}
       </div>
-      {caption && <figcaption className="mt-3 text-center text-xs text-foreground/40">{caption}</figcaption>}
+      {caption && <figcaption className="mt-3 text-center text-xs text-muted-foreground">{caption}</figcaption>}
     </figure>
   )
 }

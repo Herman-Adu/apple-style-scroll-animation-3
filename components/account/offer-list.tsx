@@ -98,12 +98,12 @@ export function OfferList() {
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-foreground/10 px-6 py-20 text-center">
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-foreground/5">
-          <Tag className="h-6 w-6 text-foreground/40" strokeWidth={1.5} />
+          <Tag className="h-6 w-6 text-muted-foreground" strokeWidth={1.5} />
         </div>
         <h3 className="mt-5 text-base font-medium text-foreground">
           No offers at the moment
         </h3>
-        <p className="mt-1 max-w-xs text-sm text-foreground/45">
+        <p className="mt-1 max-w-xs text-sm text-muted-foreground">
           When we send you a personal offer it will appear here, ready to use at
           checkout.
         </p>
@@ -165,7 +165,7 @@ function OfferCard({
           onClick={handleDismiss}
           disabled={dismissing}
           aria-label="Dismiss offer"
-          className="absolute right-4 top-4 flex size-7 items-center justify-center rounded-full text-foreground/40 transition-colors hover:bg-foreground/10 hover:text-foreground disabled:opacity-50"
+          className="absolute right-4 top-4 flex size-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground disabled:opacity-50"
         >
           <X className="size-4" strokeWidth={1.75} />
         </button>
@@ -175,7 +175,7 @@ function OfferCard({
         <span
           className={`flex size-11 shrink-0 items-center justify-center rounded-full ${
             spent
-              ? "bg-foreground/10 text-foreground/40"
+              ? "bg-foreground/10 text-muted-foreground"
               : "bg-accent-teal/15 text-accent-teal"
           }`}
         >
@@ -197,11 +197,11 @@ function OfferCard({
                   ? "Expired"
                   : deal}
             </span>
-            <span className="text-[11px] uppercase tracking-[0.2em] text-foreground/40">
+            <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
               {kindLabel(offer)}
             </span>
             {spent ? (
-              <span className="text-[11px] uppercase tracking-[0.2em] text-foreground/30">
+              <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                 {deal}
               </span>
             ) : null}
@@ -211,20 +211,20 @@ function OfferCard({
             {offer.label}
           </p>
           {offer.note ? (
-            <p className="mt-1 text-sm text-foreground/55">{offer.note}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{offer.note}</p>
           ) : null}
 
           {state === "active" ? (
-            <p className="mt-2 text-sm text-foreground/55">
+            <p className="mt-2 text-sm text-muted-foreground">
               Applied automatically at checkout — nothing to enter.
             </p>
           ) : state === "used" ? (
-            <p className="mt-2 text-sm text-foreground/55">
+            <p className="mt-2 text-sm text-muted-foreground">
               This one-time offer has already been used and no longer applies at
               checkout.
             </p>
           ) : (
-            <p className="mt-2 text-sm text-foreground/55">
+            <p className="mt-2 text-sm text-muted-foreground">
               This offer has expired and is no longer available.
             </p>
           )}
@@ -272,7 +272,7 @@ function Detail({
 }) {
   return (
     <div>
-      <dt className="text-[11px] uppercase tracking-[0.2em] text-foreground/40">
+      <dt className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
         {label}
       </dt>
       <dd className="mt-1 text-sm text-foreground/80">{children}</dd>

@@ -108,7 +108,7 @@ export function MobileNav({
                     <button
                       type="button"
                       onClick={() => setSubmenu(null)}
-                      className="flex items-center gap-2 border-b border-foreground/10 px-6 py-4 text-xs uppercase tracking-[0.2em] text-foreground/50 transition-colors hover:text-foreground"
+                      className="flex items-center gap-2 border-b border-foreground/10 px-6 py-4 text-xs uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
                     >
                       <ChevronLeft className="h-4 w-4" strokeWidth={2} />
                       Menu
@@ -123,7 +123,7 @@ export function MobileNav({
                         <span className="text-lg font-semibold text-foreground">
                           {submenu.label}
                         </span>
-                        <span className="flex items-center gap-1 text-xs uppercase tracking-[0.15em] text-foreground/40">
+                        <span className="flex items-center gap-1 text-xs uppercase tracking-[0.15em] text-muted-foreground">
                           View{" "}
                           <ArrowUpRight
                             className="h-3.5 w-3.5"
@@ -160,7 +160,7 @@ export function MobileNav({
                                   "mt-0.5 size-5 shrink-0 transition-colors",
                                   active
                                     ? "text-accent-teal"
-                                    : "text-foreground/40 group-hover/row:text-accent-teal",
+                                    : "text-muted-foreground group-hover/row:text-accent-teal",
                                 )}
                                 strokeWidth={1.5}
                                 aria-hidden
@@ -188,7 +188,7 @@ export function MobileNav({
                                 {section.label}
                               </span>
                               {section.hint && (
-                                <span className="block text-sm text-foreground/40">
+                                <span className="block text-sm text-muted-foreground">
                                   {section.hint}
                                 </span>
                               )}
@@ -210,7 +210,7 @@ export function MobileNav({
                     <button
                       type="button"
                       onClick={() => setAccountOpen(false)}
-                      className="flex items-center gap-2 border-b border-foreground/10 px-6 py-4 text-xs uppercase tracking-[0.2em] text-foreground/50 transition-colors hover:text-foreground"
+                      className="flex items-center gap-2 border-b border-foreground/10 px-6 py-4 text-xs uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
                     >
                       <ChevronLeft className="h-4 w-4" strokeWidth={2} />
                       Menu
@@ -225,7 +225,7 @@ export function MobileNav({
                         />
                         <span className="min-w-0">
                           <span className="flex items-center gap-2">
-                            <span className="text-[11px] uppercase tracking-[0.15em] text-foreground/40">
+                            <span className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
                               Account
                             </span>
                             {user.role === "admin" && (
@@ -237,7 +237,7 @@ export function MobileNav({
                           <span className="block truncate text-base font-semibold text-foreground">
                             {user.profile.displayName || user.name}
                           </span>
-                          <span className="block truncate text-sm text-foreground/40">
+                          <span className="block truncate text-sm text-muted-foreground">
                             {user.email}
                           </span>
                         </span>
@@ -251,7 +251,7 @@ export function MobileNav({
                         className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
                       >
                         <UserRound
-                          className="h-5 w-5 shrink-0 text-foreground/50"
+                          className="h-5 w-5 shrink-0 text-muted-foreground"
                           strokeWidth={1.5}
                         />
                         <span className="text-base font-medium text-foreground/80">
@@ -264,7 +264,7 @@ export function MobileNav({
                         className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
                       >
                         <Package
-                          className="h-5 w-5 shrink-0 text-foreground/50"
+                          className="h-5 w-5 shrink-0 text-muted-foreground"
                           strokeWidth={1.5}
                         />
                         <span className="text-base font-medium text-foreground/80">
@@ -277,7 +277,7 @@ export function MobileNav({
                         className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
                       >
                         <Tag
-                          className="h-5 w-5 shrink-0 text-foreground/50"
+                          className="h-5 w-5 shrink-0 text-muted-foreground"
                           strokeWidth={1.5}
                         />
                         <span className="text-base font-medium text-foreground/80">
@@ -291,7 +291,7 @@ export function MobileNav({
                           className="flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-foreground/5"
                         >
                           <LayoutDashboard
-                            className="h-5 w-5 shrink-0 text-foreground/50"
+                            className="h-5 w-5 shrink-0 text-muted-foreground"
                             strokeWidth={1.5}
                           />
                           <span className="text-base font-medium text-foreground/80">
@@ -305,7 +305,7 @@ export function MobileNav({
                         className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-colors hover:bg-foreground/5"
                       >
                         <LogOut
-                          className="h-5 w-5 shrink-0 text-foreground/50"
+                          className="h-5 w-5 shrink-0 text-muted-foreground"
                           strokeWidth={1.5}
                         />
                         <span className="text-base font-medium text-foreground/80">
@@ -347,7 +347,7 @@ export function MobileNav({
                                       "size-5 shrink-0 transition-colors",
                                       active
                                         ? "text-accent-teal"
-                                        : "text-foreground/50 group-hover:text-accent-teal",
+                                        : "text-muted-foreground group-hover:text-accent-teal",
                                     )}
                                     strokeWidth={1.5}
                                     aria-hidden
@@ -365,7 +365,7 @@ export function MobileNav({
                                 </span>
                               </span>
                               <ChevronRight
-                                className="h-5 w-5 text-foreground/40"
+                                className="h-5 w-5 text-muted-foreground"
                                 strokeWidth={1.5}
                               />
                             </button>
@@ -389,7 +389,7 @@ export function MobileNav({
                                   "size-5 shrink-0 transition-colors",
                                   active
                                     ? "text-accent-teal"
-                                    : "text-foreground/50 group-hover:text-accent-teal",
+                                    : "text-muted-foreground group-hover:text-accent-teal",
                                 )}
                                 strokeWidth={1.5}
                                 aria-hidden
@@ -424,7 +424,7 @@ export function MobileNav({
                             size={40}
                           />
                           <span className="min-w-0">
-                            <span className="block text-[11px] uppercase tracking-[0.15em] text-foreground/40">
+                            <span className="block text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
                               Signed in
                             </span>
                             <span className="block truncate text-sm font-medium text-foreground">
@@ -432,7 +432,7 @@ export function MobileNav({
                             </span>
                           </span>
                           <ChevronRight
-                            className="ml-auto h-4 w-4 shrink-0 text-foreground/40"
+                            className="ml-auto h-4 w-4 shrink-0 text-muted-foreground"
                             strokeWidth={1.5}
                           />
                         </button>
@@ -449,12 +449,12 @@ export function MobileNav({
                             <span className="block text-sm font-medium text-foreground">
                               Sign in
                             </span>
-                            <span className="block text-xs text-foreground/40">
+                            <span className="block text-xs text-muted-foreground">
                               Access your account
                             </span>
                           </span>
                           <ChevronRight
-                            className="ml-auto h-4 w-4 shrink-0 text-foreground/40"
+                            className="ml-auto h-4 w-4 shrink-0 text-muted-foreground"
                             strokeWidth={1.5}
                           />
                         </Link>
@@ -471,7 +471,7 @@ export function MobileNav({
                           />
                           {siteConfig.email}
                         </a>
-                        <p className="flex items-center gap-2.5 text-sm text-foreground/40">
+                        <p className="flex items-center gap-2.5 text-sm text-muted-foreground">
                           <MapPin
                             className="h-4 w-4 shrink-0"
                             strokeWidth={1.5}

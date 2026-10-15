@@ -19,15 +19,15 @@ export function DocCard({ doc, index = 0, snippet }: { doc: DocSummary; index?: 
         <h3 className="mt-4 text-lg font-semibold leading-snug text-foreground transition-colors group-hover:text-accent-teal">
           {doc.title}
         </h3>
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-foreground/50">{doc.summary}</p>
+        <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{doc.summary}</p>
         {snippet ? (
-          <p className="mt-3 border-l-2 border-accent-teal/40 pl-3 text-xs leading-relaxed text-foreground/45">
-            <span className="mr-1.5 font-mono text-[9px] uppercase tracking-[0.15em] text-accent-teal/70">Match</span>
+          <p className="mt-3 border-l-2 border-accent-teal/40 pl-3 text-xs leading-relaxed text-muted-foreground">
+            <span className="mr-1.5 font-mono text-[9px] uppercase tracking-[0.15em] text-accent-teal-muted">Match</span>
             {snippet}
           </p>
         ) : null}
         <div className="mt-5 flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-xs font-medium text-foreground/50 transition-colors group-hover:text-foreground">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground">
             Read guide
             <ArrowUpRight
               className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"

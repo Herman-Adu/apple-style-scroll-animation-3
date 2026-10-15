@@ -54,7 +54,7 @@ export function PageToc({
                   "-ml-px block border-l py-1.5 pl-4 text-sm leading-snug transition-colors",
                   active
                     ? "border-accent-teal text-accent-teal"
-                    : "border-transparent text-foreground/50 hover:border-accent-teal/60 hover:text-foreground",
+                    : "border-transparent text-muted-foreground hover:border-accent-teal/60 hover:text-foreground",
                 )}
               >
                 {item.label}

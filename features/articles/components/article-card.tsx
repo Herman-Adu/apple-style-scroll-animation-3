@@ -27,7 +27,7 @@ export function ArticleCard({ article, index = 0 }: { article: Article; index?: 
             <h3 className="mt-3 text-xl font-semibold leading-snug text-foreground transition-colors group-hover:text-foreground/80">
               {article.title}
             </h3>
-            <p className="mt-2 text-sm leading-relaxed text-foreground/50">{article.excerpt}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{article.excerpt}</p>
             <p className="mt-4 text-xs text-foreground/60">{formatDate(article.publishedAt)}</p>
           </div>
         </Link>

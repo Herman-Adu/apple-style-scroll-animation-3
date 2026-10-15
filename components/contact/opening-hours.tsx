@@ -49,14 +49,14 @@ export function OpeningHours() {
           className={cn(
             "flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em]",
             openNow
-              ? "bg-emerald-400/15 text-emerald-300"
-              : "bg-foreground/10 text-foreground/50",
+              ? "bg-success/15 text-success"
+              : "bg-foreground/10 text-muted-foreground",
           )}
         >
           <span
             className={cn(
               "h-1.5 w-1.5 rounded-full",
-              openNow ? "bg-emerald-400" : "bg-foreground/40",
+              openNow ? "bg-success" : "bg-foreground/40",
             )}
             aria-hidden
           />
@@ -72,21 +72,30 @@ export function OpeningHours() {
               key={d.day}
               className={cn(
                 "flex items-center justify-between rounded-lg px-3 py-2 text-sm",
+                // Accent text on an accent tint: the tint darkens with the
+                // token, so the accent keeps only part of what it gains and
+                // reads 4.37:1 here. --accent-teal-muted is a tone deeper and
+                // still follows a client's palette through the theme layer.
                 isToday
-                  ? "bg-accent-teal/10 text-accent-teal"
+                  ? "bg-accent-teal/10 text-accent-teal-muted"
                   : "text-foreground/60",
               )}
             >
               <span className="flex items-center gap-2">
                 {d.day}
                 {isToday && (
-                  <span className="rounded-full bg-accent-teal/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] text-accent-teal">
+                  // Solid, not a second tint: this pill sits inside the already
+                  // tinted today row, and stacked tints leave no tone that works
+                  // in both themes - the tint darkens the surface on light and
+                  // lightens it on dark, so the text would have to move in
+                  // opposite directions. A filled accent is 5.24:1 and 9.44:1.
+                  <span className="rounded-full bg-accent-teal px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] text-background">
                     Today
                   </span>
                 )}
               </span>
               <span
-                className={cn("tabular-nums", !d.open && "text-foreground/50")}
+                className={cn("tabular-nums", !d.open && "text-muted-foreground")}
               >
                 {d.open && d.close
                   ? `${formatHour(d.open)} – ${formatHour(d.close)}`

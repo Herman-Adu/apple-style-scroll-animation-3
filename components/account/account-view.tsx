@@ -75,13 +75,13 @@ export function AccountView({
               size={64}
             />
             <div>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-foreground/40">
+              <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
                 Account
               </p>
               <h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
                 {displayName}
               </h1>
-              <p className="text-sm text-foreground/50">{user.email}</p>
+              <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>
 
@@ -176,7 +176,7 @@ export function AccountView({
                 />
               </section>
 
-              <h2 className="text-sm uppercase tracking-[0.25em] text-foreground/50">
+              <h2 className="text-sm uppercase tracking-[0.25em] text-muted-foreground">
                 Edit profile
               </h2>
               <div className="mt-6">
@@ -188,7 +188,7 @@ export function AccountView({
               <Suspense
                 fallback={
                   <div className="flex items-center justify-center py-20">
-                    <Spinner className="size-5 text-foreground/40" />
+                    <Spinner className="size-5 text-muted-foreground" />
                   </div>
                 }
               >
@@ -214,7 +214,7 @@ export function AccountView({
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-foreground/10 bg-foreground/[0.02] px-5 py-4">
-      <p className="text-[11px] uppercase tracking-[0.25em] text-foreground/40">
+      <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
         {label}
       </p>
       <p className="mt-2 text-sm text-foreground/80">{value}</p>

@@ -17,7 +17,7 @@ function Stars({ value, size = 16 }: { value: number; size?: number }) {
           key={i}
           style={{ width: size, height: size }}
           className={cn(
-            i < Math.round(value) ? "fill-white text-foreground" : "fill-transparent text-foreground/25",
+            i < Math.round(value) ? "fill-white text-foreground" : "fill-transparent text-muted-glyph",
           )}
           strokeWidth={1.5}
         />
@@ -63,7 +63,7 @@ export function ProductReviews({
     <section className="relative z-10 border-t border-foreground/10 px-6 py-24 md:px-12 md:py-32">
       <div className="mx-auto max-w-7xl">
         <div className="mb-14 flex flex-col gap-2">
-          <span className="text-xs uppercase tracking-[0.3em] text-foreground/40">Owner reviews</span>
+          <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Owner reviews</span>
           <h2 className="text-3xl font-bold tracking-tight text-foreground text-balance md:text-4xl">
             What people say about {productName}
           </h2>
@@ -78,12 +78,12 @@ export function ProductReviews({
                   <span className="text-5xl font-bold tracking-tight text-foreground">
                     {summary.average.toFixed(1)}
                   </span>
-                  <span className="text-sm text-foreground/40">out of 5</span>
+                  <span className="text-sm text-muted-foreground">out of 5</span>
                 </div>
                 <div className="mt-3">
                   <Stars value={summary.average} size={18} />
                 </div>
-                <p className="mt-3 text-sm text-foreground/50">
+                <p className="mt-3 text-sm text-muted-foreground">
                   Based on {summary.count} review{summary.count === 1 ? "" : "s"}
                 </p>
 
@@ -93,21 +93,21 @@ export function ProductReviews({
                     const pct = summary.count ? (n / summary.count) * 100 : 0
                     return (
                       <div key={star} className="flex items-center gap-3">
-                        <span className="w-3 text-right text-xs text-foreground/50">{star}</span>
-                        <Star className="h-3 w-3 fill-white/40 text-foreground/40" strokeWidth={0} />
+                        <span className="w-3 text-right text-xs text-muted-foreground">{star}</span>
+                        <Star className="h-3 w-3 fill-white/40 text-muted-foreground" strokeWidth={0} />
                         <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/10">
                           <span
                             className="block h-full rounded-full bg-foreground/70"
                             style={{ width: `${pct}%` }}
                           />
                         </span>
-                        <span className="w-6 text-right text-xs tabular-nums text-foreground/40">{n}</span>
+                        <span className="w-6 text-right text-xs tabular-nums text-muted-foreground">{n}</span>
                       </div>
                     )
                   })}
                 </div>
 
-                <p className="mt-8 text-xs leading-relaxed text-foreground/40">
+                <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
                   Reviews are moderated before they appear publicly.
                 </p>
               </div>
@@ -135,7 +135,7 @@ export function ProductReviews({
           <div className="grid gap-12 lg:grid-cols-[320px_1fr] lg:gap-16">
             <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-12 text-center lg:sticky lg:top-28 lg:self-start">
               <Stars value={0} size={20} />
-              <p className="mt-4 text-sm text-foreground/50">
+              <p className="mt-4 text-sm text-muted-foreground">
                 {summary === null
                   ? "Loading reviews…"
                   : `No reviews yet for ${productName}. Be the first to share your experience.`}
@@ -169,7 +169,7 @@ function ReviewItem({ review, pending = false }: { review: Review; pending?: boo
         <UserAvatar name={review.author} src={review.avatarUrl} size={40} />
         <div className="flex flex-col">
           <span className="text-sm font-medium text-foreground">{review.author}</span>
-          <span className="text-xs text-foreground/40">{formatDate(review.createdAt)}</span>
+          <span className="text-xs text-muted-foreground">{formatDate(review.createdAt)}</span>
         </div>
         {pending && (
           <span className="ml-auto rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-amber-200">

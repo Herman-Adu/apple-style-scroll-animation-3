@@ -83,7 +83,7 @@ export function CartDrawer() {
             <div className="flex items-center justify-between border-b border-foreground/10 px-6 py-5">
               <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-foreground">
                 <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
-                Cart {itemCount > 0 && <span className="text-foreground/40">({itemCount})</span>}
+                Cart {itemCount > 0 && <span className="text-muted-foreground">({itemCount})</span>}
               </h2>
               <button
                 type="button"
@@ -103,7 +103,7 @@ export function CartDrawer() {
                   size={36}
                 />
                 <div className="min-w-0">
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-foreground/40">Signed in as</p>
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground">Signed in as</p>
                   <p className="truncate text-sm font-medium text-foreground">
                     {user.profile.displayName || user.name}
                   </p>
@@ -111,7 +111,7 @@ export function CartDrawer() {
                 <Link
                   href="/account"
                   onClick={closeCart}
-                  className="ml-auto shrink-0 text-[11px] uppercase tracking-[0.15em] text-foreground/50 transition-colors hover:text-foreground"
+                  className="ml-auto shrink-0 text-[11px] uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Account
                 </Link>
@@ -122,23 +122,23 @@ export function CartDrawer() {
                 onClick={closeCart}
                 className="flex items-center gap-3 border-b border-foreground/10 bg-foreground/[0.02] px-6 py-3 transition-colors hover:bg-foreground/[0.04]"
               >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-foreground/15 text-foreground/50">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-foreground/15 text-muted-foreground">
                   <User className="h-4 w-4" strokeWidth={1.5} />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-medium text-foreground">Sign in for faster checkout</span>
-                  <span className="block text-xs text-foreground/40">Save your details and track orders</span>
+                  <span className="block text-xs text-muted-foreground">Save your details and track orders</span>
                 </span>
-                <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-foreground/40" strokeWidth={1.5} />
+                <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.5} />
               </Link>
             ) : null}
 
             {lines.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-foreground/5">
-                  <ShoppingBag className="h-6 w-6 text-foreground/40" strokeWidth={1.5} />
+                  <ShoppingBag className="h-6 w-6 text-muted-foreground" strokeWidth={1.5} />
                 </div>
-                <p className="text-sm text-foreground/50">Your cart is empty.</p>
+                <p className="text-sm text-muted-foreground">Your cart is empty.</p>
                 <Link
                   href="/products"
                   onClick={closeCart}
@@ -166,12 +166,12 @@ export function CartDrawer() {
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <p className="text-sm font-medium text-foreground">{line.product.name}</p>
-                              <p className="text-xs text-foreground/40">{line.color}</p>
+                              <p className="text-xs text-muted-foreground">{line.color}</p>
                             </div>
                             <button
                               type="button"
                               onClick={() => removeItem(line.product.slug, line.color)}
-                              className="text-foreground/30 transition-colors hover:text-foreground"
+                              className="text-muted-foreground transition-colors hover:text-foreground"
                               aria-label={`Remove ${line.product.name}`}
                             >
                               <X className="h-4 w-4" strokeWidth={1.5} />
@@ -216,7 +216,7 @@ export function CartDrawer() {
 
                 {activeOffer && savingsOffers.length > 0 ? (
                   <div className="flex items-center gap-2 border-t border-foreground/10 bg-foreground/[0.02] px-6 py-2.5 text-xs">
-                    <Sparkles className="size-3.5 shrink-0 text-foreground/50" strokeWidth={2} aria-hidden />
+                    <Sparkles className="size-3.5 shrink-0 text-muted-foreground" strokeWidth={2} aria-hidden />
                     <span className="text-foreground/70">
                       <span className="font-semibold text-foreground">{offerHeadline(activeOffer)}</span> applied —
                       you save {formatMoney({ amount: quote.discount, currency })}
@@ -228,7 +228,7 @@ export function CartDrawer() {
                   {savingsOffers.length > 0 ? (
                     <dl className="space-y-2 text-sm">
                       <div className="flex items-center justify-between">
-                        <dt className="text-foreground/50">Subtotal</dt>
+                        <dt className="text-muted-foreground">Subtotal</dt>
                         <dd className="text-foreground">{formatMoney({ amount: quote.subtotal, currency })}</dd>
                       </div>
                       {savingsOffers.map((offer) => (
@@ -243,7 +243,7 @@ export function CartDrawer() {
                         </div>
                       ))}
                       <div className="flex items-center justify-between border-t border-foreground/10 pt-2">
-                        <dt className="text-foreground/50">Total</dt>
+                        <dt className="text-muted-foreground">Total</dt>
                         <dd className="text-lg font-semibold text-foreground">
                           {formatMoney({ amount: quote.total, currency })}
                         </dd>
@@ -251,13 +251,13 @@ export function CartDrawer() {
                     </dl>
                   ) : (
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-foreground/50">Subtotal</span>
+                      <span className="text-muted-foreground">Subtotal</span>
                       <span className="text-lg font-semibold text-foreground">
                         {formatMoney({ amount: subtotal, currency })}
                       </span>
                     </div>
                   )}
-                  <p className="mt-1 text-xs text-foreground/40">Shipping and taxes calculated at checkout.</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Shipping and taxes calculated at checkout.</p>
                   <button
                     type="button"
                     onClick={handleCheckout}
@@ -266,7 +266,7 @@ export function CartDrawer() {
                     {isAuthenticated ? "Checkout" : "Sign in to check out"}
                   </button>
                   {!isAuthenticated && (
-                    <p className="mt-2 text-center text-xs text-foreground/40">
+                    <p className="mt-2 text-center text-xs text-muted-foreground">
                       You&apos;ll return to your cart after signing in.
                     </p>
                   )}

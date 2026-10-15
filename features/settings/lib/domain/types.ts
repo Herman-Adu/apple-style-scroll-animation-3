@@ -5,7 +5,8 @@
 // fields can never drift, and the whole thing is Strapi-portable later.
 
 import { DEFAULT_COMPANY, type CompanyProfile } from "@/lib/data/company"
-import { DEFAULT_THEME_STATE, type ThemeState } from "./theme"
+import type { ThemeState } from "./theme"
+import { DEFAULT_THEME_STATE } from "./theme-presets"
 
 export type Currency = "GBP" | "USD" | "EUR"
 

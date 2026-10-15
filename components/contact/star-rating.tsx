@@ -33,11 +33,11 @@ export function StarRating({ value, onChange, size = 30 }: StarRatingProps) {
           <Star
             style={{ width: size, height: size }}
             strokeWidth={1.5}
-            className={cn("transition-colors", n <= active ? "fill-white text-foreground" : "text-foreground/25")}
+            className={cn("transition-colors", n <= active ? "fill-white text-foreground" : "text-muted-glyph")}
           />
         </button>
       ))}
-      <span className="ml-2 text-sm text-foreground/50">{value ? `${value}/5` : "Tap to rate"}</span>
+      <span className="ml-2 text-sm text-muted-foreground">{value ? `${value}/5` : "Tap to rate"}</span>
     </div>
   )
 }

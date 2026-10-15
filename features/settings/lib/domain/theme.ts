@@ -6,6 +6,14 @@
 // second brand-colour field to drift. Everything here is pure and serialisable
 // so it round-trips through the `StoreSettings.theme` JSON column untouched.
 
+import {
+  BUILT_IN_PRESETS,
+  DEFAULT_HEADING_ACCENT,
+  DEFAULT_THEME_STATE,
+  TITANIUM_TEAL,
+} from "./theme-presets"
+import { isSupersededSnapshot } from "./theme-snapshots"
+
 /** How headlines are tinted. Drives the shared `TwoToneTitle` primitive. */
 export type HeadingStyle = "two-tone" | "solid" | "gradient"
 
@@ -35,9 +43,6 @@ export interface HeadingAccent {
   h2: boolean
   cards: boolean
 }
-
-/** The tasteful shipped default: titles + section headlines accented, cards calm. */
-export const DEFAULT_HEADING_ACCENT: HeadingAccent = { h1: true, h2: true, cards: false }
 
 export type HeadingTier = "h1" | "h2" | "card"
 
@@ -86,82 +91,26 @@ export interface ThemeState {
 export type ColorScheme = "light" | "dark"
 
 /* -------------------------------------------------------------------------- */
-/* Built-in presets                                                           */
+/* Pure helpers                                                               */
 /* -------------------------------------------------------------------------- */
 
 /**
- * The default system theme. Its light/dark values are the EXACT tokens that
- * shipped in globals.css, so activating it is a visual no-op — the whole point
- * of the single source of truth is that nothing changes until a client edits.
+ * Refresh an unedited snapshot of a built-in preset from shipped code. The
+ * database, not this file, is what the browser paints for a store that once
+ * installed a preset — `./theme-snapshots` has the whole story and decides
+ * which copies are stale.
  */
-export const TITANIUM_TEAL: ThemeTemplate = {
-  id: "titanium-teal",
-  name: "Titanium Teal",
-  kind: "system",
-  headingStyle: "two-tone",
-  headingAccent: DEFAULT_HEADING_ACCENT,
-  tokens: {
-    accent: "oklch(0.74 0.086 195)",
-    accentMuted: "oklch(0.62 0.07 197)",
-    light: {
-      accent: "oklch(0.58 0.09 197)",
-      accentMuted: "oklch(0.52 0.08 198)",
-    },
-    dark: {
-      accent: "oklch(0.74 0.086 195)",
-      accentMuted: "oklch(0.62 0.07 197)",
-    },
-  },
+function refreshPresetTokens(theme: ThemeTemplate): ThemeTemplate {
+  const builtIn = BUILT_IN_PRESETS.find((preset) => preset.id === theme.id)
+  if (!builtIn || !isSupersededSnapshot(theme)) return theme
+  return { ...theme, tokens: structuredCloneSafe(builtIn.tokens) }
 }
-
-/** A warmer amber alternate — demonstrates re-theming with zero code edits. */
-export const SOLAR_AMBER: ThemeTemplate = {
-  id: "solar-amber",
-  name: "Solar Amber",
-  kind: "system",
-  headingStyle: "two-tone",
-  tokens: {
-    accent: "oklch(0.78 0.15 70)",
-    accentMuted: "oklch(0.68 0.13 55)",
-    light: { accent: "oklch(0.66 0.15 58)", accentMuted: "oklch(0.6 0.13 50)" },
-    dark: { accent: "oklch(0.78 0.15 70)", accentMuted: "oklch(0.68 0.13 55)" },
-  },
-}
-
-/** A vivid indigo alternate. */
-export const ELECTRIC_INDIGO: ThemeTemplate = {
-  id: "electric-indigo",
-  name: "Electric Indigo",
-  kind: "system",
-  headingStyle: "gradient",
-  tokens: {
-    accent: "oklch(0.68 0.18 275)",
-    accentMuted: "oklch(0.6 0.16 300)",
-    gradientFrom: "oklch(0.72 0.18 265)",
-    gradientTo: "oklch(0.66 0.19 320)",
-    light: { accent: "oklch(0.55 0.2 275)", accentMuted: "oklch(0.5 0.18 300)" },
-    dark: { accent: "oklch(0.68 0.18 275)", accentMuted: "oklch(0.6 0.16 300)" },
-  },
-}
-
-/** Presets a client can pick from in the admin (does not include their customs). */
-export const BUILT_IN_PRESETS: ThemeTemplate[] = [TITANIUM_TEAL, SOLAR_AMBER, ELECTRIC_INDIGO]
-
-/** The shipping default state: the brand template, active. */
-export const DEFAULT_THEME_STATE: ThemeState = {
-  activeThemeId: TITANIUM_TEAL.id,
-  themes: [TITANIUM_TEAL],
-}
-
-/* -------------------------------------------------------------------------- */
-/* Pure helpers                                                               */
-/* -------------------------------------------------------------------------- */
 
 /** Coerce an unknown JSON value (or missing column) into a valid ThemeState. */
 export function normalizeThemeState(value: unknown): ThemeState {
   if (!value || typeof value !== "object" || Array.isArray(value)) return DEFAULT_THEME_STATE
   const v = value as Partial<ThemeState>
-  const themes = Array.isArray(v.themes) ? v.themes.filter(isThemeTemplate) : []
+  const themes = Array.isArray(v.themes) ? v.themes.filter(isThemeTemplate).map(refreshPresetTokens) : []
   if (themes.length === 0) return DEFAULT_THEME_STATE
   const activeThemeId = themes.some((t) => t.id === v.activeThemeId) ? v.activeThemeId! : themes[0].id
   return { activeThemeId, themes }

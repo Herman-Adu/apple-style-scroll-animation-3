@@ -38,7 +38,7 @@ function RatingPicker({
           <Star
             className={cn(
               "h-7 w-7 transition-colors",
-              star <= active ? "fill-white text-foreground" : "fill-transparent text-foreground/25",
+              star <= active ? "fill-white text-foreground" : "fill-transparent text-muted-glyph",
             )}
             strokeWidth={1.5}
           />
@@ -146,18 +146,18 @@ export function ReviewForm({
       className="rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-8"
     >
       <h3 className="text-lg font-semibold text-foreground">Write a review</h3>
-      <p className="mt-1 text-sm text-foreground/50">
+      <p className="mt-1 text-sm text-muted-foreground">
         Signed in as {user.profile?.displayName || user.name}. Reviews are checked before they go live.
       </p>
 
       <div className="mt-6 flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <label className="text-xs uppercase tracking-[0.2em] text-foreground/40">Your rating</label>
+          <label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Your rating</label>
           <RatingPicker value={rating} onChange={setRating} />
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="review-headline" className="text-xs uppercase tracking-[0.2em] text-foreground/40">
+          <label htmlFor="review-headline" className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             Headline
           </label>
           <input
@@ -166,12 +166,12 @@ export function ReviewForm({
             onChange={(e) => setHeadline(e.target.value)}
             maxLength={80}
             placeholder="Sum up your experience"
-            className="rounded-lg border border-foreground/10 bg-foreground/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 focus:border-foreground/30 focus:outline-none"
+            className="rounded-lg border border-foreground/10 bg-foreground/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
           />
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="review-body" className="text-xs uppercase tracking-[0.2em] text-foreground/40">
+          <label htmlFor="review-body" className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             Your review
           </label>
           <textarea
@@ -181,7 +181,7 @@ export function ReviewForm({
             rows={4}
             maxLength={1000}
             placeholder="What did you like? How do you use it?"
-            className="resize-none rounded-lg border border-foreground/10 bg-foreground/[0.03] px-4 py-3 text-sm leading-relaxed text-foreground placeholder:text-foreground/30 focus:border-foreground/30 focus:outline-none"
+            className="resize-none rounded-lg border border-foreground/10 bg-foreground/[0.03] px-4 py-3 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
           />
         </div>
 

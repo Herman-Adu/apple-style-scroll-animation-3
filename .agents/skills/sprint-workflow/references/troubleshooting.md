@@ -118,3 +118,22 @@ those eleven changed nothing a reader would see.
 
 ## `tsc` rejects a BigInt literal
 `error TS2737: BigInt literals are not available when targeting lower than ES2020`. `tsconfig.json` compiles with `target: "ES6"`, and raising it is a config change that drags `pnpm build` into a sprint that never asked for one. Write the constants through the constructor instead - `BigInt("0xcbf29ce484222325")` - which typechecks under ES6 and runs identically. S65 hit this writing a 64-bit hash; the `bigint` type itself is fine, because `lib` already includes `esnext`.
+
+## axe is red on a colour every static guard says is fixed
+The stylesheet is not what the browser paints. `buildThemeCss` renders the active theme template as a `:root` / `.dark` block in an inline `<style>` *after* `app/globals.css`, and `StoreSettings.theme` stores a full copy of every installed template - so for any store that has ever activated a preset, the database holds the palette and wins the cascade. S66 lost most of a session here: `app/globals.css`, `TITANIUM_TEAL` and the token-floor tests all said light `--accent-teal` was 0.51, and axe kept measuring the 0.58 the column remembered. Read the served page first:
+
+```bash
+curl -s http://localhost:3000/products -o page.html
+node -e 'const h=require("fs").readFileSync("page.html","utf8");console.log([...h.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(m=>m[1]).find(s=>s.includes("--accent-teal")))'
+```
+
+`qa/unit/theme/theme-preset-contrast.test.ts` now compares the preset to the stylesheet token for token, and `normalizeThemeState` refreshes an unedited snapshot, so this specific gap is closed - but the layering is permanent.
+
+## A Playwright click times out at 30s on a control that is plainly there
+The thing it opens may already be open, covering the control. S66's new cart-drawer scan waited the full 30s on `getByLabel(/^Open cart/).click()` because adding to the cart opens the drawer itself, so the open dialog sat over the button - and the test reported a timeout, not a contrast result, which is why the violation it existed to find went unseen for a run. Playwright says so in the error: it lists the elements intercepting the pointer, from `<aside role="dialog">`. Guard the click with the end state instead of assuming the control is needed:
+
+```ts
+const drawer = page.getByRole("dialog", { name: "Shopping cart" })
+if (!(await drawer.isVisible().catch(() => false))) await page.getByLabel(/^Open cart/).click()
+await expect(drawer).toBeVisible()
+```

@@ -47,7 +47,7 @@ export function DocsSidebar({
                       "-ml-px block border-l py-1 pl-4 text-sm leading-snug transition-colors",
                       active
                         ? "border-accent-teal font-medium text-foreground"
-                        : "border-transparent text-foreground/50 hover:border-foreground/40 hover:text-foreground",
+                        : "border-transparent text-muted-foreground hover:border-foreground/40 hover:text-foreground",
                     )}
                   >
                     {doc.title}

@@ -59,7 +59,7 @@ export function OfferBanner() {
         type="button"
         onClick={() => setDismissed(true)}
         aria-label="Dismiss offer"
-        className="absolute right-3 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-foreground/50 transition-colors hover:bg-accent-teal/12 hover:text-accent-teal"
+        className="absolute right-3 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent-teal/12 hover:text-accent-teal"
       >
         <X className="size-3.5" />
       </button>

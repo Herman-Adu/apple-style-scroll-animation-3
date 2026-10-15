@@ -17,7 +17,7 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        "flex items-center gap-2.5 font-mono text-[10px] uppercase tracking-[0.4em] text-foreground/50",
+        "flex items-center gap-2.5 font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground",
         className,
       )}
     >

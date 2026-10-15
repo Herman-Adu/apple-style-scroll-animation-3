@@ -154,7 +154,7 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
       </div>
 
       {total === 0 ? (
-        <p className="text-foreground/50">
+        <p className="text-muted-foreground">
           {query ? `No guides match “${query}”. Try a different search.` : "No guides here yet."}
         </p>
       ) : (
@@ -168,11 +168,11 @@ export function DocsExplorer({ docs }: { docs: DocSummary[] }) {
                 >
                   {group.meta.title}
                 </h2>
-                <span className="font-mono text-[10px] text-foreground/30">
+                <span className="font-mono text-[10px] text-muted-foreground">
                   {group.count} {group.count === 1 ? "guide" : "guides"}
                 </span>
               </div>
-              <p className="mb-6 max-w-2xl text-sm leading-relaxed text-foreground/50">{group.meta.blurb}</p>
+              <p className="mb-6 max-w-2xl text-sm leading-relaxed text-muted-foreground">{group.meta.blurb}</p>
 
               <div className="space-y-3">
                 {group.categories.map((cat) => {
@@ -220,7 +220,7 @@ function AudienceTabs({
 
   const base = "rounded-full border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] transition-colors"
   const activeClass = "border-accent-teal/50 bg-accent-teal/10 text-accent-teal"
-  const idleClass = "border-foreground/15 text-foreground/50 hover:border-foreground/40 hover:text-foreground"
+  const idleClass = "border-foreground/15 text-muted-foreground hover:border-foreground/40 hover:text-foreground"
 
   return (
     <nav aria-label="Filter docs by audience" className="flex flex-wrap gap-2.5">

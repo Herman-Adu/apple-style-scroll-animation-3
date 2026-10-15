@@ -138,7 +138,7 @@ export function StatCard({
         <div
           className={cn(
             "relative mt-3",
-            accent ? "text-accent-teal" : "text-muted-foreground/50",
+            accent ? "text-accent-teal" : "text-muted-foreground",
           )}
         >
           <Sparkline data={series} />

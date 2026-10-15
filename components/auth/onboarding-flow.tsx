@@ -76,7 +76,7 @@ export function OnboardingFlow() {
       <div className="relative w-full max-w-xl">
         {/* Progress */}
         <div className="mb-10">
-          <div className="mb-3 flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-foreground/40">
+          <div className="mb-3 flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
             <span>
               Step {stepIndex + 1} / {onboardingSteps.length}
             </span>
@@ -103,7 +103,7 @@ export function OnboardingFlow() {
             <h1 className="text-3xl font-semibold tracking-tight text-foreground text-balance">
               {step.title}
             </h1>
-            <p className="mt-3 text-sm leading-relaxed text-foreground/50">{step.subtitle}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{step.subtitle}</p>
 
             <div className="mt-10 space-y-8">
               {step.fields.map((field) => (

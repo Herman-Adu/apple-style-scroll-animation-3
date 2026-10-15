@@ -57,7 +57,7 @@ function Block({ block }: { block: ArticleBlock }) {
         <blockquote className="my-12 border-l-2 border-foreground/30 pl-6">
           <p className="text-xl font-medium leading-snug text-foreground md:text-2xl">{block.text}</p>
           {block.attribution && (
-            <cite className="mt-4 block text-sm not-italic text-foreground/40">— {block.attribution}</cite>
+            <cite className="mt-4 block text-sm not-italic text-muted-foreground">— {block.attribution}</cite>
           )}
         </blockquote>
       )
@@ -98,13 +98,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <div className="mx-auto max-w-3xl">
           <Link
             href="/articles"
-            className="inline-flex items-center gap-2 text-sm font-medium text-foreground/50 transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
             All articles
           </Link>
 
-          <div className="mt-10 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+          <div className="mt-10 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             <span>{article.category}</span>
             <span className="h-1 w-1 rounded-full bg-foreground/30" />
             <span>{article.readingMinutes} min read</span>
@@ -117,9 +117,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <div className="mt-8 flex items-center gap-4 border-b border-foreground/10 pb-8">
             <div>
               <p className="text-sm font-medium text-foreground">{article.author.name}</p>
-              <p className="text-xs text-foreground/40">{article.author.role}</p>
+              <p className="text-xs text-muted-foreground">{article.author.role}</p>
             </div>
-            <span className="ml-auto text-xs text-foreground/40">{formatDate(article.publishedAt)}</span>
+            <span className="ml-auto text-xs text-muted-foreground">{formatDate(article.publishedAt)}</span>
           </div>
         </div>
 

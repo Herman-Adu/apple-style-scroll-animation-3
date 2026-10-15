@@ -19,7 +19,7 @@ export function SiteFooter() {
             <p className="mt-4 max-w-md text-sm leading-relaxed text-foreground/60 lg:max-w-xs">
               {siteConfig.description}
             </p>
-            <p className="mt-6 text-xs uppercase tracking-[0.2em] text-foreground/50">
+            <p className="mt-6 text-xs uppercase tracking-[0.2em] text-muted-foreground">
               {siteConfig.location}
             </p>
           </div>
@@ -45,7 +45,7 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-16 flex flex-col gap-4 border-t border-foreground/10 pt-8 text-xs text-foreground/50 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="mt-16 flex flex-col gap-4 border-t border-foreground/10 pt-8 text-xs text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <span>
             © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </span>

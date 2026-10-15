@@ -35,9 +35,9 @@ const iconMap = {
 const steps = ["Topic", "Your details", "Details", "Review"];
 
 const inputClass =
-  "w-full rounded-xl border border-foreground/10 bg-foreground/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 outline-none transition-colors focus:border-foreground/30";
+  "w-full rounded-xl border border-foreground/10 bg-foreground/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-foreground/30";
 const labelClass =
-  "mb-2 block text-xs uppercase tracking-[0.15em] text-foreground/50";
+  "mb-2 block text-xs uppercase tracking-[0.15em] text-muted-foreground";
 
 function resolveOptions(field: EnquiryField): string[] {
   if (field.optionsSource === "products") return products.map((p) => p.name);
@@ -221,7 +221,7 @@ export function ContactForm() {
         <h3 className="mt-5 text-xl font-semibold text-foreground">
           Message sent
         </h3>
-        <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-foreground/50">
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
           Thanks{name ? `, ${name.split(" ")[0]}` : ""}. We&apos;ve received
           your {selectedType?.label.toLowerCase()} and will reply to {email}{" "}
           shortly.
@@ -370,7 +370,7 @@ export function ContactForm() {
                       <h4 className="text-sm font-semibold text-foreground">
                         {selectedType.gate.title}
                       </h4>
-                      <p className="text-xs leading-relaxed text-foreground/55">
+                      <p className="text-xs leading-relaxed text-muted-foreground">
                         {selectedType.gate.description}
                       </p>
                     </div>
@@ -477,7 +477,7 @@ export function ContactForm() {
                       >
                         {field.label}
                         {!field.required && (
-                          <span className="ml-1 text-foreground/25">
+                          <span className="ml-1 text-muted-foreground">
                             (optional)
                           </span>
                         )}
@@ -548,7 +548,7 @@ export function ContactForm() {
               </h3>
               <dl className="divide-y divide-foreground/5 rounded-xl border border-foreground/10 bg-foreground/[0.02]">
                 <div className="flex items-center justify-between gap-4 px-4 py-3">
-                  <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">
+                  <dt className="text-xs uppercase tracking-[0.15em] text-muted-foreground">
                     Topic
                   </dt>
                   <dd className="text-sm text-foreground">
@@ -556,13 +556,13 @@ export function ContactForm() {
                   </dd>
                 </div>
                 <div className="flex items-center justify-between gap-4 px-4 py-3">
-                  <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">
+                  <dt className="text-xs uppercase tracking-[0.15em] text-muted-foreground">
                     Name
                   </dt>
                   <dd className="text-sm text-foreground">{name}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-4 px-4 py-3">
-                  <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">
+                  <dt className="text-xs uppercase tracking-[0.15em] text-muted-foreground">
                     Email
                   </dt>
                   <dd className="text-sm text-foreground">{email}</dd>
@@ -575,7 +575,7 @@ export function ContactForm() {
                       key={field.name}
                       className="flex items-start justify-between gap-4 px-4 py-3"
                     >
-                      <dt className="text-xs uppercase tracking-[0.15em] text-foreground/40">
+                      <dt className="text-xs uppercase tracking-[0.15em] text-muted-foreground">
                         {field.label}
                       </dt>
                       <dd className="max-w-[60%] text-right text-sm text-foreground">
@@ -611,7 +611,7 @@ export function ContactForm() {
           // Signed-out visitor on an account-only topic: the gate card above
           // carries the sign-in / docs actions, so suppress Continue here.
           status === "loading" ? (
-            <span className="flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-foreground/40">
+            <span className="flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />
               Checking your account
             </span>

@@ -52,7 +52,7 @@ function TooltipContent({
   if (!active || !payload?.length) return null
   return (
     <div className="glass rounded-lg border px-3 py-2 text-xs backdrop-blur-xl backdrop-saturate-150">
-      <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.15em] text-foreground/50">{label}</p>
+      <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">{label}</p>
       {payload.map((entry) => (
         <div key={entry.name} className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
@@ -73,7 +73,7 @@ export function DocChart({ chartType, data, xKey, series, title, caption, unit }
   return (
     <figure className="my-10">
       {title && (
-        <figcaption className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+        <figcaption className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           {title}
         </figcaption>
       )}
@@ -137,7 +137,7 @@ export function DocChart({ chartType, data, xKey, series, title, caption, unit }
           )}
         </ResponsiveContainer>
       </div>
-      {caption && <figcaption className="mt-3 text-center text-xs text-foreground/40">{caption}</figcaption>}
+      {caption && <figcaption className="mt-3 text-center text-xs text-muted-foreground">{caption}</figcaption>}
     </figure>
   )
 }

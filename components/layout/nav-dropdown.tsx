@@ -25,18 +25,24 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
   const Icon = link.icon
 
   // Pill treatment mirrors the admin sidebar: teal active state, subtle hover.
-  // Inactive text adapts to the transparent-over-dark-hero header.
   // Hover intentionally mirrors the active (on-page) treatment so a hovered item
-  // reads exactly like the selected one. Both use the accent's second tone: on
-  // the teal tint the accent itself reads 4.45:1, because the tint is mixed from
-  // the same token and darkened along with it.
+  // reads exactly like the selected one.
+  //
+  // The colour of that treatment is not a theme choice, it is a surface choice,
+  // and this header has two surfaces. Over the page it needs the accent's second
+  // tone: the tint is mixed from the same token, so darkening the accent darkens
+  // the tint with it and the accent itself only reaches 4.45:1. Over a dark hero
+  // the same tint composites down to near-black, where that deeper tone reads
+  // 2.74:1 and the direction reverses - which is why `onDark` already drives the
+  // inactive colour and now drives the active one too.
+  const onPill = onDark ? "text-white" : "text-accent-teal-muted"
   const pill = cn(
     "group relative inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium uppercase tracking-[0.15em] transition-colors",
     onPage
-      ? "bg-accent-teal/12 text-accent-teal-muted"
+      ? cn("bg-accent-teal/12", onPill)
       : cn(
-          "hover:bg-accent-teal/12 hover:text-accent-teal-muted",
-          onDark ? "text-white/70" : "text-foreground/60",
+          "hover:bg-accent-teal/12",
+          onDark ? "text-white/70 hover:text-white" : "text-foreground/60 hover:text-accent-teal-muted",
         ),
   )
 

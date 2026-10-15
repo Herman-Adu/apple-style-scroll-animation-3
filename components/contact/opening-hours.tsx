@@ -84,7 +84,12 @@ export function OpeningHours() {
               <span className="flex items-center gap-2">
                 {d.day}
                 {isToday && (
-                  <span className="rounded-full bg-accent-teal/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] text-accent-teal-muted">
+                  // Solid, not a second tint: this pill sits inside the already
+                  // tinted today row, and stacked tints leave no tone that works
+                  // in both themes - the tint darkens the surface on light and
+                  // lightens it on dark, so the text would have to move in
+                  // opposite directions. A filled accent is 5.24:1 and 9.44:1.
+                  <span className="rounded-full bg-accent-teal px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] text-background">
                     Today
                   </span>
                 )}

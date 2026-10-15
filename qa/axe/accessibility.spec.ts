@@ -137,8 +137,13 @@ for (const theme of THEMES) {
 
     // An empty drawer renders none of the per-line labels, which is where the
     // colour was wrong, so the scan has to put something in the cart first.
-    await page.getByLabel(/^Open cart/).click()
-    await expect(page.getByRole("dialog", { name: "Shopping cart" })).toBeVisible()
+    // Adding opens the drawer by itself, and then the open drawer covers the
+    // "Open cart" button - clicking it waits 30s for a hit target instead.
+    const drawer = page.getByRole("dialog", { name: "Shopping cart" })
+    if (!(await drawer.isVisible().catch(() => false))) {
+      await page.getByLabel(/^Open cart/).click()
+    }
+    await expect(drawer).toBeVisible()
     await scan(page, `cart drawer (${theme})`)
   })
 

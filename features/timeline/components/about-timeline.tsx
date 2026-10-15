@@ -117,7 +117,7 @@ function TimelineItem({ milestone, index }: { milestone: Milestone; index: numbe
         className={isLeft ? "md:col-start-1 md:pr-20 md:text-right" : "md:col-start-2 md:pl-20"}
       >
         <motion.p
-          className="font-mono text-4xl font-semibold tracking-tight text-foreground/15 md:text-5xl"
+          className="font-mono text-4xl font-semibold tracking-tight text-muted-glyph md:text-5xl"
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.5 }}
@@ -149,7 +149,7 @@ function TimelineItem({ milestone, index }: { milestone: Milestone; index: numbe
         </h3>
 
         <motion.p
-          className="mt-3 max-w-sm text-sm leading-relaxed text-foreground/55 md:text-base"
+          className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground md:text-base"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.5 }}

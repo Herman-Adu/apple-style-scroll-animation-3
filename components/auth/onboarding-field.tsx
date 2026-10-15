@@ -22,7 +22,7 @@ export function OnboardingFieldControl({
   onChange: (value: unknown) => void
 }) {
   const inputClass =
-    "h-12 border-foreground/10 bg-foreground/[0.03] text-foreground placeholder:text-foreground/30 focus-visible:border-foreground/30 focus-visible:ring-foreground/10"
+    "h-12 border-foreground/10 bg-foreground/[0.03] text-foreground placeholder:text-muted-foreground focus-visible:border-foreground/30 focus-visible:ring-foreground/10"
 
   switch (field.type) {
     case "text":
@@ -43,7 +43,7 @@ export function OnboardingFieldControl({
           onChange={(e) => onChange(e.target.value)}
           placeholder={field.placeholder}
           rows={4}
-          className="border-foreground/10 bg-foreground/[0.03] text-foreground placeholder:text-foreground/30 focus-visible:border-foreground/30 focus-visible:ring-foreground/10"
+          className="border-foreground/10 bg-foreground/[0.03] text-foreground placeholder:text-muted-foreground focus-visible:border-foreground/30 focus-visible:ring-foreground/10"
           aria-label={field.label}
         />
       )
@@ -68,7 +68,7 @@ export function OnboardingFieldControl({
                 <span>
                   <span className="block text-sm font-medium text-foreground">{option.label}</span>
                   {option.description && (
-                    <span className="mt-0.5 block text-xs text-foreground/45">{option.description}</span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">{option.description}</span>
                   )}
                 </span>
                 <span

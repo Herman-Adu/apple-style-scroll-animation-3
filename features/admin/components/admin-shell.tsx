@@ -484,7 +484,7 @@ function AdminMobileNav({
                     size={40}
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[11px] uppercase tracking-[0.15em] text-foreground/40">
+                    <span className="block text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
                       Signed in
                     </span>
                     <span className="block truncate text-sm font-medium text-foreground">
@@ -492,7 +492,7 @@ function AdminMobileNav({
                     </span>
                   </span>
                   <ChevronRight
-                    className="size-4 shrink-0 text-foreground/40"
+                    className="size-4 shrink-0 text-muted-foreground"
                     aria-hidden
                   />
                 </button>

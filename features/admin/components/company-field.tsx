@@ -15,7 +15,7 @@ import type { OnboardingField } from "@/lib/data/onboarding"
 import { cn } from "@/lib/utils"
 
 const inputClass =
-  "h-12 border-foreground/10 bg-foreground/[0.03] text-foreground placeholder:text-foreground/30 focus-visible:border-foreground/30 focus-visible:ring-foreground/10"
+  "h-12 border-foreground/10 bg-foreground/[0.03] text-foreground placeholder:text-muted-foreground focus-visible:border-foreground/30 focus-visible:ring-foreground/10"
 
 const errorClass = "border-destructive/60 focus-visible:border-destructive focus-visible:ring-destructive/10"
 
@@ -36,13 +36,13 @@ function FieldShell({
     <div className="space-y-3">
       <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
         {label}
-        {optional && <span className="normal-case tracking-normal text-muted-foreground/50">(optional)</span>}
+        {optional && <span className="normal-case tracking-normal text-muted-foreground">(optional)</span>}
       </label>
       {children}
       {error ? (
         <p className="text-xs text-destructive">{error}</p>
       ) : hint ? (
-        <p className="text-xs text-muted-foreground/70">{hint}</p>
+        <p className="text-xs text-muted-foreground">{hint}</p>
       ) : null}
     </div>
   )
@@ -105,7 +105,7 @@ export function AddressFieldset({
             <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
               {sub.label}
               {!sub.required && (
-                <span className="normal-case tracking-normal text-muted-foreground/50">(optional)</span>
+                <span className="normal-case tracking-normal text-muted-foreground">(optional)</span>
               )}
             </label>
             <Input

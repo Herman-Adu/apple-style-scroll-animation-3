@@ -28,7 +28,7 @@ export function ProductsOfferCallout() {
           <span>Your personal offer</span>
           <span className="rounded-full bg-foreground px-2 py-0.5 text-xs font-bold text-background">{deal}</span>
         </p>
-        <p className="mt-0.5 text-sm text-foreground/55">
+        <p className="mt-0.5 text-sm text-muted-foreground">
           {`Applied automatically at checkout — nothing to enter${ends ? ` · ${ends}` : ""}.`}
         </p>
       </div>

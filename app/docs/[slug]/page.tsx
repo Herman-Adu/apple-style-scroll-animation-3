@@ -110,7 +110,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
                 <div className="mt-16 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-8">
                   <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">Tags</span>
                   {doc.tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-foreground/5 px-3 py-1 text-xs text-foreground/50">
+                    <span key={tag} className="rounded-full bg-foreground/5 px-3 py-1 text-xs text-muted-foreground">
                       {tag}
                     </span>
                   ))}
@@ -147,8 +147,8 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
                   <h3 className="mt-4 text-base font-semibold leading-snug text-foreground transition-colors group-hover:text-accent-teal">
                     {r.title}
                   </h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-foreground/50">{r.summary}</p>
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-foreground/50 transition-colors group-hover:text-foreground">
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{r.summary}</p>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground">
                     Read guide
                     <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.5} />
                   </span>

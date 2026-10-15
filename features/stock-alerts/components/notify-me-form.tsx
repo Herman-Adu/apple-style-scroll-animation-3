@@ -46,7 +46,7 @@ export function NotifyMeForm({ productSlug }: { productSlug: string }) {
           placeholder="you@example.com"
           aria-invalid={result?.ok === false}
           aria-describedby={result?.ok === false ? `notify-error-${productSlug}` : undefined}
-          className="h-11 min-w-0 flex-1 rounded-full border border-border bg-background px-4 text-sm text-foreground placeholder:text-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="h-11 min-w-0 flex-1 rounded-full border border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         />
         <button
           type="submit"

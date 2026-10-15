@@ -17,6 +17,14 @@
   --secondary-foreground: oklch(0.18 0 0);
   --muted: oklch(0.955 0 0);
   --muted-foreground: oklch(0.44 0 0);
+  /* The recessive glyph: an unfilled star in a rating, the watermark year on
+     the About timeline. Non-text, so WCAG 1.4.11's 3:1 rather than 4.5:1, and
+     opaque on purpose - these were `text-foreground/25`, and an alpha is a
+     promise about the surface behind it, so one class read 1.78:1 here and
+     1.89:1 on dark while looking deliberate in the source. Muted *text* has a
+     token already: --muted-foreground. Both floors are measured in
+     qa/unit/theme/muted-text-contrast.test.ts. */
+  --muted-glyph: oklch(0.61 0 0);
   --accent: oklch(0.955 0 0);
   --accent-foreground: oklch(0.18 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -24,9 +32,13 @@
   --border: oklch(0.9 0 0);
   --input: oklch(0.9 0 0);
   --ring: oklch(0.6 0 0);
-  /* Muted titanium teal — the single accent color (slightly deeper for light bg contrast) */
-  --accent-teal: oklch(0.58 0.09 197);
-  --accent-teal-muted: oklch(0.52 0.08 198);
+  /* Muted titanium teal - the single accent color. Deeper here than on dark,
+     because this is also a text colour: at the 0.58 it was authored with it
+     read 3.93:1 on this background and 3.60:1 on --muted, under AA, which the
+     light-theme axe pass added in S66 found on five routes at once. The two
+     tones stay a tone apart so the brand gradient is still a gradient. */
+  --accent-teal: oklch(0.51 0.09 197);
+  --accent-teal-muted: oklch(0.45 0.08 198);
   /* Whole-title gradient (heading style "gradient"); defaults to the two tones. */
   --brand-gradient-from: var(--accent-teal);
   --brand-gradient-to: var(--accent-teal-muted);
@@ -68,6 +80,8 @@
   --secondary-foreground: oklch(0.95 0 0);
   --muted: oklch(0.15 0 0);
   --muted-foreground: oklch(0.6 0 0);
+  /* Reads against near-black here, so it is set for this theme, not derived. */
+  --muted-glyph: oklch(0.57 0 0);
   --accent: oklch(0.15 0 0);
   --accent-foreground: oklch(0.95 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -108,6 +122,7 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-muted-glyph: var(--muted-glyph);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);

@@ -40,16 +40,16 @@ export function AuthShell({
         </div>
 
         <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-8 backdrop-blur-xl">
-          <p className="text-[11px] uppercase tracking-[0.3em] text-foreground/40">{eyebrow}</p>
+          <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">{eyebrow}</p>
           <h1 className="mt-3 text-2xl font-semibold tracking-tight text-foreground text-balance">
             {title}
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-foreground/50">{subtitle}</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
 
           <div className="mt-8">{children}</div>
         </div>
 
-        <div className="mt-6 text-center text-sm text-foreground/50">{footer}</div>
+        <div className="mt-6 text-center text-sm text-muted-foreground">{footer}</div>
       </motion.div>
     </main>
   )

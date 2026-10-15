@@ -97,7 +97,7 @@ export function EmbeddedPayment({
           </EmbeddedCheckoutProvider>
         </div>
       </div>
-      <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-foreground/40">
+      <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
         <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.5} />
         Payment secured by Stripe. Momo Audio never sees your card details.
       </p>

@@ -50,7 +50,7 @@ export function OpeningHours() {
             "flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em]",
             openNow
               ? "bg-emerald-400/15 text-emerald-300"
-              : "bg-foreground/10 text-foreground/50",
+              : "bg-foreground/10 text-muted-foreground",
           )}
         >
           <span
@@ -86,7 +86,7 @@ export function OpeningHours() {
                 )}
               </span>
               <span
-                className={cn("tabular-nums", !d.open && "text-foreground/50")}
+                className={cn("tabular-nums", !d.open && "text-muted-foreground")}
               >
                 {d.open && d.close
                   ? `${formatHour(d.open)} – ${formatHour(d.close)}`

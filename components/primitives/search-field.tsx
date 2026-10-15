@@ -97,13 +97,13 @@ function SearchFieldBody({
     >
       {isPending ? (
         <Loader2
-          className="h-4 w-4 shrink-0 animate-spin text-foreground/40"
+          className="h-4 w-4 shrink-0 animate-spin text-muted-foreground"
           strokeWidth={1.5}
           aria-hidden
         />
       ) : (
         <Search
-          className="h-4 w-4 shrink-0 text-foreground/40"
+          className="h-4 w-4 shrink-0 text-muted-foreground"
           strokeWidth={1.5}
           aria-hidden
         />
@@ -115,14 +115,14 @@ function SearchFieldBody({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-transparent text-sm text-foreground placeholder:text-foreground/35 focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
+        className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
       />
       {value && (
         <button
           type="button"
           onClick={clear}
           aria-label="Clear search"
-          className="rounded-full p-0.5 text-foreground/40 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/60"
+          className="rounded-full p-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/60"
         >
           <X className="h-4 w-4" strokeWidth={1.5} aria-hidden />
         </button>

@@ -26,7 +26,7 @@ export function ProductCollection({ initialProducts, category, query }: ProductC
 
   if (products.length === 0) {
     return (
-      <p className="mx-auto max-w-7xl text-foreground/50">
+      <p className="mx-auto max-w-7xl text-muted-foreground">
         {query
           ? `No products match “${query}”${category ? ` in ${category}` : ""}. Try a different search.`
           : "No products in this category yet."}

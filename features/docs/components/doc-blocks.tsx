@@ -21,12 +21,12 @@ const calloutConfig = {
   info: {
     Icon: Info,
     className: "border-foreground/15 bg-foreground/[0.03]",
-    iconClass: "text-foreground/50",
+    iconClass: "text-muted-foreground",
   },
   note: {
     Icon: NotebookPen,
     className: "border-foreground/15 bg-foreground/[0.03]",
-    iconClass: "text-foreground/50",
+    iconClass: "text-muted-foreground",
   },
   tip: {
     Icon: Lightbulb,
@@ -107,7 +107,7 @@ function Block({ block }: { block: DocBlock }) {
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
               {block.title ?? block.language}
             </span>
-            <span className="font-mono text-[10px] text-foreground/30">
+            <span className="font-mono text-[10px] text-muted-foreground">
               {block.language}
             </span>
           </div>

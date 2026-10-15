@@ -34,7 +34,7 @@ export function LegalPageLayout({ content }: { content: LegalPageContent }) {
       {/* Header */}
       <section className="border-b border-foreground/10 px-6 pt-32 pb-16 md:px-12 md:pt-40 md:pb-20">
         <div className="mx-auto max-w-5xl">
-          <p className="mb-6 font-mono text-[10px] uppercase tracking-[0.4em] text-foreground/40">
+          <p className="mb-6 font-mono text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
             {content.eyebrow}
           </p>
           <SectionHeading
@@ -45,7 +45,7 @@ export function LegalPageLayout({ content }: { content: LegalPageContent }) {
           <p className="mt-8 max-w-2xl text-pretty text-xl leading-relaxed text-foreground/60">
             {content.intro}
           </p>
-          <p className="mt-8 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/30">
+          <p className="mt-8 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
             Last updated · {content.updated}
           </p>
         </div>
@@ -68,7 +68,7 @@ export function LegalPageLayout({ content }: { content: LegalPageContent }) {
           <div className="min-w-0">
             {content.disclaimer ? (
               <div className="mb-12 rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6">
-                <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">
+                <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                   Please note
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-foreground/60">

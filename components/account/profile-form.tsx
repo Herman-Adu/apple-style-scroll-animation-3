@@ -90,7 +90,7 @@ export function ProfileForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-8">
       <div className="space-y-3">
-        <label className="text-xs uppercase tracking-[0.2em] text-foreground/50">Photo</label>
+        <label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Photo</label>
         <div className="flex items-center gap-5">
           <UserAvatar name={draft.displayName || user?.name || "?"} src={draft.avatarUrl} size={72} />
           <div className="flex flex-col gap-2">
@@ -121,7 +121,7 @@ export function ProfileForm() {
                 </Button>
               )}
             </div>
-            <p className="text-xs text-foreground/40">
+            <p className="text-xs text-muted-foreground">
               {avatarError ?? "JPG, PNG or GIF, up to 2MB. Falls back to your initials."}
             </p>
           </div>
@@ -138,7 +138,7 @@ export function ProfileForm() {
 
       {editableFields.map((field) => (
         <div key={field.key} className="space-y-3">
-          <label className="text-xs uppercase tracking-[0.2em] text-foreground/50">{field.label}</label>
+          <label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{field.label}</label>
           <OnboardingFieldControl
             field={field}
             value={draft[field.key as keyof ProfileUpdate]}

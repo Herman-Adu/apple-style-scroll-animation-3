@@ -108,7 +108,7 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
                       <SectionIcon
                         className={cn(
                           "mt-0.5 size-4 shrink-0 transition-colors",
-                          active ? "text-accent-teal" : "text-foreground/40 group-hover/row:text-accent-teal",
+                          active ? "text-accent-teal" : "text-muted-foreground group-hover/row:text-accent-teal",
                         )}
                         strokeWidth={1.75}
                         aria-hidden
@@ -132,7 +132,7 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
                         {section.label}
                       </span>
                       {section.hint && (
-                        <span className="block text-xs text-foreground/40">{section.hint}</span>
+                        <span className="block text-xs text-muted-foreground">{section.hint}</span>
                       )}
                     </span>
                   </Link>

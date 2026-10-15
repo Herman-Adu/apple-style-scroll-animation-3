@@ -48,11 +48,11 @@ export function ProductCard({
               </h3>
             </div>
             <ArrowUpRight
-              className="h-5 w-5 shrink-0 text-foreground/40 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
+              className="h-5 w-5 shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
               strokeWidth={1.5}
             />
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-foreground/50">
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             {product.summary}
           </p>
           <p className="mt-6 text-lg font-medium text-foreground">

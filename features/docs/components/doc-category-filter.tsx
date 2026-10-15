@@ -33,7 +33,7 @@ export function DocCategoryFilter({
           base,
           !active
             ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal"
-            : "border-foreground/15 text-foreground/50 hover:border-foreground/40 hover:text-foreground",
+            : "border-foreground/15 text-muted-foreground hover:border-foreground/40 hover:text-foreground",
         )}
       >
         All
@@ -49,7 +49,7 @@ export function DocCategoryFilter({
               base,
               isActive
                 ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal"
-                : "border-foreground/15 text-foreground/50 hover:border-foreground/40 hover:text-foreground",
+                : "border-foreground/15 text-muted-foreground hover:border-foreground/40 hover:text-foreground",
             )}
           >
             {category}

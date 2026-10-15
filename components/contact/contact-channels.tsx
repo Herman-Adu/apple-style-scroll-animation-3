@@ -26,9 +26,9 @@ export function ContactChannels() {
                 <Icon className="h-5 w-5" strokeWidth={1.5} />
               </span>
               <span className="flex flex-col">
-                <span className="text-xs uppercase tracking-[0.15em] text-foreground/40">{channel.label}</span>
+                <span className="text-xs uppercase tracking-[0.15em] text-muted-foreground">{channel.label}</span>
                 <span className="mt-0.5 text-sm font-medium text-foreground">{channel.value}</span>
-                <span className="mt-1 text-xs text-foreground/45">{channel.note}</span>
+                <span className="mt-1 text-xs text-muted-foreground">{channel.note}</span>
               </span>
             </Link>
           </li>

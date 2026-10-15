@@ -13,12 +13,12 @@ export function ProductFeatures({ features }: { features: ProductFeature[] }) {
                   <span className="text-5xl font-bold tracking-tighter text-foreground md:text-6xl">
                     {feature.stat}
                   </span>
-                  <span className="font-mono text-xs uppercase tracking-widest text-foreground/40">
+                  <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
                     {feature.statUnit}
                   </span>
                 </div>
                 <h3 className="mt-6 text-xl font-semibold text-foreground">{feature.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-foreground/50">{feature.description}</p>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{feature.description}</p>
               </article>
             </Reveal>
           ))}

@@ -19,10 +19,10 @@ export function OrderHistory({
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-foreground/10 px-6 py-20 text-center">
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-foreground/5">
-          <Package className="h-6 w-6 text-foreground/40" strokeWidth={1.5} />
+          <Package className="h-6 w-6 text-muted-foreground" strokeWidth={1.5} />
         </div>
         <h3 className="mt-5 text-base font-medium text-foreground">No orders yet</h3>
-        <p className="mt-1 max-w-xs text-sm text-foreground/45">
+        <p className="mt-1 max-w-xs text-sm text-muted-foreground">
           When you place an order it will appear here with its invoice.
         </p>
         <Link

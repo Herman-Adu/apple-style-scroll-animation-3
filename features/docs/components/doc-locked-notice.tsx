@@ -14,7 +14,7 @@ export function DocLockedNotice() {
         <Lock className="h-5 w-5 text-accent-amber" strokeWidth={1.5} />
       </div>
       <h2 className="mt-5 text-lg font-semibold text-foreground">This is an internal guide</h2>
-      <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-foreground/50">
+      <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
         This guide is for the Momo Audio team. Sign in with an admin account to read it, or browse the public user
         guides instead.
       </p>

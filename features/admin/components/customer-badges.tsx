@@ -109,8 +109,8 @@ export function OfferChip({ offer, onRemove }: { offer: OfferTag; onRemove?: () 
           className={cn(
             "flex size-4 items-center justify-center rounded-full no-underline transition-colors",
             active
-              ? "text-accent-teal/70 hover:bg-accent-teal/20 hover:text-accent-teal"
-              : "text-muted-foreground/70 hover:bg-foreground/10 hover:text-foreground",
+              ? "text-accent-teal-muted hover:bg-accent-teal/20 hover:text-accent-teal"
+              : "text-muted-foreground hover:bg-foreground/10 hover:text-foreground",
           )}
         >
           ×

@@ -10,11 +10,11 @@ import { AddToCartButton } from "./add-to-cart-button"
 import { cn } from "@/lib/utils"
 
 const stockTone: Record<ReturnType<typeof stockLevel>, string> = {
-  "in-stock": "text-foreground/50",
+  "in-stock": "text-muted-foreground",
   "low-stock": "text-amber-500",
   "out-of-stock": "text-destructive",
-  preorder: "text-foreground/50",
-  "coming-soon": "text-foreground/50",
+  preorder: "text-muted-foreground",
+  "coming-soon": "text-muted-foreground",
 }
 
 /** `soldOutSlot` is composed by the page so this slice never depends on the one that fills it. */
@@ -34,7 +34,7 @@ export function ProductPurchase({ product: seed, soldOutSlot }: { product: Produ
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">{product.category}</p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{product.category}</p>
         <h1 className="mt-3 text-4xl font-bold tracking-tight text-foreground md:text-5xl">{product.name}</h1>
         <p className="mt-3 text-lg text-foreground/60">{product.tagline}</p>
       </div>
@@ -42,7 +42,7 @@ export function ProductPurchase({ product: seed, soldOutSlot }: { product: Produ
       <p className="text-base leading-relaxed text-foreground/70">{product.description}</p>
 
       <div>
-        <p className="mb-3 text-xs uppercase tracking-[0.2em] text-foreground/40">
+        <p className="mb-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">
           Finish — <span className="text-foreground/70">{color}</span>
         </p>
         <div className="flex flex-wrap gap-2">

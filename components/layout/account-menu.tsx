@@ -136,7 +136,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
                       </span>
                     )}
                   </span>
-                  <span className="block truncate text-xs text-foreground/40">
+                  <span className="block truncate text-xs text-muted-foreground">
                     {user.email}
                   </span>
                 </span>

@@ -25,7 +25,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(function A
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={id} className="text-xs uppercase tracking-[0.2em] text-foreground/50">
+      <Label htmlFor={id} className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
         {label}
       </Label>
       <div className="relative">
@@ -34,7 +34,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(function A
           ref={ref}
           type={isPassword && revealed ? "text" : type}
           className={cn(
-            "h-11 border-foreground/10 bg-foreground/[0.03] text-foreground placeholder:text-foreground/30 focus-visible:border-foreground/30 focus-visible:ring-foreground/10",
+            "h-11 border-foreground/10 bg-foreground/[0.03] text-foreground placeholder:text-muted-foreground focus-visible:border-foreground/30 focus-visible:ring-foreground/10",
             isPassword && "pr-11",
             className,
           )}
@@ -47,7 +47,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(function A
             tabIndex={-1}
             aria-label={revealed ? "Hide password" : "Show password"}
             aria-pressed={revealed}
-            className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-foreground/40 transition-colors hover:text-foreground/70"
+            className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground/70"
           >
             {revealed ? <EyeOff className="h-4 w-4" strokeWidth={1.5} /> : <Eye className="h-4 w-4" strokeWidth={1.5} />}
           </button>

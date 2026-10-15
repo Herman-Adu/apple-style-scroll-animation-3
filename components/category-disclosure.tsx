@@ -41,7 +41,7 @@ export function CategoryDisclosure({
               "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors",
               open
                 ? "border-accent-teal/40 bg-accent-teal/10 text-accent-teal"
-                : "border-foreground/10 bg-foreground/[0.03] text-foreground/50 group-hover:text-foreground",
+                : "border-foreground/10 bg-foreground/[0.03] text-muted-foreground group-hover:text-foreground",
             )}
           >
             <Icon className="h-4 w-4" strokeWidth={1.75} />
@@ -49,12 +49,12 @@ export function CategoryDisclosure({
           <span className="flex-1">
             <span className="block text-sm font-medium text-foreground">{label}</span>
           </span>
-          <span className="font-mono text-[10px] text-foreground/30">
+          <span className="font-mono text-[10px] text-muted-foreground">
             {count} {count === 1 ? itemLabel : `${itemLabel}s`}
           </span>
           <ChevronDown
             className={cn(
-              "h-4 w-4 shrink-0 text-foreground/40 transition-transform duration-200",
+              "h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200",
               open && "rotate-180 text-accent-teal",
             )}
             strokeWidth={2}

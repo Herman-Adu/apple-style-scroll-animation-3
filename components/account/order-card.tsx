@@ -36,13 +36,13 @@ export function OrderCard({ order, billTo }: { order: Order; billTo: { name: str
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="font-mono text-sm font-medium text-foreground">{order.number}</p>
-          <p className="mt-1 text-xs text-foreground/45">
+          <p className="mt-1 text-xs text-muted-foreground">
             {date} · {itemCount} {itemCount === 1 ? "item" : "items"}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[order.status]}`} aria-hidden />
-          <span className="text-[11px] uppercase tracking-[0.2em] text-foreground/55">
+          <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
             {STATUS_LABEL[order.status]}
           </span>
         </div>
@@ -62,7 +62,7 @@ export function OrderCard({ order, billTo }: { order: Order; billTo: { name: str
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm text-foreground">{item.name}</p>
-              <p className="text-xs text-foreground/40">
+              <p className="text-xs text-muted-foreground">
                 {item.color ? `${item.color} · ` : ""}Qty {item.quantity}
               </p>
             </div>
@@ -76,8 +76,8 @@ export function OrderCard({ order, billTo }: { order: Order; billTo: { name: str
       {order.trackingNumber ? (
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-foreground/10 pt-4">
           <div className="flex items-center gap-2 text-sm">
-            <Truck className="h-4 w-4 shrink-0 text-foreground/45" strokeWidth={1.75} />
-            <span className="text-foreground/45">{carrierLabel(order.carrier)}</span>
+            <Truck className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+            <span className="text-muted-foreground">{carrierLabel(order.carrier)}</span>
             <span className="font-mono text-foreground">{order.trackingNumber}</span>
           </div>
           {order.trackingUrl ? (
@@ -95,7 +95,7 @@ export function OrderCard({ order, billTo }: { order: Order; billTo: { name: str
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-foreground/10 pt-4">
         <div className="text-sm">
-          <span className="text-foreground/45">Total</span>{" "}
+          <span className="text-muted-foreground">Total</span>{" "}
           <span className="font-semibold text-foreground">
             {formatMoney({ amount: order.total, currency: order.currency })}
           </span>

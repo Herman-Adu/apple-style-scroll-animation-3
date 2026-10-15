@@ -30,7 +30,7 @@ export function StoreMap() {
             className={`flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
               i === active
                 ? "bg-foreground/10 text-foreground"
-                : "text-foreground/50 hover:text-foreground/80"
+                : "text-muted-foreground hover:text-foreground/80"
             }`}
           >
             {loc.city}
@@ -59,7 +59,7 @@ export function StoreMap() {
               {location.city}
             </span>
             <span className="text-xs text-foreground/60">{location.role}</span>
-            <span className="mt-1 text-xs leading-relaxed text-foreground/55">
+            <span className="mt-1 text-xs leading-relaxed text-muted-foreground">
               {location.address}
             </span>
           </div>

@@ -1,4 +1,8 @@
 import type { Doc } from "../lib/domain/schema"
+import { absoluteUrl } from "@/lib/seo/site"
+
+/** The deployed origin, so posting copy is ready to paste and a fork gets its own. */
+const LIVE = absoluteUrl("")
 
 export const showcaseAndPortfolio: Doc = {
   slug: "showcase-and-portfolio",
@@ -10,7 +14,7 @@ export const showcaseAndPortfolio: Doc = {
     "How to present this project as proof of senior engineering skill — on LinkedIn, Telegram, and a portfolio. What to highlight, ready-to-adapt post templates, the screenshots and links to attach, and where to drop the live URL once it is deployed.",
   readingMinutes: 9,
   order: 6,
-  updatedAt: "2026-10-13",
+  updatedAt: "2026-10-15",
   tags: ["portfolio", "showcase", "linkedin", "personal brand", "career"],
   body: [
     {
@@ -57,19 +61,19 @@ export const showcaseAndPortfolio: Doc = {
     },
     {
       type: "paragraph",
-      text: "These are starting points, not scripts — rewrite them in your own voice. Replace the bracketed live URL once the site is deployed (see the section below).",
+      text: `These are starting points, not scripts — rewrite them in your own voice. The links are already pointed at ${LIVE}, so the copy is ready to paste as it stands.`,
     },
     {
       type: "code",
       language: "text",
       title: "LinkedIn — the architecture angle",
-      code: "I built a server-first commerce platform with its own email system — no rented ESP.\n\nA few decisions I am proud of:\n\n- Server-first rendering: pages are React Server Components by default; the browser only gets interactive islands. Fast pages, better SEO.\n- A port/adapter seam sits between the UI and the data source, so swapping the local corpus for a Strapi CMS is a config change, not a rewrite.\n- Email is owned, not rented: branded block-based templates, campaigns, and 1:1 customer messaging running on our own domain and Postgres — beside real order data.\n- Access control is enforced on the server: gated docs are never serialized to a browser without the role.\n\nWritten up end to end, with diagrams, for users, admins, and engineers.\n\nLive: [your-url-here]\n\n#nextjs #react #typescript #softwarearchitecture",
+      code: `I built a server-first commerce platform with its own email system — no rented ESP.\n\nA few decisions I am proud of:\n\n- Server-first rendering: pages are React Server Components by default; the browser only gets interactive islands. Fast pages, better SEO.\n- A port/adapter seam sits between the UI and the data source, so swapping the local corpus for a Strapi CMS is a config change, not a rewrite.\n- Email is owned, not rented: branded block-based templates, campaigns, and 1:1 customer messaging running on our own domain and Postgres — beside real order data.\n- Access control is enforced on the server: gated docs are never serialized to a browser without the role.\n\nWritten up end to end, with diagrams, for users, admins, and engineers.\n\nLive: ${LIVE}\n\n#nextjs #react #typescript #softwarearchitecture`,
     },
     {
       type: "code",
       language: "text",
       title: "Telegram / short-form — the outcome angle",
-      code: "New build shipped.\n\nA commerce app that owns its email instead of renting Klaviyo/Mailchimp: your domain, your database, campaigns and customer messaging built in. Server-first, so pages load fast. Fully documented with architecture diagrams and step-by-step training guides.\n\nLive demo: [your-url-here]",
+      code: `New build shipped.\n\nA commerce app that owns its email instead of renting Klaviyo/Mailchimp: your domain, your database, campaigns and customer messaging built in. Server-first, so pages load fast. Fully documented with architecture diagrams and step-by-step training guides.\n\nLive demo: ${LIVE}`,
     },
     {
       type: "callout",
@@ -96,7 +100,7 @@ export const showcaseAndPortfolio: Doc = {
     },
     {
       type: "paragraph",
-      text: "Once the app is deployed to Vercel, you get a production URL. Put it everywhere the reader might want to click through, and update the bracketed placeholder in the post templates above.",
+      text: `The deployed origin is read from the site's own configuration, so every post template above already carries ${LIVE} and anyone forking this project gets their own host instead of yours. Nothing here needs editing by hand before you post.`,
     },
     {
       type: "steps",

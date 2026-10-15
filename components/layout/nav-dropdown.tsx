@@ -27,13 +27,15 @@ export function NavDropdown({ link, activeId, category, onDark = false }: NavDro
   // Pill treatment mirrors the admin sidebar: teal active state, subtle hover.
   // Inactive text adapts to the transparent-over-dark-hero header.
   // Hover intentionally mirrors the active (on-page) treatment so a hovered item
-  // reads exactly like the selected one.
+  // reads exactly like the selected one. Both use the accent's second tone: on
+  // the teal tint the accent itself reads 4.45:1, because the tint is mixed from
+  // the same token and darkened along with it.
   const pill = cn(
     "group relative inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium uppercase tracking-[0.15em] transition-colors",
     onPage
-      ? "bg-accent-teal/12 text-accent-teal"
+      ? "bg-accent-teal/12 text-accent-teal-muted"
       : cn(
-          "hover:bg-accent-teal/12 hover:text-accent-teal",
+          "hover:bg-accent-teal/12 hover:text-accent-teal-muted",
           onDark ? "text-white/70" : "text-foreground/60",
         ),
   )

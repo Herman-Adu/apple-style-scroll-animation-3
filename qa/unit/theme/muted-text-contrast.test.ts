@@ -98,6 +98,11 @@ const TOKEN_FLOORS: readonly NamedToken[] = [
     floor: TEXT_FLOOR,
     role: "the accent's second tone, and where accent text goes when it needs more contrast",
   },
+  {
+    token: "success",
+    floor: TEXT_FLOOR,
+    role: 'the positive status colour - the "Open now" badge reads it as text, so AA for normal text',
+  },
 ]
 
 describe.each(TOKEN_FLOORS)("--$token", ({ token, floor, role }) => {

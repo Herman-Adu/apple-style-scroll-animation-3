@@ -73,9 +73,12 @@ export default async function ProductsPage({
                   aria-current={filter.active ? "page" : undefined}
                   className={cn(
                     "rounded-full border px-5 py-2 text-xs uppercase tracking-[0.2em] transition-colors",
+                    // The teal tint takes the accent down with it, so accent on
+                    // its own tint reads 4.43:1; the second tone clears AA and
+                    // still re-themes with the client's palette.
                     filter.active
-                      ? "border-accent-teal/40 bg-accent-teal/12 text-accent-teal"
-                      : "border-foreground/15 text-foreground/60 hover:border-accent-teal/30 hover:bg-accent-teal/12 hover:text-accent-teal",
+                      ? "border-accent-teal/40 bg-accent-teal/12 text-accent-teal-muted"
+                      : "border-foreground/15 text-foreground/60 hover:border-accent-teal/30 hover:bg-accent-teal/12 hover:text-accent-teal-muted",
                   )}
                 >
                   {filter.label}

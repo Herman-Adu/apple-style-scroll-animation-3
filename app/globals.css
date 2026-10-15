@@ -42,8 +42,14 @@
   /* Whole-title gradient (heading style "gradient"); defaults to the two tones. */
   --brand-gradient-from: var(--accent-teal);
   --brand-gradient-to: var(--accent-teal-muted);
-  /* Semantic status colors — order lifecycle affordance (traffic-light system). */
-  --success: oklch(0.6 0.16 152);
+  /* Semantic status colors — order lifecycle affordance (traffic-light system).
+     --success is deeper here than on dark for the same reason --accent-teal is:
+     it is read as text. At the 0.6 it was authored with it measured 3.51:1 on
+     this background, and 2.94:1 inside the `bg-success/15` pill it tints - the
+     "Open now" badge on /contact, which had been written in raw emerald-300 and
+     rendered at 1.25:1 until S66's light-theme axe pass. The dark value is
+     untouched: the slide renders are dark by design and read this token. */
+  --success: oklch(0.46 0.16 152);
   --warning: oklch(0.72 0.16 75);
   --accent-orange: oklch(0.65 0.16 45);
   /* Cinematic media surfaces — always dark regardless of colour scheme. */

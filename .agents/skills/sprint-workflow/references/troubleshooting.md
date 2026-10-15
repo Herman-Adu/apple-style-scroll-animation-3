@@ -137,3 +137,22 @@ const drawer = page.getByRole("dialog", { name: "Shopping cart" })
 if (!(await drawer.isVisible().catch(() => false))) await page.getByLabel(/^Open cart/).click()
 await expect(drawer).toBeVisible()
 ```
+
+## `page.evaluate(someString, arg)` hands the page callback `undefined`
+Playwright accepts a *function* or a *string* as the page function, and the two behave differently: a string is evaluated as an expression and its value returned, so a string holding `(x) => {...}` evaluates to a function, which is not serialisable and arrives back as `undefined` - the `arg` is never passed to it. S67 wrote a browser probe this way and spent a run on `Cannot read properties of undefined`. Pass a real function declared at module scope instead; Playwright sends its source, so it may close over nothing in the spec file:
+
+```ts
+function measureProbe(classes: string) { /* runs in the page; no closure over the spec */ }
+const probe = await page.evaluate(measureProbe, "text-destructive-strong")
+```
+
+## Running a repo TS module ad hoc, to measure something before writing a test
+There is no `tsx` here, and `node` cannot resolve this repo's `@/` aliases, so a quick measurement with something like `qa/config/contrast.ts` has no obvious runner. Vitest is the wrong tool for an exploratory sweep - every temporary file under `qa/unit` moves the counts that `qa/unit/meta` and the fact snapshot assert. Copy the module into the scratchpad with its one aliased import inlined and run it under Node's own type stripping:
+
+```bash
+sed 's#import { REPO_ROOT } from "@/qa/config/repo-root"#const REPO_ROOT = process.env.REPO_ROOT as string#' \
+  qa/config/contrast.ts > "$SCRATCH/contrast.ts"
+REPO_ROOT="$PWD" node --experimental-strip-types "$SCRATCH/measure.ts"
+```
+
+S67 used this to sweep lightness against both roles and both themes before writing a line of the test, which is how it found that the handoff's proposed per-theme split could not work. Measuring with the repo's own model matters: a reimplementation of the arithmetic would have agreed with itself.

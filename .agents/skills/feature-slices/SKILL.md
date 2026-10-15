@@ -56,6 +56,7 @@ Every `features/<slice>/lib/` uses exactly these, no loose files
 - **There is no `api/` or `database/` folder.** `api` is a file name (`data/api.ts`, exported through `server.ts`); database data is just `data/`.
 - **Imports point inward:** `actions` and `data` may import `domain`; `adapters` may import `domain`; `domain` imports no sibling folder. Types shared with `actions/` live in `domain/`.
 - **Actions go out through `index.ts`:** `export * from "./lib/actions/..."`. A `"use server"` file is an RPC boundary, so a client bundle gets stubs, never the code behind them; `client-barrels.test.ts` stops its walk there. `index.ts` has no directive and no `server-only`/Prisma/Stripe/`next/headers` import outside `"use server"` files; that code goes in `server.ts`. Server components import loaders from `server.ts`; client islands import hooks and components from `index.ts`. Every admin action starts with `await requireAdmin()`.
+- **No `node:` import in `domain/`,** even a pure one like `node:crypto`: `index.ts` is the slice's client-safe surface, so anything `domain/` reaches can land in a browser bundle. S65 wanted a SHA-256 of a slide definition and used a pure-TypeScript hash instead, because `export-manifest` is exported from `features/showcase/index.ts`.
 - Static config that a schema depends on stays in `domain/`; a dataset standing in for a store goes in `data/`.
 - Root `lib/` small single-purpose folders (`lib/db`, `lib/seo`, `lib/strapi`, `lib/stripe`) don't need the split; `lib/auth/` already uses it (R6).
 

@@ -10,7 +10,7 @@ export const theThemeSystem: Doc = {
     "How brand identity became a single source of truth: a library of named theme templates in the StoreSettings.theme JSON column, one active at a time, resolved server-side and injected as CSS variables after globals.css so the storefront, admin, and email all re-theme with zero per-component edits and no flash on first paint.",
   readingMinutes: 10,
   order: 6,
-  updatedAt: "2026-10-04",
+  updatedAt: "2026-10-15",
   tags: ["theme", "branding", "css variables", "ssr", "prisma", "architecture"],
   body: [
     {
@@ -106,6 +106,12 @@ export const theThemeSystem: Doc = {
       variant: "note",
       title: "Why inline <style>, SSR-seeded",
       text: "The overrides are emitted during the server render (BrandThemeStyle), so the correct palette is in the very first HTML payload. There is no client fetch and no flash of the default theme before the client's theme loads.",
+    },
+    {
+      type: "callout",
+      variant: "note",
+      title: "What a theme reaches, and what it does not",
+      text: "buildThemeCss emits four variables: the two accents and the two gradient endpoints. The rest of the palette - the page and card surfaces, the greys, and the status colours for errors, success and low stock - is set in globals.css per colour scheme and is not part of a template. That boundary is deliberate: a client can re-brand the whole site without being able to make an error message or a \"Sold out\" tag unreadable, and tests hold each of those colours to WCAG AA in both schemes. It also decides which source tells the truth about a colour. For the four a theme owns, the database is what the browser paints, so a check that reads only globals.css is measuring a palette nobody sees. For everything else the stylesheet is the final word.",
     },
     {
       type: "heading",

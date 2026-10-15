@@ -1,4 +1,8 @@
 import type { Doc } from "../lib/domain/schema"
+import { absoluteUrl } from "@/lib/seo/site"
+
+/** The deployed origin, so posting copy is ready to paste and a fork gets its own. */
+const LIVE = absoluteUrl("")
 
 export const socialAndRecruitmentMarketing: Doc = {
   slug: "social-and-recruitment-marketing",
@@ -10,7 +14,7 @@ export const socialAndRecruitmentMarketing: Doc = {
     "The tactical companion to the Showcase guide: a ready-to-run content engine. A two-week launch calendar, a copy bank of post variants for LinkedIn, X, and Telegram tuned to each audience, and recruitment artifacts — CV line, STAR bullets, interview talking points, and a 60-second verbal pitch — so this build works as hard for your career as it does for the client.",
   readingMinutes: 12,
   order: 7,
-  updatedAt: "2026-10-13",
+  updatedAt: "2026-10-15",
   tags: ["marketing", "social", "linkedin", "recruitment", "personal brand", "career", "content"],
   body: [
     {
@@ -92,31 +96,31 @@ export const socialAndRecruitmentMarketing: Doc = {
       type: "code",
       language: "text",
       title: "LinkedIn — cost / TCO angle",
-      code: "Most e-commerce teams rent their email. Every new contact costs more on Klaviyo or Mailchimp — you are taxed for growing your own audience.\n\nSo I built the alternative into the platform itself:\n\n- Campaigns, transactional email, and 1:1 customer messaging on our own Resend domain and Postgres database.\n- Flat infrastructure cost instead of per-contact pricing.\n- Full ownership of the customer relationship and data.\n\nBecause email lives beside real order data, messages use actual order lines, product images, and per-customer offers — no paid integrations to bolt on.\n\nLower total cost of ownership, and you own the asset.\n\nLive: [your-url-here]\n\n#ecommerce #nextjs #startups",
+      code: `Most e-commerce teams rent their email. Every new contact costs more on Klaviyo or Mailchimp — you are taxed for growing your own audience.\n\nSo I built the alternative into the platform itself:\n\n- Campaigns, transactional email, and 1:1 customer messaging on our own Resend domain and Postgres database.\n- Flat infrastructure cost instead of per-contact pricing.\n- Full ownership of the customer relationship and data.\n\nBecause email lives beside real order data, messages use actual order lines, product images, and per-customer offers — no paid integrations to bolt on.\n\nLower total cost of ownership, and you own the asset.\n\nLive: ${LIVE}\n\n#ecommerce #nextjs #startups`,
     },
     {
       type: "code",
       language: "text",
       title: "X / Twitter — thread (architecture angle)",
-      code: "1/ I built a server-first commerce platform with its own email system. A thread on the decisions that made it fast and maintainable.\n\n2/ Server-first: pages are React Server Components by default. The browser only downloads interactive islands, not the whole app. Fast first paint, clean SEO.\n\n3/ A port/adapter seam sits between the UI and the data source. The UI never talks to the CMS or DB directly — so swapping the local corpus for Strapi is a config change, not a rewrite.\n\n4/ Access control is enforced on the server. Gated content is never serialized to a browser that lacks the role. Not hidden with CSS — never sent.\n\n5/ Email is owned, not rented: block-based templates, campaigns, and customer messaging on our own domain + Postgres.\n\n6/ Documented end to end with diagrams for five audiences. Live: [your-url-here]",
+      code: `1/ I built a server-first commerce platform with its own email system. A thread on the decisions that made it fast and maintainable.\n\n2/ Server-first: pages are React Server Components by default. The browser only downloads interactive islands, not the whole app. Fast first paint, clean SEO.\n\n3/ A port/adapter seam sits between the UI and the data source. The UI never talks to the CMS or DB directly — so swapping the local corpus for Strapi is a config change, not a rewrite.\n\n4/ Access control is enforced on the server. Gated content is never serialized to a browser that lacks the role. Not hidden with CSS — never sent.\n\n5/ Email is owned, not rented: block-based templates, campaigns, and customer messaging on our own domain + Postgres.\n\n6/ Documented end to end with diagrams for five audiences. Live: ${LIVE}`,
     },
     {
       type: "code",
       language: "text",
       title: "LinkedIn — recruiter angle (open to work)",
-      code: "I ship full-stack, and I document what I ship.\n\nMy latest build is a production-grade commerce platform:\n\n- Frontend + backend: Next.js App Router, server-first, TypeScript end to end.\n- Auth & authorization: Better Auth on Neon Postgres with server-verified roles.\n- An owned email platform: templates, campaigns, and customer messaging.\n- A documentation system written for users, admins, engineers, and a CTO — with architecture and sequence diagrams.\n\nI care about trade-offs, not just features, and about leaving a codebase a team can actually run.\n\nOpen to senior full-stack / frontend roles. Live demo and full docs: [your-url-here]\n\n#hiring #opentowork #fullstack #react",
+      code: `I ship full-stack, and I document what I ship.\n\nMy latest build is a production-grade commerce platform:\n\n- Frontend + backend: Next.js App Router, server-first, TypeScript end to end.\n- Auth & authorization: Better Auth on Neon Postgres with server-verified roles.\n- An owned email platform: templates, campaigns, and customer messaging.\n- A documentation system written for users, admins, engineers, and a CTO — with architecture and sequence diagrams.\n\nI care about trade-offs, not just features, and about leaving a codebase a team can actually run.\n\nOpen to senior full-stack / frontend roles. Live demo and full docs: ${LIVE}\n\n#hiring #opentowork #fullstack #react`,
     },
     {
       type: "code",
       language: "text",
       title: "Telegram — short update",
-      code: "Shipped something I am proud of: a commerce app that owns its email instead of renting an ESP — your domain, your database, campaigns + customer messaging built in. Server-first and fully documented.\n\nLive: [your-url-here]\n\nWould love your feedback.",
+      code: `Shipped something I am proud of: a commerce app that owns its email instead of renting an ESP — your domain, your database, campaigns + customer messaging built in. Server-first and fully documented.\n\nLive: ${LIVE}\n\nWould love your feedback.`,
     },
     {
       type: "code",
       language: "text",
       title: "GitHub README — project blurb",
-      code: "A server-first e-commerce platform with an owned email system (templates, campaigns, customer messaging), Better Auth authentication on Neon Postgres, and a multi-audience documentation library with architecture diagrams.\n\nStack: Next.js (App Router, RSC), TypeScript, Neon Postgres, Prisma, Better Auth, Resend, Stripe, Tailwind.\n\nHighlights: React Server Components by default; a port/adapter data seam that makes the CMS swappable; server-enforced per-viewer access control; instant cache revalidation via CMS webhooks.\n\nLive demo: [your-url-here]",
+      code: `A server-first e-commerce platform with an owned email system (templates, campaigns, customer messaging), Better Auth authentication on Neon Postgres, and a multi-audience documentation library with architecture diagrams.\n\nStack: Next.js (App Router, RSC), TypeScript, Neon Postgres, Prisma, Better Auth, Resend, Stripe, Tailwind.\n\nHighlights: React Server Components by default; a port/adapter data seam that makes the CMS swappable; server-enforced per-viewer access control; instant cache revalidation via CMS webhooks.\n\nLive demo: ${LIVE}`,
     },
     {
       type: "heading",
@@ -130,7 +134,7 @@ export const socialAndRecruitmentMarketing: Doc = {
       type: "code",
       language: "text",
       title: "CV / resume — project line",
-      code: "Server-first e-commerce platform (Next.js, TypeScript, Neon Postgres) — Designed and built a production-grade store with an owned email system (block-based templates, campaigns, customer messaging) replacing a rented ESP, Better Auth authentication with server-enforced role-based access, and a multi-audience documentation library with architecture diagrams. Live: [your-url-here]",
+      code: `Server-first e-commerce platform (Next.js, TypeScript, Neon Postgres) — Designed and built a production-grade store with an owned email system (block-based templates, campaigns, customer messaging) replacing a rented ESP, Better Auth authentication with server-enforced role-based access, and a multi-audience documentation library with architecture diagrams. Live: ${LIVE}`,
     },
     {
       type: "code",

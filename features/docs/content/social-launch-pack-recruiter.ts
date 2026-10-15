@@ -22,7 +22,9 @@ export const socialLaunchPackRecruiterBlocks: DocBlock[] = [
     title: "LinkedIn - recruiter 1: how I work",
     code: `Most portfolio projects show what you can build. I wanted mine to show how I work.
 
-I took a Next.js 16 commerce platform (Prisma on Neon, Better Auth, Stripe, Resend) and ran it like a team codebase:
+I started from a v0 template that was a single marketing page - a 192-frame scroll animation, a nav bar and a features grid. No cart, no checkout, no admin, no database, no auth.
+
+Everything else I designed and built: the catalog and Stripe checkout, the entire admin dashboard, Better Auth with server-enforced roles, an owned email platform sending through Resend, and Prisma on Neon underneath it. AI-assisted throughout, and run like a team codebase:
 
 - Every change is a small pull request. ${prs} are merged, each with the failing test written first.
 - ${tests} automated tests, plus browser smoke tests and accessibility checks, run before anything merges.
@@ -37,7 +39,7 @@ If you are hiring for a senior full-stack or product engineering role, I would b
     type: "code",
     language: "text",
     title: "LinkedIn - recruiter 2: the refactor with numbers",
-    code: `I refactored a Next.js 16 commerce codebase without breaking it. The trick was making the architecture measurable.
+    code: `I refactored the commerce platform I had built, without breaking it. The trick was making the architecture measurable.
 
 First I wrote a script that runs in CI and counts the smells:
 

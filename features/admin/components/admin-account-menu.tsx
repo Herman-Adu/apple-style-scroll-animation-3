@@ -99,7 +99,7 @@ export function AdminAccountMenu({
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
-            className="gap-3 rounded-xl px-2 py-2.5 focus:bg-destructive/10 focus:text-destructive"
+            className="gap-3 rounded-xl px-2 py-2.5 focus:bg-destructive/10 focus:text-destructive-strong"
             onSelect={(e) => {
               e.preventDefault()
               setSignOutOpen(true)

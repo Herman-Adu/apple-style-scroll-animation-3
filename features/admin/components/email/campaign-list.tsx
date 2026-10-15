@@ -149,7 +149,7 @@ function DeleteCampaignButton({ id, name }: { id: number; name: string }) {
         <Button
           size="icon"
           variant="ghost"
-          className="size-9 shrink-0 text-muted-foreground hover:text-destructive"
+          className="size-9 shrink-0 text-muted-foreground hover:text-destructive-strong"
           aria-label={`Delete ${name}`}
         >
           <Trash2 className="size-4" />
@@ -239,7 +239,7 @@ function SubscriberRow({ subscriber }: { subscriber: SubscriberItem }) {
       <Button
         size="icon"
         variant="ghost"
-        className="size-7 text-muted-foreground hover:text-destructive"
+        className="size-7 text-muted-foreground hover:text-destructive-strong"
         aria-label="Remove subscriber"
         disabled={pending}
         onClick={() =>

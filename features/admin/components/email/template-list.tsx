@@ -204,7 +204,7 @@ export function TemplateList({ templates }: { templates: TemplateListItem[] }) {
                           <Button
                             size="icon"
                             variant="ghost"
-                            className="size-8 text-muted-foreground hover:text-destructive"
+                            className="size-8 text-muted-foreground hover:text-destructive-strong"
                             onClick={() => setToDelete(tpl)}
                             disabled={pending}
                             aria-label={`Delete ${tpl.name}`}

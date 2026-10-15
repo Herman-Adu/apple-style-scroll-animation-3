@@ -207,7 +207,7 @@ export function MermaidDiagram({ diagram, title, caption }: Props) {
       )}
       <div className="overflow-x-auto rounded-2xl border border-foreground/10 bg-card/50 p-6 backdrop-blur-sm">
         {error ? (
-          <p className="font-mono text-xs text-destructive">Diagram error: {error}</p>
+          <p className="font-mono text-xs text-destructive-strong">Diagram error: {error}</p>
         ) : svg ? (
           <div
             ref={containerRef}

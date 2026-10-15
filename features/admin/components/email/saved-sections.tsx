@@ -111,7 +111,7 @@ export function SavedSections({
               <Button
                 size="icon"
                 variant="ghost"
-                className="size-7 text-muted-foreground hover:text-destructive"
+                className="size-7 text-muted-foreground hover:text-destructive-strong"
                 onClick={() => remove(s.id, s.name)}
                 disabled={deletingId === s.id}
                 aria-label={`Delete saved section ${s.name}`}
@@ -235,7 +235,7 @@ function SaveSectionDialog({
           </fieldset>
 
           {(error || overLimit) && (
-            <p role="alert" className="text-sm text-destructive">
+            <p role="alert" className="text-sm text-destructive-strong">
               {overLimit ? `A saved section can hold up to ${SECTION_MAX_BLOCKS} blocks` : error}
             </p>
           )}

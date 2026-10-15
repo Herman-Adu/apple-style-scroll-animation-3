@@ -200,7 +200,7 @@ export function ProductManager({ demandPromise }: { demandPromise: Promise<Waiti
                         <button
                           type="button"
                           onClick={() => setPendingDelete(product)}
-                          className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                          className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive-strong"
                           aria-label={`Delete ${product.name}`}
                         >
                           <Trash2 className="size-4" aria-hidden />

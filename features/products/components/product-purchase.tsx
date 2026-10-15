@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 const stockTone: Record<ReturnType<typeof stockLevel>, string> = {
   "in-stock": "text-muted-foreground",
   "low-stock": "text-amber-500",
-  "out-of-stock": "text-destructive",
+  "out-of-stock": "text-destructive-strong",
   preorder: "text-muted-foreground",
   "coming-soon": "text-muted-foreground",
 }

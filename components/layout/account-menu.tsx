@@ -157,7 +157,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
                   type="button"
                   role="menuitem"
                   onClick={() => setSignOutOpen(true)}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-foreground/80 transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-60"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-foreground/80 transition-colors hover:bg-destructive/10 hover:text-destructive-strong disabled:opacity-60"
                 >
                   <LogOut className="h-4 w-4" strokeWidth={1.5} />
                   Sign out

@@ -43,7 +43,7 @@ export function CopyQualityHint({
           "shrink-0 tabular-nums",
           tone === "ok" && "text-muted-foreground",
           tone === "warn" && "text-amber-600 dark:text-amber-400",
-          tone === "over" && "text-destructive",
+          tone === "over" && "text-destructive-strong",
         )}
       >
         {length}/{limit}

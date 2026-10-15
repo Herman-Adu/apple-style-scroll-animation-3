@@ -1122,7 +1122,7 @@ function SortableBlockRow({
           <Button
             size="icon"
             variant="ghost"
-            className="size-7 text-muted-foreground hover:text-destructive"
+            className="size-7 text-muted-foreground hover:text-destructive-strong"
             onClick={onRemove}
             disabled={locked}
             aria-label="Remove section"
@@ -1642,7 +1642,7 @@ function ProductMultiPickField({
               <Button
                 size="icon"
                 variant="ghost"
-                className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
+                className="size-7 shrink-0 text-muted-foreground hover:text-destructive-strong"
                 onClick={() => remove(slug)}
                 aria-label={`Remove ${p?.name ?? slug}`}
               >

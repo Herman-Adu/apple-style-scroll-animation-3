@@ -4,14 +4,9 @@ import {
   CAROUSEL_ID,
   InfographicSlide,
   SocialSlide,
-  carouselSlides,
-  exportSlides,
-  getInfographic,
-  getPackByCarouselId,
-  getSocialAsset,
+  exportRenderSlides,
   briefId,
   briefs,
-  getBriefByExportId,
   infographics,
   packCarouselId,
   packs,
@@ -39,56 +34,23 @@ export const dynamicParams = false
 export default async function ShowcaseRenderPage({ params }: { params: Promise<{ asset: string }> }) {
   const { asset } = await params
 
-  if (asset === CAROUSEL_ID) {
-    // `exportSlides` resolves this to the same list; this branch keeps the
-    // narrower type, since every slide in it is a social asset.
-    const slides = carouselSlides()
-    return (
-      <main className="flex flex-col">
-        {slides.map((slide, index) => (
-          <SocialSlide key={slide.id} asset={slide} position={{ index, total: slides.length }} />
-        ))}
-      </main>
-    )
-  }
+  // The one resolution of what this export renders: the same function the
+  // manifest hashes, so a published file's recorded source is the source that
+  // drew it. Page numbers included - the shell prints them.
+  const pages = exportRenderSlides(asset)
+  if (pages.length === 0) notFound()
 
-  const pack = getPackByCarouselId(asset) ?? getBriefByExportId(asset)
-  if (pack) {
-    const slides = exportSlides(asset)
-    const facts = await loadFacts()
-    return (
-      <main className="flex flex-col">
-        {slides.map((slide, index) => {
-          const position = { index, total: slides.length }
-          return "kind" in slide ? (
-            <InfographicSlide key={slide.id} infographic={slide} facts={facts} position={position} />
-          ) : (
-            <SocialSlide key={slide.id} asset={slide} position={position} />
-          )
-        })}
-      </main>
-    )
-  }
-
-  const infographic = getInfographic(asset)
-  if (infographic) {
-    const facts = await loadFacts()
-    return (
-      <main>
-        <InfographicSlide infographic={infographic} facts={facts} />
-      </main>
-    )
-  }
-
-  const found = getSocialAsset(asset)
-  if (!found) notFound()
-
-  const slides = carouselSlides()
-  const index = slides.findIndex((s) => s.id === found.id)
+  const facts = await loadFacts()
 
   return (
-    <main>
-      <SocialSlide asset={found} position={index >= 0 ? { index, total: slides.length } : undefined} />
+    <main className="flex flex-col">
+      {pages.map(({ slide, position }) =>
+        "kind" in slide ? (
+          <InfographicSlide key={slide.id} infographic={slide} facts={facts} position={position} />
+        ) : (
+          <SocialSlide key={slide.id} asset={slide} position={position} />
+        ),
+      )}
     </main>
   )
 }

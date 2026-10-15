@@ -8,12 +8,15 @@ import {
   exportFactKeys,
   exportManifestRecord,
   exportPlanItems,
+  exportRenderSlides,
   exportSlides,
+  exportSourceHash,
   factBoundSlides,
   mergeExportManifest,
   staleExports,
   type ExportManifest,
 } from "@/features/showcase/lib/domain/export-manifest"
+import { contentHash } from "@/features/showcase/lib/domain/slide-source"
 import { REPO_ROOT } from "@/qa/config/repo-root"
 
 /**
@@ -137,6 +140,7 @@ describe("which facts an export draws", () => {
   it("records the value of each fact the slide drew, and the snapshot it came from", () => {
     expect(exportManifestRecord("infographic-engineer-coverage", FACTS)).toEqual({
       renderedFrom: "2026-10-14T00:00:00.000Z",
+      sourceHash: exportSourceHash("infographic-engineer-coverage"),
       facts: { "coverage.lines": 50.5, "coverage.branches": 40.25 },
     })
   })
@@ -292,5 +296,127 @@ describe("writing the manifest back after an export", () => {
   it("writes the files in a stable order, so the committed manifest diffs by content", () => {
     const keys = Object.keys(mergeExportManifest(freshManifest(), {}).exports)
     expect(keys).toEqual([...keys].sort())
+  })
+})
+
+/**
+ * The columns of `infographic-offer`, exactly as they read before S61 (#216)
+ * rewrote the third one. Lifted from `46746bd^` rather than invented: the
+ * defect this sprint guards against is this text surviving in three published
+ * files for three sprints, so the fixture is the real wording.
+ */
+const S61_OFFER_COLUMNS = [
+  {
+    heading: "Included",
+    items: [
+      "Storefront with product pages",
+      "Checkout with Stripe test mode",
+      "Admin for orders and customers",
+      "Email campaigns and templates",
+      "Discount codes and offers",
+    ],
+  },
+  {
+    heading: "Customised for you",
+    items: ["Your brand, theme and fonts", "Your products and catalog", "Your domain and email sender", "Your Stripe and Resend accounts"],
+  },
+  {
+    heading: "Handover",
+    items: ["Written handover guide", "Local runbook and environment guide", "Tests and CI left green", "Docs site your team can extend"],
+  },
+]
+
+const OFFER = "/showcase/social/shared/offer.png"
+const BUYER_CAROUSEL = "/showcase/social/buyer/carousel.pdf"
+const BUSINESS_CASE = "/showcase/social/business-case/brief.pdf"
+
+describe("what the renderer reads for one export", () => {
+  it("gives every page of a pack the page number it prints", () => {
+    expect(exportRenderSlides("pack-engineer").map((page) => page.position)).toEqual([
+      { index: 0, total: 7 },
+      { index: 1, total: 7 },
+      { index: 2, total: 7 },
+      { index: 3, total: 7 },
+      { index: 4, total: 7 },
+      { index: 5, total: 7 },
+      { index: 6, total: 7 },
+    ])
+  })
+
+  it("gives a standalone social asset the page number it prints in the case-study carousel", () => {
+    // The shell prints "04 / 08" on it, so the length of that carousel is part
+    // of what this PNG shows - a change to it drifts a file nothing else links.
+    expect(exportRenderSlides("carousel-locks")).toEqual([
+      { slide: expect.objectContaining({ id: "carousel-locks" }), position: { index: 3, total: 8 } },
+    ])
+  })
+
+  it("gives a standalone infographic no page number, because the shell prints none", () => {
+    expect(exportRenderSlides("infographic-offer")).toEqual([{ slide: expect.objectContaining({ id: "infographic-offer" }) }])
+  })
+
+  it("reads nothing for an asset that does not exist", () => {
+    expect(exportRenderSlides("not-an-asset")).toEqual([])
+  })
+
+  it("agrees with the slide list the fact guard reads", () => {
+    for (const item of exportPlanItems()) {
+      expect(exportRenderSlides(item.asset).map((page) => page.slide), item.asset).toEqual(exportSlides(item.asset))
+    }
+  })
+})
+
+describe("the source a published file was rendered from", () => {
+  it("is recorded beside the facts, as a hash of the slides the renderer read", () => {
+    expect(exportManifestRecord("infographic-offer", FACTS)).toEqual({
+      renderedFrom: "2026-10-14T00:00:00.000Z",
+      facts: {},
+      sourceHash: exportSourceHash("infographic-offer"),
+    })
+  })
+
+  it("is compared for a slide that draws no fact at all, which is the whole point", () => {
+    expect(exportFactKeys("infographic-offer")).toEqual([])
+    const manifest = freshManifest()
+    manifest.exports[OFFER].sourceHash = "0000000000000000"
+    expect(problemsFor(manifest, OFFER)).toEqual([
+      `the slide source changed since it was rendered (recorded 0000000000000000, now ${exportSourceHash("infographic-offer")})`,
+    ])
+  })
+
+  it("flags a record written before this field existed, so the manifest cannot stay half-filled", () => {
+    const manifest = freshManifest()
+    delete manifest.exports[OFFER].sourceHash
+    expect(problemsFor(manifest, OFFER)).toEqual(["no record of the slide source it was rendered from"])
+  })
+
+  it("finds nothing stale when every recorded hash still holds", () => {
+    expect(staleExports(freshManifest(), FACTS)).toEqual([])
+  })
+
+  it("names every published file that embeds the edited slide, not just its own PNG", () => {
+    // S61 edited one slide and dated three files. The buyer carousel and the
+    // business-case brief both page `infographic-offer`, and neither has a
+    // record of its own to go stale.
+    const embedding = exportPlanItems()
+      .filter((item) => exportSlides(item.asset).some((slide) => slide.id === "infographic-offer"))
+      .map((item) => item.file)
+    expect(embedding.sort()).toEqual([BUSINESS_CASE, BUYER_CAROUSEL, OFFER])
+  })
+
+  it("moves when the slide's own words move, as S61's rewrite did", () => {
+    // The hash of the real pack, beside the hash the same pack would have if
+    // its offer slide still read the way it did before S61.
+    const asItWas = exportRenderSlides("pack-buyer").map((page) =>
+      page.slide.id === "infographic-offer" ? { ...page, slide: { ...page.slide, columns: S61_OFFER_COLUMNS } } : page,
+    )
+    expect(contentHash(asItWas)).not.toEqual(exportSourceHash("pack-buyer"))
+  })
+
+  it("does not move when a slide somewhere else is edited", () => {
+    const before = exportSourceHash("infographic-offer")
+    const other = exportRenderSlides("pack-engineer")
+    expect(contentHash(other)).not.toEqual(before)
+    expect(exportSourceHash("infographic-offer")).toEqual(before)
   })
 })

@@ -19,11 +19,27 @@ import { facts } from "../../lib/facts"
  *
  * `public/showcase/export-manifest.json` records, per published file, the value
  * of every fact drawn on it at the moment it was rendered. This compares that
- * to the facts now. Per file and per fact, not per snapshot: 65 of the 73
+ * to the facts now. Per file and per fact, not per snapshot: 64 of the 73
  * exports draw no facts at all, and `shared/before-after.png` draws four that
  * have read 0/0/0/32 since S43. A whole-snapshot comparison would demand a
  * re-export of all 73 every time one unit test was added, and a guard that
  * cries wolf ends up with an allow-list.
+ *
+ * ## The other drift: the words
+ *
+ * Comparing facts says nothing about the files that draw none, and that is not
+ * hypothetical. `shared/offer.png` draws no fact, and S61 (#216) rewrote its
+ * third column from "Handover / Written handover guide" to "Yours to run /
+ * Source escrow if I stop trading" - that sprint's whole point being that
+ * "handover" was the wrong promise. The slide was never re-exported, so that
+ * PNG, the buyer carousel and the business-case brief all kept showing the
+ * retired wording for three sprints, past a guard that was green throughout.
+ *
+ * So each record also holds `sourceHash`: `contentHash` of the slides the
+ * renderer read, page numbers included. A hash of the definition rather than
+ * of the published bytes, because only a deterministic function of the repo
+ * may gate a committed artefact - the same line that keeps coverage recorded
+ * and never compared.
  *
  * ## Why this is a browser test and not a unit test
  *
@@ -47,9 +63,10 @@ const manifest = exportManifestSchema.parse(
   JSON.parse(readFileSync(path.join(REPO_ROOT, EXPORT_MANIFEST_FILE), "utf8")),
 )
 
-test("every committed showcase export still agrees with the facts drawn on it", () => {
+test("every committed showcase export still agrees with the source and the facts drawn on it", () => {
   const compared = compareExports(manifest, facts)
   const drawing = compared.filter((row) => row.compared.length > 0)
+  const sourceMoved = compared.filter((row) => row.source.rendered !== null && row.source.rendered !== row.source.current)
 
   // Printed on a pass as well as a failure. A guard that measures has to be
   // shown measuring the right thing, and "73 files checked" is not evidence
@@ -57,8 +74,10 @@ test("every committed showcase export still agrees with the facts drawn on it", 
   console.log(
     [
       `Facts snapshot generated ${facts.generatedAt}`,
-      `${compared.length} published exports, ${drawing.length} of them drawing a comparable fact.`,
+      `${compared.length} published exports. Every one has its source hashed; ${drawing.length} also draw a comparable fact.`,
+      `${sourceMoved.length} drawn from a slide definition that has since changed.`,
       "Coverage is recorded in the manifest but never compared: it measures a run, not the repo, and CI's platform moves it.",
+      ...sourceMoved.map((row) => `  ${row.file}\n    source: rendered ${row.source.rendered}, now ${row.source.current}  <- MOVED`),
       ...drawing.map(
         (row) =>
           `  ${row.file}\n    rendered from ${row.renderedFrom}\n` +
@@ -73,10 +92,14 @@ test("every committed showcase export still agrees with the facts drawn on it", 
   // nothing in it, would otherwise agree with any set of files at all.
   expect(compared.length, "published exports to check").toBeGreaterThan(50)
   expect(drawing.length, "exports drawing at least one fact").toBeGreaterThan(0)
+  expect(
+    compared.filter((row) => /^[0-9a-f]{16}$/.test(row.source.current)).length,
+    "exports with a source hash to compare against",
+  ).toBe(compared.length)
 
   const stale = staleExports(manifest, facts)
   expect(
     stale.map((row) => `${row.file}: ${row.problems.join("; ")}`),
-    "committed exports drawn from facts that have since moved — re-export with `pnpm showcase:assets`",
+    "committed exports whose slide source or facts have since moved — re-export with `pnpm showcase:assets`",
   ).toEqual([])
 })

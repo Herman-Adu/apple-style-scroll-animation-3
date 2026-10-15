@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { FACT_KEYS, factRefsIn, resolveFact, type FactKey, type Facts } from "./facts"
+import { contentHash } from "./slide-source"
 import { getBriefByExportId, briefExportPlan } from "./briefs"
 import { getInfographic, infographics } from "./infographics"
 import { getPackByCarouselId, packExportPlan, packSlides } from "./packs"
@@ -25,15 +26,22 @@ import type { Infographic } from "./infographics"
  * headed TODAY, while the post text beside them read the live facts.
  *
  * The record is per file and holds only the facts that file actually draws, so
- * the guard is quiet about the sixty-five exports that draw none and about
+ * the guard is quiet about the sixty-four exports that draw none and about
  * `before-after.png`, which draws four facts that have all read the same value
  * since S43. A whole-snapshot record would demand a re-export of everything
  * every time one test was added, and a guard that cries wolf gets an
  * allow-list, which is the guard agreeing with the bug.
  *
+ * The record also holds a hash of the slide definitions the file was rendered
+ * from, which is the half of this that catches an edit to a slide's *words*.
+ * See `slide-source.ts`: the fact comparison is silent about the sixty-four
+ * exports that draw no number, and `shared/offer.png` spent three sprints
+ * showing a promise S61 had retired.
+ *
  * Deliberately absent: anything that rebuilds the whole manifest from today's
- * facts. That would turn the guard green without re-rendering a file.
- * `mergeExportManifest` only ever takes records for files a run just wrote.
+ * facts or today's source. That would turn the guard green without re-rendering
+ * a file. `mergeExportManifest` only ever takes records for files a run just
+ * wrote.
  */
 export const EXPORT_MANIFEST_FILE = "public/showcase/export-manifest.json"
 
@@ -43,6 +51,13 @@ export const exportManifestSchema = z.object({
     z.object({
       /** `generatedAt` of the facts the file was rendered from. Provenance for a reader; the values below are what the guard compares. */
       renderedFrom: z.string(),
+      /**
+       * `contentHash` of the slides the renderer read, which is what catches a
+       * file whose *words* moved. Optional in the schema and required by the
+       * comparison: a record written before S65 has none, and that is reported
+       * as a file to re-export rather than a manifest too old to read.
+       */
+      sourceHash: z.string().optional(),
       /**
        * Any key, not only a current `FactKey`: a record written before a slide
        * was edited may name a fact nothing draws any more, and that is a
@@ -57,10 +72,12 @@ export type ExportManifest = z.infer<typeof exportManifestSchema>
 export type ExportRecord = ExportManifest["exports"][string]
 
 export type FactComparison = { key: FactKey; rendered: number | null; current: number | null }
+export type SourceComparison = { rendered: string | null; current: string }
 export type ExportComparison = {
   file: string
   asset: string
   renderedFrom: string | null
+  source: SourceComparison
   compared: FactComparison[]
   problems: string[]
 }
@@ -70,15 +87,50 @@ export function exportPlanItems(): ExportItem[] {
   return [...exportPlan(), ...packExportPlan(), ...briefExportPlan()]
 }
 
+/** Where a page stands in its export, which the slide shell prints as "04 / 08". */
+export type SlidePosition = { index: number; total: number }
+/** One page of an export: the slide the renderer reads, and the page number it will print. */
+export type RenderSlide = { slide: Infographic | SocialAsset; position?: SlidePosition }
+
+const paged = (slides: (Infographic | SocialAsset)[]): RenderSlide[] =>
+  slides.map((slide, index) => ({ slide, position: { index, total: slides.length } }))
+
+/**
+ * Everything one export renders, in page order, with the page numbers.
+ *
+ * `app/showcase-render/[asset]/page.tsx` renders exactly this, so the two
+ * cannot drift apart - which matters because the page number is part of what a
+ * file shows. A standalone PNG of a case-study slide prints its place in that
+ * carousel, so lengthening the carousel dates nine files, not one, and a hash
+ * of the slide alone would have said nothing about eight of them.
+ */
+export function exportRenderSlides(asset: string): RenderSlide[] {
+  if (asset === CAROUSEL_ID) return paged(carouselSlides())
+  const pack = getPackByCarouselId(asset) ?? getBriefByExportId(asset)
+  if (pack) return paged(packSlides(pack))
+  const infographic = getInfographic(asset)
+  if (infographic) return [{ slide: infographic }]
+  const found = getSocialAsset(asset)
+  if (!found) return []
+  const slides = carouselSlides()
+  const index = slides.findIndex((slide) => slide.id === found.id)
+  return [index >= 0 ? { slide: found, position: { index, total: slides.length } } : { slide: found }]
+}
+
 /** The slides one export renders, in page order. The same resolution the render route uses. */
 export function exportSlides(asset: string): (Infographic | SocialAsset)[] {
-  if (asset === CAROUSEL_ID) return carouselSlides()
-  const pack = getPackByCarouselId(asset) ?? getBriefByExportId(asset)
-  if (pack) return packSlides(pack)
-  const infographic = getInfographic(asset)
-  if (infographic) return [infographic]
-  const found = getSocialAsset(asset)
-  return found ? [found] : []
+  return exportRenderSlides(asset).map((page) => page.slide)
+}
+
+/**
+ * The fingerprint of an export's source, as the manifest records it.
+ *
+ * A deterministic function of the repo and nothing else: plain data in, a hash
+ * out, no render involved. See `slide-source.ts` for why it is the definition
+ * that is hashed rather than the published bytes.
+ */
+export function exportSourceHash(asset: string): string {
+  return contentHash(exportRenderSlides(asset))
 }
 
 /**
@@ -116,6 +168,7 @@ export function exportFactKeys(asset: string): FactKey[] {
 export function exportManifestRecord(asset: string, facts: Facts): ExportRecord {
   return {
     renderedFrom: facts.generatedAt,
+    sourceHash: exportSourceHash(asset),
     facts: Object.fromEntries(
       exportFactKeys(asset).flatMap((key) => {
         const value = resolveFact(facts, key)
@@ -152,15 +205,24 @@ export function compareExports(manifest: ExportManifest, facts: Facts): ExportCo
     }))
     const extra = Object.keys(record?.facts ?? {}).filter((key) => !(drawn as string[]).includes(key))
     const missing = drawn.filter((key) => record && record.facts[key] === undefined)
+    const source = { rendered: record?.sourceHash ?? null, current: exportSourceHash(item.asset) }
 
     return {
       file: item.file,
       asset: item.asset,
       renderedFrom: record?.renderedFrom ?? null,
+      source,
       compared,
       problems: !record
         ? ["no record of the facts it was rendered from"]
         : [
+            // First, because it is the broader statement: a file whose source
+            // moved needs a re-export whatever its numbers say.
+            ...(source.rendered === null
+              ? ["no record of the slide source it was rendered from"]
+              : source.rendered === source.current
+                ? []
+                : [`the slide source changed since it was rendered (recorded ${source.rendered}, now ${source.current})`]),
             ...missing.map((key) => `draws ${key}, which it was not rendered with`),
             ...compared.flatMap(({ key, rendered, current }) =>
               rendered === null || rendered === current ? [] : [`${key} was ${rendered} when it was rendered, now ${current}`],

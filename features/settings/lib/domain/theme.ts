@@ -93,6 +93,12 @@ export type ColorScheme = "light" | "dark"
  * The default system theme. Its light/dark values are the EXACT tokens that
  * shipped in globals.css, so activating it is a visual no-op — the whole point
  * of the single source of truth is that nothing changes until a client edits.
+ *
+ * That "EXACT" is load-bearing, and until S66 nothing held it: `buildThemeCss`
+ * emits these as a `:root` block after the stylesheet, so when S66 darkened
+ * light `--accent-teal` in globals.css alone, the theme layer went on painting
+ * the old 0.58 and five routes kept failing axe while every static guard passed.
+ * `qa/unit/theme/theme-preset-contrast.test.ts` now compares the two.
  */
 export const TITANIUM_TEAL: ThemeTemplate = {
   id: "titanium-teal",
@@ -104,8 +110,8 @@ export const TITANIUM_TEAL: ThemeTemplate = {
     accent: "oklch(0.74 0.086 195)",
     accentMuted: "oklch(0.62 0.07 197)",
     light: {
-      accent: "oklch(0.58 0.09 197)",
-      accentMuted: "oklch(0.52 0.08 198)",
+      accent: "oklch(0.51 0.09 197)",
+      accentMuted: "oklch(0.45 0.08 198)",
     },
     dark: {
       accent: "oklch(0.74 0.086 195)",
@@ -114,7 +120,14 @@ export const TITANIUM_TEAL: ThemeTemplate = {
   },
 }
 
-/** A warmer amber alternate — demonstrates re-theming with zero code edits. */
+/**
+ * A warmer amber alternate — demonstrates re-theming with zero code edits.
+ *
+ * Its light accents are darker than the dark-scheme pair rather than a tint of
+ * them: amber at the dark theme's lightness measures 3.11:1 as text on a white
+ * page, so the "zero code edits" promise would have handed a client an
+ * unreadable storefront. Picked to land on the same ratios Titanium Teal does.
+ */
 export const SOLAR_AMBER: ThemeTemplate = {
   id: "solar-amber",
   name: "Solar Amber",
@@ -123,7 +136,7 @@ export const SOLAR_AMBER: ThemeTemplate = {
   tokens: {
     accent: "oklch(0.78 0.15 70)",
     accentMuted: "oklch(0.68 0.13 55)",
-    light: { accent: "oklch(0.66 0.15 58)", accentMuted: "oklch(0.6 0.13 50)" },
+    light: { accent: "oklch(0.53 0.15 58)", accentMuted: "oklch(0.47 0.13 50)" },
     dark: { accent: "oklch(0.78 0.15 70)", accentMuted: "oklch(0.68 0.13 55)" },
   },
 }
@@ -157,11 +170,70 @@ export const DEFAULT_THEME_STATE: ThemeState = {
 /* Pure helpers                                                               */
 /* -------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------- */
+/* Stale snapshots of shipped presets                                         */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The `StoreSettings.theme` column holds a full copy of every installed
+ * template, so a store that once activated a built-in froze that preset's
+ * colours in its own database — and `buildThemeCss` paints whatever came out of
+ * the column, over globals.css. Editing a preset here therefore reaches new
+ * stores only. S66 learned this from the served page: the stylesheet said 0.51,
+ * the constant said 0.51, and the browser painted the 0.58 the column
+ * remembered, failing five routes at 3.44–3.95:1.
+ *
+ * Each entry is a token set one of the built-ins actually used to ship with. A
+ * persisted copy still matching one has never been edited, so it is a stale
+ * copy of shipped code and is refreshed from the constant. Anything else — one
+ * channel different — is the client's own colour, because `brand-colors-form`
+ * writes an edit back under the same id, and reverting that to ship a contrast
+ * fix would be a worse bug than the one being fixed.
+ *
+ * Add a row here whenever a built-in preset's colours change, or stores that
+ * already installed it keep the old ones for good.
+ */
+const SUPERSEDED_PRESET_TOKENS: Record<string, ThemeTemplate["tokens"][]> = {
+  [TITANIUM_TEAL.id]: [
+    {
+      accent: "oklch(0.74 0.086 195)",
+      accentMuted: "oklch(0.62 0.07 197)",
+      light: { accent: "oklch(0.58 0.09 197)", accentMuted: "oklch(0.52 0.08 198)" },
+      dark: { accent: "oklch(0.74 0.086 195)", accentMuted: "oklch(0.62 0.07 197)" },
+    },
+  ],
+  [SOLAR_AMBER.id]: [
+    {
+      accent: "oklch(0.78 0.15 70)",
+      accentMuted: "oklch(0.68 0.13 55)",
+      light: { accent: "oklch(0.66 0.15 58)", accentMuted: "oklch(0.6 0.13 50)" },
+      dark: { accent: "oklch(0.78 0.15 70)", accentMuted: "oklch(0.68 0.13 55)" },
+    },
+  ],
+}
+
+/** Every colour a token set carries, in a fixed order, so two can be compared. */
+function tokenFingerprint(tokens: ThemeTemplate["tokens"]): string {
+  const colours = (scope?: Partial<ThemeTokens>) =>
+    [scope?.accent, scope?.accentMuted, scope?.gradientFrom, scope?.gradientTo].map((c) => c ?? "").join("|")
+  return [colours(tokens), colours(tokens.light), colours(tokens.dark)].join("/")
+}
+
+/** Refresh an unedited snapshot of a built-in preset from shipped code. */
+function refreshPresetTokens(theme: ThemeTemplate): ThemeTemplate {
+  const builtIn = BUILT_IN_PRESETS.find((preset) => preset.id === theme.id)
+  if (!builtIn) return theme
+  const superseded = SUPERSEDED_PRESET_TOKENS[theme.id] ?? []
+  const fingerprint = tokenFingerprint(theme.tokens)
+  if (!superseded.some((tokens) => tokenFingerprint(tokens) === fingerprint)) return theme
+  return { ...theme, tokens: structuredCloneSafe(builtIn.tokens) }
+}
+
 /** Coerce an unknown JSON value (or missing column) into a valid ThemeState. */
 export function normalizeThemeState(value: unknown): ThemeState {
   if (!value || typeof value !== "object" || Array.isArray(value)) return DEFAULT_THEME_STATE
   const v = value as Partial<ThemeState>
-  const themes = Array.isArray(v.themes) ? v.themes.filter(isThemeTemplate) : []
+  const themes = Array.isArray(v.themes) ? v.themes.filter(isThemeTemplate).map(refreshPresetTokens) : []
   if (themes.length === 0) return DEFAULT_THEME_STATE
   const activeThemeId = themes.some((t) => t.id === v.activeThemeId) ? v.activeThemeId! : themes[0].id
   return { activeThemeId, themes }

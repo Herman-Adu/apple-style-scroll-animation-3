@@ -71,9 +71,16 @@ async function scan(page: Page, label: string) {
   const serious = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical")
   // Surface the offending nodes, not just the rule id: a contrast failure here
   // is usually something only on screen while the page is still loading, and
-  // the selector is what says which.
+  // the selector is what says which. For contrast, carry axe's own numbers too -
+  // the measured ratio and the background it composited, which is the only
+  // place the real surface behind a translucent element is ever named.
   expect(
-    serious.map((v) => `${label}: ${v.id} (${v.impact}) ${v.nodes.map((n) => n.target.join(" ")).join(" | ")}`),
+    serious.map(
+      (v) =>
+        `${label}: ${v.id} (${v.impact}) ${v.nodes
+          .map((n) => [n.target.join(" "), ...n.any.map((check) => check.message)].join(" -- "))
+          .join(" | ")}`,
+    ),
   ).toEqual([])
 }
 

@@ -101,3 +101,17 @@ a near-identical background, or anything a screenshot would settle. Note that
 `devices["Desktop Chrome"]` - what the smoke and axe projects use - is
 `deviceScaleFactor: 1`, so the suite already runs at the density where
 hairline rendering problems appear, and a retina dev machine does not.
+
+## Reading a showcase re-export's binary diff
+
+"The export is deterministic, byte-identical files" was repo folklore and S64
+measured it false. Across S48's export and S64's, 57 of 64 PNGs matched, but
+**all 9 PDFs change every run** - Chromium writes a creation date and a document
+id, and three of them changed with no change in size at all - and the two
+mermaid slides re-lay out. So a diff showing eleven changed files after a
+re-export is the floor, not a signal.
+
+Read the diff by *which* slides changed, never by how many. `git diff --stat`
+over `public/showcase/` and then subtract the PDFs and the mermaid pair; what
+is left is the set that genuinely re-rendered. A re-export that touches only
+those eleven changed nothing a reader would see.

@@ -10,6 +10,46 @@ const prs = facts.repo.mergedPrs
 /** The deployed origin, so posting copy is ready to paste and a fork gets its own. */
 const LIVE = absoluteUrl("")
 
+/**
+ * The personal profile, agreed 2026-10-16 (`docs/hand-off/profile-copy-s68.md`).
+ * LinkedIn allows one personal profile, so this one is recruiter-first and the
+ * client offer is a single closing line pointing at the Adu Dev company page.
+ *
+ * These are plain-text fields: LinkedIn renders no markdown, so the asterisks
+ * and backticks the handoff uses for emphasis would paste as themselves.
+ *
+ * The Nexgen paragraph the handoff drafted for the About is not here. The
+ * agreed About ran to 4,050 characters against a 2,600 ceiling, and Nexgen
+ * already has its own Experience entry with a 2,000-character field of its own,
+ * so the About was the one place it was being paid for twice.
+ */
+export const socialLaunchPackRecruiterProfileBlocks: DocBlock[] = [
+  {
+    type: "code",
+    language: "text",
+    title: "Profile headline - Herman Adu, LinkedIn personal",
+    code: `Senior Full-Stack Engineer (Next.js · React · TypeScript · Prisma) — shipping production platforms for UK businesses. Test-first, CI-enforced architecture, docs the next team can use.`,
+  },
+  {
+    type: "code",
+    language: "text",
+    title: "Profile About section - Herman Adu, LinkedIn personal",
+    code: `I'm a full-stack engineer. I design and build the platforms businesses run their day on — and I build them so the next team can run them without me.
+
+Momo Audio is my own commerce platform, built to show what my standard looks like when I control every variable. ${prs} pull requests, each one opened with a failing test written first. ${tests} automated tests plus browser smoke and accessibility checks before anything merges. Permissions verified on the server in three places — the request proxy, every server action, and the UI — so gated content never reaches a browser without the role. Architecture rules enforced by CI rather than by memory: a ratchet fails the build if deep imports, any types or useEffect counts get worse. And it owns its own email — block-based templates, campaigns and customer messaging on the store's own domain and database, rather than renting a service and copying products between tools. All of it documented publicly, with diagrams, for five audiences from a first-time user to a CTO.
+
+On AI-assisted development: I run a Claude Code pipeline with custom agents, a hook system, structured skills and a Docker MCP stack (Caddy gateway, GitHub, Playwright, sequential-thinking, and a persistent knowledge-graph memory store so architectural decisions survive between sessions). On top of it I built a multi-project governance framework: structural enforcement hooks — scope-fence, controller-edit guard, manifest-freshness gate — per-agent model-floor routing that reserves premium models for judgement and review, and a tool-agnostic secret-safety scanner with exfiltration detection and post-execution redaction. It is genuinely faster, but it is only as good as the engineer directing it: the harness, the rules and the review standards are my engineering judgement written down. The tests and the CI ratchets exist precisely so that speed never becomes a quality trade.
+
+Stack: TypeScript, Next.js (App Router, Server Components, Server Actions), React 19, Tailwind, Prisma, PostgreSQL/Neon, Better Auth and Clerk, Stripe, Resend, Strapi, Zod, React Hook Form, Zustand, Vitest, Playwright, Docker, GitHub Actions, Vercel. Currently playing with TanStack and Astro.
+
+What I'm looking for: senior full-stack or product engineering work, permanent or contract, UK-based or remote.
+
+Don't take my word for it — read the engineering write-up: ${LIVE}/docs/engineering-quality
+
+For businesses who want a platform built and run for them rather than a hire, that's what I do through Adu Dev.`,
+  },
+]
+
 export const socialLaunchPackRecruiterBlocks: DocBlock[] = [
   { type: "heading", text: "For recruiters and hiring managers" },
   {

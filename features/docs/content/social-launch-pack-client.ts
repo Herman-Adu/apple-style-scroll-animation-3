@@ -4,6 +4,51 @@ import { absoluteUrl } from "@/lib/seo/site"
 /** The deployed origin, so posting copy is ready to paste and a fork gets its own. */
 const LIVE = absoluteUrl("")
 
+/**
+ * The Adu Dev pages, agreed 2026-10-16 (`docs/hand-off/profile-copy-s68.md`).
+ * Three fields, three ceilings: the tagline is cut at 120 characters, the
+ * Facebook short description at 255, and the overview has room to spare.
+ *
+ * Plain-text fields, so no markdown emphasis survives the paste.
+ *
+ * The Nexgen link is written bare rather than as a URL on purpose. LinkedIn
+ * and Facebook both auto-link it, and the pack's host guard requires every
+ * absolute URL in this doc to be this site's own origin - which a client's
+ * domain is not, and should not be rewritten to be.
+ */
+export const socialLaunchPackClientProfileBlocks: DocBlock[] = [
+  {
+    type: "code",
+    language: "text",
+    title: "Profile headline - Adu Dev, LinkedIn company page tagline",
+    code: `Commercial websites and platforms, built properly and kept running. Next.js, Strapi, Stripe. UK.`,
+  },
+  {
+    type: "code",
+    language: "text",
+    title: "Profile overview - Adu Dev, LinkedIn company page",
+    code: `Adu Dev builds the website and the systems behind it — and then keeps them running.
+
+Most businesses end up with a site someone built once and nobody maintains, stitched to four monthly subscriptions that don't talk to each other. We build the opposite: one platform that owns its own content, its own customer enquiries and its own email, on your domain and your database.
+
+What that includes: a fast, modern site built on Next.js that search engines and customers both reward. A content system your team can update without calling us. Enquiry, quote and booking flows with spam and bot protection. Branded email that lands in the inbox, with delivery tracking. Payments through Stripe. Secure staff logins with proper permissions. And automated testing and deployment, so a change goes live in minutes without breaking what already worked.
+
+How we work: every change is tested before it ships. Accessibility and performance are checked automatically, not hoped for. Everything is documented, so you're never held hostage by the person who built it.
+
+Recent work: the complete digital platform for Nexgen Electrical Innovations, a NICEIC-approved electrical contractor specialising in EV charging infrastructure — site, CMS, enquiry and quotation flows, campaign landing pages, email security and hosting, end to end. nexgen-electrical.co.uk
+
+We build it, we host it, we run it. You own the result.
+
+Based in Maidenhead, working with businesses across the UK.`,
+  },
+  {
+    type: "code",
+    language: "text",
+    title: "Profile description - Adu Dev, Facebook business page",
+    code: `We build commercial websites and the systems behind them — content, enquiries, payments and email on one platform you own. Built properly, tested before every release, and kept running. Maidenhead, UK.`,
+  },
+]
+
 export const socialLaunchPackClientBlocks: DocBlock[] = [
   { type: "heading", text: "For prospective clients" },
   {

@@ -156,3 +156,21 @@ REPO_ROOT="$PWD" node --experimental-strip-types "$SCRATCH/measure.ts"
 ```
 
 S67 used this to sweep lightness against both roles and both themes before writing a line of the test, which is how it found that the handoff's proposed per-theme split could not work. Measuring with the repo's own model matters: a reimplementation of the arithmetic would have agreed with itself.
+
+## `--reporter=basic` is not a reporter on Vitest 5
+`vitest run --reporter=basic` aborts before collecting anything with `Failed to load custom Reporter from basic` / `Failed to load url basic`, because the name was dropped in Vitest 5 and the flag is read as a module path. The default reporter already prints a per-test list, so pass no reporter at all - and run the suite through its config the way the scripts do, since a bare `pnpm vitest run <path>` picks up none:
+
+```bash
+pnpm vitest run --config qa/config/vitest.config.mts qa/unit/docs/social-launch-pack.test.ts
+```
+
+## Backslash escapes collapse on the way into a heredoc
+Writing a patch script inline, a doubled backslash can reach the interpreter as a single one even inside a quoted heredoc (`<<'PY'`). S68 lost two cycles to it, then a third while writing this entry: `"\n\n"` arrived as a real newline and broke the TypeScript string it was meant to write, and `C:\Users` raised `truncated \UXXXXXXXX escape`. Three habits avoid it - build the escape rather than typing it, make every literal path a raw string, and keep backslashes out of the heredoc altogether when the text is *about* backslashes:
+
+```python
+esc = chr(92) + "n"                 # instead of a typed escape surviving the trip
+block = r"""...C:\Users\herma..."""  # raw, so a lone backslash stays one
+body = TEMPLATE.replace("<BS>", chr(92))  # or no backslash in the source at all
+```
+
+Either way, assert the anchor exists before writing (`assert old in s`) so a collapsed escape fails loudly instead of writing a broken file.

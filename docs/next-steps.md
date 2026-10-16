@@ -23,9 +23,11 @@ approved plan. This file is the source of truth for **what is on `main`**.
 - Template handover is the active posture (`docs/template-handover.md`), not in-repo production go-live.
 - All required gates were run green for S5 before merge (`tsc`, lint, test, arch, build, smoke, axe).
 
-## Current handoff snapshot (Oct 15, 2026)
+## Current handoff snapshot (Oct 16, 2026)
 
 - `main` is at S67: PR #228, merge SHA `9c0dc27`, and **nothing is owed** - this closeout carries S67's own ledger row and What's New entry. S67 split `--destructive`, the last colour in the palette written as one value for both themes. The handoff asked for a per-theme split; measuring the constraint first showed that cannot work, because the token does two opposed jobs and on dark the text role needs `L >= 0.62` while the white label on the fill needs `L <= 0.58`. So the split is by role too: `--destructive` keeps the fill, `--destructive-strong` carries text, and 38 occurrences across 24 files moved. It also found the "Sold out" tag already below AA on light at 4.32:1, because it renders `bg-destructive/90` and the old guard measured the solid colour. S66 (#227, `1403afb`) is included - its row stood at `PENDING` until this sprint's first commit filled it in, and the PR opened as #227, the number that closeout had assumed from the sequence. S65a (#224, `7452797`), S65 (#225, `2c7cb67`) and its closeout (#226, `9be71b1`) are included, as are S64 (#222, `72deeb6`) with its closeout (#223, `322108f`). Verified on this tree: tsc, lint, `pnpm arch` (no regressions), unit 1835, integration 83, smoke 31, seo 19 and axe 37 green across both themes, and all 73 exports re-rendered. The PR opened as #228, the number this closeout had assumed from the sequence, so neither the ledger row nor the What's New row needed correcting.
+- **Two docs-only merges sit on top of S67 and carry no ledger row of their own**, the way S65a's closeout did not: S67a (#229, `c4a4627`), and S67b (#230, `be23c06`) which landed three hand-off briefs. The line above still names S67 because `qa/unit/docs/changelog-coverage.test.ts` holds the snapshot's named sprint equal to the newest S-series ledger row, and a docs merge that ships no feature does not earn a row. `main` is at `be23c06`.
+- **The product hero direction is decided and written down** (`docs/hand-off/product-hero-sprint.md`). The owner asked whether Momo Beat's hero could match the headphones frame sequence; it can, because `components/scroll/frame-scroll-hero.tsx` is already generic. Measuring it first found that `hero` is one field doing two opposed jobs - `app/page.tsx:20` renders the flagship's *product* hero as the site's front door, so the lure and the per-product section are the same data. The owner then asked the question that settled it: why would every product carry one, at ~48 MB across four products behind four blocking preloads? So it splits by role, the way S67 split `--destructive`: the cinematic stays on the home page, and product pages get one static, data-driven, **server-rendered** hero. `docs/hand-off/momo-beat-frame-hero.md` records the path not taken and is marked superseded - read it for the frame engine's asset contract, do not build from it.
 - **The next session's prompt is written here, not asked for.** Asking a finished session to compose a handoff prompt re-reads the whole sprint to produce prose the repo should already hold, and the owner is billed for it twice. The closeout writes "Next session starts here" below; a fresh terminal opens this file and begins. Because S64's closeout was requested as a prompt rather than read from here.
 - **The domain follows `main` on its own now, and that is proved rather than assumed. Stop checking it each sprint.** `autoAssignCustomDomains` was false, which is why the domain sat six days behind `main` while every deploy reported success; it was set true on Oct 14 and S63's merge was the first production deploy to exercise it. The deployment built from `01d8ac8` carries `momo-audio.adudev.co.uk` in its alias list, and the `?dpl=` id in the page HTML matched the newest production deployment (`dpl_C3c7rZpMqjTYAardmuwgtP6NPks1`). Merging is deploying again. If a future sprint sees the domain lag, that setting is the first thing to read - and promoting is still a gate.
 - **The browser counts are two numbers, not one stale one.** Playwright runs the `app-identity` setup project that every other project depends on; `pnpm facts` counts a spec only when its path contains `smoke/`, `axe/` or `seo/`, and that setup lives in `qa/config/setup/`. So a run of 30/12/19 and a snapshot of 29/11/18 are both right. Do not "fix" either.
@@ -39,10 +41,45 @@ approved plan. This file is the source of truth for **what is on `main`**.
 
 Paste nothing. A fresh terminal reads this block and begins.
 
-- **State.** `main` is at S67 (#228, `9c0dc27`). Every gate green, nothing owed,
-  all 73 exports current as of that merge. The domain follows `main` by itself -
-  do not check it, do not offer to promote. Stripe stays in test mode; there is
-  no go-live.
+- **State.** `main` is at `be23c06` - S67 (#228, `9c0dc27`) plus two docs-only
+  merges, S67a (#229) and S67b (#230). Every gate green, nothing owed, all 73
+  exports current as of S67's merge; neither docs merge touched a source, test
+  or config file. The domain follows `main` by itself - do not check it, do not
+  offer to promote. Stripe stays in test mode; there is no go-live.
+- **The next sprint is S68, and it is specified.** Read
+  `docs/hand-off/profile-copy-s68.md`; section 6 is the scope and sections 1-3
+  are the agreed copy. Nothing in that doc is a draft - do not redraft the
+  headline, the About, the company overview or the Facebook description. Branch
+  `v0/s68-profile-copy`, failing test first in
+  `qa/unit/docs/social-launch-pack.test.ts`, then add a profile-copy section to
+  `features/docs/content/social-launch-pack-recruiter.ts` (headline, About) and
+  `-client.ts` (tagline, overview, Facebook description). **`219` and `2,002`
+  are template values** read from `facts.repo.mergedPrs` and `facts.tests.total`,
+  never typed in, and scoped to Momo Audio only rather than to the owner's work
+  generally.
+- **After S68, the product hero sprint.** `docs/hand-off/product-hero-sprint.md`
+  is the brief: section 3 the target schema, 4 the file plan, 5 the test-first
+  order, 6 the four image prompts, 7 the content that must not die with the
+  renderers. Section 7 is the part most likely to be done badly - the story
+  beats and the exploded layer labels are product writing that exists nowhere
+  else in the repo, so the strings are inventoried and guarded by a test written
+  while they are still on disk, before any renderer is deleted.
+- **The banner images are finished.** Both LinkedIn banners and the Adu Dev
+  company and Facebook covers were generated on Oct 16 and live outside the
+  repo in `C:\Users\herma\Documents\kie-generations\banners\`. Do not regenerate
+  them, and do not treat the earlier banner handoff as pending work.
+- **Two files are untracked on purpose.** `public/brand/herman.jpg` is the
+  owner's headshot, referenced by nothing in the codebase, and committing it
+  would publish a personal photo to a public repo.
+  `docs/hand-off/banner-images-next-session.md` is a spent prompt whose work is
+  done. Leave both alone rather than tidying them in.
+- **CI costs two full runs per merge**, because `.github/workflows/ci.yml`
+  triggers on `pull_request` *and* on `push: branches: [main]`. Keep a sprint to
+  one push. A `paths-ignore` on the push trigger only - never on the PR trigger,
+  which can leave a required check pending forever - would halve that for
+  docs-only changes; it is offered and not yet taken. `gh pr checks` can report
+  a finished job as `pending`; `gh run view <run-id>` is the one that tells the
+  truth.
 - **Read this before proposing any sprint.** The posting month is **live and
   running**, and the build work is ahead of the posting. `CALENDAR_START` is
   `2026-10-12`, so week one began on Monday 12 October. Two LinkedIn slots have
@@ -71,8 +108,8 @@ Paste nothing. A fresh terminal reads this block and begins.
   sprint. `pnpm facts` clears it. That is the guard working. Run it again after
   the last new source or test file, because `qa/unit/meta` asserts once per file
   and the eight fact-drawing exports go stale the moment a count moves.
-- **If, and only if, the owner asks for another build sprint,** the first
-  candidate below is the amber and emerald literals, and its numbers were
+- **A later contrast candidate, after the two sprints named above,** is the
+  amber and emerald literals, and its numbers were
   measured on this tree rather than guessed: `text-amber-500` is the low-stock
   line a buyer reads on a product detail page (`stockTone` in
   `features/products/components/product-purchase.tsx`) and it measures 1.88:1
@@ -90,8 +127,9 @@ Paste nothing. A fresh terminal reads this block and begins.
   renders anywhere `qa/axe` looks, because no product in the database is sold
   out.
 - **How to run a build sprint, if one is called for.**
-  `.agents/skills/sprint-workflow/` from step 0. Branch `v0/s68-<short-name>`
-  from a freshly fetched `origin/main`.
+  `.agents/skills/sprint-workflow/` from step 0. Branch
+  `v0/s<next-number>-<short-name>` from a freshly fetched `origin/main` - S68 is
+  taken by the profile copy named above, so a further sprint is S69 onward.
 - **At the end of the sprint,** rewrite this block as part of the closeout. The
   next session's prompt is a file in the repo, not something to ask a finished
   session to compose.

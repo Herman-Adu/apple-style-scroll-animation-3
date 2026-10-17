@@ -25,7 +25,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 
 ## Current handoff snapshot (Oct 16, 2026)
 
-- `main` is at S68: PR #232, merge SHA `b5dae18`, and **nothing is owed** - this closeout carries S68's own ledger row and What's New entry. S68 landed the profile copy agreed on Oct 16 into the launch pack and found the one thing the handoff had not measured: its About section was 4,050 characters against LinkedIn's 2,600 ceiling. The owner's call was to pull the Nexgen paragraph, which has its own Experience entry, leaving the remaining seven paragraphs at 2,541 with nothing reworded. S67 (#228, `9c0dc27`) is included - this closeout carries S67's own ledger row and What's New entry. S67 split `--destructive`, the last colour in the palette written as one value for both themes. The handoff asked for a per-theme split; measuring the constraint first showed that cannot work, because the token does two opposed jobs and on dark the text role needs `L >= 0.62` while the white label on the fill needs `L <= 0.58`. So the split is by role too: `--destructive` keeps the fill, `--destructive-strong` carries text, and 38 occurrences across 24 files moved. It also found the "Sold out" tag already below AA on light at 4.32:1, because it renders `bg-destructive/90` and the old guard measured the solid colour. S66 (#227, `1403afb`) is included - its row stood at `PENDING` until this sprint's first commit filled it in, and the PR opened as #227, the number that closeout had assumed from the sequence. S65a (#224, `7452797`), S65 (#225, `2c7cb67`) and its closeout (#226, `9be71b1`) are included, as are S64 (#222, `72deeb6`) with its closeout (#223, `322108f`). Verified on this tree: tsc, lint, `pnpm arch` (no regressions), unit 1835, integration 83, smoke 31, seo 19 and axe 37 green across both themes, and all 73 exports re-rendered. The PR opened as #228, the number this closeout had assumed from the sequence, so neither the ledger row nor the What's New row needed correcting.
+- `main` is at S69: PR #234, merge SHA `2db5a8c`, and **nothing is owed** - this closeout carries S69's own ledger row and What's New entry. S69 split the `hero` field that was doing two opposed jobs: `cinematicHero` keeps the 192-frame sequence on the home page, `productHero` is static and server-rendered on every product page, and three client renderers plus 2.5 MB of exploded-view PNGs are gone (`clientComponents` 153 -> 150). The writing inside those renderers existed nowhere else in the repo, so it was inventoried and pinned by a test before anything was deleted - and that guard caught two real losses mid-migration. CI then went red on a contrast defect S69 did not introduce and no scan had ever been awake to see: the `/contact` opening-hours pill renders "Closed" only outside opening hours, so every local run during the working day scanned the other branch. S68 (#232, `b5dae18`) is included - this closeout carries S68's own ledger row and What's New entry. S68 landed the profile copy agreed on Oct 16 into the launch pack and found the one thing the handoff had not measured: its About section was 4,050 characters against LinkedIn's 2,600 ceiling. The owner's call was to pull the Nexgen paragraph, which has its own Experience entry, leaving the remaining seven paragraphs at 2,541 with nothing reworded. S67 (#228, `9c0dc27`) is included - this closeout carries S67's own ledger row and What's New entry. S67 split `--destructive`, the last colour in the palette written as one value for both themes. The handoff asked for a per-theme split; measuring the constraint first showed that cannot work, because the token does two opposed jobs and on dark the text role needs `L >= 0.62` while the white label on the fill needs `L <= 0.58`. So the split is by role too: `--destructive` keeps the fill, `--destructive-strong` carries text, and 38 occurrences across 24 files moved. It also found the "Sold out" tag already below AA on light at 4.32:1, because it renders `bg-destructive/90` and the old guard measured the solid colour. S66 (#227, `1403afb`) is included - its row stood at `PENDING` until this sprint's first commit filled it in, and the PR opened as #227, the number that closeout had assumed from the sequence. S65a (#224, `7452797`), S65 (#225, `2c7cb67`) and its closeout (#226, `9be71b1`) are included, as are S64 (#222, `72deeb6`) with its closeout (#223, `322108f`). Verified on this tree: tsc, lint, `pnpm arch` (no regressions), unit 1835, integration 83, smoke 31, seo 19 and axe 37 green across both themes, and all 73 exports re-rendered. The PR opened as #228, the number this closeout had assumed from the sequence, so neither the ledger row nor the What's New row needed correcting.
 - **Two docs-only merges sit on top of S67 and carry no ledger row of their own**, the way S65a's closeout did not: S67a (#229, `c4a4627`), and S67b (#230, `be23c06`) which landed three hand-off briefs. The line above still names S67 because `qa/unit/docs/changelog-coverage.test.ts` holds the snapshot's named sprint equal to the newest S-series ledger row, and a docs merge that ships no feature does not earn a row. `main` is at `be23c06`.
 - **The product hero direction is decided and written down** (`docs/hand-off/product-hero-sprint.md`). The owner asked whether Momo Beat's hero could match the headphones frame sequence; it can, because `components/scroll/frame-scroll-hero.tsx` is already generic. Measuring it first found that `hero` is one field doing two opposed jobs - `app/page.tsx:20` renders the flagship's *product* hero as the site's front door, so the lure and the per-product section are the same data. The owner then asked the question that settled it: why would every product carry one, at ~48 MB across four products behind four blocking preloads? So it splits by role, the way S67 split `--destructive`: the cinematic stays on the home page, and product pages get one static, data-driven, **server-rendered** hero. `docs/hand-off/momo-beat-frame-hero.md` records the path not taken and is marked superseded - read it for the frame engine's asset contract, do not build from it.
 - **The next session's prompt is written here, not asked for.** Asking a finished session to compose a handoff prompt re-reads the whole sprint to produce prose the repo should already hold, and the owner is billed for it twice. The closeout writes "Next session starts here" below; a fresh terminal opens this file and begins. Because S64's closeout was requested as a prompt rather than read from here.
@@ -33,7 +33,7 @@ approved plan. This file is the source of truth for **what is on `main`**.
 - **The browser counts are two numbers, not one stale one.** Playwright runs the `app-identity` setup project that every other project depends on; `pnpm facts` counts a spec only when its path contains `smoke/`, `axe/` or `seo/`, and that setup lives in `qa/config/setup/`. So a run of 30/12/19 and a snapshot of 29/11/18 are both right. Do not "fix" either.
 - **The merged-PR recount is red by exactly one immediately after a merge**, because the snapshot committed in a PR cannot record that PR's own squash commit. The fix is the next sprint's first `pnpm facts`, not a change to the guard. Every sprint therefore regenerates and commits `lib/facts/snapshot.json`; `.agents/skills/sprint-workflow/` says so in its checks step.
 - The sprint named here is checked against the newest row in the ledger below by `qa/unit/docs/changelog-coverage.test.ts`, so this line cannot fall behind a merge again.
-- Architecture metrics are currently stable at: `deepImports 0`, `libToFeatures 0`, `routePropDrilling 0`, `useEffect 32`, `anyTypes 0`, `incrementers 3`, `clientComponents 153`, `largeFiles 21`. Baseline before the R-series: deep imports 116, inversions 16, `any` 28, `useEffect` 45.
+- Architecture metrics are currently stable at: `deepImports 0`, `libToFeatures 0`, `routePropDrilling 0`, `useEffect 32`, `anyTypes 0`, `incrementers 3`, `clientComponents 150`, `largeFiles 21`. Baseline before the R-series: deep imports 116, inversions 16, `any` 28, `useEffect` 45.
 - S20 (docs and social catch-up) adds the ready-to-post pack `features/docs/content/social-launch-pack*.ts`, a guard that every path named in a doc exists (`qa/unit/docs/doc-paths.test.ts`), and a guard for pack and ledger continuity (`qa/unit/docs/social-launch-pack.test.ts`).
 - Post-formatter regressions were fixed in strict-typing boundaries and client search sync; no lint or architecture regressions were introduced.
 
@@ -41,111 +41,98 @@ approved plan. This file is the source of truth for **what is on `main`**.
 
 Paste nothing. A fresh terminal reads this block and begins.
 
-- **State.** `main` is at `b5dae18` - S68 (#232), the profile copy sprint, plus
-  the docs-only closeout S68a (#233) that carries this block and S68's retro.
-  Every gate was green on S68's tree: tsc, lint, `pnpm arch` (no regressions),
-  unit 1842, integration 83, smoke 31, seo 19, axe 37, and all 73 exports
-  re-rendered because the moved unit count dated seven of them. Nothing is
-  owed - S68's ledger row and What's New entry shipped with it and its merge SHA
-  is filled in. The domain follows `main` by itself - do not check
-  it, do not offer to promote. Stripe stays in test mode; there is no go-live.
-- **The first action is not a sprint. It is pasting what S68 produced.**
-  `/docs/social-launch-pack` now carries all five profile fields, ready to
-  paste and inside the limit of the box each one goes in: the personal headline
-  and About under "Profile and discoverability", then the Adu Dev tagline,
-  company overview and Facebook short description. The repo cannot do this part
-  - LinkedIn has no write access to a personal profile, and the community MCPs
-  are scrapers that risk the account, which `docs/hand-off/profile-copy-s68.md`
-  section 5 records. Two things in that handoff are still manual and are **not**
-  owed by any sprint: the Nexgen **Experience** entry takes his own verbatim
-  write-up (confirm the end date is blank so LinkedIn computes the duration),
-  and section 4 holds the agreed banner wording.
-- **What S68 found, because it is the kind of thing that recurs.** The handoff
-  was agreed in full and marked not-a-draft, and its About still could not be
-  pasted: 4,050 characters against LinkedIn's 2,600, truncated mid-sentence
-  rather than refused. Everything else fitted. **Length is a claim a handoff
-  rarely checks**, so measure every field against its own box before adopting
-  the copy. The owner resolved it in one line - pull the Nexgen paragraph, which
-  has its own Experience entry - and nothing else was reworded.
-- **The banner images are finished.** Both LinkedIn banners and the Adu Dev
-  company and Facebook covers were generated on Oct 16 and live outside the
-  repo in `C:\Users\herma\Documents\kie-generations\banners\`. Do not
-  regenerate them. Image-to-image re-renders his face on every run, so a banner
-  whose face is already right is finished work.
-- **The next build sprint is S69, and it is specified.**
-  `docs/hand-off/product-hero-sprint.md` is the brief: section 3 the target
-  schema, 4 the file plan, 5 the test-first order, 6 the four image prompts, 7
-  the content that must not die with the renderers. Section 7 is the part most
-  likely to be done badly - the story beats and the exploded layer labels are
-  product writing that exists nowhere else in the repo, so the strings are
-  inventoried and guarded by a test written while they are still on disk,
-  before any renderer is deleted.
-- **Read this before proposing any sprint.** The posting month is **live and
-  running**, and the build work is ahead of the posting. `CALENDAR_START` is
-  `2026-10-12`, so week one began on Monday 12 October. Two LinkedIn slots have
-  already gone by unposted - Tue 13 Oct (the recruiter 4x5 video) and Wed 14 Oct
-  (the recruiter carousel). **The default next action is to post, not to
-  build.**
-- **Where the posting plan lives, with real dates.** `/docs/social-launch-kit`
-  (owner access) renders the whole month from
-  `features/showcase/lib/domain/posting-schedule.ts`: one row per week, the
-  date for each slot, the asset to upload, the channel, and the doc each post
-  links to. `/docs/social-launch-pack` carries the ready-to-paste copy for
-  recruiters and clients, and `/docs/social-and-recruitment-marketing` the
-  playbook behind it. The month is 16 slots, 7 of them LinkedIn. The next three
-  LinkedIn slots after this block was written: **Tue 20 Oct** (journey 4x5 ->
-  `/docs/system-architecture-overview`), **Wed 21 Oct** (engineer carousel ->
-  `/docs/architecture-in-diagrams`), **Fri 30 Oct** (email case-study carousel
-  -> `/docs/case-study-email-platform`).
-- **One thing to check before pasting a number into a public post.** The live
-  figures - test counts, coverage, architecture metrics - render inside gated
-  docs. A recruiter following a link from LinkedIn cannot see the page that
-  justifies the count, so either name the scope in the post itself or drop the
-  number. The profile About does name its scope: the counts sit in the Momo
-  Audio paragraph and a guard holds them there, because 2,009 tests is what one
-  repo has and not what the owner has written. That is a standing rule, not a
-  sprint.
+- **Before anything is built, there is a decision the owner has asked to make.**
+  He does not want a Vercel preview stage while he is the only person working on
+  this: nobody views the previews, and they cost build minutes and resources on
+  every push. He also objected that **Vercel starts deploying before the GitHub
+  Actions checks have finished**, so a preview can be built from a tree whose
+  tests are still running or already red - "we are not supposed to put broken
+  code live". Both are real: the Vercel Git integration deploys on push
+  independently of Actions, and nothing currently gates one on the other. Do not
+  change any of this unilaterally - **repo settings and deploy configuration are
+  a gate**. Open the conversation first, then implement what he chooses. The
+  options worth putting to him, cheapest first: turn preview deployments off for
+  non-production branches in the Vercel project (Git -> Ignored Build Step or
+  deployment settings); keep them but make production deploys wait on Actions;
+  or `git push` once per sprint so the cost is one build rather than several.
+  Note the related cost already recorded below: CI itself runs twice per merge,
+  on `pull_request` and on `push: main`.
+- **State.** `main` is at `2db5a8c` - S69 (#234), the product hero sprint, plus
+  the docs-only closeout S69a that carries this block and S69's ledger row.
+  Every gate was green on S69's tree: tsc, lint, `pnpm arch` (no regressions),
+  unit 1869, integration 83, smoke 31, seo 19, axe 39, and all 73 exports
+  re-rendered. Nothing is owed. The domain follows `main` by itself - do not
+  check it, do not offer to promote. Stripe stays in test mode; there is no
+  go-live.
+- **The posting is the owner's own job and he is handling it.** He said so
+  explicitly at the start of S69. Do not open a sprint by proposing a post, and
+  do not re-relay the posting calendar at him; `/docs/social-launch-kit` and
+  `/docs/social-launch-pack` hold it if he asks.
+- **What S69 shipped, in one line.** `hero` was one field doing two opposed
+  jobs, so it split by role: `cinematicHero` keeps the 192-frame sequence on the
+  home page alone, `productHero` is static and server-rendered on every product
+  page, and three client renderers plus 2.5 MB of PNGs are gone.
+  `clientComponents` 153 -> 150, with `qa/baselines/arch.json` updated to hold
+  it.
+- **Three images are still owed, and the owner chose to stop after one.** S69
+  generated Momo X's hero only (Nano Banana Pro, 1:1 at 2K, 18 credits - the
+  brief's estimate was exact), then resized it 2048 -> 1400 and compressed it
+  2.9 MB -> 194 KB. Momo Air, Momo Studio and Momo Beat still use their existing
+  product shots, which look correct. Section 6 of
+  `docs/hand-off/product-hero-sprint.md` holds the shared art direction and the
+  per-product accent; match the other three to `public/products/hero/momo-x.jpg`
+  rather than generating them independently. **Price each one and wait for the
+  go** - that is a standing gate, and he took the one-at-a-time option on
+  purpose. Two prompt notes worth carrying: the brief's "16:9 with generous
+  empty space on one side for text" belongs to a full-bleed treatment, and the
+  layout S69 actually built is two-column, so 1:1 is the right ratio and the
+  layout supplies the space; and each shot needs a radial mask over it, because
+  its own near-black backdrop otherwise reads as a rectangle pasted onto the
+  field.
+- **The lesson S69 paid for, which will recur.** A handoff brief is a set of
+  claims, and four of this one's were wrong when measured on the tree: ten story
+  beats, not the twelve "three per product" implies; `features/products/
+  components/`, not the `ui/` it named, because `folder-layout` allows a slice
+  only `components/`, `hooks/`, `lib/` and `content/`; four files it did not
+  list also carried the hero (the Strapi mapper, its fixture, the mapper test,
+  and the admin product builder in `features/catalog/lib/domain/store.ts`); and
+  the `productHeroSchema` name it asked for was already taken by the union it
+  deletes. Measure the brief before implementing its shape.
+- **And the one that is a rule, not a sprint: a guard that depends on the wall
+  clock reports on whichever state the clock picked.** CI failed S69 on
+  `/contact` dark at 4.31:1 in the opening-hours pill. It would not reproduce
+  locally, because the pill renders `Open now` or `Closed` from the current
+  time and every local run during the working day scanned the green branch;
+  CI ran at 09:53 UTC, outside opening hours. Both themes were in fact failing
+  (4.27:1 dark, 4.23:1 light) and neither had ever been looked at. The fix is in
+  (`text-foreground/75`, 8.97:1 and 5.83:1) and `qa/axe` now pins the clock to
+  03:00 so the closed state is always scanned. If another time-, date- or
+  data-dependent surface turns up, give the guard the state rather than hoping
+  for it.
+- **Candidates for the next build sprint, in the order they were judged most
+  useful, none started.** The amber and emerald literals remain the strongest:
+  `text-amber-500` is the low-stock line a buyer reads on a product detail page
+  (`stockTone` in `features/products/components/product-purchase.tsx`) and
+  measures 1.88:1 on `--muted` and 2.05:1 on the page in light theme, against
+  9.17-9.79:1 on dark; the in-stock dot beside it is `bg-emerald-500` at 2.36:1,
+  under the 3:1 non-text floor. Both are dark-tuned Tailwind defaults no token
+  guard can see, because they name no token. The low-stock *badge* on the
+  listing is a different surface and is already fine at 10.45:1, so that is two
+  sites, not an amber sweep. `--warning` already exists; look there before
+  adding a token. Given the S69 finding above, check first which of those two
+  states a scan can actually reach. Gate: none. Data impact: none.
 - **Two files are untracked on purpose.** `public/brand/herman.jpg` is the
   owner's headshot, referenced by nothing in the codebase, and committing it
   would publish a personal photo to a public repo.
   `docs/hand-off/banner-images-next-session.md` is a spent prompt whose work is
   done. Leave both alone rather than tidying them in.
-- **CI costs two full runs per merge**, because `.github/workflows/ci.yml`
-  triggers on `pull_request` *and* on `push: branches: [main]`. Keep a sprint to
-  one push. A `paths-ignore` on the push trigger only - never on the PR trigger,
-  which can leave a required check pending forever - would halve that for
-  docs-only changes; it is offered and not yet taken. `gh pr checks` can report
-  a finished job as `pending`; `gh run view <run-id>` is the one that tells the
-  truth.
-- **Facts.** The merged-PR recount is red by exactly one at the start of every
-  sprint. `pnpm facts` clears it. That is the guard working. Run it again after
-  the last new source or test file, because `qa/unit/meta` asserts once per file
-  and the eight fact-drawing exports go stale the moment a count moves - seven
-  of them did this sprint, from seven new unit tests and nothing else.
-- **A later contrast candidate** is the amber and emerald literals, and its
-  numbers were measured on this tree rather than guessed: `text-amber-500` is
-  the low-stock line a buyer reads on a product detail page (`stockTone` in
-  `features/products/components/product-purchase.tsx`) and it measures 1.88:1
-  on `--muted` and 2.05:1 on the page in light theme, against 9.17-9.79:1 on
-  dark; the in-stock dot beside it is `bg-emerald-500` at 2.36:1, under the 3:1
-  non-text floor. The low-stock *badge* on the listing is a different surface
-  and is already fine at 10.45:1, so that is two sites, not an amber sweep.
-  `--warning` already exists; look there before adding a token.
 - **How to run a build sprint, if one is called for.**
   `.agents/skills/sprint-workflow/` from step 0. Branch
-  `v0/s<next-number>-<short-name>` from a freshly fetched `origin/main` - S68 is
-  taken by the profile copy above, so the next is S69 onward.
+  `v0/s<next-number>-<short-name>` from a freshly fetched `origin/main` - S69 is
+  taken by the product heroes above, so the next is S70 onward.
 - **At the end of the sprint,** rewrite this block as part of the closeout. The
   next session's prompt is a file in the repo, not something to ask a finished
   session to compose.
-
-### Ready-to-ship checklist for next station
-
-1. Rebase/branch from real `origin/main` using the protocol in this file.
-2. Keep scope narrow to one station outcome (prefer docs/tests/template-quality unless explicitly approved otherwise).
-3. Before PR: run `pnpm typecheck`, `pnpm lint`, `pnpm arch`, plus targeted tests for changed areas.
-4. Confirm `git diff --stat origin/main` only includes the station’s intended files.
-5. After squash merge: verify `main` points to the merge SHA, then update this ledger immediately.
 
 ## Sprint protocol (every sprint, no exceptions)
 
@@ -251,6 +238,7 @@ Paste nothing. A fresh terminal reads this block and begins.
 | S66    | #227     | `1403afb`            | The light theme, scanned for the first time, and the reason its fix was invisible. The muted-label ramp went first: 209 occurrences migrated - 196 of the sub-AA `text-foreground/15..55` ramp and 6 alpha'd muted labels onto the existing `--muted-foreground`, 4 onto a new `--muted-glyph` at the 3:1 non-text floor (unfilled stars, the timeline watermark year), 3 coloured sites de-alpha'd - behind `qa/config/contrast.ts`, an oklch -> sRGB -> WCAG model pinned against WebAIM boundary greys that reproduces the two ratios axe measured in a browser in S62 (3.30:1 dark, 2.68:1 light), plus a sweep that measures every `text-<token>/<alpha>` in the source and refuses a token it has not been taught to place. `qa/axe` was rewritten to scan both themes - light was never scanned and is the worse one - and to open the cart drawer and the mobile nav, which between them held 19 of the 209 labels and had never been rendered by any scan. Then the light accent: `--accent-teal` 0.58 -> 0.51, because at 0.58 it read 3.93:1 as text on the page, and five routes failed axe on it. **And that fix did not reach a single visitor, which is the sprint's real finding.** `buildThemeCss` emits the active template's tokens as a `:root` block in an inline `<style>` after globals.css, and `StoreSettings.theme` holds a full copy of every installed template - so the database, not the stylesheet, is what the browser paints. The served page still carried 0.58 while the stylesheet, the preset constant and every static guard said 0.51. A guard that reads `app/globals.css` alone measures a palette nobody sees. `normalizeThemeState` now refreshes a built-in preset whose persisted colours still match a set it used to ship with, and leaves anything one channel different alone, because `brand-colors-form` writes a client's edit back under the same id and reverting that would be the worse bug. `theme-preset-contrast.test.ts` compares the preset to the stylesheet token for token and holds every preset to AA - which caught `solar-amber` shipping a light accent at 3.11:1, a preset a client can activate from the admin with no code change. Three further surfaces only the browser could show. Accent text on a tint mixed from the same token: darkening `--accent-teal` darkens `bg-accent-teal/10|12|15` with it, so the accent keeps only part of its gain and still reads 4.43-4.45:1 - five sites moved to `--accent-teal-muted`, which unlike a literal still follows a client's palette. The `Today` pill on `/contact` stacks its own tint on an already tinted row, where no single tone works because the tint darkens the surface on light and lightens it on dark, so it is a solid accent fill at 5.24:1 / 9.44:1. And the nav pill renders over the dark hero as well as the page, where in light theme the same tint composites to near-black and the deeper tone reads 2.74:1 - `onDark` already chose the inactive colour and now chooses the active one. The `Open now` badge was raw `emerald-400/15` + `emerald-300`, a dark-tuned palette literal no token guard could see, at 1.25:1 on light; it reads `--success`, whose light value moves 0.6 -> 0.46 while dark stays put so the slide renders that read it are unchanged. `theme.ts` crossed the 300-line audit threshold and split along a real seam: `theme-presets.ts` (shipped palettes), `theme-snapshots.ts` (what they used to be). Unit 1752 -> 1826, axe 11 -> 32; the eight fact-drawing exports were re-rendered, because the handoff said none was owed on the grounds no showcase file changed - true, and beside the point: the slides draw the test counts this sprint moved. Retro: a guard is only as true as the layer it reads, and this repo paints from the database; the cart-drawer scan sat 30s behind its own dialog and reported nothing until the click was made conditional; and a tint mixed from a token is not a surface a static sweep can model - it moves with the token, in opposite directions per theme |
 | S67    | #228     | `9c0dc27`            | `--destructive` was the last colour in the palette written as one value for both themes, and the handoff said to split it per theme "the way every other colour here already is". Measured first, with the repo's own model rather than the plan's numbers, and that could not work: the token does two opposed jobs - the red fill under a white label (the "Sold out" tag, the destructive button and badge, the status dot) and red words on the page (a form error, the out-of-stock line, an admin delete icon on hover) - and on dark the text role needs `L >= 0.62` to clear AA on every surface while the white label on the fill needs `L <= 0.58`. No value sits in both ranges, in either theme, so the split is by role as well: `--destructive` keeps the fill, and a new `--destructive-strong` carries text, the way `--accent-teal-muted` carries accent text needing more contrast than the accent has. Light 0.52 / 0.46, dark 0.577 (unchanged) / 0.64; 38 `text-destructive` occurrences across 24 files migrated, and a source sweep now refuses the fill colour as a text colour so the roles cannot drift back together. Two of the handoff's three numbers were claims and are corrected: dark's worst surface is `--muted` at 4.13:1, not `--background` at 4.41:1, and **the tag was already below AA on light** - it renders `bg-destructive/90`, which composites to 4.32:1 under its own white label, while the old guard measured the solid colour at 4.56:1 and passed. That is S66's lesson one layer down: measure the alpha the markup asks for, not the token it names. The tint alphas are read off the markup too - `/[0.06]`, `/10`, `/12`, and a `/20` that is `dark:`-prefixed in all three shadcn menus, so light is not held to a tint it never paints, and would measure 4.09:1 if a prefix were dropped. Two browser claims the model cannot make, both shown red on the real files. Deleting `--color-destructive-strong` from `@theme inline` leaves the utility matching nothing and the text inheriting `--foreground`: the probe read `rgb(11,11,11)` while the token still resolved `rgb(188,0,0)`, and every static guard stayed green because the stylesheet was right. And reverting light `--destructive` to 0.577 put the painted fill at `rgb(233,25,35)` with its label at 4.35:1 - the same number the unit model predicts for `/90` over `--background`, one instrument sampling pixels and the other doing arithmetic. **The finding that changed the sprint's browser layer**: neither role renders anywhere the gate looks. The first spec draft waited on `/products` for a "Sold out" tag that is not there - the fixture has `momo-air` at `stock: 0`, but the served catalog comes from the database, where nothing is sold out, and the text role needs a validation failure no public route reaches at rest. axe has scanned `/products` in both themes since S66 and was always going to report nothing, whatever the colour was. A route list is a claim about coverage; the data behind a scanned route is a second claim nobody had made. So the measurement is a probe carrying the tag's own utilities - a question put to the served stylesheet, not a stand-in for its markup - with the real tag measured as well whenever the catalog has one. Unlike the accent, this token is not painted from the database: `buildThemeCss` emits four variables and no destructive one, which is asserted rather than assumed (shown red by adding one; it named `titanium-teal`). Unit 1826 -> 1835, axe 32 -> 36; 73 re-exported, 16 files changed. Retro: three rules - a handoff's proposed *fix* is a claim, not only its numbers; a guard over tokens cannot see whether the utility exists; and a scanned route only speaks for the states its data puts on screen |
 | S68    | #232     | `b5dae18`            | The agreed profile copy for three channels, and the field limit that proved the handoff's About could not be pasted. `docs/hand-off/profile-copy-s68.md` was agreed in full and marked not-a-draft, so it was measured rather than adopted: the About ran to **4,050 characters against LinkedIn's 2,600**, and LinkedIn truncates the overflow mid-sentence rather than refusing it. Nothing else in the handoff was over - headline 183/220, Adu Dev tagline 96/120, overview 1,460/2,000, Facebook short 201/255 - so the About was the only blocker, and the resolution came from the owner rather than from a rewrite: pull the Nexgen paragraph, which already has its own Experience entry with its own 2,000-character field, and the remaining seven paragraphs total 2,541 with nothing reworded. Two plain-text corrections the handoff could not have seen: LinkedIn renders no markdown, so the `**bold**` markers and the backticks around `any` and `useEffect` would have pasted as themselves, and the existing pack About already writes those words bare. Five fields now live in the two audience files per the handoff's file plan - `socialLaunchPackRecruiterProfileBlocks` (personal headline, About) and `socialLaunchPackClientProfileBlocks` (tagline, overview, Facebook description) - spliced into the parent's `Profile and discoverability` section so the fields a reader fills in one sitting stay contiguous and the section's own guards can still see them. **The length guard measures the paste, not the render.** `absoluteUrl("")` is `http://localhost:3000` under CI's env and 10 characters longer on the deployed host, so every link in the copy is grown by the difference before measuring; shown red at 2,602 on a 60-character pad that the naive `code.length` read as 2,592 and would have passed, which is the exact band the helper exists for. The channel split retires the personal profile's client-angle headline - LinkedIn allows one personal profile, so it is recruiter-first with a single closing line naming Adu Dev, and the client offer is the company page's tagline - and every headline block is now required to name its channel, because an unlabelled one is the old shape returning. The skills list is reordered as a consequence rather than a preference: the guard holds the pinned first three to terms the headline leads with, and the agreed headline names Prisma where the old one named PostgreSQL, so `Next.js / React / TypeScript` lead, Prisma moves to fourth and PostgreSQL to fifth. Two existing guards were corrected rather than satisfied. The Open to Work guard demanded the word `handover`, which was never in its own callout: it was passing on `handover-ready commerce builds` in the retired headline three blocks away, and that word is the promise S61 deliberately replaced with built-and-run, so it is re-anchored on `client work` and `run it without you`, both lifted from the callout itself. And the `Keep claims accurate` callout told the reader to quote no client results, which the new Adu Dev overview does by naming Nexgen - a real delivered platform, unlike the Momo Audio template the callout was written about - so it now scopes the prohibition to Momo Audio and permits Nexgen by name. The numbers rule is a guard, not a convention: the two source files must not contain the rendered counts as literals while the About must render both, shown red naming `social-launch-pack-recruiter.ts` and `219`; the paragraph carrying them must also name Momo Audio, because a recruiter reading 2,002 as career-wide is a claim the owner cannot back up; and the client page is swept for both counts and for any hiring signal, since an agency page that reads as one person looking for a job sells against itself. Unit 1835 -> 1842. Retro: a field limit belongs to the box rather than to the copy, so five fields with four ceilings cannot share one guard however alike their titles look; agreed copy can still be unpasteable, because length is a claim a handoff rarely checks; measure copy as it will be pasted, not as the test environment renders it; and a guard can be green on a phrase three blocks from the thing it claims to be checking. |
+| S69    | #234     | `2db5a8c`            | One `hero` field was doing two opposed jobs: `app/page.tsx:20` rendered the flagship's *product* hero as the site's front door, so the lure and the per-product section were the same data and the same three client renderers. Split by role, the move S67 made on `--destructive`. `cinematicHero` is optional and flagship-only - the 192-frame sequence stays where 16 MB earns its weight once; `productHero` is flat, required, and **server-rendered**, which is the whole point and is held by a test asserting the file carries no `"use client"`, no motion import and no hook (shown red by adding the first two to the real file). `ParallaxStoryHero`, `ExplodedStoryHero`, the `StoryHero` switch, both schemas and 2.5 MB of layer PNGs deleted, with the one-off background-keying script whose only input was that folder; `clientComponents` 153 -> 150 and the arch baseline updated to hold it. **The copy was the risk, not the layout.** Every string in the four `hero` blocks exists nowhere else in the repo, so it was transcribed into `docs/hand-off/product-hero-copy-inventory.md` while still on disk and pinned by `hero-copy-survives.test.ts` *before* any renderer was deleted - proven red by removing a real beat description, which it named. It then caught two genuine losses during the migration: a kicker paraphrased to the brief's own illustrative `"THE SPEAKER"` where the owner's word was `Sound everywhere`, and the five exploded layer labels, which the first rehoming joined into one spec value the exact-match guard could not see. Ten beats went into `features[]` (`stat` and `statUnit` are now optional, so a beat need not invent a number) and the layer labels into a `specs[]` Construction row. Four of the brief's claims were measured and corrected: ten beats, not the twelve "three per product" implies; `components/`, not the `ui/` it named, because `folder-layout` allows a slice only components/hooks/lib/content; four sites it did not list also carried the hero (the Strapi mapper, its fixture, the mapper test, and the admin product builder in `features/catalog`); and its `productHeroSchema` name was already taken by the union it deletes, so the type is now `ProductHeroContent`. Momo X was using `/frames/00096.jpg`, a frame borrowed from the sequence, and now has its own generated shot - 18 credits, which is exactly what the brief estimated - resized 2048 -> 1400 and compressed 2.9 MB -> 194 KB; the other three keep their existing shots, deferred on purpose. A radial mask dissolves each shot's own near-black backdrop, which otherwise reads as a hard-edged rectangle pasted onto the field - verified in a browser, because no test can see that. **Then CI went red on something S69 did not touch.** `/contact` dark, `color-contrast (serious) .py-1 ... 4.31`, in the opening-hours pill. It would not reproduce locally until the clock was pinned: the pill renders `Open now` or `Closed` from the current time, the branches are different colours, and every scan that has ever run during the working day saw the green one. CI ran at 09:53 UTC, outside opening hours. That is S67's rule again - a scanned route only speaks for the states its data puts on screen - and it is why S66's muted-label sweep could not have reached it. Measured rather than guessed: `text-muted-foreground` reads 4.27:1 on dark and 4.23:1 on light against the pill's own `bg-foreground/10` tint, which lifts the surface just far enough to drop under AA, so **both themes were failing and only dark was ever looked at**; `text-foreground/75` reads 8.97:1 and 5.83:1. The colour fix alone would leave the state invisible again, so the guard now pins the clock to 03:00 and scans the closed pill on both themes. Unit 1842 -> 1869 (the net of three new spec files and one deleted script, since the meta suites assert once per source file), axe 37 -> 39; all 73 exports re-rendered three times, because each of those count moves dated them. Retro: a brief is a set of claims and four of this one's were wrong on the tree; a copy-survival test written before the deletion is what makes "do not lose the writing" enforceable, and it earned its keep twice; and a guard that depends on the wall clock is a guard that reports on whichever state the clock happened to pick |
 | S0     | archived | archived             | Historical placeholder for initial ledger/protocol setup; retained for chronology                                                        |
 | SEC1   | #122     | `c6e8b40`            | Guard admin transactional actions; move server-only email/discount exports out of `"use server"` endpoints                               |
 | SEC2   | #124     | `3d32053`            | Stabilized auth/session origin handling: Better Auth trusted canonical/proxy host set and checkout return URL pinned to canonical origin |

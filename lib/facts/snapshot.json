@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-17T09:58:21.384Z",
+  "generatedAt": "2026-10-17T10:10:43.411Z",
   "tests": {
     "unit": 1869,
     "integration": 83,
@@ -26,7 +26,7 @@
     "pages": 45
   },
   "repo": {
-    "mergedPrs": 224,
-    "latestPr": 233
+    "mergedPrs": 225,
+    "latestPr": 234
   }
 }

@@ -72,6 +72,25 @@ the worst in the tree. Re-measure before adopting either the count or the fix.
   diff. Note the constraint before designing it - a module in `qa/config/` can
   export `dominantColour` (it takes `page` and explicit args) but a probe
   function has to arrive as source.
+- **An unparseable PR cell switches off changelog coverage for that sprint.**
+  Found by walking into it: S73 wrote its ledger row with a `#PR` placeholder
+  before the PR existed, and `qa/unit/docs/changelog-coverage.test.ts` stayed
+  green. `missingChangelogSprints` exempts any row where `row.prs.length === 0`,
+  so a placeholder or a typo reads as "nothing to check" rather than as a
+  problem. Measured on a fixture ledger, floor 38, against a changelog
+  mentioning nothing:
+
+  | PR cell | parsed PRs | reported missing |
+  |---|---|---|
+  | `#239` | `["#239"]` | 1 |
+  | `#PR` | `[]` | **0** |
+  | `TBD` | `[]` | **0** |
+
+  This is the S63 allow-list shape again - a guard quiet because it stopped
+  looking - and the fix is small: a row at or above the floor with no parseable
+  PR is a failure, not an exemption. The red is already written above, and it
+  wants a case lifted from the real ledger for the rows that must still pass
+  (`S2` carries two PRs, `Locks` and `SEC1` are below the floor).
 - **`docs/next-steps.md` is at 144 lines against the 150 in
   `qa/unit/docs/ledger-split.test.ts`.** S73 spent 19 of the 25 lines it
   inherited. The next closeout has six, so something has to come out of the

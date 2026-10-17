@@ -215,7 +215,7 @@ export function ContactForm() {
   if (result) {
     return (
       <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-8 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-400/15 text-emerald-300">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success/10 text-success">
           <Check className="h-7 w-7" strokeWidth={1.5} />
         </div>
         <h3 className="mt-5 text-xl font-semibold text-foreground">
@@ -353,7 +353,7 @@ export function ContactForm() {
                 })}
               </div>
               {touched && !typeId && (
-                <p className="text-xs text-red-400">
+                <p className="text-xs text-destructive-strong">
                   Please choose a topic to continue.
                 </p>
               )}
@@ -422,7 +422,7 @@ export function ContactForm() {
                   autoComplete="name"
                 />
                 {touched && name.trim().length <= 1 && (
-                  <p className="mt-1.5 text-xs text-red-400">
+                  <p className="mt-1.5 text-xs text-destructive-strong">
                     Please enter your name.
                   </p>
                 )}
@@ -441,7 +441,7 @@ export function ContactForm() {
                   autoComplete="email"
                 />
                 {touched && !isEmail(email) && (
-                  <p className="mt-1.5 text-xs text-red-400">
+                  <p className="mt-1.5 text-xs text-destructive-strong">
                     Please enter a valid email.
                   </p>
                 )}
@@ -529,7 +529,7 @@ export function ContactForm() {
                       )}
 
                       {missing && (
-                        <p className="mt-1.5 text-xs text-red-400">
+                        <p className="mt-1.5 text-xs text-destructive-strong">
                           This field is required.
                         </p>
                       )}
@@ -585,7 +585,7 @@ export function ContactForm() {
                   );
                 })}
               </dl>
-              {error && <p className="text-sm text-red-400">{error}</p>}
+              {error && <p className="text-sm text-destructive-strong">{error}</p>}
             </div>
           )}
         </motion.div>

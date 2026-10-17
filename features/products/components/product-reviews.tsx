@@ -172,7 +172,7 @@ function ReviewItem({ review, pending = false }: { review: Review; pending?: boo
           <span className="text-xs text-muted-foreground">{formatDate(review.createdAt)}</span>
         </div>
         {pending && (
-          <span className="ml-auto rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-amber-200">
+          <span className="ml-auto rounded-full border border-warning/30 bg-warning/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-warning">
             Pending approval
           </span>
         )}

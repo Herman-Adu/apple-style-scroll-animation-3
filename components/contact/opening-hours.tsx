@@ -50,7 +50,14 @@ export function OpeningHours() {
             "flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em]",
             openNow
               ? "bg-success/15 text-success"
-              : "bg-foreground/10 text-muted-foreground",
+              // `text-muted-foreground` read 4.27:1 on dark and 4.23:1 on light
+              // against this tint - the pill's own `foreground/10` lifts the
+              // surface just enough to drop it under AA. The closed state only
+              // renders outside opening hours, so every scan that ever ran
+              // during the working day saw the green branch instead and the
+              // S66 muted-label sweep could not reach it. Measured at 8.97:1
+              // and 5.83:1 at /75.
+              : "bg-foreground/10 text-foreground/75",
           )}
         >
           <span

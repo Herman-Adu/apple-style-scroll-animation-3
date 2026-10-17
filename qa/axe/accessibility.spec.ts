@@ -94,6 +94,24 @@ for (const theme of THEMES) {
     })
   }
 
+  /**
+   * The opening-hours pill renders "Open now" or "Closed" from the clock, and
+   * the two branches are different colours. Every local run during the working
+   * day scanned the green branch, so the grey one went under AA unseen until a
+   * CI run at 09:53 UTC happened to land outside opening hours - which is S67's
+   * lesson again: a scanned route only speaks for the states its data puts on
+   * screen. Pinning the clock to the small hours makes the closed state a
+   * state the guard always sees, instead of one it sees by luck.
+   */
+  test(`the closed opening-hours pill has no violations on ${theme}`, async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2026-10-18T03:00:00"))
+    await prepare(page, theme)
+    await page.goto("/contact", { waitUntil: "networkidle" })
+    await settle(page, theme)
+    await expect(page.getByText("Closed", { exact: true }).first()).toBeVisible()
+    await scan(page, `/contact closed (${theme})`)
+  })
+
   test(`a product and an article detail page have no violations on ${theme}`, async ({ page, request }) => {
     const sitemap = await (await request.get("/sitemap.xml")).text()
     const paths = ["products", "articles"].map((kind) => {

@@ -1,155 +1,155 @@
 {
   "exports": {
     "/showcase/social/business-case/brief.pdf": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "df1c4a66c3e61998",
       "facts": {
-        "tests.total": 2036,
+        "tests.total": 2038,
         "coverage.lines": 43.16,
         "coverage.branches": 33.21,
         "arch.deepImports": 0
       }
     },
     "/showcase/social/business-case/build-vs-buy.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "a73861fdf75cee1c",
       "facts": {}
     },
     "/showcase/social/business-case/replatform-risk.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "81069eb5a052f6aa",
       "facts": {}
     },
     "/showcase/social/buyer/carousel.pdf": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "88476e3d24203143",
       "facts": {}
     },
     "/showcase/social/buyer/cost-line.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "a65821da3745f67a",
       "facts": {}
     },
     "/showcase/social/buyer/cost-table.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "34f98324ce7a8860",
       "facts": {}
     },
     "/showcase/social/buyer/self-serve.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "2d4eced217a6ef00",
       "facts": {}
     },
     "/showcase/social/buyer/stock-alerts.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "07a87162c4acd427",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/1.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "033fdb7c95eff101",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/2.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "d473ff33e9281e85",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/3.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "85e6828fa734ddf9",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/4.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "ecc51b8e62a2ea9f",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/5.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "0d47f0eeddcf3619",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/carousel.pdf": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "afe63d9ac4a2d508",
       "facts": {}
     },
     "/showcase/social/checkout-sequence/cover.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "1a2620520a6e1355",
       "facts": {}
     },
     "/showcase/social/email-case-study/carousel.pdf": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "13af2e1473ee4efd",
       "facts": {}
     },
     "/showcase/social/email-case-study/cover.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "279c51249c3b37fa",
       "facts": {}
     },
     "/showcase/social/email-case-study/cta.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "a07c09afc1db82c9",
       "facts": {}
     },
     "/showcase/social/email-case-study/flow.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "985a6a34717d6789",
       "facts": {}
     },
     "/showcase/social/email-case-study/history.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "9a3a0162f9d6c85d",
       "facts": {}
     },
     "/showcase/social/email-case-study/layers.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "019ddb17cc556386",
       "facts": {}
     },
     "/showcase/social/email-case-study/locks.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "91c9fcad45d9c9ac",
       "facts": {}
     },
     "/showcase/social/email-case-study/products.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "21586f138b9424bd",
       "facts": {}
     },
     "/showcase/social/email-case-study/starters.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "9b9a39822f8d5e52",
       "facts": {}
     },
     "/showcase/social/engineer/architecture.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "4f4d5e3f94f8cfc4",
       "facts": {}
     },
     "/showcase/social/engineer/carousel.pdf": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "b53ae42a6c0d147b",
       "facts": {
         "tests.unit": 1869,
         "tests.integration": 83,
         "tests.smoke": 30,
-        "tests.axe": 36,
+        "tests.axe": 38,
         "tests.seo": 18,
         "coverage.lines": 43.16,
         "coverage.branches": 33.21
       }
     },
     "/showcase/social/engineer/checkout.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "9d5e516dc3788158",
       "facts": {}
     },
     "/showcase/social/engineer/coverage.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "8e27148a78a32420",
       "facts": {
         "coverage.lines": 43.16,
@@ -157,150 +157,150 @@
       }
     },
     "/showcase/social/engineer/restock.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "65b8047122dea649",
       "facts": {}
     },
     "/showcase/social/engineer/tests.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "abd1a7bf5645d588",
       "facts": {
         "tests.unit": 1869,
         "tests.integration": 83,
         "tests.smoke": 30,
-        "tests.axe": 36,
+        "tests.axe": 38,
         "tests.seo": 18
       }
     },
     "/showcase/social/engineer/theme.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "fbe5420edbef8448",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/1.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "7bf8a6beee3c46bf",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/2.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "476bdea133bd8c1b",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/3.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "e04a70a04620aec0",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/4.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "5761d658274d2eaf",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/5.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "2ef2b38ed1ffc216",
       "facts": {}
     },
     "/showcase/social/how-it-was-built/carousel.pdf": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "3f2ee0e425e5eb62",
       "facts": {
         "tests.unit": 1869,
         "tests.integration": 83,
         "tests.smoke": 30,
-        "tests.axe": 36,
+        "tests.axe": 38,
         "tests.seo": 18
       }
     },
     "/showcase/social/how-it-was-built/cover.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "2ec1770463286b8f",
       "facts": {}
     },
     "/showcase/social/recruiter/built.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "bc45dbfdaefb47f0",
       "facts": {}
     },
     "/showcase/social/recruiter/carousel.pdf": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "d9a622a6776bf0ea",
       "facts": {
-        "tests.total": 2036,
+        "tests.total": 2038,
         "coverage.lines": 43.16,
         "coverage.branches": 33.21,
         "arch.deepImports": 0
       }
     },
     "/showcase/social/recruiter/cta.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "d7247042e978954f",
       "facts": {}
     },
     "/showcase/social/recruiter/judgement.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "5a628ffa16241724",
       "facts": {}
     },
     "/showcase/social/recruiter/proof.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "587f9b525158d20a",
       "facts": {
-        "tests.total": 2036,
+        "tests.total": 2038,
         "coverage.lines": 43.16,
         "coverage.branches": 33.21,
         "arch.deepImports": 0
       }
     },
     "/showcase/social/security/1.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "f4bb29fdaf5d0dd3",
       "facts": {}
     },
     "/showcase/social/security/2.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "3c06007eb538f954",
       "facts": {}
     },
     "/showcase/social/security/3.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "2eec13b6f930434c",
       "facts": {}
     },
     "/showcase/social/security/4.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "7b12180aaadcd9bc",
       "facts": {}
     },
     "/showcase/social/security/5.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "316a5954289bda81",
       "facts": {}
     },
     "/showcase/social/security/carousel.pdf": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "a71f8f24e61e6c94",
       "facts": {}
     },
     "/showcase/social/security/cover.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "cabc0df5fd26e6dc",
       "facts": {}
     },
     "/showcase/social/shared/bar-chart.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "ccea466d7364a75a",
       "facts": {
         "tests.unit": 1869,
         "tests.integration": 83,
         "tests.smoke": 30,
-        "tests.axe": 36,
+        "tests.axe": 38,
         "tests.seo": 18
       }
     },
     "/showcase/social/shared/before-after.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "323b165f6d9ccd1d",
       "facts": {
         "arch.deepImports": 0,
@@ -310,107 +310,107 @@
       }
     },
     "/showcase/social/shared/flow.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "b60a776213b21881",
       "facts": {}
     },
     "/showcase/social/shared/gates.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "12eb5c0b5370d50c",
       "facts": {}
     },
     "/showcase/social/shared/layers.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "4bc74a3b185810a1",
       "facts": {}
     },
     "/showcase/social/shared/line-chart.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "addef0bcabae0306",
       "facts": {}
     },
     "/showcase/social/shared/offer.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "8a26fc500a297197",
       "facts": {}
     },
     "/showcase/social/shared/sequence.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "f43e793c1b6c10ab",
       "facts": {}
     },
     "/showcase/social/shared/squares/layers.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "ada13b64392c0258",
       "facts": {}
     },
     "/showcase/social/shared/squares/locks.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "bcaad82e4bc61a05",
       "facts": {}
     },
     "/showcase/social/shared/squares/starters.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "2e66b73c10e63d0a",
       "facts": {}
     },
     "/showcase/social/shared/stack.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "eb873bbb59e08fee",
       "facts": {}
     },
     "/showcase/social/shared/table.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "93df88764ecf985b",
       "facts": {}
     },
     "/showcase/social/site-tour/analytics.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "5ac45f9a693b8e8b",
       "facts": {}
     },
     "/showcase/social/site-tour/campaigns.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "87eb7ebbaab2df00",
       "facts": {}
     },
     "/showcase/social/site-tour/carousel.pdf": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "2eb636d8391336f9",
       "facts": {}
     },
     "/showcase/social/site-tour/checkout.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "e2cb77318adc9562",
       "facts": {}
     },
     "/showcase/social/site-tour/products.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "17c9f8de3aa51e68",
       "facts": {}
     },
     "/showcase/social/site-tour/storefront.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "410136e209dbb6ed",
       "facts": {}
     },
     "/showcase/social/site-tour/structure-admin.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "ce53787a5475000f",
       "facts": {}
     },
     "/showcase/social/site-tour/structure-docs.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "df128b643e6c1b20",
       "facts": {}
     },
     "/showcase/social/site-tour/structure-overview.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "7de5424d42d989d7",
       "facts": {}
     },
     "/showcase/social/site-tour/structure-storefront.png": {
-      "renderedFrom": "2026-10-17T09:46:02.415Z",
+      "renderedFrom": "2026-10-17T09:58:21.384Z",
       "sourceHash": "51ef3551bda72724",
       "facts": {}
     }

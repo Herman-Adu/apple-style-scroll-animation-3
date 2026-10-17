@@ -118,6 +118,18 @@ function mentionsPr(changelogText: string, pr: string): boolean {
  * Ledger rows at or after the floor whose PRs are recorded nowhere in the
  * changelog. A sprint counts as recorded when any one of its PRs is mentioned,
  * because a sprint that merged as two PRs tells one story.
+ *
+ * **A row with no parseable PR is reported, not exempted.** Until S75 it was:
+ * `#PR`, `TBD` or a typo in the PR cell parses to no PRs at all, and an empty
+ * list read as "nothing to check" rather than as a problem - so the guard went
+ * quiet on exactly the row whose record of itself was broken, which is the S63
+ * allow-list shape one layer in. S74 leant on this guard to check its own
+ * What's New entry. A row that cannot say which PR shipped it cannot be checked
+ * against anything, so it fails.
+ *
+ * Rows below the floor and the unnumbered series (`D1`, `SEC1`, `W26`, `Locks`)
+ * are still exempt, which is what keeps the real ledger's `archived` S0 row
+ * passing - its floor, not its cell.
  */
 export function missingChangelogSprints(
   rows: LedgerRow[],
@@ -126,8 +138,36 @@ export function missingChangelogSprints(
 ): LedgerRow[] {
   return rows.filter((row) => {
     const number = sprintNumber(row.sprint)
-    if (number === null || number < floor || row.prs.length === 0) return false
+    if (number === null || number < floor) return false
+    if (row.prs.length === 0) return true
     return !row.prs.some((pr) => mentionsPr(changelogText, pr))
+  })
+}
+
+/**
+ * Ledger rows at or after the floor whose merge SHA was never filled in, the
+ * newest S-series row excepted.
+ *
+ * The same defect as `missingChangelogSprints`' old PR-cell exemption, on the
+ * cell beside it, and it was live on `main` while this was written: S74's row
+ * read `PENDING`, because a PR cannot record its own squash commit, and nothing
+ * afterwards asked for it. Every sprint since S72 has owed its predecessor's
+ * SHA by convention - which is to say by somebody remembering.
+ *
+ * The exemption is derived, not listed: the highest-numbered S-series row is
+ * the sprint whose merge has not happened yet, so it is the one row allowed to
+ * say `PENDING`. Every row behind it has merged and can name its commit.
+ */
+export function missingLedgerShas(
+  rows: LedgerRow[],
+  floor: number = CHANGELOG_COVERAGE_FLOOR,
+): LedgerRow[] {
+  const newest = newestLedgerSprint(rows)
+  return rows.filter((row) => {
+    const number = sprintNumber(row.sprint)
+    if (number === null || number < floor) return false
+    if (row.sprint === newest?.sprint) return false
+    return row.shas.length === 0
   })
 }
 

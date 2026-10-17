@@ -56,6 +56,7 @@ the SEO suite checks that each page's canonical points at where it is served.
 - **Unit / email** pins every pure editor rule in `features/email/*` — version pruning, saved-section picking and validation, starter shape (unique ids, valid groups, hero images exist), and locked-block behaviour (no edits/moves/deletes, insertion above trailing locks). Write these first when adding an editor feature; the UI only calls these functions.
 - **Integration / email** and **integration / checkout-finalize** run against the database and verify reset-to-original and the post-checkout email/order flow.
 - **Smoke / SEO / axe** are Playwright suites that run against the dev server for real-browser guarantees.
+- **axe / theme-utilities-paint** answers the one colour question no static guard can. A Tailwind v4 colour utility exists only because `app/globals.css` declares `--color-<name>` in its `@theme inline` block; delete that line and `text-info` matches nothing, the text inherits `--foreground`, and every token guard stays green *because the stylesheet is correct*. The spec mounts a probe per colour on a served page and compares what Chromium painted against the token. Its candidate list is derived in `qa/config/theme-utilities.ts` from the `:root` palette and the app's own markup - never from the `@theme inline` block, which is the set that disappears when a bridge is deleted - so a token added later is covered without anyone adding it here. `qa/unit/theme/theme-utilities.test.ts` holds the static half.
 
 ## Facts and the coverage ratchet
 

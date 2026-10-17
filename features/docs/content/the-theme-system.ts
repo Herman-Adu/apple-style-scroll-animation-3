@@ -121,6 +121,12 @@ export const theThemeSystem: Doc = {
       text: "buildThemeCss emits four variables: the two accents and the two gradient endpoints. The rest of the palette - the page and card surfaces, the greys, and the status colours for errors, success and low stock - is set in globals.css per colour scheme and is not part of a template. That boundary is deliberate: a client can re-brand the whole site without being able to make an error message or a \"Sold out\" tag unreadable, and tests hold each of those colours to WCAG AA in both schemes. It also decides which source tells the truth about a colour. For the four a theme owns, the database is what the browser paints, so a check that reads only globals.css is measuring a palette nobody sees. For everything else the stylesheet is the final word.",
     },
     {
+      type: "callout",
+      variant: "note",
+      title: "The third layer: the bridge that makes a colour a class",
+      text: "A palette token only becomes something markup can use because globals.css also declares --color-<name> in its @theme inline block. That line is what makes text-info a class at all; without it the class matches nothing, the writing inherits the page's foreground colour, and the stylesheet is still entirely correct - so no check that reads it can see the problem. Only a browser can, which is why the suite mounts a probe on a served page and compares what Chromium painted with the token it should have painted. The list of colours it checks is worked out from the palette and the pages, not written down, because a list taken from the bridges themselves would lose its own test case the moment a bridge was deleted.",
+    },
+    {
       type: "heading",
       text: "The default is a visual no-op",
     },

@@ -48,5 +48,5 @@ Patterns to follow when extending the app so new code matches the existing archi
 
 ## Accessibility
 
-- Animation-driven components must honor `prefers-reduced-motion` (follow `Reveal` / `page-hero`).
+- Animation-driven components must honor `prefers-reduced-motion` (follow `Reveal` for scroll-into-view, `MountReveal` for an entrance that plays on mount).
 - Keep semantic HTML and ARIA correct; the `qa/axe` suite guards this.

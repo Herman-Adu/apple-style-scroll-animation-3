@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-10-17T10:10:43.411Z",
+  "generatedAt": "2026-10-17T10:57:07.812Z",
   "tests": {
-    "unit": 1869,
+    "unit": 1885,
     "integration": 83,
     "smoke": 30,
     "axe": 38,
     "seo": 18,
-    "total": 2038
+    "total": 2054
   },
   "coverage": {
-    "lines": 43.16,
+    "lines": 43.19,
     "branches": 33.21
   },
   "arch": {
@@ -26,7 +26,7 @@
     "pages": 45
   },
   "repo": {
-    "mergedPrs": 225,
-    "latestPr": 234
+    "mergedPrs": 226,
+    "latestPr": 235
   }
 }

@@ -10,7 +10,7 @@ export const products: Product[] = [
     summary: "The flagship over-ear. Titanium build, 40mm planar drivers, and reference-grade silence.",
     description:
       "Momo X is the culmination of a decade of acoustic research. A machined titanium frame houses 40mm planar magnetic drivers tuned in our anechoic lab, while adaptive noise cancellation removes the world so only the music remains.",
-    image: "/products/hero/momo-x.jpg",
+    image: "/frames/00096.jpg",
     accent: "oklch(0.72 0.15 250)",
     featured: true,
     releaseStatus: "preorder",
@@ -53,7 +53,7 @@ export const products: Product[] = [
       ],
     },
     productHero: {
-      image: "/products/hero/momo-x.jpg",
+      image: "/frames/00096.jpg",
       kicker: "Introducing",
       title: "Momo X",
       subtitle: "Pure Sound. Zero Compromise.",

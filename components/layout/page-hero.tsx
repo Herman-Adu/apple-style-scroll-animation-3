@@ -1,16 +1,23 @@
-"use client"
-
+import type { ReactNode } from "react"
 import Image from "next/image"
-import { motion, useReducedMotion } from "framer-motion"
 import type { PageHeroContent } from "@/lib/types"
 import { cn } from "@/lib/utils"
-import { TwoToneTitle } from "@/components/primitives/two-tone-title"
-
-const EASE_OUT = [0.16, 1, 0.3, 1] as const
+import { MountReveal } from "@/components/primitives/mount-reveal"
+import { HeroCopy } from "./page-hero-copy"
 
 /**
- * Shared, data-driven hero header used on top-level pages (Home keeps its own
- * scroll hero). Two treatments:
+ * Shared, data-driven page hero. **A server component**, which is the point of
+ * it: every animated element here is wrapped in `MountReveal`, the one client
+ * leaf, so the copy, the headline and the image markup render on the server.
+ * Before S70 this file carried `"use client"` for nothing but its entrance
+ * animations, and S70 made it the hero of every product page too — so that
+ * directive would have reached nine routes instead of five.
+ * `qa/unit/products/product-hero-is-server.test.ts` holds that line for this
+ * file and for the product wrapper together.
+ *
+ * Used by Home's siblings (`/about`, `/products`, `/articles`, `/contact`,
+ * `/docs`) and, through `ProductHero`, by every product page. Home keeps its
+ * own scroll cinematic. Two treatments:
  * - "immersive" (default): full-bleed image behind overlaid copy.
  * - "split": image fills one half of the viewport (full-bleed to the screen
  *   edge) while the copy sits in the same max-w-7xl container as the site nav,
@@ -18,10 +25,18 @@ const EASE_OUT = [0.16, 1, 0.3, 1] as const
  */
 export function PageHero({
   content,
+  actions,
   glowClassName,
   imageGlowClassName,
 }: {
   content: PageHeroContent
+  /**
+   * Optional interactive leaf below the copy — a product page's Add-to-cart
+   * button. Everything above it is static, so the button arrives as a client
+   * island inside a server-rendered hero rather than making the hero client
+   * code to carry it.
+   */
+  actions?: ReactNode
   /**
    * Optional override for the split hero's teal glow layer (paint +
    * positioning). Lets a single page contain the glow so it doesn't clip at
@@ -36,102 +51,28 @@ export function PageHero({
   imageGlowClassName?: string
 }) {
   if (content.layout === "split")
-    return <SplitHero content={content} glowClassName={glowClassName} imageGlowClassName={imageGlowClassName} />
-  return <ImmersiveHero content={content} />
-}
-
-/* -------------------------------------------------------------------------- */
-/* Shared animated copy                                                       */
-/* -------------------------------------------------------------------------- */
-
-function HeroCopy({
-  content,
-  tone,
-  align = "left",
-}: {
-  content: PageHeroContent
-  /** "over-image" sits on the immersive photo; "on-surface" on a dark panel. */
-  tone: "over-image" | "on-surface"
-  /** Text alignment for this instance (split always renders left). */
-  align?: "left" | "center" | "right"
-}) {
-  const { eyebrow, title, titleAccent, subtitle } = content
-  const reduce = useReducedMotion()
-
-  return (
-    <div
-      className={cn(
-        "max-w-2xl",
-        align === "center" && "mx-auto text-center",
-        align === "right" && "ml-auto text-right",
-      )}
-    >
-      <motion.p
-        initial={reduce ? false : { opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-        className="mb-5 flex items-center gap-2.5 font-mono text-[10px] uppercase tracking-[0.4em] text-white/50"
-      >
-        <span className="h-1.5 w-1.5 rounded-full bg-accent-teal" aria-hidden />
-        {eyebrow}
-      </motion.p>
-      <motion.h1
-        initial={reduce ? false : { opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.25 }}
-        className={cn(
-          "text-balance font-bold leading-[1.03] tracking-tight text-white",
-          tone === "over-image"
-            ? "text-5xl md:text-7xl lg:text-8xl"
-            : "text-4xl md:text-6xl lg:text-7xl",
-        )}
-      >
-        <TwoToneTitle title={title} accent={titleAccent} tier="h1" />
-      </motion.h1>
-      <motion.p
-        initial={reduce ? false : { opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut", delay: 0.4 }}
-        className={cn(
-          "mt-6 text-pretty text-lg leading-relaxed text-white/60 md:text-xl",
-          align === "center" ? "mx-auto max-w-xl" : "max-w-xl",
-          align === "right" && "ml-auto",
-        )}
-      >
-        {subtitle}
-      </motion.p>
-      <motion.div
-        initial={reduce ? false : { scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ duration: 0.9, ease: EASE_OUT, delay: 0.55 }}
-        className={cn(
-          "mt-10 h-px w-24 origin-left bg-gradient-to-r from-accent-teal to-transparent",
-          align === "center" && "mx-auto origin-center",
-          align === "right" && "ml-auto origin-right",
-        )}
-        aria-hidden
+    return (
+      <SplitHero
+        content={content}
+        actions={actions}
+        glowClassName={glowClassName}
+        imageGlowClassName={imageGlowClassName}
       />
-    </div>
-  )
+    )
+  return <ImmersiveHero content={content} actions={actions} />
 }
 
 /* -------------------------------------------------------------------------- */
 /* Immersive (full-bleed) — articles, contact                                 */
 /* -------------------------------------------------------------------------- */
 
-function ImmersiveHero({ content }: { content: PageHeroContent }) {
+function ImmersiveHero({ content, actions }: { content: PageHeroContent; actions?: ReactNode }) {
   const { image, imageAlt, align = "left" } = content
-  const reduce = useReducedMotion()
 
   return (
     <section className="relative flex min-h-[66vh] items-end overflow-hidden md:min-h-[76vh]">
       {/* Background image — subtle Ken Burns settle (decorative) */}
-      <motion.div
-        initial={reduce ? false : { scale: 1.12, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1.4, ease: EASE_OUT }}
-        className="absolute inset-0"
-      >
+      <MountReveal from={{ scale: 1.12, opacity: 0 }} duration={1.4} className="absolute inset-0">
         <Image
           src={image || "/placeholder.svg"}
           alt={imageAlt}
@@ -140,7 +81,7 @@ function ImmersiveHero({ content }: { content: PageHeroContent }) {
           sizes="100vw"
           className="object-cover"
         />
-      </motion.div>
+      </MountReveal>
 
       {/* Strong dark overlay: base tint + vertical + directional gradients */}
       <div className="absolute inset-0 bg-[#050505]/55" aria-hidden />
@@ -169,29 +110,30 @@ function ImmersiveHero({ content }: { content: PageHeroContent }) {
 
       {/* Content — same container as the site nav so copy aligns with the logo */}
       <div className="relative mx-auto w-full max-w-7xl px-5 pb-16 pt-40 md:px-10 md:pb-24 md:pt-48">
-        <HeroCopy content={content} tone="over-image" align={align} />
+        <HeroCopy content={content} tone="over-image" align={align} actions={actions} />
       </div>
     </section>
   )
 }
 
 /* -------------------------------------------------------------------------- */
-/* Split — about, products                                                    */
+/* Split — about, products, docs, every product page                          */
 /* Image fills one half full-bleed to the screen edge; copy lives in the      */
 /* nav's max-w-7xl container so the headline aligns with the logo.            */
 /* -------------------------------------------------------------------------- */
 
 function SplitHero({
   content,
+  actions,
   glowClassName,
   imageGlowClassName,
 }: {
   content: PageHeroContent
+  actions?: ReactNode
   glowClassName?: string
   imageGlowClassName?: string
 }) {
   const { image, imageAlt, align = "left" } = content
-  const reduce = useReducedMotion()
 
   // `align: "right"` puts the image on the LEFT half; otherwise on the RIGHT.
   const imageOnRight = align !== "right"
@@ -225,12 +167,7 @@ function SplitHero({
           imageOnRight ? "md:left-auto md:right-0" : "md:right-auto md:left-0",
         )}
       >
-        <motion.div
-          initial={reduce ? false : { scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.3, ease: EASE_OUT }}
-          className="absolute inset-0"
-        >
+        <MountReveal from={{ scale: 1.1, opacity: 0 }} duration={1.3} className="absolute inset-0">
           <Image
             src={image || "/placeholder.svg"}
             alt={imageAlt}
@@ -239,7 +176,7 @@ function SplitHero({
             sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover"
           />
-        </motion.div>
+        </MountReveal>
 
         {/* Legibility tint */}
         <div className="absolute inset-0 bg-[#050505]/25" aria-hidden />
@@ -269,7 +206,7 @@ function SplitHero({
       {/* Copy — nav-aligned container; sits in the half opposite the image */}
       <div className="relative mx-auto flex min-h-[62vh] max-w-7xl items-end px-5 pb-14 pt-[46vh] md:min-h-[80vh] md:items-center md:px-10 md:py-32 md:pt-32">
         <div className={cn("w-full md:w-1/2", imageOnRight ? "" : "md:ml-auto md:pl-10 lg:pl-14")}>
-          <HeroCopy content={content} tone="on-surface" align="left" />
+          <HeroCopy content={content} tone="on-surface" align="left" actions={actions} />
         </div>
       </div>
     </section>

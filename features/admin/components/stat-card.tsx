@@ -109,8 +109,8 @@ export function StatCard({
         <p
           className={cn(
             "font-mono text-2xl font-semibold tabular-nums tracking-tight",
-            tone === "warning" && "text-amber-500",
-            tone === "danger" && "text-red-500",
+            tone === "warning" && "text-warning",
+            tone === "danger" && "text-destructive-strong",
           )}
         >
           {shownValue}
@@ -121,7 +121,7 @@ export function StatCard({
               "mb-1 inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-medium",
               delta >= 0
                 ? "bg-accent-teal/15 text-accent-teal-strong"
-                : "bg-red-500/15 text-red-500",
+                : "bg-destructive/12 text-destructive-strong",
             )}
           >
             {delta >= 0 ? (

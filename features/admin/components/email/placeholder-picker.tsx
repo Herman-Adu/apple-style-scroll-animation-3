@@ -142,7 +142,7 @@ export function PlaceholderWarning({ value, onChange }: { value: string; onChang
   return (
     <ul className="flex flex-col gap-1" aria-live="polite">
       {unknown.map(({ key, suggestion }) => (
-        <li key={key} className="flex flex-wrap items-center gap-1.5 text-xs text-amber-500">
+        <li key={key} className="flex flex-wrap items-center gap-1.5 text-xs text-warning">
           <TriangleAlert className="size-3.5 shrink-0" aria-hidden="true" />
           <span>
             <code className="font-mono">{placeholderToken(key)}</code> isn&apos;t a known placeholder and will send blank.

@@ -634,7 +634,7 @@ export function TemplateEditor({
             {template.isSystem ? (
               <Badge
                 variant="outline"
-                className="border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                className="border-warning/30 bg-warning/10 text-warning"
               >
                 System
               </Badge>
@@ -1027,7 +1027,7 @@ function SortableBlockRow({
       <div className="flex items-center gap-2 px-3 py-2.5">
         {locked ? (
           <span
-            className="shrink-0 text-amber-600 dark:text-amber-400"
+            className="shrink-0 text-warning"
             title="Locked: can't be moved"
           >
             <Lock className="size-4" aria-hidden="true" />
@@ -1053,7 +1053,7 @@ function SortableBlockRow({
           {locked ? (
             <Badge
               variant="outline"
-              className="shrink-0 border-amber-500/30 bg-amber-500/10 px-1.5 py-0 text-[11px] text-amber-600 dark:text-amber-400"
+              className="shrink-0 border-warning/30 bg-warning/10 px-1.5 py-0 text-[11px] text-warning"
             >
               Locked
             </Badge>
@@ -1070,7 +1070,7 @@ function SortableBlockRow({
               className={cn(
                 "size-7",
                 locked
-                  ? "text-amber-600 dark:text-amber-400"
+                  ? "text-warning"
                   : "text-muted-foreground",
               )}
               onClick={onToggleLock}
@@ -1134,7 +1134,7 @@ function SortableBlockRow({
       {selected ? (
         <div className="flex flex-col gap-3 border-t border-border px-3 py-3">
           {locked ? (
-            <p className="flex items-center gap-2 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+            <p className="flex items-center gap-2 rounded-lg bg-warning/10 px-3 py-2 text-xs text-warning">
               <Lock className="size-3.5 shrink-0" aria-hidden="true" />
               {canLock
                 ? "This block is locked. Unlock it to make changes."

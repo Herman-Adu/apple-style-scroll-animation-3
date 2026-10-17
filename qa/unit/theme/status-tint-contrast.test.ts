@@ -66,7 +66,7 @@ const THEMES: readonly ThemeName[] = ["light", "dark"]
  * fill-plus-tint model for it lives in `destructive-contrast.test.ts`.
  * Asserting it twice would mean two files to keep in step.
  */
-const STATUS_TOKENS = ["success", "warning"] as const
+const STATUS_TOKENS = ["success", "warning", "info"] as const
 
 const themes = readThemes()
 

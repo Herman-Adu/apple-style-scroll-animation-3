@@ -144,7 +144,7 @@ export function DiscountCodeManager({ codesPromise }: { codesPromise: Promise<Di
                             "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
                             inactive
                               ? "border-border bg-foreground/5 text-muted-foreground"
-                              : "border-emerald-500/30 bg-emerald-500/10 text-emerald-500",
+                              : "border-success/30 bg-success/10 text-success",
                           )}
                         >
                           {expired ? "Expired" : exhausted ? "Fully redeemed" : code.active ? "Active" : "Inactive"}
@@ -208,7 +208,7 @@ export function DiscountCodeManager({ codesPromise }: { codesPromise: Promise<Di
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-500 text-white hover:bg-red-600">
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-white hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

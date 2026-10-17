@@ -20,7 +20,7 @@ export function ProductStockBadge({ product: seed }: { product: Product }) {
     level === "out-of-stock"
       ? "bg-destructive/90 text-destructive-foreground"
       : level === "low-stock"
-        ? "bg-amber-500/90 text-black"
+        ? "bg-warning/90 text-background"
         : "bg-foreground/10 text-foreground backdrop-blur-md"
 
   return (

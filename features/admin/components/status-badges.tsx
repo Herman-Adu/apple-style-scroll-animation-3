@@ -4,10 +4,10 @@ import type { OrderStatus } from "@/features/orders"
 import { cn } from "@/lib/utils"
 
 const STOCK_TONE: Record<ReturnType<typeof stockLevel>, string> = {
-  "in-stock": "border-emerald-500/30 bg-emerald-500/10 text-emerald-500",
-  "low-stock": "border-amber-500/30 bg-amber-500/10 text-amber-500",
-  "out-of-stock": "border-red-500/30 bg-red-500/10 text-red-500",
-  preorder: "border-sky-500/30 bg-sky-500/10 text-sky-500",
+  "in-stock": "border-success/30 bg-success/10 text-success",
+  "low-stock": "border-warning/30 bg-warning/10 text-warning",
+  "out-of-stock": "border-destructive/30 bg-destructive/10 text-destructive-strong",
+  preorder: "border-info/30 bg-info/10 text-info",
   "coming-soon": "border-border bg-foreground/5 text-muted-foreground",
 }
 
@@ -26,10 +26,10 @@ export function StockBadge({ product }: { product: Product }) {
 }
 
 const ORDER_TONE: Record<OrderStatus, string> = {
-  processing: "border-amber-500/30 bg-amber-500/10 text-amber-500",
-  fulfilled: "border-emerald-500/30 bg-emerald-500/10 text-emerald-500",
+  processing: "border-warning/30 bg-warning/10 text-warning",
+  fulfilled: "border-success/30 bg-success/10 text-success",
   cancelled: "border-border bg-foreground/5 text-muted-foreground",
-  refunded: "border-red-500/30 bg-red-500/10 text-red-500",
+  refunded: "border-destructive/30 bg-destructive/10 text-destructive-strong",
 }
 
 const ORDER_LABEL: Record<OrderStatus, string> = {

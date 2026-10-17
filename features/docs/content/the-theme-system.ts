@@ -218,7 +218,7 @@ export const theThemeSystem: Doc = {
       type: "callout",
       variant: "tip",
       title: "Adding a token is a three-line change",
-      text: "Add the field to ThemeTokens, map it in buildThemeCss, and consume the CSS variable in globals.css. A token that is a function of another one is derived in buildThemeCss instead, the way --accent-teal-strong is, so a client editing the accent cannot leave it behind. Because every surface reads variables, nothing else needs editing — the new token themes the whole app the moment it's emitted.",
+      text: "Add the field to ThemeTokens, map it in buildThemeCss, and consume the CSS variable in globals.css. A token that is a function of another one is derived in buildThemeCss instead, the way --accent-teal-strong is, so a client editing the accent cannot leave it behind. Because every surface reads variables, nothing else needs editing — the new token themes the whole app the moment it's emitted. That is the brand layer, and it is not the whole palette: the status colours (--success, --warning, --info and the --destructive pair) live only in globals.css, are not fields on ThemeTokens, and a client switching template cannot repaint them. So a status token is written once per scheme and measured against the page surfaces, while a brand token has to be measured against whatever accent the database happens to hold.",
     },
     {
       type: "heading",

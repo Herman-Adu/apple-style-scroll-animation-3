@@ -46,8 +46,8 @@ export type SubscriberItem = {
 
 const STATUS_STYLES: Record<string, string> = {
   draft: "border-border bg-muted text-muted-foreground",
-  sending: "border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  sent: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  sending: "border-info/30 bg-info/10 text-info",
+  sent: "border-success/30 bg-success/10 text-success",
 }
 
 function fmt(d: string | Date) {

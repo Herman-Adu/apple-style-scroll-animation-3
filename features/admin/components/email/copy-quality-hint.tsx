@@ -30,7 +30,7 @@ export function CopyQualityHint({
         {flags.map((f) => (
           <span
             key={f.label}
-            className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-amber-600 dark:text-amber-400"
+            className="inline-flex items-center gap-1 rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-warning"
             title={`"${f.match}" can trigger spam filters or read as spammy`}
           >
             <AlertTriangle className="size-3" aria-hidden />
@@ -42,7 +42,7 @@ export function CopyQualityHint({
         className={cn(
           "shrink-0 tabular-nums",
           tone === "ok" && "text-muted-foreground",
-          tone === "warn" && "text-amber-600 dark:text-amber-400",
+          tone === "warn" && "text-warning",
           tone === "over" && "text-destructive-strong",
         )}
       >

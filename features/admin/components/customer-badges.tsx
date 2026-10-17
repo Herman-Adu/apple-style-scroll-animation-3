@@ -3,8 +3,8 @@ import type { OfferTag, UserRole, UserStatus } from "@/lib/auth/domain/types"
 import { isOfferActive, offerDaysLeft } from "@/features/checkout"
 
 const STATUS_TONE: Record<UserStatus, string> = {
-  active: "border-emerald-500/30 bg-emerald-500/10 text-emerald-500",
-  blocked: "border-red-500/30 bg-red-500/10 text-red-500",
+  active: "border-success/30 bg-success/10 text-success",
+  blocked: "border-destructive/30 bg-destructive/10 text-destructive-strong",
 }
 
 export function CustomerStatusBadge({ status = "active" }: { status?: UserStatus }) {
@@ -35,7 +35,7 @@ export function RoleBadge({ role, owner = false }: { role: UserRole; owner?: boo
       </span>
       {owner ? (
         <span
-          className="inline-flex items-center rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-xs font-medium text-amber-400"
+          className="inline-flex items-center rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-xs font-medium text-warning"
           title="Platform owner (super-admin)"
         >
           Owner
@@ -95,7 +95,7 @@ export function OfferChip({ offer, onRemove }: { offer: OfferTag; onRemove?: () 
       ) : null}
       {redeemed ? (
         <span
-          className="rounded-full bg-emerald-500/15 px-1.5 py-px text-[10px] font-normal text-emerald-500 no-underline"
+          className="rounded-full bg-success/10 px-1.5 py-px text-[10px] font-normal text-success no-underline"
           title={offer.redeemedAt ? `Last used ${new Date(offer.redeemedAt).toLocaleDateString()}` : undefined}
         >
           used{(offer.redemptionCount ?? 0) > 1 ? ` ${offer.redemptionCount}×` : ""}

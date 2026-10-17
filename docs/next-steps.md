@@ -14,15 +14,17 @@ session's prompt. Nothing else needs to restate a sprint.
 
 ## Current handoff snapshot (Oct 17, 2026)
 
-- `main` is at S71: PR #237, merge SHA `6f0a8e7`. The availability row a buyer
-  reads on a product page moved off three raw Tailwind literals onto `--warning`
-  and `--success`, and light `--warning` was deepened `0.72` -> `0.50` to clear
-  AA as text. `qa/unit/theme/palette-literals.test.ts` now refuses raw palette
-  literals outright and holds the remaining **127 in 24 files** as a ratchet
-  that may only fall. PR #237 is the full account.
-- **Green on S71's tree:** tsc, lint, `pnpm arch` (no regressions), unit 1913,
-  integration 83, smoke 31, seo 19, axe 43, `pnpm build`, and all 73 exports
-  re-rendered.
+- `main` is at S72: PR #238, merge SHA `PENDING` until the squash lands (fill it
+  from `git log --oneline -1 origin/main` in the next sprint). 19 raw Tailwind
+  palette literals in eight buyer-facing files moved onto tokens measured for
+  the surface each is drawn on; the ratchet in
+  `qa/unit/theme/palette-literals.test.ts` holds the remaining **108 in 17
+  files**, all admin and email. `docs/next-steps.md` was split: the merge
+  history lives in `docs/sprint-ledger.md` and this file is 92% shorter.
+  PR #238 is the full account.
+- **Green on S72's tree:** tsc, lint, `pnpm arch` (no regressions), unit 1933,
+  integration 83, smoke 33, seo 19, axe 43, `pnpm build`, `pnpm facts`, and all
+  73 exports re-rendered.
 - **Architecture metrics, stable:** `deepImports 0`, `libToFeatures 0`,
   `routePropDrilling 0`, `useEffect 32`, `anyTypes 0`, `incrementers 3`,
   `clientComponents 150`, `largeFiles 21`. Baseline before the R-series: deep
@@ -38,7 +40,8 @@ session's prompt. Nothing else needs to restate a sprint.
   a spec only when its path contains `smoke/`, `axe/` or `seo/`, and the
   `app-identity` setup project every other project depends on lives in
   `qa/config/setup/`. So a run of 31/19/43 and a snapshot of 30/18/42 are both
-  right. Do not "fix" either.
+  right. Do not "fix" either; the convention is written down in
+  `.agents/skills/sprint-workflow/` step 3 since S72.
 - Template handover is the active posture (`docs/template-handover.md`), not
   in-repo production go-live.
 
@@ -50,8 +53,9 @@ Paste nothing. A fresh terminal reads this block and begins.
   prompt and it carries the scope, the measurements already taken and the
   corrections owed. It is written as part of the sprint's own PR, so it is never
   something to ask a finished session to compose.
-- **State.** `main` is at S71 (#237, `6f0a8e7`) plus whatever the current sprint
-  adds. The counts and metrics above are S71's. The domain follows `main` by
+- **State.** `main` is at S72 (#238) plus whatever the current sprint adds. The
+  counts and metrics above are S72's, and S72's own merge SHA is owed in the
+  ledger - a PR cannot record its own squash commit. The domain follows `main` by
   itself - do not check it, do not offer to promote. Stripe stays in test mode;
   there is no go-live.
 - **Vercel preview builds are the owner's call and he has made it twice in one
@@ -75,6 +79,11 @@ Paste nothing. A fresh terminal reads this block and begins.
   page type has instances, walk to the instance that renders the state rather
   than naming a slug an admin can change, and `curl` the page to confirm the
   element is in the HTML before writing any assertion about it.
+- **A page's states are part of its coverage, not just its routes.** S72's two
+  literal sites on `/contact` were a success panel and validation lines behind a
+  `touched` flag - neither on screen at rest, so no scan of that route could
+  ever have measured them. Drive the state, and keep the at-rest check beside it
+  as the proof the driven one is needed.
 - **Treat a token, a guard or a proposed fix you are about to adopt at face
   value as evidence you have not measured yet**, exactly as you would a number.
   S71's handoff handed over a token (`--warning`) and a shape (S67's two-token

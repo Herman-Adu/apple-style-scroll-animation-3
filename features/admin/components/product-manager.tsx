@@ -192,7 +192,7 @@ export function ProductManager({ demandPromise }: { demandPromise: Promise<Waiti
                         <button
                           type="button"
                           onClick={() => openEdit(product)}
-                          className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent-teal/10 hover:text-accent-teal"
+                          className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent-teal/10 hover:text-accent-teal-strong"
                           aria-label={`Edit ${product.name}`}
                         >
                           <Pencil className="size-4" aria-hidden />

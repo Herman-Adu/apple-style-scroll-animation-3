@@ -28,7 +28,7 @@ export function OfferBanner() {
     <div className="relative border-b border-foreground/10 bg-background/80 text-foreground backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-center gap-x-3 px-12 py-2 text-sm">
         <span className="flex items-center gap-2">
-          <span className="flex size-5 items-center justify-center rounded-full bg-accent-teal/15 text-accent-teal">
+          <span className="flex size-5 items-center justify-center rounded-full bg-accent-teal/15 text-accent-teal-strong">
             <Sparkles className="size-3" strokeWidth={2} aria-hidden />
           </span>
           <span className="rounded-full bg-accent-teal px-2 py-0.5 text-xs font-bold tracking-wide text-background">
@@ -59,7 +59,7 @@ export function OfferBanner() {
         type="button"
         onClick={() => setDismissed(true)}
         aria-label="Dismiss offer"
-        className="absolute right-3 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent-teal/12 hover:text-accent-teal"
+        className="absolute right-3 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent-teal/12 hover:text-accent-teal-strong"
       >
         <X className="size-3.5" />
       </button>

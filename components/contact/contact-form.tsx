@@ -327,7 +327,7 @@ export function ContactForm() {
                         className={cn(
                           "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors",
                           selected
-                            ? "bg-accent-teal/15 text-accent-teal"
+                            ? "bg-accent-teal/15 text-accent-teal-strong"
                             : "bg-foreground/5 text-foreground/70 group-hover/topic:bg-accent-teal/15 group-hover/topic:text-accent-teal",
                         )}
                       >

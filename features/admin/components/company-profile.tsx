@@ -348,7 +348,7 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent-teal/12 text-accent-teal ring-1 ring-accent-teal/25">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent-teal/12 text-accent-teal-strong ring-1 ring-accent-teal/25">
         <Icon className="size-4" strokeWidth={1.5} />
       </span>
       <div>

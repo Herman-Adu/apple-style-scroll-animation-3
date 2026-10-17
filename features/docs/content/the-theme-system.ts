@@ -10,7 +10,7 @@ export const theThemeSystem: Doc = {
     "How brand identity became a single source of truth: a library of named theme templates in the StoreSettings.theme JSON column, one active at a time, resolved server-side and injected as CSS variables after globals.css so the storefront, admin, and email all re-theme with zero per-component edits and no flash on first paint.",
   readingMinutes: 10,
   order: 6,
-  updatedAt: "2026-10-15",
+  updatedAt: "2026-10-17",
   tags: ["theme", "branding", "css variables", "ssr", "prisma", "architecture"],
   body: [
     {
@@ -50,6 +50,13 @@ export const theThemeSystem: Doc = {
         "  gradientFrom?: string // whole-title gradient start",
         "  gradientTo?: string   // whole-title gradient end",
         "}",
+        "",
+        "// --accent-teal-strong is emitted too, but is not a field here: it is",
+        "// derived from `accent` per scheme by accentStrong(), 0.06 darker on",
+        "// light and the accent itself on dark. It is the colour for accent words",
+        "// sitting on a tint of the accent, where the accent cannot clear AA on",
+        "// its own tint. Deriving it rather than storing it is what keeps a",
+        "// client's custom accent readable without them picking a second colour.",
       ].join("\n"),
     },
     {
@@ -80,7 +87,7 @@ export const theThemeSystem: Doc = {
         "  end",
         "  subgraph Client[Rendered document]",
         "    STYLE[inline style#brand-theme after globals.css]",
-        "    VARS[--accent-teal / --accent-teal-muted / --brand-gradient-*]",
+        "    VARS[--accent-teal / --accent-teal-strong / --accent-teal-muted / --brand-gradient-*]",
         "  end",
         "  SS --> NORM --> ACT --> CSS --> STYLE --> VARS",
         "  VARS --> SF[Storefront components]",
@@ -98,7 +105,7 @@ export const theThemeSystem: Doc = {
         { title: "normalizeThemeState(value)", text: "Coerces the unknown JSON value (or a missing column) into a valid ThemeState, falling back to DEFAULT_THEME_STATE. Nothing downstream ever sees a malformed theme." },
         { title: "getActiveTheme(state)", text: "Returns the live template — the active id, else the first template, else the built-in Titanium Teal. Always total." },
         { title: "resolveTokens(theme, scheme)", text: "Merges base tokens with the per-scheme (light/dark) override, and derives gradient endpoints from accents when not set explicitly." },
-        { title: "buildThemeCss(theme)", text: "Emits `:root { … }` (light) and `.dark { … }` blocks overriding the accent/gradient variables. Rendered as an inline <style> after globals.css so it wins the cascade." },
+        { title: "buildThemeCss(theme)", text: "Emits `:root { … }` (light) and `.dark { … }` blocks overriding the accent/gradient variables, including the derived --accent-teal-strong. Rendered as an inline <style> after globals.css so it wins the cascade." },
       ],
     },
     {
@@ -211,7 +218,7 @@ export const theThemeSystem: Doc = {
       type: "callout",
       variant: "tip",
       title: "Adding a token is a three-line change",
-      text: "Add the field to ThemeTokens, map it in buildThemeCss, and consume the CSS variable in globals.css. Because every surface reads variables, nothing else needs editing — the new token themes the whole app the moment it's emitted.",
+      text: "Add the field to ThemeTokens, map it in buildThemeCss, and consume the CSS variable in globals.css. A token that is a function of another one is derived in buildThemeCss instead, the way --accent-teal-strong is, so a client editing the accent cannot leave it behind. Because every surface reads variables, nothing else needs editing — the new token themes the whole app the moment it's emitted.",
     },
     {
       type: "heading",

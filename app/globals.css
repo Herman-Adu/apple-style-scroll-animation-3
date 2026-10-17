@@ -49,6 +49,16 @@
      light-theme axe pass added in S66 found on five routes at once. The two
      tones stay a tone apart so the brand gradient is still a gradient. */
   --accent-teal: oklch(0.51 0.09 197);
+  /* The text role, for accent words sitting on a tint of the accent itself -
+     the chips, the open menu item, the docs filter pills. The fill role above
+     cannot do this job: it reads 4.80:1 on --muted, so `bg-accent-teal/10`
+     already drags it to 4.20:1 and `/15` to 3.92:1, and no alpha a designer
+     would accept clears AA on that surface. Same hue and chroma, 0.06 darker;
+     4.65:1 on the worst tint in the tree and 6.11:1 on the surfaces. Held by
+     qa/unit/theme/accent-tint-contrast.test.ts. 0.06 is also what the two
+     alternate presets need, which is why `buildThemeCss` derives this token
+     with the same drop instead of emitting a constant. */
+  --accent-teal-strong: oklch(0.45 0.09 197);
   --accent-teal-muted: oklch(0.45 0.08 198);
   /* Whole-title gradient (heading style "gradient"); defaults to the two tones. */
   --brand-gradient-from: var(--accent-teal);
@@ -138,6 +148,13 @@
   --input: oklch(0.2 0 0);
   --ring: oklch(0.4 0 0);
   --accent-teal: oklch(0.74 0.086 195);
+  /* Deliberately the accent itself. Unlike --destructive-strong, this role does
+     not pull apart on dark: the accent reads 6.34:1 on its own worst tint and
+     8.84:1 on --muted, so there is no second value to justify. It is declared
+     rather than left to fall back, because `buildThemeCss` emits this token per
+     scheme from the client's own accent and a missing dark line would paint the
+     light theme's darker teal on a black page. */
+  --accent-teal-strong: oklch(0.74 0.086 195);
   --accent-teal-muted: oklch(0.62 0.07 197);
   --brand-gradient-from: var(--accent-teal);
   --brand-gradient-to: var(--accent-teal-muted);
@@ -180,6 +197,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-accent-teal: var(--accent-teal);
+  --color-accent-teal-strong: var(--accent-teal-strong);
   --color-accent-teal-muted: var(--accent-teal-muted);
   --color-success: var(--success);
   --color-warning: var(--warning);

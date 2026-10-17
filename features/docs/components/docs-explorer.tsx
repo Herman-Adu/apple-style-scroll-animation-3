@@ -219,7 +219,7 @@ function AudienceTabs({
   if (!showTabs) return <div />
 
   const base = "rounded-full border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] transition-colors"
-  const activeClass = "border-accent-teal/50 bg-accent-teal/10 text-accent-teal"
+  const activeClass = "border-accent-teal/50 bg-accent-teal/10 text-accent-teal-strong"
   const idleClass = "border-foreground/15 text-muted-foreground hover:border-foreground/40 hover:text-foreground"
 
   return (

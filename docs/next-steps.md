@@ -14,16 +14,18 @@ session's prompt. Nothing else needs to restate a sprint.
 
 ## Current handoff snapshot (Oct 17, 2026)
 
-- `main` is at S72: PR #238, merge SHA `PENDING` until the squash lands (fill it
-  from `git log --oneline -1 origin/main` in the next sprint). 19 raw Tailwind
-  palette literals in eight buyer-facing files moved onto tokens measured for
-  the surface each is drawn on; the ratchet in
-  `qa/unit/theme/palette-literals.test.ts` holds the remaining **108 in 17
-  files**, all admin and email. `docs/next-steps.md` was split: the merge
-  history lives in `docs/sprint-ledger.md` and this file is 92% shorter.
-  PR #238 is the full account.
-- **Green on S72's tree:** tsc, lint, `pnpm arch` (no regressions), unit 1933,
-  integration 83, smoke 33, seo 19, axe 43, `pnpm build`, `pnpm facts`, and all
+- `main` is at S73: PR #239, merge SHA `PENDING` until the squash lands (fill it
+  from `git log --oneline -1 origin/main` in the next sprint). S72's SHA is
+  filled in: `ed6d9a5`. The brand accent's text role split out as
+  `--accent-teal-strong` and **52 sites in 28 files** moved onto it, because
+  light `--accent-teal` reads 4.80:1 on `--muted` and a tint of itself eats all
+  0.30 of that headroom - so no alpha clears AA and S72's answer was not
+  available. The token is **derived per scheme by `accentStrong()`**, not a
+  constant, since `buildThemeCss` paints the accent from `StoreSettings.theme`
+  and a frozen text role would put teal words on an amber chip. PR #239 is the
+  full account.
+- **Green on S73's tree:** tsc, lint, `pnpm arch` (no regressions), unit 1949,
+  integration 83, smoke 33, seo 19, axe 47, `pnpm build`, `pnpm facts`, and all
   73 exports re-rendered.
 - **Architecture metrics, stable:** `deepImports 0`, `libToFeatures 0`,
   `routePropDrilling 0`, `useEffect 32`, `anyTypes 0`, `incrementers 3`,
@@ -53,8 +55,8 @@ Paste nothing. A fresh terminal reads this block and begins.
   prompt and it carries the scope, the measurements already taken and the
   corrections owed. It is written as part of the sprint's own PR, so it is never
   something to ask a finished session to compose.
-- **State.** `main` is at S72 (#238) plus whatever the current sprint adds. The
-  counts and metrics above are S72's, and S72's own merge SHA is owed in the
+- **State.** `main` is at S73 (#239) plus whatever the current sprint adds. The
+  counts and metrics above are S73's, and S73's own merge SHA is owed in the
   ledger - a PR cannot record its own squash commit. The domain follows `main` by
   itself - do not check it, do not offer to promote. Stripe stays in test mode;
   there is no go-live.
@@ -78,7 +80,12 @@ Paste nothing. A fresh terminal reads this block and begins.
   URL and that is `momo-x`, the pre-order, where neither amber renders. When a
   page type has instances, walk to the instance that renders the state rather
   than naming a slug an admin can change, and `curl` the page to confirm the
-  element is in the HTML before writing any assertion about it.
+  element is in the HTML before writing any assertion about it. **S73 found the
+  same mistake one layer down, at the component.** Two navs on `/docs` ship the
+  identical `bg-accent-teal/10 text-accent-teal-strong` pair, and the new spec
+  reached for the category filter when the one rendered at rest is the audience
+  filter - behind a tolerant `isVisible().catch(() => false)` that reported
+  green while measuring nothing. Assert the element, never probe for it.
 - **A page's states are part of its coverage, not just its routes.** S72's two
   literal sites on `/contact` were a success panel and validation lines behind a
   `touched` flag - neither on screen at rest, so no scan of that route could
@@ -87,7 +94,21 @@ Paste nothing. A fresh terminal reads this block and begins.
 - **Treat a token, a guard or a proposed fix you are about to adopt at face
   value as evidence you have not measured yet**, exactly as you would a number.
   S71's handoff handed over a token (`--warning`) and a shape (S67's two-token
-  split); both were plausible and both were wrong on the tree.
+  split); both were plausible and both were wrong on the tree. **The repo's own
+  precedent is a claim too.** S73's shape looked settled - S72 had just fixed
+  this exact pattern by lowering the alpha - and measuring the headroom first
+  showed that answer was unavailable at any alpha, because the accent had 0.30
+  to spare and its own tint spends all of it. Measure the constraint, then pick
+  the shape; a fix that worked last sprint is not evidence about this one.
+- **A token the database paints must be derived, not duplicated.**
+  `buildThemeCss` emits the accent out of `StoreSettings.theme`, so any token
+  measured *against* the accent has to be a function of whichever accent is
+  live - a constant in `app/globals.css` is correct only for the default theme
+  and silently wrong for every client who picks their own. S73's `accentStrong()`
+  is the shape: derive it, hold the derivation against every preset, and keep
+  the margin honest. There is none spare - the drop clears `/20` and fails at
+  `/21`, which is exactly the markup's maximum, so two guards close from both
+  ends rather than one guard claiming comfort it does not have.
 - **At the end of the sprint,** rewrite this block and the snapshot above as
   part of the closeout, in the sprint's own PR, and write the next brief into
   `docs/hand-off/`.

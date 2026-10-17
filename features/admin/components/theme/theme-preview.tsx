@@ -52,7 +52,7 @@ export function ThemePreview({ theme, className }: { theme: ThemeTemplate; class
           >
             Pre-order
           </button>
-          <span className="rounded-full border border-accent-teal/40 bg-accent-teal/12 px-3 py-1 text-xs font-medium text-accent-teal">
+          <span className="rounded-full border border-accent-teal/40 bg-accent-teal/12 px-3 py-1 text-xs font-medium text-accent-teal-strong">
             Active filter
           </span>
         </div>

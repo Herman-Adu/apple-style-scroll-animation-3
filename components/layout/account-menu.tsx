@@ -131,7 +131,7 @@ export function AccountMenu({ chromeText, chromeHover }: AccountMenuProps) {
                       {displayName}
                     </span>
                     {user.role === "admin" && (
-                      <span className="shrink-0 rounded-full bg-accent-teal/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-teal">
+                      <span className="shrink-0 rounded-full bg-accent-teal/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-teal-strong">
                         Admin
                       </span>
                     )}
@@ -194,8 +194,8 @@ function MenuLink({
       className={cn(
         "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
         active
-          ? "bg-accent-teal/10 text-accent-teal"
-          : "text-foreground/80 hover:bg-accent-teal/10 hover:text-accent-teal",
+          ? "bg-accent-teal/10 text-accent-teal-strong"
+          : "text-foreground/80 hover:bg-accent-teal/10 hover:text-accent-teal-strong",
       )}
     >
       {icon}

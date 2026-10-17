@@ -27,7 +27,7 @@ export function RoleBadge({ role, owner = false }: { role: UserRole; owner?: boo
         className={cn(
           "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium capitalize",
           role === "admin"
-            ? "border-accent-teal/30 bg-accent-teal/10 text-accent-teal"
+            ? "border-accent-teal/30 bg-accent-teal/10 text-accent-teal-strong"
             : "border-border bg-foreground/5 text-muted-foreground",
         )}
       >
@@ -78,7 +78,7 @@ export function OfferChip({ offer, onRemove }: { offer: OfferTag; onRemove?: () 
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border py-0.5 pl-2.5 pr-1 text-xs font-medium",
         active
-          ? "border-accent-teal/30 bg-accent-teal/10 text-accent-teal"
+          ? "border-accent-teal/30 bg-accent-teal/10 text-accent-teal-strong"
           : "border-border bg-foreground/5 text-muted-foreground line-through",
       )}
     >
@@ -109,7 +109,7 @@ export function OfferChip({ offer, onRemove }: { offer: OfferTag; onRemove?: () 
           className={cn(
             "flex size-4 items-center justify-center rounded-full no-underline transition-colors",
             active
-              ? "text-accent-teal-muted hover:bg-accent-teal/20 hover:text-accent-teal"
+              ? "text-accent-teal-muted hover:bg-accent-teal/20 hover:text-accent-teal-strong"
               : "text-muted-foreground hover:bg-foreground/10 hover:text-foreground",
           )}
         >

@@ -69,8 +69,8 @@ function NavLeaf({
             ? ""
             : "px-3 py-2",
         active
-          ? "bg-accent-teal/12 text-accent-teal"
-          : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
+          ? "bg-accent-teal/12 text-accent-teal-strong"
+          : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal-strong",
       )}
     >
       {active && !collapsed ? (
@@ -143,8 +143,8 @@ function NavGroup({
                 className={cn(
                   "block rounded-lg px-2 py-1.5 text-sm transition-colors",
                   childActive
-                    ? "bg-accent-teal/12 text-accent-teal"
-                    : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
+                    ? "bg-accent-teal/12 text-accent-teal-strong"
+                    : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal-strong",
                 )}
               >
                 {child.label}
@@ -168,7 +168,7 @@ function NavGroup({
           size === "large" ? "px-3 py-3 text-base" : "px-3 py-2 text-sm",
           parentActive
             ? "text-accent-teal"
-            : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
+            : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal-strong",
         )}
       >
         {parentActive ? (
@@ -218,8 +218,8 @@ function NavGroup({
                         "block rounded-lg px-3 py-1.5 transition-colors",
                         size === "large" ? "text-sm" : "text-[13px]",
                         childActive
-                          ? "bg-accent-teal/12 font-medium text-accent-teal"
-                          : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal",
+                          ? "bg-accent-teal/12 font-medium text-accent-teal-strong"
+                          : "text-muted-foreground hover:bg-accent-teal/12 hover:text-accent-teal-strong",
                       )}
                     >
                       {child.label}
@@ -306,7 +306,7 @@ function SidebarBody({
         {collapsed ? (
           <Link
             href="/admin"
-            className="flex size-9 items-center justify-center rounded-lg bg-accent-teal/15 text-sm font-bold text-accent-teal ring-1 ring-accent-teal/30"
+            className="flex size-9 items-center justify-center rounded-lg bg-accent-teal/15 text-sm font-bold text-accent-teal-strong ring-1 ring-accent-teal/30"
             aria-label="MOMO admin"
           >
             M
@@ -316,7 +316,7 @@ function SidebarBody({
             <Link href="/admin" className="text-sm font-bold tracking-[0.35em]">
               MOMO
             </Link>
-            <span className="rounded-sm border border-accent-teal/30 bg-accent-teal/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-accent-teal">
+            <span className="rounded-sm border border-accent-teal/30 bg-accent-teal/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-accent-teal-strong">
               Admin
             </span>
           </>
@@ -453,7 +453,7 @@ function AdminMobileNav({
                 >
                   MOMO
                 </Link>
-                <span className="rounded-sm border border-accent-teal/30 bg-accent-teal/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-accent-teal">
+                <span className="rounded-sm border border-accent-teal/30 bg-accent-teal/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-accent-teal-strong">
                   Admin
                 </span>
               </span>

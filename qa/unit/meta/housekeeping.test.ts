@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  APP_PORT,
   PROTECTED,
   REGENERABLE,
   currentSessionPid,
+  describePortUse,
   isSafeToDelete,
   staleSessions,
 } from "@/scripts/lib/housekeeping.mjs";
@@ -160,6 +162,69 @@ describe("currentSessionPid", () => {
       now,
     });
     expect(stale.map((s) => s.pid)).toEqual([777]);
+  });
+});
+
+/**
+ * From S70's retro: a `next dev` left over from an earlier session held 3000,
+ * a product page answered 500 from three-sprint-old code, and Playwright's
+ * `webServer` would have run the browser gate against that server rather than
+ * this tree. `pnpm health` looked at memory, output and sessions and not at the
+ * one piece of state that decides what the gate measures.
+ */
+describe("describePortUse", () => {
+  it("says the port is free when nothing holds it", () => {
+    expect(describePortUse([])).toEqual([`Port ${APP_PORT} is free.`]);
+    expect(describePortUse(undefined)).toEqual([`Port ${APP_PORT} is free.`]);
+  });
+
+  it("names the pid, because that is the only part a human can act on", () => {
+    const lines = describePortUse([{ port: APP_PORT, pid: 1234, name: "node.exe", ageHours: 9 }]);
+    expect(lines.join("\n")).toContain("pid 1234");
+    expect(lines.join("\n")).toContain("node.exe");
+    expect(lines.join("\n")).toContain("9h old");
+  });
+
+  it("explains what a listener costs, not just that there is one", () => {
+    // The report exists to stop ten minutes going into a stale page, so the
+    // reason has to travel with it.
+    const lines = describePortUse([{ port: APP_PORT, pid: 1234 }]).join("\n");
+    expect(lines).toContain("Playwright reuses an existing listener");
+    expect(lines).toContain("this tree's build");
+  });
+
+  it("ignores a listener on some other port", () => {
+    expect(describePortUse([{ port: APP_PORT + 1, pid: 1234 }])).toEqual([`Port ${APP_PORT} is free.`]);
+  });
+
+  it("reports every holder, since two servers on one port is the confusing case", () => {
+    const lines = describePortUse([
+      { port: APP_PORT, pid: 1 },
+      { port: APP_PORT, pid: 2 },
+    ]).join("\n");
+    expect(lines).toContain("2 processes");
+    expect(lines).toContain("pid 1");
+    expect(lines).toContain("pid 2");
+  });
+
+  it("survives a process table that knew nothing about the holder", () => {
+    // The pid comes from netstat and the name and age from a separate table,
+    // which can fail on its own; the port is still worth reporting.
+    const lines = describePortUse([{ port: APP_PORT, pid: 1234 }]).join("\n");
+    expect(lines).toContain("pid 1234");
+    expect(lines).not.toContain("NaN");
+    expect(lines).not.toContain("undefined");
+  });
+
+  it("uses the port the browser gate uses, or it reports about the wrong one", () => {
+    const config = readFileSync(join(REPO_ROOT, "qa/config/playwright.config.mts"), "utf8");
+    expect(config).toContain(`process.env.PORT ?? ${APP_PORT}`);
+  });
+
+  it("is asked by the health script, not only exported", () => {
+    const health = readFileSync(join(REPO_ROOT, "scripts/health.mjs"), "utf8");
+    expect(health).toContain("describePortUse");
+    expect(health).toContain("App port");
   });
 });
 

@@ -165,6 +165,162 @@ for (const theme of THEMES) {
     await scan(page, `cart drawer (${theme})`)
   })
 
+  /**
+   * The availability row on a product detail page, in the low-stock state.
+   *
+   * A product detail page has been scanned here in both themes since before
+   * S66, and it reported nothing about the three raw Tailwind literals S71
+   * found in that row at 1.88-2.46:1 on light. Not because the scan was wrong
+   * - because of which page it got. The route comes from the first
+   * `/products/` URL in the sitemap, and that is `momo-x`, the pre-order:
+   * neither amber renders on it at all. The one state that puts the "Only N
+   * left" line on screen is `momo-studio`, three entries further down, and no
+   * scan had ever opened it.
+   *
+   * That is S67's lesson one turn on. There, the state was unreachable because
+   * the database had no sold-out product. Here the state exists and is served -
+   * `curl /products/momo-studio` has it - and the gate still could not see it,
+   * because a route list picks one instance of a page type and the states live
+   * in the others. So the walk below is the fix, the way pinning the clock made
+   * the "Closed" pill a state the guard always sees: find the product that
+   * renders the state, rather than hoping the first one does.
+   *
+   * It also asserts what axe cannot. `text-warning` is only a class because
+   * `--color-warning` is declared in `@theme inline`; without that line the
+   * utility matches nothing and the text silently inherits `--foreground`,
+   * which is 15.8:1 here - so axe would pass, and pass *because* the fix had
+   * been undone. The computed colour is read back and refused if it is the
+   * inherited one, which is the S67 probe's claim made on real markup.
+   */
+  test(`the low-stock availability row has no violations on ${theme}`, async ({ page, request }) => {
+    const sitemap = await (await request.get("/sitemap.xml")).text()
+    const products = [...sitemap.matchAll(/<loc>([^<]*\/products\/[^<]+)<\/loc>/g)].map(
+      (match) => new URL(match[1]).pathname,
+    )
+    expect(products.length, "product URLs in sitemap").toBeGreaterThan(0)
+
+    await prepare(page, theme)
+
+    // Which product is low on stock is the admin's business and the database's,
+    // so it is found rather than named. Walking also means this fails loudly
+    // when no product is low any more, instead of scanning a page that renders
+    // the row in some other colour and reporting it green.
+    let found: { path: string; label: string } | null = null
+    let line = page.locator("never")
+    for (const path of products) {
+      await page.goto(path, { waitUntil: "networkidle" })
+      // The availability row, not the listing badge: both render "Only N left"
+      // from the same `stockLabel`, and the badge is the one with `text-black`
+      // on an amber fill, which reads 10.45:1 and is a different surface. The
+      // row is addressed by its shape - the words directly after the
+      // aria-hidden dot - and not by the colour class, because the class is
+      // what is under test: anchoring on it would turn "the fix was reverted"
+      // into "no product is low on stock", which is a different and untrue
+      // failure.
+      line = page.locator('span[aria-hidden="true"] + span', { hasText: /^Only \d+ left$/ }).first()
+      if (!(await line.isVisible().catch(() => false))) continue
+      found = { path, label: (await line.textContent()) ?? "" }
+      break
+    }
+    expect(
+      found,
+      `a product rendering "Only N left" among ${products.join(", ")} - the low-stock state is what this scan is for`,
+    ).not.toBeNull()
+
+    await settle(page, theme)
+
+    // The words and the dot beside them, read back as the browser resolved
+    // them. `--warning` is compared through the same `getComputedStyle`, so the
+    // authoring colour space does not have to be parsed on either side.
+    // Normalised through a 1x1 canvas rather than parsed: these tokens are
+    // authored in `oklch()` and Chromium reports them in the space they were
+    // authored in, which a naive `rgb()` comparison reads straight past. The
+    // trick is `qa/axe/destructive-contrast.spec.ts`'s.
+    const painted = await line.evaluate((el: HTMLElement) => {
+      const canvas = document.createElement("canvas")
+      canvas.width = canvas.height = 1
+      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+      const normalise = (value: string) => {
+        ctx.clearRect(0, 0, 1, 1)
+        ctx.fillStyle = "#000"
+        ctx.fillStyle = value
+        ctx.fillRect(0, 0, 1, 1)
+        return Array.from(ctx.getImageData(0, 0, 1, 1).data).join(",")
+      }
+      const root = getComputedStyle(document.documentElement)
+      const dot = el.previousElementSibling
+      return {
+        text: normalise(getComputedStyle(el).color),
+        dot: dot ? normalise(getComputedStyle(dot).backgroundColor) : null,
+        warning: normalise(root.getPropertyValue("--warning").trim()),
+        foreground: normalise(root.getPropertyValue("--foreground").trim()),
+      }
+    })
+
+    expect(painted, "the availability row in the DOM").not.toBeNull()
+    // Refused if the class painted nothing: that is the failure a correct
+    // stylesheet hides from every static guard.
+    expect(painted!.text, `text-warning inherited --foreground: ${JSON.stringify(painted)}`).not.toBe(
+      painted!.foreground,
+    )
+    expect(painted!.text, JSON.stringify(painted)).toBe(painted!.warning)
+    expect(painted!.dot, JSON.stringify(painted)).toBe(painted!.warning)
+
+    await scan(page, `${found!.path} low stock "${found!.label}" (${theme})`)
+  })
+
+  /**
+   * The third literal. `bg-emerald-500` was the in-stock dot at 2.16-2.46:1 on
+   * light, under 1.4.11's 3:1 for a graphical object, and it is on nearly every
+   * product page - including `momo-x`, the one the scan above used to get. axe
+   * never said so and never will: `color-contrast` measures text, and this dot
+   * is 8px and `aria-hidden`. So the floor is held in the unit model, where
+   * `--success` is already measured, and the only question left for a browser
+   * is the S67 one - whether `bg-success` paints that token or silently nothing.
+   */
+  test(`the in-stock dot paints its token on ${theme}`, async ({ page, request }) => {
+    const sitemap = await (await request.get("/sitemap.xml")).text()
+    const products = [...sitemap.matchAll(/<loc>([^<]*\/products\/[^<]+)<\/loc>/g)].map(
+      (match) => new URL(match[1]).pathname,
+    )
+    await prepare(page, theme)
+
+    let dot = page.locator("never")
+    let where = ""
+    for (const path of products) {
+      await page.goto(path, { waitUntil: "networkidle" })
+      const row = page.locator('span[aria-hidden="true"] + span', { hasText: /^In stock$/ }).first()
+      if (!(await row.isVisible().catch(() => false))) continue
+      dot = row.locator("xpath=preceding-sibling::span[1]")
+      where = path
+      break
+    }
+    expect(where, `a product rendering "In stock" among ${products.join(", ")}`).not.toBe("")
+    await settle(page, theme)
+
+    const painted = await dot.evaluate((el: HTMLElement) => {
+      const canvas = document.createElement("canvas")
+      canvas.width = canvas.height = 1
+      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+      const normalise = (value: string) => {
+        ctx.clearRect(0, 0, 1, 1)
+        ctx.fillStyle = "#000"
+        ctx.fillStyle = value
+        ctx.fillRect(0, 0, 1, 1)
+        return Array.from(ctx.getImageData(0, 0, 1, 1).data).join(",")
+      }
+      const root = getComputedStyle(document.documentElement)
+      return {
+        fill: normalise(getComputedStyle(el).backgroundColor),
+        success: normalise(root.getPropertyValue("--success").trim()),
+      }
+    })
+
+    // A missing `--color-success` line leaves the fill transparent, which is
+    // the failure no static guard and no axe scan can see.
+    expect(painted.fill, `${where}: ${JSON.stringify(painted)}`).toBe(painted.success)
+  })
+
   test(`the mobile nav has no violations on ${theme}`, async ({ page }) => {
     await prepare(page, theme)
     await page.setViewportSize({ width: 390, height: 844 })

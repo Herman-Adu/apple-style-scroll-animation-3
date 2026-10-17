@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 
 const stockTone: Record<ReturnType<typeof stockLevel>, string> = {
   "in-stock": "text-muted-foreground",
-  "low-stock": "text-amber-500",
+  "low-stock": "text-warning",
   "out-of-stock": "text-destructive-strong",
   preorder: "text-muted-foreground",
   "coming-soon": "text-muted-foreground",
@@ -65,7 +65,8 @@ export function ProductPurchase({ product: seed, soldOutSlot }: { product: Produ
         </div>
       </div>
 
-      {/* Live stock indicator */}
+      {/* Live stock indicator. The dot takes the same token as the words beside
+          it, so the row reads as one colour per state in both themes. */}
       <div className="flex items-center gap-2 text-sm">
         <span
           aria-hidden
@@ -74,8 +75,8 @@ export function ProductPurchase({ product: seed, soldOutSlot }: { product: Produ
             level === "out-of-stock"
               ? "bg-destructive"
               : level === "low-stock"
-                ? "bg-amber-500"
-                : "bg-emerald-500",
+                ? "bg-warning"
+                : "bg-success",
           )}
         />
         <span className={stockTone[level]}>{stockLabel(product)}</span>

@@ -38,3 +38,9 @@ qa/.coverage/
 
 # Plan execution scratch (superpowers ledger/briefs)
 .superpowers/
+
+# The owner's headshot: in the tree only so an agent could see his face while
+# generating banner images, referenced by nothing, and a personal photo in a
+# public repo. The pre-commit hook refuses it by path as well, because
+# .gitignore is silent about why and does not cover `git add -f`.
+public/brand/herman.jpg

@@ -107,6 +107,11 @@ const TOKEN_FLOORS: readonly NamedToken[] = [
     floor: TEXT_FLOOR,
     role: 'the positive status colour - the "Open now" badge reads it as text, so AA for normal text',
   },
+  {
+    token: "warning",
+    floor: TEXT_FLOOR,
+    role: 'the caution status colour - the "Only N left" line on a product page reads it as text, so AA for normal text',
+  },
 ]
 
 describe.each(TOKEN_FLOORS)("--$token", ({ token, floor, role }) => {

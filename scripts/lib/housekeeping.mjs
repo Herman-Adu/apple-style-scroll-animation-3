@@ -37,6 +37,52 @@ export const PROTECTED = [
 const DEFAULT_MAX_AGE_HOURS = 12;
 
 /**
+ * The port the app and the browser gate both use. `qa/config/playwright.config.mts`
+ * reads the same default, and its `webServer` reuses whatever is already
+ * listening - which is the whole reason this is worth reporting.
+ */
+export const APP_PORT = 3000;
+
+/**
+ * What a listener on the app's port means for the next command someone runs.
+ *
+ * From S70's retro. A `next dev` left over from an earlier session was still
+ * holding 3000, so the first `curl` of a product page answered 500 from code
+ * three sprints old, and Playwright - whose `webServer` reuses an existing
+ * listener rather than booting one - would have run the whole browser gate
+ * against that server instead of this tree. Ten minutes went into reading a
+ * stale page before anyone suspected the port. Nothing in the repo said so:
+ * `pnpm health` reported memory, output and sessions, and the one piece of
+ * state that silently decides what the gate measures was the piece it did not
+ * look at.
+ *
+ * Reported, never killed, for the same reason sessions are: a listener on 3000
+ * is usually the dev server someone is deliberately using, and this cannot tell
+ * that from an orphan. The judgement it asks for is not "is this stale" but
+ * "is this *your* build", which only the person can answer.
+ */
+export function describePortUse(listeners, options = {}) {
+  const { port = APP_PORT } = options;
+  const holders = (listeners ?? []).filter((listener) => Number(listener.port) === Number(port));
+  if (holders.length === 0) return [`Port ${port} is free.`];
+
+  const lines = holders.map((holder) => {
+    const name = holder.name ? ` ${holder.name}` : "";
+    const age = Number.isFinite(holder.ageHours) ? `, ${Math.round(holder.ageHours)}h old` : "";
+    return `  pid ${holder.pid}${name}${age}`;
+  });
+
+  return [
+    `Port ${port} is in use by ${holders.length === 1 ? "a process" : `${holders.length} processes`}:`,
+    ...lines,
+    "Playwright reuses an existing listener instead of booting one, so the browser",
+    "gate measures whatever answers here. Confirm it is this tree's build before",
+    "believing anything you read from it, including a curl.",
+    process.platform === "win32" ? "  taskkill /PID <pid> /T /F" : "  kill <pid>",
+  ];
+}
+
+/**
  * True only for an exact entry on the allow-list. Absolute paths, traversal and
  * anything merely ending in a regenerable name are refused, so a caller cannot
  * talk this into deleting `../.next` or `/.next`.

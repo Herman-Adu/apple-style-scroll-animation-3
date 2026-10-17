@@ -68,8 +68,11 @@ Nothing in the repo shows it. Run `pnpm health`. On Oct 9, 2026 it was nine live
 ## CI `app` job fails in about 30s having run no tests
 Read the log before re-running. `toomanyrequests: You have reached your unauthenticated pull rate limit` on `docker pull postgres:16` in "Initialize containers" is Docker Hub's shared-IP limit on GitHub runners, not the branch. `gh run rerun <id> --failed` once, usually on a different runner IP, clears it. Do not loop; each attempt burns quota.
 
+## `pnpm build` fails `EPERM` on `query_engine-windows.dll.node`
+A dev server is running and holding the file, so `prisma generate` cannot rename it. Stop it and build again - `pnpm health` names the pid on port 3000. S71 and S72 both lost a cycle to this, which is why it is written down: the error names Prisma and the cause is the server you started an hour earlier to curl a page.
+
 ## A commit on `main` went through, or the hook never ran
-The hook is tracked in `.githooks/` and only runs once `core.hooksPath` points there, which `postinstall` does - so a clone installed with `--ignore-scripts`, or a worktree added before S53, has no hook and fails open silently. Check with `git config --get core.hooksPath` and run `node scripts/install-hooks.mjs` if it is unset. The refusal itself names `ALLOW_COMMIT_ON_MAIN` for the case you really mean it; staged work is never touched either way.
+The hook is tracked in `.githooks/` and only runs once `core.hooksPath` points there, which `postinstall` does - so a clone installed with `--ignore-scripts`, or a worktree added before S53, has no hook and fails open silently. Check with `git config --get core.hooksPath` and run `node scripts/install-hooks.mjs` if it is unset. The refusal itself names `ALLOW_COMMIT_ON_MAIN` for the case you really mean it; staged work is never touched either way. The forbidden-path rule in the same hook has its own override, `ALLOW_FORBIDDEN_PATHS` - deliberately not the same one, so a decision about committing on `main` cannot also publish a personal photo.
 
 ## A `pnpm <name>` script prints nothing and exits 0
 The name collides with a pnpm built-in, which wins silently. `doctor` is one, which is why the health command is `pnpm health`. `pnpm run <name>` reaches the script, but rename it instead: `qa/unit/meta/housekeeping.test.ts` fails if any script is named after a built-in.

@@ -30,6 +30,18 @@ export const PROTECTED_BRANCHES = ["main"];
  */
 export const OVERRIDE = "ALLOW_COMMIT_ON_MAIN";
 
+/**
+ * The same way out for the path rule, under its own name.
+ *
+ * S71 gave both rules `OVERRIDE`, so setting `ALLOW_COMMIT_ON_MAIN=1` to land
+ * one deliberate commit on `main` also silently permitted the headshot - which
+ * is how S71's retro found it, by using the override to test the branch rule
+ * and watching the photo go through. An override is a decision about the rule
+ * it names; the branch rule's name is the one that is accurate, so the path
+ * rule gets its own rather than the shared one getting a vaguer name.
+ */
+export const PATH_OVERRIDE = "ALLOW_FORBIDDEN_PATHS";
+
 /** Where the tracked hooks live, as `core.hooksPath` is pointed at them. */
 export const HOOKS_DIR = ".githooks";
 
@@ -58,11 +70,13 @@ export const FORBIDDEN_PATHS = ["public/brand/herman.jpg"];
  * Why these staged paths must not be committed, or `null` to let them through.
  *
  * Paths arrive as git prints them, forward-slashed and repo-relative, which is
- * true on Windows too. The same `OVERRIDE` stands aside here as for the branch
- * rule, for the same reason: a hook with no way out gets uninstalled wholesale.
+ * true on Windows too. `PATH_OVERRIDE` - and only it - stands aside here, for
+ * the same reason the branch rule has one: a hook with no way out gets
+ * uninstalled wholesale. `OVERRIDE` deliberately does not, because a decision
+ * about committing on `main` is not a decision about publishing a photo.
  */
 export function refusalForPaths(paths, env = {}) {
-  if (env[OVERRIDE]) return null;
+  if (env[PATH_OVERRIDE]) return null;
 
   const staged = (paths ?? []).filter((path) => FORBIDDEN_PATHS.includes(path));
   if (staged.length === 0) return null;
@@ -78,7 +92,7 @@ export function refusalForPaths(paths, env = {}) {
     "",
     ...staged.map((path) => `    git restore --staged ${path}`),
     "",
-    `If you really mean to commit it, say so: ${OVERRIDE}=1 git commit ...`,
+    `If you really mean to commit it, say so: ${PATH_OVERRIDE}=1 git commit ...`,
   ].join("\n");
 }
 

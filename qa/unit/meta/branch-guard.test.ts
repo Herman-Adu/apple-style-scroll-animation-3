@@ -6,6 +6,7 @@ import {
   FORBIDDEN_PATHS,
   HOOKS_DIR,
   OVERRIDE,
+  PATH_OVERRIDE,
   PROTECTED_BRANCHES,
   refusalFor,
   refusalForPaths,
@@ -69,7 +70,7 @@ describe("committing a forbidden path", () => {
     const refusal = refusalForPaths(["app/globals.css", "public/brand/herman.jpg"]);
     expect(refusal).toContain("public/brand/herman.jpg");
     expect(refusal).toContain("git restore --staged public/brand/herman.jpg");
-    expect(refusal).toContain(OVERRIDE);
+    expect(refusal).toContain(PATH_OVERRIDE);
   });
 
   it("says nothing about the files staged alongside it", () => {
@@ -98,8 +99,30 @@ describe("committing a forbidden path", () => {
     expect(refusalForPaths(undefined)).toBeNull();
   });
 
-  it("stands aside when the override is set, the same way the branch rule does", () => {
-    expect(refusalForPaths(["public/brand/herman.jpg"], { [OVERRIDE]: "1" })).toBeNull();
+  it("stands aside for its own override, which is the deliberate way past it", () => {
+    expect(refusalForPaths(["public/brand/herman.jpg"], { [PATH_OVERRIDE]: "1" })).toBeNull();
+  });
+
+  it("ignores its override set to nothing, the way the branch rule does", () => {
+    expect(refusalForPaths(["public/brand/herman.jpg"], { [PATH_OVERRIDE]: "" })).not.toBeNull();
+  });
+
+  /**
+   * S71 gave both rules the same override, so `ALLOW_COMMIT_ON_MAIN=1` - set to
+   * commit one deliberate thing on `main` - also silently permitted the
+   * headshot. Found in S71's own retro by using the override to test the branch
+   * rule and watching the headshot go through. An override is a decision about
+   * the rule it names; disarming an unrelated rule is not something its name
+   * says, and the branch rule's name is the one that is accurate.
+   */
+  it("is not disarmed by the branch rule's override, which says nothing about paths", () => {
+    const refusal = refusalForPaths(["public/brand/herman.jpg"], { [OVERRIDE]: "1" });
+    expect(refusal).toContain("public/brand/herman.jpg");
+    expect(refusal).toContain(PATH_OVERRIDE);
+  });
+
+  it("names its own override in the refusal, not the branch one", () => {
+    expect(refusalForPaths(["public/brand/herman.jpg"])).not.toContain(OVERRIDE);
   });
 
   it("is carried by .gitignore too, which is the line that stops `git add -A`", () => {

@@ -107,7 +107,7 @@ export function ActivePresets() {
                     </p>
                   </div>
                   {isActive ? (
-                    <span className="flex items-center gap-1 rounded-full bg-accent-teal/15 px-2.5 py-1 text-[11px] font-medium text-accent-teal">
+                    <span className="flex items-center gap-1 rounded-full bg-accent-teal/15 px-2.5 py-1 text-[11px] font-medium text-accent-teal-strong">
                       <Star className="size-3" aria-hidden />
                       Active
                     </span>
@@ -122,7 +122,7 @@ export function ActivePresets() {
                     onClick={() => duplicate(theme)}
                     title="Duplicate"
                     aria-label={`Duplicate ${theme.name}`}
-                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent-teal/12 hover:text-accent-teal"
+                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent-teal/12 hover:text-accent-teal-strong"
                   >
                     <Copy className="size-4" aria-hidden />
                   </button>

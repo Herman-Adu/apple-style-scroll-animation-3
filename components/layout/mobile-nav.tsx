@@ -229,7 +229,7 @@ export function MobileNav({
                               Account
                             </span>
                             {user.role === "admin" && (
-                              <span className="rounded-full bg-accent-teal/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-teal">
+                              <span className="rounded-full bg-accent-teal/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-teal-strong">
                                 Admin
                               </span>
                             )}

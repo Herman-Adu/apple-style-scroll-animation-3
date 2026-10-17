@@ -142,7 +142,7 @@ export function AdminOnboarding() {
             <span className="text-sm font-bold tracking-[0.35em] text-foreground">
               MOMO
             </span>
-            <span className="rounded-sm border border-accent-teal/30 bg-accent-teal/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-accent-teal">
+            <span className="rounded-sm border border-accent-teal/30 bg-accent-teal/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-accent-teal-strong">
               Admin
             </span>
           </span>

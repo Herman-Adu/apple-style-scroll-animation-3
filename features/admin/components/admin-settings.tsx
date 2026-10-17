@@ -85,7 +85,7 @@ export function AdminSettings() {
                 className={cn(
                   "flex flex-col items-center gap-2 rounded-xl border px-3 py-4 text-sm font-medium transition-colors",
                   active
-                    ? "border-accent-teal/40 bg-accent-teal/10 text-accent-teal"
+                    ? "border-accent-teal/40 bg-accent-teal/10 text-accent-teal-strong"
                     : "border-border text-muted-foreground hover:border-foreground/20 hover:text-foreground",
                 )}
               >
@@ -147,7 +147,7 @@ export function AdminSettings() {
                     className={cn(
                       "flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors",
                       active
-                        ? "border-accent-teal/40 bg-accent-teal/10 text-accent-teal"
+                        ? "border-accent-teal/40 bg-accent-teal/10 text-accent-teal-strong"
                         : "border-border text-muted-foreground hover:border-foreground/20 hover:text-foreground",
                     )}
                   >
@@ -261,7 +261,7 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent-teal/12 text-accent-teal ring-1 ring-accent-teal/25">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent-teal/12 text-accent-teal-strong ring-1 ring-accent-teal/25">
         <Icon className="size-4" strokeWidth={1.5} />
       </span>
       <div>

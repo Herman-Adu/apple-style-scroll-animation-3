@@ -85,7 +85,7 @@ export function ThemeTemplatesManager() {
                   onClick={() => setKind(k)}
                   className={cn(
                     "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm capitalize transition-colors",
-                    kind === k ? "bg-accent-teal/15 text-accent-teal" : "text-muted-foreground hover:text-foreground",
+                    kind === k ? "bg-accent-teal/15 text-accent-teal-strong" : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {k === "seasonal" ? <Snowflake className="size-3.5" aria-hidden /> : null}
@@ -123,7 +123,7 @@ export function ThemeTemplatesManager() {
                   </p>
                 </div>
                 {isActive ? (
-                  <span className="rounded-full bg-accent-teal/15 px-2.5 py-1 text-[11px] font-medium text-accent-teal">
+                  <span className="rounded-full bg-accent-teal/15 px-2.5 py-1 text-[11px] font-medium text-accent-teal-strong">
                     Active
                   </span>
                 ) : (
@@ -136,7 +136,7 @@ export function ThemeTemplatesManager() {
                   onClick={() => duplicate(theme)}
                   title="Duplicate"
                   aria-label={`Duplicate ${theme.name}`}
-                  className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent-teal/12 hover:text-accent-teal"
+                  className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent-teal/12 hover:text-accent-teal-strong"
                 >
                   <Copy className="size-4" aria-hidden />
                 </button>

@@ -39,8 +39,8 @@ export function AdminAccountMenu({
 
   const itemClass = (active: boolean) =>
     cn(
-      "gap-3 rounded-xl px-2 py-2.5 focus:bg-accent-teal/10 focus:text-accent-teal",
-      active && "bg-accent-teal/10 text-accent-teal",
+      "gap-3 rounded-xl px-2 py-2.5 focus:bg-accent-teal/10 focus:text-accent-teal-strong",
+      active && "bg-accent-teal/10 text-accent-teal-strong",
     )
 
   const displayName = user.profile.displayName || user.name

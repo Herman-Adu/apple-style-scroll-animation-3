@@ -241,7 +241,7 @@ export function CampaignEditor({
                   className={cn(
                     "flex-1 rounded-xl border px-4 py-3 text-sm font-medium transition-colors disabled:opacity-60",
                     audienceType === o.value
-                      ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal"
+                      ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal-strong"
                       : "border-border text-muted-foreground hover:text-foreground",
                   )}
                 >

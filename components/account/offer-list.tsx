@@ -176,7 +176,7 @@ function OfferCard({
           className={`flex size-11 shrink-0 items-center justify-center rounded-full ${
             spent
               ? "bg-foreground/10 text-muted-foreground"
-              : "bg-accent-teal/15 text-accent-teal"
+              : "bg-accent-teal/15 text-accent-teal-strong"
           }`}
         >
           <Sparkles className="size-5" strokeWidth={1.5} aria-hidden />

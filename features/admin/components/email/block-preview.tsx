@@ -94,7 +94,7 @@ export function EmailPreviewPane({
               className={cn(
                 "flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors",
                 device === "desktop"
-                  ? "bg-accent-teal/10 text-accent-teal"
+                  ? "bg-accent-teal/10 text-accent-teal-strong"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
@@ -109,7 +109,7 @@ export function EmailPreviewPane({
               className={cn(
                 "flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors",
                 device === "mobile"
-                  ? "bg-accent-teal/10 text-accent-teal"
+                  ? "bg-accent-teal/10 text-accent-teal-strong"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >

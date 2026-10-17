@@ -32,7 +32,7 @@ export function DocCategoryFilter({
         className={cn(
           base,
           !active
-            ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal"
+            ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal-strong"
             : "border-foreground/15 text-muted-foreground hover:border-foreground/40 hover:text-foreground",
         )}
       >
@@ -48,7 +48,7 @@ export function DocCategoryFilter({
             className={cn(
               base,
               isActive
-                ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal"
+                ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal-strong"
                 : "border-foreground/15 text-muted-foreground hover:border-foreground/40 hover:text-foreground",
             )}
           >

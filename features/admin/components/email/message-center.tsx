@@ -111,7 +111,7 @@ export function MessageCenter({
       <div className="min-w-0 space-y-6">
         <div className="rounded-2xl border border-border bg-card p-5">
           <div className="mb-4 flex items-center gap-2">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-accent-teal/10 text-accent-teal">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-accent-teal/10 text-accent-teal-strong">
               <Mail className="size-4" aria-hidden />
             </div>
             <div>

@@ -170,7 +170,7 @@ export function TemplateList({ templates }: { templates: TemplateListItem[] }) {
                     key={tpl.id}
                     className="group flex flex-col rounded-2xl border border-border bg-card p-5 transition-colors hover:border-accent-teal/40"
                   >
-                    <div className="flex size-10 items-center justify-center rounded-xl bg-accent-teal/10 text-accent-teal">
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-accent-teal/10 text-accent-teal-strong">
                       <FileText className="size-5" aria-hidden />
                     </div>
 

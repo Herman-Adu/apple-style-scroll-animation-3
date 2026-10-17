@@ -96,7 +96,7 @@ export function StatCard({
             className={cn(
               "flex size-8 items-center justify-center rounded-full",
               accent
-                ? "bg-accent-teal/15 text-accent-teal"
+                ? "bg-accent-teal/15 text-accent-teal-strong"
                 : "bg-foreground/5 text-muted-foreground",
             )}
           >
@@ -120,7 +120,7 @@ export function StatCard({
             className={cn(
               "mb-1 inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-medium",
               delta >= 0
-                ? "bg-accent-teal/15 text-accent-teal"
+                ? "bg-accent-teal/15 text-accent-teal-strong"
                 : "bg-red-500/15 text-red-500",
             )}
           >

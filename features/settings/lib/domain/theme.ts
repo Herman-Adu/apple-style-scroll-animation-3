@@ -217,19 +217,63 @@ function structuredCloneSafe<T>(value: T): T {
 }
 
 /**
+ * How much darker the accent's text role is than the accent itself, per scheme.
+ *
+ * On light the two roles cannot be one token: the accent reads 4.80:1 on
+ * `--muted`, so a tint mixed from it - `bg-accent-teal/10` and up - drags accent
+ * words under AA, and no alpha a designer would accept clears it. 0.06 is the
+ * drop that fixes every preset: titanium-teal needs 0.06, solar-amber 0.05 and
+ * electric-indigo 0.06. On dark the accent clears AA on its own tints with
+ * 1.84 to spare, so the text role is the accent and the drop is nothing.
+ *
+ * The ceiling this buys is exactly the markup's: AA holds to
+ * `bg-accent-teal/20` and fails at `/21` on electric-indigo's light accent.
+ * `qa/unit/theme/accent-tint-contrast.test.ts` is what keeps the markup inside
+ * it, and `theme-preset-contrast.test.ts` holds this rule against every preset.
+ */
+const ACCENT_STRONG_DROP: Record<ColorScheme, number> = { light: 0.06, dark: 0 }
+
+/** The `oklch(L C H)` the presets and the admin's colour form are written in. */
+const OKLCH_LCH = /^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)$/
+
+/**
+ * The text role for accent words on a tint of the accent - derived, not stored.
+ *
+ * It has to be derived because `buildThemeCss` paints `--accent-teal` from the
+ * client's own row, so a constant would be measured against somebody else's
+ * hue. A value this cannot read is returned unchanged rather than guessed at:
+ * the colour forms only ever write `oklch(L C H)`, and a store holding anything
+ * else is already outside what any contrast guard in the repo can model.
+ */
+export function accentStrong(accent: string, scheme: ColorScheme): string {
+  const drop = ACCENT_STRONG_DROP[scheme]
+  if (drop === 0) return accent
+  const match = OKLCH_LCH.exec(accent.trim())
+  if (!match) return accent
+  const lightness = Math.max(0, Number(match[1]) - drop)
+  return `oklch(${Number(lightness.toFixed(3))} ${match[2]} ${match[3]})`
+}
+
+/**
  * Build the CSS that overrides the accent/gradient tokens on :root (light) and
  * .dark. Rendered as an inline <style> after globals.css so the whole app
  * re-themes with no per-component edits, SSR-seeded to avoid any flash.
+ *
+ * The text role is emitted here too, and emitted for both schemes even though
+ * dark's is the accent unchanged: this block wins the cascade, so a scheme left
+ * out would keep whatever the other one set and paint light's darker teal on a
+ * black page.
  */
 export function buildThemeCss(theme: ThemeTemplate): string {
-  const light = resolveTokens(theme, "light")
-  const dark = resolveTokens(theme, "dark")
-  const block = (t: ThemeTokens) =>
+  const block = (t: ThemeTokens, scheme: ColorScheme) =>
     [
       `--accent-teal: ${t.accent};`,
+      `--accent-teal-strong: ${accentStrong(t.accent, scheme)};`,
       `--accent-teal-muted: ${t.accentMuted};`,
       `--brand-gradient-from: ${t.gradientFrom};`,
       `--brand-gradient-to: ${t.gradientTo};`,
     ].join(" ")
-  return `:root { ${block(light)} }\n.dark { ${block(dark)} }`
+  const light = block(resolveTokens(theme, "light"), "light")
+  const dark = block(resolveTokens(theme, "dark"), "dark")
+  return `:root { ${light} }\n.dark { ${dark} }`
 }

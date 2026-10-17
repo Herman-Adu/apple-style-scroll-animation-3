@@ -40,7 +40,7 @@ export function CategoryDisclosure({
             className={cn(
               "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors",
               open
-                ? "border-accent-teal/40 bg-accent-teal/10 text-accent-teal"
+                ? "border-accent-teal/40 bg-accent-teal/10 text-accent-teal-strong"
                 : "border-foreground/10 bg-foreground/[0.03] text-muted-foreground group-hover:text-foreground",
             )}
           >

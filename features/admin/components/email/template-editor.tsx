@@ -1216,7 +1216,7 @@ function AlignField({
             className={cn(
               "flex-1 rounded-lg border px-3 py-1.5 text-sm transition-colors",
               value === o.value
-                ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal"
+                ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal-strong"
                 : "border-border text-muted-foreground hover:text-foreground",
             )}
           >
@@ -1443,7 +1443,7 @@ function BlockFields({
                 className={cn(
                   "flex-1 rounded-lg border px-3 py-1.5 text-sm uppercase transition-colors",
                   block.size === s
-                    ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal"
+                    ? "border-accent-teal/50 bg-accent-teal/10 text-accent-teal-strong"
                     : "border-border text-muted-foreground hover:text-foreground",
                 )}
               >

@@ -22,7 +22,7 @@ export function ContactChannels() {
               rel={external ? "noopener noreferrer" : undefined}
               className="glass backdrop-blur-xl backdrop-saturate-150 flex items-start gap-4 rounded-2xl border p-5 transition-colors hover:border-accent-teal/40"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-teal/10 text-accent-teal">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-teal/10 text-accent-teal-strong">
                 <Icon className="h-5 w-5" strokeWidth={1.5} />
               </span>
               <span className="flex flex-col">

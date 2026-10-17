@@ -93,6 +93,25 @@
      this traffic light, already single and already deep on light.
      Held by qa/unit/theme/muted-text-contrast.test.ts. */
   --warning: oklch(0.5 0.16 75);
+  /* The neutral status colour, and the third family the admin surfaces needed.
+     S74 moved 108 raw Tailwind literals off admin and email onto tokens, and
+     emerald, amber and red already had one - sky did not, so the campaign
+     "Scheduled" and "Draft" tags and the message-centre info rows had nothing
+     to point at. Deep on light for the same reason --success and --warning are:
+     it is read as text. At 0.48 the worst page surface is --muted at 5.36:1 and
+     the `bg-info/10` pill it tints reads 4.65:1 there, which is the same profile
+     --warning runs (5.37:1 and 4.68:1) rather than a value picked to look right.
+     That margin is the whole of it: at /15 the same pill reads 4.32:1 and at /20
+     4.01:1, both under AA - and --success and --warning fail at those alphas
+     too, which is why the three sites that asked for /15 or /20 had their alpha
+     lowered rather than their colour re-pointed: the success pill to /10, and
+     the two destructive ones to /12, the thickest tint that token's own guard
+     models in both themes. One token, not a pair:
+     nothing carries a label on --info, so the 4.5:1 text floor is the only
+     constraint and it is strictly tighter than 1.4.11's 3:1 for the dot beside
+     it. Held by qa/unit/theme/muted-text-contrast.test.ts and, for the pills,
+     qa/unit/theme/status-tint-contrast.test.ts. */
+  --info: oklch(0.48 0.15 237);
   --accent-orange: oklch(0.65 0.16 45);
   /* Cinematic media surfaces — always dark regardless of colour scheme. */
   --media: oklch(0.02 0 0);
@@ -161,6 +180,7 @@
   /* Semantic status colors — order lifecycle affordance (traffic-light system). */
   --success: oklch(0.72 0.17 152);
   --warning: oklch(0.8 0.17 80);
+  --info: oklch(0.76 0.13 237);
   --accent-orange: oklch(0.72 0.17 45);
   --sidebar: oklch(0.05 0 0);
   --sidebar-foreground: oklch(0.95 0 0);
@@ -201,6 +221,7 @@
   --color-accent-teal-muted: var(--accent-teal-muted);
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-info: var(--info);
   --color-accent-orange: var(--accent-orange);
   --color-media: var(--media);
   --color-on-media: var(--on-media);

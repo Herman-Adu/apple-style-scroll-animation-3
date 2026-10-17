@@ -138,7 +138,7 @@ export function CampaignEditor({
               className={cn(
                 "capitalize",
                 sent
-                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  ? "border-success/30 bg-success/10 text-success"
                   : "border-border bg-muted text-muted-foreground",
               )}
             >

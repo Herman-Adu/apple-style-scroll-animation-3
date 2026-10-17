@@ -199,7 +199,7 @@ export function CustomerDetail({
             className={
               blocked
                 ? "inline-flex h-9 items-center gap-1.5 rounded-md border border-border px-3 text-sm font-medium transition-colors hover:bg-foreground/5"
-                : "inline-flex h-9 items-center gap-1.5 rounded-md border border-red-500/30 bg-red-500/10 px-3 text-sm font-medium text-red-500 transition-colors hover:bg-red-500/20"
+                : "inline-flex h-9 items-center gap-1.5 rounded-md border border-destructive/30 bg-destructive/10 px-3 text-sm font-medium text-destructive-strong transition-colors hover:bg-destructive/12"
             }
           >
             {blocked ? <Undo2 className="size-4" /> : <Ban className="size-4" />}

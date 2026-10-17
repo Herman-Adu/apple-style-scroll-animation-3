@@ -17,8 +17,8 @@ const STATUS_LABEL: Record<OrderStatus, string> = {
 // Small status dot color. Kept to a tight, functional set so it reads as a state
 // indicator rather than decoration.
 const STATUS_DOT: Record<OrderStatus, string> = {
-  processing: "bg-amber-400",
-  fulfilled: "bg-emerald-400",
+  processing: "bg-warning",
+  fulfilled: "bg-success",
   cancelled: "bg-foreground/30",
   refunded: "bg-foreground/30",
 }

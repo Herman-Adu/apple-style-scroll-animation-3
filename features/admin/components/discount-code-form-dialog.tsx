@@ -269,7 +269,7 @@ function DiscountCodeFormDialogBody({
             </p>
           </div>
 
-          {error ? <p className="text-sm text-red-500">{error}</p> : null}
+          {error ? <p className="text-sm text-destructive-strong">{error}</p> : null}
         </div>
 
         <div className="flex items-center justify-end gap-2 border-t border-border px-6 py-4">

@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-10-17T15:31:14.095Z",
+  "generatedAt": "2026-10-17T16:56:10.613Z",
   "tests": {
-    "unit": 1949,
+    "unit": 1950,
     "integration": 83,
     "smoke": 32,
-    "axe": 46,
+    "axe": 48,
     "seo": 18,
-    "total": 2128
+    "total": 2131
   },
   "coverage": {
     "lines": 43.34,
@@ -26,7 +26,7 @@
     "pages": 45
   },
   "repo": {
-    "mergedPrs": 229,
-    "latestPr": 238
+    "mergedPrs": 230,
+    "latestPr": 239
   }
 }

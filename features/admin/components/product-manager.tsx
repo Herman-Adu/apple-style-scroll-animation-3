@@ -241,7 +241,7 @@ export function ProductManager({ demandPromise }: { demandPromise: Promise<Waiti
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className="bg-red-500 text-white hover:bg-red-600"
+              className="bg-destructive text-white hover:bg-destructive/90"
             >
               Delete
             </AlertDialogAction>

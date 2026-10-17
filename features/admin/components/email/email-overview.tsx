@@ -31,8 +31,8 @@ export type OverviewStats = {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  sent: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  skipped: "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  sent: "border-success/30 bg-success/10 text-success",
+  skipped: "border-warning/30 bg-warning/10 text-warning",
   failed: "border-destructive/30 bg-destructive/10 text-destructive-strong",
 }
 
@@ -61,14 +61,14 @@ export function EmailOverview({ stats, configured }: { stats: OverviewStats; con
         className={cn(
           "flex items-start gap-3 rounded-2xl border p-4",
           configured
-            ? "border-emerald-500/30 bg-emerald-500/5"
-            : "border-amber-500/30 bg-amber-500/5",
+            ? "border-success/30 bg-success/5"
+            : "border-warning/30 bg-warning/5",
         )}
       >
         {configured ? (
-          <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-500" aria-hidden />
+          <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success" aria-hidden />
         ) : (
-          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-500" aria-hidden />
+          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden />
         )}
         <div className="min-w-0">
           <p className="text-sm font-medium">

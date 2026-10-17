@@ -89,29 +89,19 @@ const LITERAL = new RegExp(
 const SOURCE_TREES = ["app", "components", "features", "lib"]
 
 /**
- * Raw palette literals still in the tree, by file. S71 measured 127 in 24
- * files; S72 cleared the eight buyer-facing ones below, leaving 108 in 17.
- * Every line is owed a sprint. The numbers may only go down - see the note above.
+ * A string carrying literals in the shapes this repo actually had, so the
+ * pattern is proved against something that does not depend on the tree.
+ *
+ * Until S74 the canary was `found.length > 50` over the app's own markup: with
+ * 108 literals in it, a pattern that broke would take every assertion below
+ * with it, and the count was the thing that proved the sweep still saw. S74
+ * took the count to zero, which removes that proof - an empty result is what a
+ * working sweep and a broken regex both return. So the canary moved off the
+ * tree and onto a fixture, and the tree assertion became the plain one: none,
+ * anywhere. The three shapes here are the ones that were really in the files -
+ * a bare utility, an alpha-modified fill, and a `dark:`-prefixed variant.
  */
-const DEBT: Readonly<Record<string, number>> = {
-  "components/account/order-card.tsx": 2,
-  "features/admin/components/customer-badges.tsx": 11,
-  "features/admin/components/customer-detail.tsx": 4,
-  "features/admin/components/discount-code-form-dialog.tsx": 1,
-  "features/admin/components/discount-code-manager.tsx": 5,
-  "features/admin/components/email/campaign-editor.tsx": 4,
-  "features/admin/components/email/campaign-list.tsx": 8,
-  "features/admin/components/email/copy-quality-hint.tsx": 6,
-  "features/admin/components/email/email-overview.tsx": 14,
-  "features/admin/components/email/message-center.tsx": 8,
-  "features/admin/components/email/placeholder-picker.tsx": 1,
-  "features/admin/components/email/template-editor.tsx": 15,
-  "features/admin/components/product-form-dialog.tsx": 1,
-  "features/admin/components/product-manager.tsx": 2,
-  "features/admin/components/stat-card.tsx": 4,
-  "features/admin/components/status-badges.tsx": 21,
-  "features/products/components/product-stock-badge.tsx": 1,
-}
+const CANARY = "text-amber-500 bg-emerald-500/10 dark:text-sky-400 border-red-500/30"
 
 function sourceFiles(dir: string): string[] {
   const absolute = join(REPO_ROOT, dir)
@@ -125,8 +115,8 @@ function sourceFiles(dir: string): string[] {
 
 /**
  * Blanks block comments while keeping newlines, so a reported line number still
- * points at the right line - and so the paragraph above, which has to be able
- * to name `text-amber-500` to explain it, is not itself reported. That is the
+ * points at the right line - and so the paragraphs above, which have to be able
+ * to name `text-amber-500` to explain themselves, are not reported. That is the
  * S52 rule: what is refused is an occurrence that reaches a reader, never the
  * vocabulary needed to describe it.
  */
@@ -149,74 +139,29 @@ function literals(): Literal[] {
   })
 }
 
-const found = literals()
-
-const countsByFile = found.reduce<Record<string, number>>((counts, { file }) => {
-  return { ...counts, [file]: (counts[file] ?? 0) + 1 }
-}, {})
-
 describe("raw Tailwind palette literals", () => {
-  it("finds the literals to count, so a silent sweep cannot pass", () => {
-    // If the pattern ever stops matching, every assertion below passes trivially.
-    expect(found.length).toBeGreaterThan(50)
+  it("still matches the shapes it is looking for, so a silent sweep cannot pass", () => {
+    // The whole assertion below is `[]`, and a regex that matched nothing would
+    // satisfy it. This is the half that cannot be satisfied by being broken.
+    expect([...CANARY.matchAll(LITERAL)].map((match) => match[0])).toEqual([
+      "text-amber-500",
+      "bg-emerald-500/10",
+      "text-sky-400",
+      "border-red-500/30",
+    ])
   })
 
-  it("is absent from every file a sprint has paid off", () => {
-    // A file simply missing from DEBT is indistinguishable from a file that was
-    // never swept, so the ones that have been cleared are named. S71 did the
-    // availability row; S72 did the buyer-facing eight - the contact form's
-    // confirmation and validation lines, the destructive toast's close glyph,
-    // the review pills and both auth error lines, plus the cinematic overlay's
-    // loader error, which is the one that is NOT a status colour: it sits on
-    // `bg-media`, near-black in both themes, where no coloured token in this
-    // palette clears AA on light (--destructive-strong 3.13:1, --warning
-    // 3.43:1, --success 3.30:1). That surface has its own text token.
-    const paidOff = [
-      "features/products/components/product-purchase.tsx",
-      "components/auth/sign-in-form.tsx",
-      "components/auth/sign-up-form.tsx",
-      "components/contact/contact-form.tsx",
-      "components/scroll/frame-scroll-hero.tsx",
-      "components/ui/toast.tsx",
-      "features/products/components/product-reviews.tsx",
-      "features/products/components/review-form.tsx",
-    ]
-    const offences = found.filter((l) => paidOff.includes(l.file))
-    expect(offences, JSON.stringify(offences, null, 1)).toEqual([])
-  })
-
-  it("adds none to a file that has none", () => {
-    const unknown = Object.entries(countsByFile)
-      .filter(([file]) => DEBT[file] === undefined)
-      .map(([file, count]) => `${file} (${count})`)
+  it("is zero: no raw palette literal is left in the app's markup", () => {
+    // 130 before S71, 127 after it, 108 after S72's buyer-facing eight, and 0
+    // after S74 took the 17 admin and email files. There is no DEBT record and
+    // no paid-off list any more, because every file is in the second group: a
+    // named list of cleared files only existed to tell a swept file from an
+    // unswept one, and with nothing left in the tree that distinction is gone.
+    // What replaces the ratchet is this - a literal anywhere is a failure, and
+    // the fix is the token the colour already has.
     expect(
-      unknown,
-      `use a palette token, not a raw Tailwind colour - a literal cannot move with the theme and no guard measures it:\n${found
-        .filter((l) => DEBT[l.file] === undefined)
-        .map((l) => ` ${l.file}:${l.line} ${l.utility}`)
-        .join("\n")}`,
+      literals().map(({ file, line, utility }) => `${file}:${line} ${utility}`),
+      "use a palette token, not a raw Tailwind colour - a literal cannot move with the theme and no guard measures it",
     ).toEqual([])
-  })
-
-  it("holds every file at or below the count S71 measured, and refuses a stale one", () => {
-    // Both directions are failures with different fixes: more than recorded is
-    // a new literal to replace with a token, fewer is a cleanup to record by
-    // lowering the number. Neither may pass silently, which is the whole
-    // difference between a ratchet and an allow-list.
-    const drifted = Object.entries(DEBT).flatMap(([file, recorded]) => {
-      const now = countsByFile[file] ?? 0
-      if (now === recorded) return []
-      const direction = now > recorded ? "use a token for the new one" : "cleaned up - lower the recorded count"
-      return [`${file}: recorded ${recorded}, found ${now} - ${direction}`]
-    })
-    expect(drifted).toEqual([])
-  })
-
-  it("records the blind spot's size, so it is a number someone can watch fall", () => {
-    const total = Object.values(DEBT).reduce((sum, count) => sum + count, 0)
-    expect(found.length).toBe(total)
-    // 130 before S71, 127 after it, 108 after S72's buyer-facing eight. What
-    // is left is the 17 admin and email files - staff surfaces, their own sprint.
-    expect(total).toBe(108)
   })
 })

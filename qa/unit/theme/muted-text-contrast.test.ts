@@ -112,6 +112,11 @@ const TOKEN_FLOORS: readonly NamedToken[] = [
     floor: TEXT_FLOOR,
     role: 'the caution status colour - the "Only N left" line on a product page reads it as text, so AA for normal text',
   },
+  {
+    token: "info",
+    floor: TEXT_FLOOR,
+    role: "the neutral status colour - a campaign's \"Scheduled\" and \"Draft\" tags read it as text, so AA for normal text",
+  },
 ]
 
 describe.each(TOKEN_FLOORS)("--$token", ({ token, floor, role }) => {
@@ -176,6 +181,7 @@ const PLACEMENTS: Record<string, Placement> = {
   "destructive-strong": { kind: "coloured" },
   success: { kind: "coloured" },
   warning: { kind: "coloured" },
+  info: { kind: "coloured" },
   "accent-orange": { kind: "coloured" },
 }
 

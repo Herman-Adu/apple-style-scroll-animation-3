@@ -147,6 +147,30 @@ async function dominantColour(page: Page, png: Buffer): Promise<number[]> {
   )
 }
 
+/**
+ * The element's effective opacity, multiplied up the ancestor chain.
+ *
+ * `toBeVisible()` does not read opacity, and this is a scroll-animation site:
+ * a product card is in the layout at its final box while its reveal is still
+ * at `opacity: 0`, so a screenshot taken then is of whatever sits behind it.
+ * That is what made the first version of the low-stock measurement read the
+ * page background in both themes - 250,250,250 on light and 0,0,0 on dark,
+ * against a label that is itself `--background`, for a flat 1:1. It is also
+ * the reason the "Sold out" probe above is mounted on `document.body`: a node
+ * outside the revealed subtree has nothing to wait for.
+ *
+ * Module scope and closing over nothing, like the other page-side functions.
+ */
+function effectiveOpacity(element: Element) {
+  let value = 1
+  let node: Element | null = element
+  while (node) {
+    value *= Number(getComputedStyle(node).opacity)
+    node = node.parentElement
+  }
+  return value
+}
+
 async function prepare(page: Page, theme: Theme) {
   await page.addInitScript(
     ([key, value]) => window.localStorage.setItem(key, value),
@@ -161,6 +185,25 @@ async function settle(page: Page, theme: Theme) {
   })
   // Fail loudly rather than measuring the other theme and reporting it green.
   await expect(page.locator("html")).toHaveClass(new RegExp(`\\b${theme}\\b`))
+}
+
+/**
+ * Normalises one real element's own text colour, the same way `measureProbe`
+ * does for a mounted one: Chromium may hand back the authoring colour space, so
+ * the value goes through a 1x1 canvas before it is compared to anything.
+ *
+ * Also declared at module scope and closing over nothing - Playwright sends the
+ * source to the page, so a reference to anything in this file arrives undefined.
+ */
+function measureElementColour(element: Element) {
+  const canvas = document.createElement("canvas")
+  canvas.width = canvas.height = 1
+  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+  ctx.clearRect(0, 0, 1, 1)
+  ctx.fillStyle = "#000"
+  ctx.fillStyle = getComputedStyle(element).color
+  ctx.fillRect(0, 0, 1, 1)
+  return Array.from(ctx.getImageData(0, 0, 1, 1).data)
 }
 
 for (const theme of THEMES) {
@@ -223,5 +266,52 @@ for (const theme of THEMES) {
         `the rendered tag's label on ${rgb(realFill)} (${theme}) measured ${realRatio}:1`,
       ).toBeGreaterThanOrEqual(TEXT_FLOOR)
     }
+  })
+
+  test(`the low-stock badge's label clears AA on the warning fill Chromium paints on ${theme}`, async ({
+    page,
+  }) => {
+    await prepare(page, theme)
+    await page.goto(PROBE_ROUTE, { waitUntil: "networkidle" })
+    await settle(page, theme)
+
+    /**
+     * The other half of the same component, and the one case on this route that
+     * is measured on the element the shop actually serves rather than on a
+     * probe. S67 had to mount one because nothing in the catalog is sold out;
+     * the catalog does carry a low-stock product, so this asserts the badge
+     * itself - which is the S73 rule, assert the element rather than probing
+     * for it and reporting green on nothing. If the catalog stops carrying one
+     * this goes red naming the missing badge, which is the failure wanted: the
+     * measurement would otherwise be of a combination no page paints.
+     *
+     * S74 is why it exists. The badge was `bg-amber-500/90 text-black`, a raw
+     * literal that happened to read 10.45:1, and moving it onto `--warning`
+     * changed both halves: the fill now flips with the scheme, so a fixed black
+     * label could not follow it. `text-background` is the measured choice -
+     * 4.79:1 on light and 8.94:1 on dark, where `--foreground` gives 3.94:1 and
+     * 2.03:1 and the sibling tag's `--destructive-foreground` gives 2.25:1 on
+     * dark. The modelling is in the unit suite; the composite over `/90` is
+     * Chromium's to compute, which is what this reads back.
+     */
+    const badge = page.getByText(/^Only \d+ left$/).first()
+    await expect(badge).toBeVisible()
+
+    // Wait for the reveal to finish, or the screenshot is of the card's
+    // background. `settle` zeroes transition durations, so this resolves as
+    // soon as the reveal has been triggered rather than waiting one out.
+    await badge.scrollIntoViewIfNeeded()
+    await expect
+      .poll(async () => badge.evaluate(effectiveOpacity), { timeout: 10_000 })
+      .toBe(1)
+
+    const label = await badge.evaluate(measureElementColour)
+    const painted = await dominantColour(page, await badge.screenshot())
+
+    const ratio = round(contrast(label, painted))
+    expect(
+      ratio,
+      `the low-stock label ${rgb(label)} on the painted warning fill ${rgb(painted)} (${theme}) measured ${ratio}:1`,
+    ).toBeGreaterThanOrEqual(TEXT_FLOOR)
   })
 }

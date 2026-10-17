@@ -10,7 +10,7 @@ export const contributingAndWorkflow: Doc = {
     "How to make a change safely: branch naming, tests first, which test suite covers what, the checks to run before a pull request, and how docs are kept in step with the code.",
   readingMinutes: 6,
   order: 2,
-  updatedAt: "2026-10-13",
+  updatedAt: "2026-10-17",
   tags: [
     "contributing",
     "workflow",
@@ -54,7 +54,7 @@ export const contributingAndWorkflow: Doc = {
         },
         {
           title: "Open a pull request",
-          text: "One feature per PR, described in plain language. Squash-merge, confirm main moved to the merge commit, and add a row to the sprint ledger in docs/next-steps.md before starting the next sprint.",
+          text: "One feature per PR, described in plain language. Squash-merge, confirm main moved to the merge commit, and add a two-sentence row to the sprint ledger in docs/sprint-ledger.md before starting the next sprint.",
         },
       ],
     },

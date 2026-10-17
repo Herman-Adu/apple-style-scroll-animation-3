@@ -20,7 +20,7 @@ The full guide with diagrams is in the app at `/docs/contributing-and-workflow`.
    ```
 6. Update `docs/*.md` and the matching in-app guide in `features/docs/content/`, and bump `updatedAt`.
 7. Check `git diff --stat origin/main` lists only your files, so nothing merged earlier is being reverted.
-8. Open one pull request per feature, then squash-merge and delete the branch. Confirm main moved to the merge commit and add a row to the sprint ledger in `docs/next-steps.md`.
+8. Open one pull request per feature, then squash-merge and delete the branch. Confirm main moved to the merge commit and add a row to the sprint ledger in `docs/sprint-ledger.md`.
 
 ## Schema changes
 

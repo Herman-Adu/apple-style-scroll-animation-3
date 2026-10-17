@@ -342,7 +342,7 @@ describe("docs caught up with the architecture work", () => {
 });
 
 describe("ledger continuity through S20", () => {
-  const ledger = readFileSync(join(REPO_ROOT, "docs/next-steps.md"), "utf8");
+  const ledger = readFileSync(join(REPO_ROOT, "docs/sprint-ledger.md"), "utf8");
 
   it.each([
     ["S17", "#144", "d30bc71"],

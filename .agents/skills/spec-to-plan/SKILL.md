@@ -13,7 +13,7 @@ If the request still has open decisions (a brain-dump, a new feature, "what do y
 
 ## 1. Gather (cheaply)
 
-- Read the ledger (`docs/next-steps.md`) and the current plan in `v0_plans/`, so new sprints continue the numbering and don't redo shipped work.
+- Read the ledger (`docs/sprint-ledger.md`) and the current plan in `v0_plans/`, so new sprints continue the numbering and don't redo shipped work.
 - Search the code only to answer a question that changes the plan: does it exist already, which slice owns it, is there a schema impact.
 - If a blocker can't be resolved from the repo, ask one batched question with a recommended default.
 

@@ -14,13 +14,20 @@ import { docText } from "@/features/docs/lib/domain/freshness";
 import { REPO_ROOT } from "@/qa/config/repo-root";
 
 /**
- * `docs/next-steps.md` is the source of truth for what is on `main`, so the
- * changelog is checked against it rather than against a list of PR numbers
- * written by hand. A hand-written list can only ever check the past: the page
- * drifted for eleven sprints after S37 because nothing failed when a sprint
- * shipped without an entry.
+ * The two halves of the repo's record of itself, and they are two files since
+ * S72: `docs/sprint-ledger.md` holds the merge history, `docs/next-steps.md`
+ * holds what is on `main` right now. The changelog is checked against the
+ * ledger rather than against a list of PR numbers written by hand, because a
+ * hand-written list can only ever check the past - the page drifted for eleven
+ * sprints after S37 because nothing failed when a sprint shipped without an
+ * entry.
+ *
+ * Reading both by path is what the split made explicit here. Before S72 one
+ * file answered both questions, so the assertion that the snapshot names the
+ * newest row was comparing a file with itself.
  */
-const LEDGER = readFileSync(join(REPO_ROOT, "docs/next-steps.md"), "utf8");
+const LEDGER = readFileSync(join(REPO_ROOT, "docs/sprint-ledger.md"), "utf8");
+const SNAPSHOT = readFileSync(join(REPO_ROOT, "docs/next-steps.md"), "utf8");
 
 const FIXTURE = `## Sprint ledger
 
@@ -135,8 +142,8 @@ describe("handoff snapshot", () => {
     ).toBe("S48");
   });
 
-  it("names the newest sprint in the ledger", () => {
-    expect(handoffSnapshotSprint(LEDGER)).toBe(
+  it("names the newest sprint in the ledger, now that the two are separate files", () => {
+    expect(handoffSnapshotSprint(SNAPSHOT)).toBe(
       newestLedgerSprint(parseSprintLedger(LEDGER))?.sprint,
     );
   });

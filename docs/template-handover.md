@@ -143,7 +143,7 @@ When asking v0 to generate this, request both the post copy adaptation and the i
 
 Update these early so handoff context and public claims stay coherent:
 
-1. `docs/next-steps.md` — reset from template continuity to your fork's own sprint ledger.
+1. `docs/next-steps.md` and `docs/sprint-ledger.md` — reset from template continuity to your fork's own current state and sprint ledger.
 2. `README.md` — replace template framing with your product framing.
 3. `docs/template-handover.md` — keep as your living transfer doc between agents.
 4. `docs/testing.md` + `qa/README.md` — keep run commands and coverage policy aligned with your CI.

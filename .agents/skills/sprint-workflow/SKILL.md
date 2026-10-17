@@ -13,7 +13,7 @@ One sprint = one branch = one PR = one ledger row. Scope comes from the active p
 git status --short && git branch --show-current && git log --oneline -5 && git stash list
 ```
 
-Read the ledger in `docs/next-steps.md` and the sprint's section of the plan. Tell the user in plain words: last merged sprint + PR, what is next, anything blocked.
+Read `docs/next-steps.md` (current state; the merge history is in `docs/sprint-ledger.md`) and the sprint's section of the plan. Tell the user in plain words: last merged sprint + PR, what is next, anything blocked.
 
 Why: the workspace can be switched to a fresh branch from `main` between turns. That wiped uncommitted files in S1.
 

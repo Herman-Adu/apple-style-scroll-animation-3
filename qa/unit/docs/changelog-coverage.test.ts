@@ -6,6 +6,7 @@ import {
   CHANGELOG_COVERAGE_FLOOR,
   handoffSnapshotSprint,
   missingChangelogSprints,
+  missingLedgerShas,
   newestLedgerSprint,
   parseSprintLedger,
   sprintNumber,
@@ -39,6 +40,8 @@ const FIXTURE = `## Sprint ledger
 | S25a   | #153     | \`e4a143d\`            | Troubleshooting |
 | W26    | #157     | \`4853540\`            | Generated facts |
 | S41    | #177     | \`8155f9a\`            | Recordings pace by distance |
+| S39    | #PR      | \`8155f9a\`            | A placeholder nobody replaced |
+| S40    | TBD      | TBD                  | A row written before the merge |
 | S0     | archived | archived             | Historical placeholder |
 `;
 
@@ -72,6 +75,8 @@ describe("sprint ledger parsing", () => {
       "S25a",
       "W26",
       "S41",
+      "S39",
+      "S40",
       "S0",
     ]);
   });
@@ -112,7 +117,49 @@ describe("changelog coverage", () => {
       "the changelog mentions #177 only",
       25,
     );
-    expect(missing.map((row) => row.sprint)).toEqual(["S25a"]);
+    expect(missing.map((row) => row.sprint)).toEqual(["S25a", "S39", "S40"]);
+  });
+
+  /**
+   * The hole S73 measured and S74 carried over without re-measuring, re-measured
+   * here before it was closed: `#PR` and `TBD` both parse to no PRs at all, and
+   * the old rule exempted a row with none. So a row at or above the floor read
+   * as "nothing to check" rather than as a problem, and S74 leant on this guard
+   * to check its own What's New entry. Measured on this tree against a changelog
+   * mentioning nothing, floor 38: `#239` reported 1, `#PR` reported 0, `TBD`
+   * reported 0, and so did an empty cell and `archived`.
+   *
+   * That is the S63 shape - a guard quiet because it stopped looking - and an
+   * unparseable PR cell is now the failure, because a row that cannot say which
+   * PR shipped it cannot be checked against anything.
+   */
+  it("reports a row at the floor whose PR cell cannot be parsed", () => {
+    const missing = missingChangelogSprints(
+      parseSprintLedger(FIXTURE),
+      "the changelog mentions #177, #92 and #153",
+      38,
+    );
+    expect(missing.map((row) => row.sprint)).toEqual(["S39", "S40"]);
+  });
+
+  /**
+   * The other half, and the cases are lifted from the real ledger rather than
+   * invented: an invented allow case agrees with the bug. `S0` really does carry
+   * `archived` in both cells, and is exempt because it is below the floor -
+   * not because its cell is unparseable. `Locks`, `D1`, `SEC1` and `W26` carry
+   * real PR numbers but no sprint *number*, so the floor cannot place them and
+   * the changelog covers that series by theme.
+   */
+  it("still exempts the archived row and the unnumbered series", () => {
+    const missing = missingChangelogSprints(
+      parseSprintLedger(FIXTURE),
+      "mentions nothing at all",
+      38,
+    );
+    expect(missing.map((row) => row.sprint)).not.toContain("S0");
+    expect(missing.map((row) => row.sprint)).not.toContain("Locks");
+    expect(missing.map((row) => row.sprint)).not.toContain("D1");
+    expect(missing.map((row) => row.sprint)).not.toContain("W26");
   });
 
   it("counts a sprint as recorded when any of its PRs is mentioned", () => {
@@ -129,6 +176,62 @@ describe("changelog coverage", () => {
     const missing = missingChangelogSprints(parseSprintLedger(LEDGER), whatsNew);
     expect(
       missing.map((row) => `${row.sprint} (${row.prs.join(", ")})`),
+    ).toEqual([]);
+  });
+});
+
+/**
+ * The same hole on the cell beside it, and this one was live while it was
+ * being written: S74's row read \`PENDING\` in the Merge SHA column, because a
+ * PR cannot record its own squash commit, and nothing anywhere asked for it
+ * afterwards. Every sprint since S72 has owed its predecessor's SHA by
+ * convention, which is to say by somebody remembering.
+ *
+ * The newest row is the one exemption and it is derived rather than listed:
+ * whichever S-series row is highest is the one whose merge has not happened
+ * yet. Every row above the floor behind it must carry a SHA.
+ */
+describe("ledger merge SHAs", () => {
+  it("reports a row above the floor whose SHA cell was never filled in", () => {
+    // S40 carries `TBD` and is not the newest - S41 is, by number, whatever
+    // order the rows are written in - so S40 has merged and can name a commit.
+    const missing = missingLedgerShas(parseSprintLedger(FIXTURE), 38);
+    expect(missing.map((row) => row.sprint)).toEqual(["S40"]);
+  });
+
+  /**
+   * The newest row written the way a sprint really writes it. `8155f9a` is in
+   * two rows of the fixture, so the whole cell is replaced rather than the SHA:
+   * a narrower replacement would silently edit S39 instead and the test would
+   * be measuring the wrong row.
+   */
+  const PENDING_NEWEST = FIXTURE.replace(
+    "| S41    | #177     | \`8155f9a\`",
+    "| S41    | #177     | \`PENDING\`",
+  );
+
+  it("exempts the newest row, which cannot record its own squash commit", () => {
+    expect(PENDING_NEWEST, "the fixture edit landed").not.toBe(FIXTURE);
+    expect(missingLedgerShas(parseSprintLedger(PENDING_NEWEST), 38).map((row) => row.sprint)).toEqual([
+      "S40",
+    ]);
+  });
+
+  it("reports that same row once a later sprint has merged behind it", () => {
+    const withNewer = parseSprintLedger(
+      `${PENDING_NEWEST}| S44    | #180     | \`1111111\`            | Merged after |`,
+    );
+    expect(missingLedgerShas(withNewer, 38).map((row) => row.sprint)).toEqual([
+      "S41",
+      "S40",
+    ]);
+  });
+
+  it("every merged sprint in the real ledger records its merge SHA", () => {
+    const rows = parseSprintLedger(LEDGER);
+    expect(
+      missingLedgerShas(rows).map((row) => `${row.sprint} (${row.prs.join(", ")})`),
+      "fill the merge SHA from `git log --oneline -1 origin/main` after a fresh fetch",
     ).toEqual([]);
   });
 });

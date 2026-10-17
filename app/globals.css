@@ -61,7 +61,28 @@
      rendered at 1.25:1 until S66's light-theme axe pass. The dark value is
      untouched: the slide renders are dark by design and read this token. */
   --success: oklch(0.46 0.16 152);
-  --warning: oklch(0.72 0.16 75);
+  /* The caution colour, deepened here for the same reason --success was, and it
+     took the same two jobs with it: the "Only N left" line on a product page is
+     read as text, and the dot beside it is a fill. At the 0.72 it was authored
+     with it measured 2.43:1 on this background and 2.23:1 on --muted - under AA
+     for text and under 1.4.11's 3:1 for the dot as well, so the two literals it
+     replaces (`text-amber-500` at 2.05:1, `bg-amber-500` at 1.88:1) could not be
+     fixed by re-pointing them at this token; it was just as unreadable.
+     At 0.50 the worst surface reads 5.37:1.
+
+     One token, not the --destructive pair, and that is measured rather than
+     assumed. The destructive split exists because its fill carries a white
+     label, which caps L, while its text role needs a floor on L, and on dark
+     those ranges do not overlap. Nothing carries a label on --warning: its only
+     other use is a chart segment in the admin analytics panel, and the dot is
+     8px and aria-hidden. So both roles are the same measurement against the
+     page behind them, the text floor of 4.5:1 is strictly tighter than the
+     dot's 3:1, and one value that clears the first clears the second. The dot
+     is darker than it needs to be by that margin, which keeps it the same
+     colour as the words it labels - and matches --success, the other half of
+     this traffic light, already single and already deep on light.
+     Held by qa/unit/theme/muted-text-contrast.test.ts. */
+  --warning: oklch(0.5 0.16 75);
   --accent-orange: oklch(0.65 0.16 45);
   /* Cinematic media surfaces — always dark regardless of colour scheme. */
   --media: oklch(0.02 0 0);

@@ -15,7 +15,13 @@ import { freemem, totalmem } from "node:os";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { REGENERABLE, currentSessionPid, staleSessions } from "./lib/housekeeping.mjs";
+import {
+  APP_PORT,
+  REGENERABLE,
+  currentSessionPid,
+  describePortUse,
+  staleSessions,
+} from "./lib/housekeeping.mjs";
 import { directorySize, formatBytes } from "./lib/disk-usage.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -42,8 +48,81 @@ for (const path of REGENERABLE) {
 }
 console.log(residue ? `  Total ${formatBytes(residue)} - run \`pnpm clean\`.` : "  Clean.");
 
+console.log("\nApp port");
+for (const line of describePorts()) console.log(`  ${line}`);
+
 console.log("\nClaude Code sessions");
 for (const line of describeSessions()) console.log(`  ${line}`);
+
+/**
+ * Best-effort, like the session listing: a port report that could throw would
+ * take the whole health check with it, and this is the least important section.
+ */
+function describePorts() {
+  let listeners;
+  let table = new Map();
+  try {
+    table = processTable();
+  } catch {
+    // Still worth reporting the port itself; the name and age just go missing.
+  }
+  try {
+    listeners = portListeners(APP_PORT, table);
+  } catch {
+    return ["Could not read listening ports on this platform; skipping."];
+  }
+  return describePortUse(listeners, { port: APP_PORT });
+}
+
+/**
+ * Processes listening on `port`, with the name and age the process table knows.
+ *
+ * `netstat` rather than a Node probe: connecting to the port would be answered
+ * by the server and tell us nothing about which process it is, and the pid is
+ * the only part a human can act on.
+ */
+function portListeners(port, table) {
+  const output =
+    process.platform === "win32"
+      ? execFileSync("netstat", ["-ano", "-p", "TCP"], {
+          encoding: "utf8",
+          timeout: 20_000,
+          stdio: ["ignore", "pipe", "ignore"],
+        })
+      : execFileSync("lsof", ["-nP", `-iTCP:${port}`, "-sTCP:LISTEN"], {
+          encoding: "utf8",
+          timeout: 20_000,
+          stdio: ["ignore", "pipe", "ignore"],
+        });
+
+  const pids = new Set();
+  for (const line of output.split("\n")) {
+    if (process.platform === "win32") {
+      // "  TCP    0.0.0.0:3000    0.0.0.0:0    LISTENING    1234"
+      const parts = line.trim().split(/\s+/);
+      if (parts.length < 5 || parts[3] !== "LISTENING") continue;
+      if (!new RegExp(`[:.]${port}$`).test(parts[1])) continue;
+      pids.add(Number(parts[4]));
+    } else {
+      const parts = line.trim().split(/\s+/);
+      if (parts.length < 2 || parts[0] === "COMMAND") continue;
+      pids.add(Number(parts[1]));
+    }
+  }
+
+  return [...pids]
+    .filter((pid) => Number.isFinite(pid) && pid > 0)
+    .map((pid) => {
+      const row = table.get(pid);
+      const startedAt = row ? row.startedAt : NaN;
+      return {
+        port,
+        pid,
+        name: row ? row.name : undefined,
+        ageHours: Number.isFinite(startedAt) ? (Date.now() - startedAt) / 3600_000 : undefined,
+      };
+    });
+}
 
 /**
  * Best-effort: the listing is platform-specific and entirely cosmetic, so every

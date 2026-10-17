@@ -34,6 +34,55 @@ export const OVERRIDE = "ALLOW_COMMIT_ON_MAIN";
 export const HOOKS_DIR = ".githooks";
 
 /**
+ * Paths that must never be committed, whatever stages them.
+ *
+ * `public/brand/herman.jpg` is the owner's headshot. It was in the tree only so
+ * an agent could see his face while generating banner images, it is referenced
+ * by nothing, and committing it would publish a personal photo to a public
+ * repo. `git add -A` staged it during S70 and it was caught by eye on the way
+ * past; the same pattern had already swept `banner-images-next-session.md` onto
+ * `main` in S69a. Catching a file by eye is not a control, and the file being
+ * deleted now (2026-10-17) does not retire the pattern - the next banner sprint
+ * puts it back in the same place.
+ *
+ * `.gitignore` carries this path too and is the first line: it stops `git add -A`
+ * staging the file at all. This is the backstop for the cases `.gitignore` does
+ * not cover - `git add -f`, a path already tracked - and, unlike `.gitignore`,
+ * it says out loud why it refused. Deliberately not a pattern over
+ * `public/brand/`: the four wordmark and monogram files there are tracked and
+ * belong in the repo.
+ */
+export const FORBIDDEN_PATHS = ["public/brand/herman.jpg"];
+
+/**
+ * Why these staged paths must not be committed, or `null` to let them through.
+ *
+ * Paths arrive as git prints them, forward-slashed and repo-relative, which is
+ * true on Windows too. The same `OVERRIDE` stands aside here as for the branch
+ * rule, for the same reason: a hook with no way out gets uninstalled wholesale.
+ */
+export function refusalForPaths(paths, env = {}) {
+  if (env[OVERRIDE]) return null;
+
+  const staged = (paths ?? []).filter((path) => FORBIDDEN_PATHS.includes(path));
+  if (staged.length === 0) return null;
+
+  return [
+    `Refusing to commit ${staged.length === 1 ? "a file that" : "files that"} must not be in this repo:`,
+    "",
+    ...staged.map((path) => `    ${path}`),
+    "",
+    "This is a personal photo in a public repo, referenced by nothing in the",
+    "codebase. It is kept out of git on purpose - see scripts/lib/branch-guard.mjs.",
+    "Unstage it and commit the rest:",
+    "",
+    ...staged.map((path) => `    git restore --staged ${path}`),
+    "",
+    `If you really mean to commit it, say so: ${OVERRIDE}=1 git commit ...`,
+  ].join("\n");
+}
+
+/**
  * Why this commit must not happen, or `null` to let it through.
  *
  * `branch` is `null` for a detached HEAD, which is what a rebase, a bisect and a

@@ -101,14 +101,15 @@ export function buildProduct(input: NewProductInput, map: ProductMap): Product {
     accent,
     featured: input.featured ?? false,
     releaseStatus: input.releaseStatus ?? "available",
-    hero: {
-      kind: "parallax",
+    // A product created in the admin gets the static hero every product has.
+    // It gets no `cinematicHero`: that is the front door's 16 MB frame
+    // sequence, and there is one of those by design.
+    productHero: {
       image,
-      accent,
-      motion: "rise",
-      scrollVh: 200,
-      intro: { kicker: "Introducing", title: input.name, subtitle: input.tagline ?? "" },
-      beats: [],
+      kicker: "Introducing",
+      title: input.name,
+      subtitle: input.tagline ?? "",
+      align: "right",
     },
     features: [],
     specs: [],

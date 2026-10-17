@@ -4,9 +4,9 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
-import { StoryHero } from "@/components/scroll/story-hero"
 import {
   ProductFeatures,
+  ProductHero,
   ProductSpecs,
   ProductPurchase,
   ProductCard,
@@ -80,7 +80,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           ]),
         ]}
       />
-      <StoryHero product={product} />
+      <ProductHero product={product} />
 
       {/* Purchase section */}
       <section className="relative z-10 border-t border-foreground/10 px-6 py-24 md:px-12 md:py-32">

@@ -24,9 +24,13 @@ describe("mapStrapiProduct", () => {
     expect(parsed.colors).toEqual(["Titanium", "Midnight", "Stone"])
   })
 
-  it("preserves the polymorphic hero discriminant", () => {
+  it("normalizes the product hero's media path", () => {
+    // S69 replaced the polymorphic `hero` union with one flat `productHero`,
+    // so there is no `kind` discriminant left to preserve - what the mapper
+    // still owes is the upload path, resolved the same way `image` is.
     const parsed = productSchema.parse(mapStrapiProduct(strapiProductEntry))
-    expect(parsed.hero?.kind).toBe("parallax")
+    expect(parsed.productHero.image).toContain("momo_x_hero.jpg")
+    expect(parsed.productHero.align).toBe("right")
   })
 
   it("coerces a falsy `featured` into a boolean", () => {

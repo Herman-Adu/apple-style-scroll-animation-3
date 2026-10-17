@@ -1,7 +1,8 @@
 /**
  * Changelog coverage: does the What's New doc record every sprint that merged?
  *
- * `docs/next-steps.md` is the repo's source of truth for what is on `main`, and
+ * `docs/sprint-ledger.md` is the repo's merge history (`docs/next-steps.md` is
+ * what is on `main` right now), and
  * its sprint ledger gains a row with a PR number and merge SHA immediately after
  * every squash merge. These helpers read that ledger so the guard in
  * `qa/unit/docs/changelog-coverage.test.ts` derives the answer instead of

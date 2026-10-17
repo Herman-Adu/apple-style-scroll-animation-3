@@ -69,7 +69,7 @@ export function SignUpForm() {
       />
 
       {error && (
-        <p className="flex items-center gap-2 text-sm text-red-400">
+        <p className="flex items-center gap-2 text-sm text-destructive-strong">
           <AlertCircle className="h-4 w-4 shrink-0" />
           {error}
         </p>

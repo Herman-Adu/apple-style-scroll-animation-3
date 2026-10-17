@@ -29,48 +29,48 @@ describe("S5 template handover docs", () => {
   });
 
   it("closes the ledger with an explicit S5 row", () => {
-    const ledger = read("docs/next-steps.md");
+    const ledger = read("docs/sprint-ledger.md");
     expect(ledger).toContain("| S5");
     expect(ledger).toContain("Template handover");
   });
 
   it("tracks merged PR #138 in current state and sprint ledger", () => {
-    const ledger = read("docs/next-steps.md");
+    const ledger = read("docs/sprint-ledger.md");
     expect(ledger).toContain("PR #138");
     expect(ledger).toContain("| S11");
     expect(ledger).toContain("2b9af42");
   });
 
   it("tracks merged PR #139 in current state and sprint ledger", () => {
-    const ledger = read("docs/next-steps.md");
+    const ledger = read("docs/sprint-ledger.md");
     expect(ledger).toContain("PR #139");
     expect(ledger).toContain("| S12");
     expect(ledger).toContain("f8b27e3");
   });
 
   it("tracks merged PR #140 in current state and sprint ledger", () => {
-    const ledger = read("docs/next-steps.md");
+    const ledger = read("docs/sprint-ledger.md");
     expect(ledger).toContain("PR #140");
     expect(ledger).toContain("| S13");
     expect(ledger).toContain("b6f21cc");
   });
 
   it("tracks merged PR #141 in current state and sprint ledger", () => {
-    const ledger = read("docs/next-steps.md");
+    const ledger = read("docs/sprint-ledger.md");
     expect(ledger).toContain("PR #141");
     expect(ledger).toContain("| S14");
     expect(ledger).toContain("5464056");
   });
 
   it("tracks merged PR #142 in current state and sprint ledger", () => {
-    const ledger = read("docs/next-steps.md");
+    const ledger = read("docs/sprint-ledger.md");
     expect(ledger).toContain("PR #142");
     expect(ledger).toContain("| S15");
     expect(ledger).toContain("274a9fa");
   });
 
   it("tracks merged PR #143 in current state and sprint ledger", () => {
-    const ledger = read("docs/next-steps.md");
+    const ledger = read("docs/sprint-ledger.md");
     expect(ledger).toContain("PR #143");
     expect(ledger).toContain("| S16");
     expect(ledger).toContain("f4124dd");

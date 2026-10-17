@@ -41,10 +41,16 @@ import { REPO_ROOT } from "@/qa/config/repo-root"
  * sprint still owed on it. The numbers may only go down.
  *
  * S71 deliberately fixed only `product-purchase.tsx`, which is why it is absent
- * below rather than present with a zero: the rest are the admin, email and
- * account surfaces, which are staff-facing, plus four buyer-facing files that
- * are their own sprint. Sweeping 130 literals in one branch would have put a
+ * below rather than present with a zero: the rest were the admin, email and
+ * account surfaces, which are staff-facing, plus the buyer-facing files that
+ * were their own sprint. Sweeping 130 literals in one branch would have put a
  * palette rewrite and a token design in the same diff.
+ *
+ * S72 was that sprint for the buyer-facing side: eight files, 19 literals, each
+ * replaced with a token that was *measured for the surface it is drawn on*
+ * rather than with the nearest-looking one. Two of the 19 needed a tint alpha
+ * chosen rather than copied, and `status-tint-contrast.test.ts` is what holds
+ * them. What remains is 108 in 17 admin and email files.
  */
 
 /** Tailwind's own palette families. A token is `--color-<name>`; none of these is. */
@@ -83,16 +89,12 @@ const LITERAL = new RegExp(
 const SOURCE_TREES = ["app", "components", "features", "lib"]
 
 /**
- * Raw palette literals still in the tree, by file, with the count S71 measured.
+ * Raw palette literals still in the tree, by file. S71 measured 127 in 24
+ * files; S72 cleared the eight buyer-facing ones below, leaving 108 in 17.
  * Every line is owed a sprint. The numbers may only go down - see the note above.
  */
 const DEBT: Readonly<Record<string, number>> = {
   "components/account/order-card.tsx": 2,
-  "components/auth/sign-in-form.tsx": 1,
-  "components/auth/sign-up-form.tsx": 1,
-  "components/contact/contact-form.tsx": 7,
-  "components/scroll/frame-scroll-hero.tsx": 1,
-  "components/ui/toast.tsx": 3,
   "features/admin/components/customer-badges.tsx": 11,
   "features/admin/components/customer-detail.tsx": 4,
   "features/admin/components/discount-code-form-dialog.tsx": 1,
@@ -108,9 +110,7 @@ const DEBT: Readonly<Record<string, number>> = {
   "features/admin/components/product-manager.tsx": 2,
   "features/admin/components/stat-card.tsx": 4,
   "features/admin/components/status-badges.tsx": 21,
-  "features/products/components/product-reviews.tsx": 3,
   "features/products/components/product-stock-badge.tsx": 1,
-  "features/products/components/review-form.tsx": 3,
 }
 
 function sourceFiles(dir: string): string[] {
@@ -161,12 +161,27 @@ describe("raw Tailwind palette literals", () => {
     expect(found.length).toBeGreaterThan(50)
   })
 
-  it("is absent from the availability row S71 fixed", () => {
-    // The three literals this guard was written for. A token now paints all of
-    // them, so the file carries none - and this says so by name, because a
-    // file simply missing from DEBT is indistinguishable from a file that was
-    // never swept.
-    const offences = found.filter((l) => l.file === "features/products/components/product-purchase.tsx")
+  it("is absent from every file a sprint has paid off", () => {
+    // A file simply missing from DEBT is indistinguishable from a file that was
+    // never swept, so the ones that have been cleared are named. S71 did the
+    // availability row; S72 did the buyer-facing eight - the contact form's
+    // confirmation and validation lines, the destructive toast's close glyph,
+    // the review pills and both auth error lines, plus the cinematic overlay's
+    // loader error, which is the one that is NOT a status colour: it sits on
+    // `bg-media`, near-black in both themes, where no coloured token in this
+    // palette clears AA on light (--destructive-strong 3.13:1, --warning
+    // 3.43:1, --success 3.30:1). That surface has its own text token.
+    const paidOff = [
+      "features/products/components/product-purchase.tsx",
+      "components/auth/sign-in-form.tsx",
+      "components/auth/sign-up-form.tsx",
+      "components/contact/contact-form.tsx",
+      "components/scroll/frame-scroll-hero.tsx",
+      "components/ui/toast.tsx",
+      "features/products/components/product-reviews.tsx",
+      "features/products/components/review-form.tsx",
+    ]
+    const offences = found.filter((l) => paidOff.includes(l.file))
     expect(offences, JSON.stringify(offences, null, 1)).toEqual([])
   })
 
@@ -200,7 +215,8 @@ describe("raw Tailwind palette literals", () => {
   it("records the blind spot's size, so it is a number someone can watch fall", () => {
     const total = Object.values(DEBT).reduce((sum, count) => sum + count, 0)
     expect(found.length).toBe(total)
-    // 130 before S71; the three in the availability row are the first paid off.
-    expect(total).toBe(127)
+    // 130 before S71, 127 after it, 108 after S72's buyer-facing eight. What
+    // is left is the 17 admin and email files - staff surfaces, their own sprint.
+    expect(total).toBe(108)
   })
 })

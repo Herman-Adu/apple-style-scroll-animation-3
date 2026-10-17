@@ -186,9 +186,9 @@ export function ReviewForm({
         </div>
 
         {errors.length > 0 && (
-          <ul className="flex flex-col gap-1 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
+          <ul className="flex flex-col gap-1 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3">
             {errors.map((error) => (
-              <li key={error} className="text-xs text-red-200">
+              <li key={error} className="text-xs text-destructive-strong">
                 {error}
               </li>
             ))}

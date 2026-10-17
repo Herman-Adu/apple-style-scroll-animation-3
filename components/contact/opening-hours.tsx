@@ -49,7 +49,7 @@ export function OpeningHours() {
           className={cn(
             "flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em]",
             openNow
-              ? "bg-success/15 text-success"
+              ? "bg-success/10 text-success"
               // `text-muted-foreground` read 4.27:1 on dark and 4.23:1 on light
               // against this tint - the pill's own `foreground/10` lifts the
               // surface just enough to drop it under AA. The closed state only

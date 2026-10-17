@@ -17,4 +17,4 @@
 ## After merge
 
 - [ ] `main` refreshed and pointing at the merge commit
-- [ ] Ledger row added in `docs/next-steps.md`
+- [ ] Ledger row added in `docs/sprint-ledger.md` (two sentences and a SHA)

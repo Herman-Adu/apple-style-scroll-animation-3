@@ -28,7 +28,7 @@ Read this file, then open **only** the skill that matches the task. Skills link 
 1. **Never commit to `main`.** One sprint = one `v0/<id>-<name>` branch = one PR = squash-merge. Branch from the real `main`. A tracked `pre-commit` hook refuses it, installed by `pnpm install`.
 2. **Test first.** Write the failing test, see it fail for the right reason, then implement.
 3. **Green before merge:** `tsc`, lint, unit, integration, and the browser tests (smoke + axe). A failure gets fixed in the same sprint; never merge red.
-4. **After merge:** refresh `main`, confirm it points at the merge commit, update the ledger in `docs/next-steps.md`, and rewrite its "Next session starts here" block. The next session's starting prompt is a file in this repo; never make the user ask a finished session to compose one.
+4. **After merge:** refresh `main`, confirm it points at the merge commit, add a two-sentence row to `docs/sprint-ledger.md`, and rewrite the snapshot and "Next session starts here" block in `docs/next-steps.md`. The next session's starting prompt is a file in this repo; never make the user ask a finished session to compose one.
 5. **Admin server actions** start with `await requireAdmin()`; permission rules live in `lib/auth/permissions.ts`.
 6. **Schema changes are additive** unless the user approves otherwise.
 7. **Reuse before you build:** search `features/`, `lib/` and `components/ui/` first.
@@ -45,7 +45,7 @@ Read this file, then open **only** the skill that matches the task. Skills link 
 ## Where things are
 
 - Canonical terms: `GLOSSARY.md` (read it before naming a domain concept).
-- Plans: `v0_plans/*.md`. Ledger: `docs/next-steps.md`. ADRs: in-app `/docs/architecture-decision-records`.
+- Plans: `v0_plans/*.md`. Current state: `docs/next-steps.md`. Merge history: `docs/sprint-ledger.md`. ADRs: in-app `/docs/architecture-decision-records`.
 - Tests: `qa/unit`, `qa/integration` (Vitest), `qa/smoke`, `qa/seo`, `qa/axe` (Playwright). Always use the `pnpm test:*` scripts.
 - Known sandbox problems and fixes: `.agents/skills/sprint-workflow/references/troubleshooting.md`.
 

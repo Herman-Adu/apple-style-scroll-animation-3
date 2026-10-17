@@ -28,10 +28,10 @@ A component is marked `"use client"` **only** when it needs the browser: state, 
 
 - `components/primitives/reveal.tsx` — a small entrance-animation wrapper (respects `prefers-reduced-motion`).
 - `components/primitives/search-field.tsx` — a debounced input that syncs a `q` URL param.
-- `components/layout/page-hero.tsx` — mount-driven entrance animation.
+- `components/primitives/mount-reveal.tsx` — the same for an entrance that plays on mount, which is what a hero needs: it is already in view and has nothing to scroll into.
 - `features/checkout/components/cart-context.tsx`, `lib/auth/adapters/auth-context.tsx` — client context providers.
 
-**Rule of thumb:** presentational content (cards, statements, specs) stays on the server. If such a component only needs an entrance animation, it wraps its markup in `<Reveal>` rather than becoming a client component itself. This keeps the client bundle small and pushes interactivity to the leaves. See [`conventions.md`](conventions.md).
+**Rule of thumb:** presentational content (cards, statements, specs) stays on the server. If such a component only needs an entrance animation, it wraps its markup in `<Reveal>` or `<MountReveal>` rather than becoming a client component itself. `components/layout/page-hero.tsx` was the standing exception until S70; its entrance animations moved into `MountReveal` and it is now a server component everywhere it is used, including every product page. This keeps the client bundle small and pushes interactivity to the leaves. See [`conventions.md`](conventions.md).
 
 ---
 

@@ -1,6 +1,34 @@
+import type { PageHeroContent } from "@/lib/types"
+
 import type { Product, Money } from "./schema"
 
 /** Pure domain selectors — no I/O, safe to unit test and reuse anywhere. */
+
+/**
+ * The product page's hero, as content for the **shared** `PageHero` — the same
+ * renderer and the same treatment `/products` uses, with this product's words
+ * and picture in it.
+ *
+ * S69 gave each product page a bespoke hero instead and the owner rejected it
+ * on sight: a square shot beside the copy reads as the product card sitting
+ * directly below it, with less detail, rather than as a hero. So this mapping
+ * is the whole of what "per product" means now. Deliberately no `titleAccent`:
+ * `TwoToneTitle` accents a headline's last word on its own, which is right for
+ * every product name here, and a per-product accent string would be the
+ * bespoke treatment coming back as data.
+ */
+export function productPageHero(product: Product): PageHeroContent {
+  const { productHero: hero } = product
+  return {
+    eyebrow: hero.kicker,
+    title: hero.title,
+    subtitle: hero.subtitle,
+    image: hero.image,
+    imageAlt: product.name,
+    align: hero.align,
+    layout: "split",
+  }
+}
 
 /**
  * Inventory rules — the single source of truth for "can this be sold, and how

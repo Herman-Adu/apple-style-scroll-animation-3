@@ -133,8 +133,11 @@ describe("planPacedScroll", () => {
 })
 
 describe("the recorded homepage hero", () => {
-  const hero = products.find((product) => product.hero.kind === "frames")?.hero
-  const frameCount = hero && hero.kind === "frames" ? hero.frameCount : 0
+  // S69 moved the frame sequence out of the polymorphic `hero` union and onto
+  // `cinematicHero`, which only the flagship has. The coverage is retargeted
+  // rather than dropped: this is still the one recorded hero on the site.
+  const hero = products.find((product) => product.cinematicHero)?.cinematicHero
+  const frameCount = hero?.frameCount ?? 0
 
   it("is a frame sequence measured in whole frames", () => {
     expect(frameCount).toBeGreaterThan(100)

@@ -44,7 +44,8 @@ export function mapStrapiProduct(entry: unknown): unknown {
     accent: a.accent,
     featured: Boolean(a.featured),
     releaseStatus: a.releaseStatus,
-    hero: mapProductHero(a.hero),
+    cinematicHero: a.cinematicHero,
+    productHero: mapProductHero(a.productHero),
     features: Array.isArray(a.features)
       ? a.features.map((f) => {
           const feature = asRecord(f);
@@ -71,27 +72,13 @@ export function mapStrapiProduct(entry: unknown): unknown {
 }
 
 /**
- * The hero is a polymorphic component in Strapi. Normalize media paths inside
- * each variant; the discriminated-union schema validates `kind` downstream.
+ * S69 made the product hero a single flat shape, so this is now one media path
+ * to normalize rather than a switch over `kind`. The flagship's `cinematicHero`
+ * needs none: its `framePath` is a directory of static frames, not an upload.
  */
 function mapProductHero(hero: unknown): unknown {
-  const heroRecord = asRecord(hero);
   if (!hero) return hero;
-  switch (heroRecord.kind) {
-    case "parallax":
-      return { ...heroRecord, image: strapiMedia(heroRecord.image) };
-    case "exploded":
-      return {
-        ...heroRecord,
-        layers: Array.isArray(heroRecord.layers)
-          ? heroRecord.layers.map((l) => {
-              const layer = asRecord(l);
-              return { ...layer, image: strapiMedia(layer.image) };
-            })
-          : [],
-      };
-    case "frames":
-    default:
-      return heroRecord;
-  }
+  const heroRecord = asRecord(hero);
+  return { ...heroRecord, image: strapiMedia(heroRecord.image) };
 }
+

@@ -1,4 +1,4 @@
-import { StoryHero } from "@/components/scroll/story-hero"
+import { FrameScrollHero } from "@/components/scroll/frame-scroll-hero"
 import { BrandStatement } from "@/components/home/brand-statement"
 import { ProductShowcase } from "@/features/products"
 import { FeaturedArticles } from "@/features/articles"
@@ -15,9 +15,13 @@ export default async function HomePage() {
 
   return (
     <main>
-      {flagship && (
+      {/* The front door's cinematic, rendered explicitly. `StoryHero` used to
+          switch between three renderers by `hero.kind`; with the product pages
+          static there is one case left, and one indirection for one case is
+          not worth a file. */}
+      {flagship?.cinematicHero && (
         <div id="top" className="scroll-mt-24">
-          <StoryHero product={flagship} />
+          <FrameScrollHero hero={flagship.cinematicHero} product={flagship} />
         </div>
       )}
       <div id="statement" className="scroll-mt-24">

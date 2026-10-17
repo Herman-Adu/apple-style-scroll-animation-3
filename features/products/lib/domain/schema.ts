@@ -39,43 +39,39 @@ export const frameHeroSchema = z.object({
 })
 export type FrameHero = z.infer<typeof frameHeroSchema>
 
-export const parallaxHeroSchema = z.object({
-  kind: z.literal("parallax"),
+/**
+ * S69 split one `hero` field that was doing two opposed jobs.
+ *
+ * The *front door* keeps its cinematic: one 16 MB frame sequence, on the page
+ * people land on, where it earns its weight once. `frameHeroSchema` above is
+ * that hero, and only the flagship has one.
+ *
+ * Every *product page* gets this instead — static, server-rendered, no canvas
+ * and no blocking preload. A scrollytelling hero per product meant ~48 MB
+ * across four products, each behind its own progress bar, and a frame sequence
+ * to produce per product: one cinematic is a signature, four is a tax.
+ *
+ * `parallaxHeroSchema` and `explodedHeroSchema` were deleted here, not
+ * deprecated. The writing that lived inside them is not lost — it moved into
+ * `features` and `specs`, and `qa/unit/products/hero-copy-survives.test.ts`
+ * holds the exact strings so it cannot quietly go missing.
+ */
+export const productHeroSchema = z.object({
+  /** The staged product shot. */
   image: z.string(),
-  accent: z.string(),
-  motion: z.enum(["orbit", "rise", "drift"]),
-  scrollVh: z.number(),
-  intro: heroIntroSchema,
-  beats: z.array(storyBeatSchema),
+  /** Small, tracked, with an accent dot — "THE SPEAKER". */
+  kicker: z.string(),
+  /** Two-tone, rendered through `TwoToneTitle`. */
+  title: z.string(),
+  subtitle: z.string(),
+  /** Which side the copy sits on; the image takes the other. */
+  align: z.enum(["left", "right"]).default("right"),
 })
-export type ParallaxHero = z.infer<typeof parallaxHeroSchema>
-
-export const explodedLayerSchema = z.object({
-  image: z.string(),
-  label: z.string(),
-  assembledY: z.number(),
-  explodedY: z.number(),
-  height: z.number(),
-  z: z.number(),
-})
-export type ExplodedLayer = z.infer<typeof explodedLayerSchema>
-
-export const explodedHeroSchema = z.object({
-  kind: z.literal("exploded"),
-  accent: z.string(),
-  scrollVh: z.number(),
-  layers: z.array(explodedLayerSchema),
-  intro: heroIntroSchema,
-  beats: z.array(storyBeatSchema),
-})
-export type ExplodedHero = z.infer<typeof explodedHeroSchema>
-
-export const productHeroSchema = z.discriminatedUnion("kind", [
-  frameHeroSchema,
-  parallaxHeroSchema,
-  explodedHeroSchema,
-])
-export type ProductHero = z.infer<typeof productHeroSchema>
+/**
+ * Named `...Content` because the component that renders it is `ProductHero`,
+ * and a slice barrel cannot export both under one name.
+ */
+export type ProductHeroContent = z.infer<typeof productHeroSchema>
 
 export const productSpecSchema = z.object({
   label: z.string(),
@@ -84,11 +80,18 @@ export const productSpecSchema = z.object({
 })
 export type ProductSpec = z.infer<typeof productSpecSchema>
 
+/**
+ * `stat` and `statUnit` are optional: S69 rehomed the story beats that used to
+ * live in the `parallax` and `exploded` heroes into this array, and a beat is a
+ * title and a description with no number attached. `ProductFeatures` renders
+ * the stat block only when there is one, rather than making the copy invent a
+ * figure it never had.
+ */
 export const productFeatureSchema = z.object({
   title: z.string(),
   description: z.string(),
-  stat: z.string(),
-  statUnit: z.string(),
+  stat: z.string().optional(),
+  statUnit: z.string().optional(),
 })
 export type ProductFeature = z.infer<typeof productFeatureSchema>
 
@@ -104,7 +107,13 @@ export const productSchema = z.object({
   accent: z.string(),
   featured: z.boolean(),
   releaseStatus: z.enum(["available", "preorder", "coming-soon"]),
-  hero: productHeroSchema,
+  /**
+   * The front door's cinematic. Optional, because only the flagship has one -
+   * see `productHeroSchema` for why this is not per product.
+   */
+  cinematicHero: frameHeroSchema.optional(),
+  /** Every product has one. Static and server-rendered. */
+  productHero: productHeroSchema,
   features: z.array(productFeatureSchema),
   specs: z.array(productSpecSchema),
   colors: z.array(z.string()),

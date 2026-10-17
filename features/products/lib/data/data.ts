@@ -10,11 +10,12 @@ export const products: Product[] = [
     summary: "The flagship over-ear. Titanium build, 40mm planar drivers, and reference-grade silence.",
     description:
       "Momo X is the culmination of a decade of acoustic research. A machined titanium frame houses 40mm planar magnetic drivers tuned in our anechoic lab, while adaptive noise cancellation removes the world so only the music remains.",
-    image: "/frames/00096.jpg",
+    image: "/products/hero/momo-x.jpg",
     accent: "oklch(0.72 0.15 250)",
     featured: true,
     releaseStatus: "preorder",
-    hero: {
+    // The front door's cinematic. The flagship is the only product with one.
+    cinematicHero: {
       kind: "frames",
       framePath: "/frames/",
       frameCount: 192,
@@ -50,6 +51,13 @@ export const products: Product[] = [
           window: [0.88, 0.95, 1.1, 1.2],
         },
       ],
+    },
+    productHero: {
+      image: "/products/hero/momo-x.jpg",
+      kicker: "Introducing",
+      title: "Momo X",
+      subtitle: "Pure Sound. Zero Compromise.",
+      align: "right",
     },
     features: [
       {
@@ -105,33 +113,12 @@ export const products: Product[] = [
     accent: "oklch(0.78 0.14 190)",
     featured: true,
     releaseStatus: "available",
-    hero: {
-      kind: "parallax",
+    productHero: {
       image: "/products/momo-air.png",
-      accent: "oklch(0.78 0.14 190)",
-      motion: "rise",
-      scrollVh: 320,
-      intro: {
-        kicker: "Introducing",
-        title: "Momo Air",
-        subtitle: "Weightless. Wireless. Everywhere.",
-      },
-      beats: [
-        {
-          index: "01",
-          title: "4.2 grams\nof silence.",
-          description: "So light you forget it is there — until the noise around you simply vanishes.",
-          align: "left",
-          window: [0.16, 0.26, 0.4, 0.5],
-        },
-        {
-          index: "02",
-          title: "Adaptive\nTransparency.",
-          description: "Six microphones read your surroundings and let the world back in, exactly as much as you want.",
-          align: "right",
-          window: [0.52, 0.62, 0.78, 0.88],
-        },
-      ],
+      kicker: "Introducing",
+      title: "Momo Air",
+      subtitle: "Weightless. Wireless. Everywhere.",
+      align: "right",
     },
     features: [
       {
@@ -157,6 +144,16 @@ export const products: Product[] = [
         description: "IPX4 rated for workouts, rain, and everything the commute throws at you.",
         stat: "IPX4",
         statUnit: "rated",
+      },
+      // Rehomed from the deleted parallax hero: readable here without
+      // scrubbing, which is arguably where it belonged all along.
+      {
+        title: "4.2 grams\nof silence.",
+        description: "So light you forget it is there — until the noise around you simply vanishes.",
+      },
+      {
+        title: "Adaptive\nTransparency.",
+        description: "Six microphones read your surroundings and let the world back in, exactly as much as you want.",
       },
     ],
     specs: [
@@ -185,33 +182,12 @@ export const products: Product[] = [
     accent: "oklch(0.7 0.13 60)",
     featured: false,
     releaseStatus: "available",
-    hero: {
-      kind: "parallax",
+    productHero: {
       image: "/products/momo-studio.png",
-      accent: "oklch(0.7 0.13 60)",
-      motion: "drift",
-      scrollVh: 320,
-      intro: {
-        kicker: "For the studio",
-        title: "Momo Studio",
-        subtitle: "Reference Truth.",
-      },
-      beats: [
-        {
-          index: "01",
-          title: "Open-back\nby design.",
-          description: "A ventilated acoustic chamber creates a wide, natural soundstage with zero pressure buildup.",
-          align: "left",
-          window: [0.16, 0.26, 0.4, 0.5],
-        },
-        {
-          index: "02",
-          title: "Hand-matched\ndrivers.",
-          description: "Every pair is matched to within 0.5dB so left and right are perfectly, provably balanced.",
-          align: "right",
-          window: [0.52, 0.62, 0.78, 0.88],
-        },
-      ],
+      kicker: "For the studio",
+      title: "Momo Studio",
+      subtitle: "Reference Truth.",
+      align: "left",
     },
     features: [
       {
@@ -237,6 +213,15 @@ export const products: Product[] = [
         description: "Total harmonic distortion under 0.05% across the audible range.",
         stat: "0.05",
         statUnit: "% THD",
+      },
+      // Rehomed from the deleted parallax hero.
+      {
+        title: "Open-back\nby design.",
+        description: "A ventilated acoustic chamber creates a wide, natural soundstage with zero pressure buildup.",
+      },
+      {
+        title: "Hand-matched\ndrivers.",
+        description: "Every pair is matched to within 0.5dB so left and right are perfectly, provably balanced.",
       },
     ],
     specs: [
@@ -265,45 +250,12 @@ export const products: Product[] = [
     accent: "oklch(0.7 0.16 20)",
     featured: true,
     releaseStatus: "available",
-    hero: {
-      kind: "exploded",
-      accent: "oklch(0.7 0.16 20)",
-      scrollVh: 500,
-      layers: [
-        { image: "/products/beat-exploded/01-cap.png", label: "Titanium cap", assembledY: -15, explodedY: -46, height: 46, z: 6 },
-        { image: "/products/beat-exploded/02-grille.png", label: "360° acoustic grille", assembledY: -5, explodedY: -22, height: 46, z: 5 },
-        { image: "/products/beat-exploded/03-driver.png", label: "Full-range driver", assembledY: 4, explodedY: 4, height: 46, z: 4 },
-        { image: "/products/beat-exploded/04-radiator.png", label: "Amp & passive radiator", assembledY: 12, explodedY: 28, height: 46, z: 3 },
-        { image: "/products/beat-exploded/05-base.png", label: "Machined base", assembledY: 20, explodedY: 52, height: 46, z: 2 },
-      ],
-      intro: {
-        kicker: "Sound everywhere",
-        title: "Momo Beat",
-        subtitle: "Fill the Room.",
-      },
-      beats: [
-        {
-          index: "01",
-          title: "Every layer\nengineered.",
-          description: "Six precision components stack into a machined titanium body no wider than a coffee cup.",
-          align: "left",
-          window: [0.18, 0.28, 0.42, 0.52],
-        },
-        {
-          index: "02",
-          title: "Bass you\nfeel.",
-          description: "A dedicated full-range driver and opposed passive radiator move real air for depth that belies its size.",
-          align: "right",
-          window: [0.54, 0.64, 0.74, 0.82],
-        },
-        {
-          index: "03",
-          title: "360°\nof sound.",
-          description: "Assembled, the radial array projects evenly in every direction — no sweet spot, no dead zones.",
-          align: "left",
-          window: [0.86, 0.93, 1.1, 1.2],
-        },
-      ],
+    productHero: {
+      image: "/products/momo-beat.png",
+      kicker: "Sound everywhere",
+      title: "Momo Beat",
+      subtitle: "Fill the Room.",
+      align: "right",
     },
     features: [
       {
@@ -330,6 +282,19 @@ export const products: Product[] = [
         stat: "IP67",
         statUnit: "rated",
       },
+      // Rehomed from the deleted exploded-view hero.
+      {
+        title: "Every layer\nengineered.",
+        description: "Six precision components stack into a machined titanium body no wider than a coffee cup.",
+      },
+      {
+        title: "Bass you\nfeel.",
+        description: "A dedicated full-range driver and opposed passive radiator move real air for depth that belies its size.",
+      },
+      {
+        title: "360°\nof sound.",
+        description: "Assembled, the radial array projects evenly in every direction — no sweet spot, no dead zones.",
+      },
     ],
     specs: [
       { label: "Drivers", value: "Dual 20mm + 2 radiators" },
@@ -338,6 +303,14 @@ export const products: Product[] = [
       { label: "Weight", value: "980", unit: "g" },
       { label: "Connectivity", value: "Bluetooth 5.3 · Aux" },
       { label: "Durability", value: "IP67" },
+      // The five exploded-view layer labels, in assembly order. They are the
+      // component names beats 01 and 02 refer to - specification, not
+      // decoration - so the spec table is their home now that the teardown
+      // animation that used to caption them is gone.
+      {
+        label: "Construction",
+        value: "Titanium cap · 360° acoustic grille · Full-range driver · Amp & passive radiator · Machined base",
+      },
     ],
     colors: ["Titanium", "Slate"],
     stock: 15,

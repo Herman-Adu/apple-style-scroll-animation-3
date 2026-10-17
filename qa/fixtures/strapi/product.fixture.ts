@@ -26,22 +26,12 @@ export const strapiProductEntry = {
   image: {
     data: { attributes: { url: "/uploads/momo_x_00096.jpg" } },
   },
-  hero: {
-    kind: "parallax",
+  productHero: {
     image: "/uploads/momo_x_hero.jpg",
-    accent: "oklch(0.72 0.15 250)",
-    motion: "orbit",
-    scrollVh: 400,
-    intro: { kicker: "Introducing", title: "Momo X", subtitle: "Pure Sound. Zero Compromise." },
-    beats: [
-      {
-        index: "01",
-        title: "Designed for\nPrecision.",
-        description: "Sub-millimeter accuracy for perfect acoustic response.",
-        align: "left",
-        window: [0.18, 0.28, 0.42, 0.52],
-      },
-    ],
+    kicker: "Introducing",
+    title: "Momo X",
+    subtitle: "Pure Sound. Zero Compromise.",
+    align: "right",
   },
   features: [
     { title: "Active Noise Cancellation", description: "-45dB adaptive reduction.", stat: "-45", statUnit: "dB" },
